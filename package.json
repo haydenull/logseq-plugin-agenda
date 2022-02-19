@@ -1,9 +1,9 @@
 {
-  "name": "logseq-plugin-react-boilerplate",
+  "name": "logseq-plugin-calendar",
   "version": "1.0.0",
   "main": "dist/index.html",
   "logseq": {
-    "id": "logseq-plugin-react-boilerplate",
+    "id": "logseq-plugin-calendar",
     "icon": "logo.png"
   },
   "scripts": {
