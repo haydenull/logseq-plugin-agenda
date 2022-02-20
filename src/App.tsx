@@ -8,74 +8,19 @@ import 'antd/dist/antd.css'
 import './App.css'
 import { getSchedules } from './util'
 
-var templates = {
-  popupIsAllDay: function() {
-    return 'All Day';
-  },
-  popupStateFree: function() {
-    return 'Free';
-  },
-  popupStateBusy: function() {
-    return 'Busy';
-  },
-  titlePlaceholder: function() {
-    return 'Subject';
-  },
-  locationPlaceholder: function() {
-    return 'Location';
-  },
-  startDatePlaceholder: function() {
-    return 'Start date';
-  },
-  endDatePlaceholder: function() {
-    return 'End date';
-  },
-  popupSave: function() {
-    return 'Save';
-  },
-  popupUpdate: function() {
-    return 'Update';
-  },
-  popupDetailDate: function(isAllDay, start, end) {
-    var isSameDate = day(start).isSame(end);
-    var endFormat = (isSameDate ? '' : 'YYYY.MM.DD ') + 'hh:mm a';
-
-    if (isAllDay) {
-      return day(start).format('YYYY.MM.DD') + (isSameDate ? '' : ' - ' + day(end).format('YYYY.MM.DD'));
-    }
-
-    return (day(start).format('YYYY.MM.DD hh:mm a') + ' - ' + day(end).format(endFormat));
-  },
-  popupDetailLocation: function(schedule) {
-    return 'Location : ' + schedule.location;
-  },
-  popupDetailUser: function(schedule) {
-    return 'User : ' + (schedule.attendees || []).join(', ');
-  },
-  popupDetailState: function(schedule) {
-    return 'State : ' + schedule.state || 'Busy';
-  },
-  popupDetailRepeat: function(schedule) {
-    return 'Repeat : ' + schedule.recurrenceRule;
-  },
-  popupDetailBody: function(schedule) {
-    return 'Body : ' + schedule.body;
-  },
-  popupEdit: function() {
-    return 'Edit';
-  },
-  popupDelete: function() {
-    return 'Delete';
-  }
-};
-
 const DEFAULT_OPTIONS = {
   defaultView: 'month',
   taskView: true,
   scheduleView: true,
-  // template: templates,
   useDetailPopup: true,
   isReadOnly: true,
+  week: {
+    startDayOfWeek: 1,
+    narrowWeekend: true,
+  },
+  month: {
+    startDayOfWeek: 1,
+  },
 }
 
 const App: React.FC<{ env: string }> = ({ env }) => {
@@ -99,22 +44,49 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     if (calendar) {
       calendar.clear()
 
-      const schedules = await getSchedules() || []
-      calendar.createSchedules(schedules?.map(block => {
-        const date = block?.page?.journalDay
-        const time = block.content?.substr(0, 5)
-        const hasTime = time.split(':')?.filter(num => !Number.isNaN(Number(num)))?.length === 2
-        return {
-          id: block.id,
-          calendarId: 'journal',
-          title: block.content,
-          category: hasTime ? 'time' : 'allday',
-          dueDateClass: '',
-          start: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').format() : day(String(date), 'YYYYMMDD').format(),
-          // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
-          isAllDay: !hasTime,
-        }
-      }))
+      const schedules = await getSchedules()
+
+      // const finalSchedules = schedules?.map(block => {
+      //   const date = block?.page?.journalDay
+      //   const time = block.content?.substr(0, 5)
+      //   const hasTime = time.split(':')?.filter(num => !Number.isNaN(Number(num)))?.length === 2
+      //   return {
+      //     id: block.id,
+      //     calendarId: 'journal',
+      //     title: block.content,
+      //     category: hasTime ? ['time'] : ['allday'],
+      //     dueDateClass: '',
+      //     start: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').format() : day(String(date), 'YYYYMMDD').format(),
+      //     // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
+      //     isAllDay: !hasTime,
+      //   }
+      // })
+
+      // const finalTasks = tasks?.map(task => {
+      //   const date = task?.page?.journalDay || task?.deadline || task?.scheduled
+      //   const time = task?.faizTime
+      //   return {
+      //     id: task.id,
+      //     calendarId: 'task',
+      //     title: task.content,
+      //     category: ,
+      //     dueDateClass: '',
+      //     start: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').format() : day(String(date), 'YYYYMMDD').format(),
+      //     // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
+      //     isAllDay: !hasTime,
+      //   }
+      // })
+      // calendar.createSchedules([].concat({
+      //   id: '123',
+      //   calendarId: 'task',
+      //   title: '任务',
+      //   category: ['task'],
+      //   dueDateClass: '',
+      //   start: day().format(),
+      //   // isAllDay: true,
+      // }))
+
+      calendar.createSchedules(schedules)
 
       calendar.render()
 
