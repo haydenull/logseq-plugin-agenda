@@ -1,8 +1,18 @@
 import dayjs from "dayjs"
+import en from 'dayjs/locale/en'
 import { ISchedule } from "tui-calendar"
 
-const DEFAULT_DATE_FORMAT = "YYYYMMDD"
-const genCalendarDate = (date: number | string, format = DEFAULT_DATE_FORMAT) => {
+dayjs.locale({
+  ...en,
+  weekStart: 1,
+})
+
+export const SHOW_DATE_FORMAT = 'YYYY-MM-DD'
+export const DEFAULT_JOURNAL_FORMAT = 'YYYY-MM-DD ddd'
+export const DEFAULT_LOG_KEY = 'Daily Log'
+
+const DEFAULT_BLOCK_DEADLINE_DATE_FORMAT = "YYYYMMDD"
+const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_DATE_FORMAT) => {
   return dayjs(String(date), format).format()
 }
 
@@ -81,7 +91,7 @@ export const getSchedules = async () => {
   }))
 
   // Daily Logs
-  const keyword = logseq.settings?.logKey || 'Daily Log'
+  const keyword = logseq.settings?.logKey || DEFAULT_LOG_KEY
   const logs = await logseq.DB.q(`[[${keyword}]]`)
   const _logs = logs?.filter(block => {
     const _content = block.content?.trim()
@@ -103,37 +113,23 @@ export const getSchedules = async () => {
     }
   }))
 
-  // const tasks = await logseq.DB.datascriptQuery(`
-  //   [:find (pull ?b [*])
-  //   :where
-  //   [?b :block/marker ?m]
-  //   [(not= ?m "nil")]]
-  // `)
-
-
-// SCHEDULED: <2022-02-20 Sun 10:04 .+1d>"
-  // const tasks = await logseq.DB.q(`(and (todo now later done doing))`)
-  // const validTasks = tasks?.filter(t => {
-  //   return t?.page?.journalDay || t.deadline || t.scheduled
-  // }).map(t => {
-  //   if (t.scheduled) {
-  //     const scheduledString = t.content?.split('\n').find(l => l.startsWith('SCHEDULED:')).trim()
-  //     return {
-  //       ...t,
-  //       faizTime: / \d{2}:\d{2}[ >]/.exec(scheduledString)?.[1] || '',
-  //     }
-    // }
-  //   return t
-  // })
-  // console.log('[faiz:] === tasks', validTasks)
-
   console.log('[faiz:] === calendatSchedules', calendatSchedules)
   return calendatSchedules
 }
 
-// export getScheduleCategory = (schedule: any, task?: boolean) => {
-//   const categroy: string[] = []
-//   if (schedule.deadline) categroy.push('milestone')
-//   if (schedule.scheduled && schedule.faizTime) categroy.push('time')
-
-// }
+/**
+ * 获取周报
+ */
+export const getWeekly = async (startDate, endDate) => {
+  const keyword = logseq.settings?.logKey || DEFAULT_LOG_KEY
+  const journalFormat = logseq.settings?.journalFormat || DEFAULT_JOURNAL_FORMAT
+  const _start = dayjs(startDate, SHOW_DATE_FORMAT).format(journalFormat)
+  const _end = dayjs(endDate, SHOW_DATE_FORMAT).format(journalFormat)
+  const logs = await logseq.DB.q(`(and [[${keyword}]] (between [[${_start}]] [[${_end}]]))`)
+  const _logs = logs?.filter(block => {
+    const _content = block.content?.trim()
+    return _content.length > 0 && _content !== `[[${keyword}]]`
+  })
+  console.log('[faiz:] === weekly logs', _logs)
+  return _logs
+}

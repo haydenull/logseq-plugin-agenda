@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar from 'tui-calendar'
-import { Button, Select } from 'antd'
+import { Button, Select, Modal, Input, Typography } from 'antd'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import day from 'dayjs'
 import 'tui-calendar/dist/tui-calendar.css'
 import 'antd/dist/antd.css'
 import './App.css'
-import { getSchedules } from './util'
+import { getSchedules, getWeekly, SHOW_DATE_FORMAT } from './util'
 
 const DEFAULT_OPTIONS = {
-  defaultView: 'month',
+  defaultView: 'week',
   taskView: true,
   scheduleView: true,
   useDetailPopup: true,
@@ -26,6 +26,11 @@ const DEFAULT_OPTIONS = {
 const App: React.FC<{ env: string }> = ({ env }) => {
 
   const [showDate, setShowDate] = useState<string>()
+  const [showExportWeekly, setShowExportWeekly] = useState<boolean>(true)
+  const [weeklyModal, setWeeklyModal] = useState({
+    visible: false,
+    content: '',
+  })
   const calendarRef = useRef<Calendar>()
 
   const changeShowDate = () => {
@@ -33,9 +38,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       const dateRangeStart = day(calendarRef.current.getDateRangeStart().getTime())
       const dateRangeEnd = day(calendarRef.current.getDateRangeEnd().getTime())
       if (dateRangeStart.isSame(dateRangeEnd, 'day')) {
-        setShowDate(dateRangeStart.format('YYYY-MM-DD'))
+        setShowDate(dateRangeStart.format(SHOW_DATE_FORMAT))
       } else {
-        setShowDate(dateRangeStart.format('YYYY-MM-DD') + ' ~ ' + dateRangeEnd.format('YYYY-MM-DD'))
+        setShowDate(dateRangeStart.format(SHOW_DATE_FORMAT) + ' ~ ' + dateRangeEnd.format(SHOW_DATE_FORMAT))
       }
     }
   }
@@ -45,58 +50,26 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       calendar.clear()
 
       const schedules = await getSchedules()
-
-      // const finalSchedules = schedules?.map(block => {
-      //   const date = block?.page?.journalDay
-      //   const time = block.content?.substr(0, 5)
-      //   const hasTime = time.split(':')?.filter(num => !Number.isNaN(Number(num)))?.length === 2
-      //   return {
-      //     id: block.id,
-      //     calendarId: 'journal',
-      //     title: block.content,
-      //     category: hasTime ? ['time'] : ['allday'],
-      //     dueDateClass: '',
-      //     start: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').format() : day(String(date), 'YYYYMMDD').format(),
-      //     // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
-      //     isAllDay: !hasTime,
-      //   }
-      // })
-
-      // const finalTasks = tasks?.map(task => {
-      //   const date = task?.page?.journalDay || task?.deadline || task?.scheduled
-      //   const time = task?.faizTime
-      //   return {
-      //     id: task.id,
-      //     calendarId: 'task',
-      //     title: task.content,
-      //     category: ,
-      //     dueDateClass: '',
-      //     start: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').format() : day(String(date), 'YYYYMMDD').format(),
-      //     // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
-      //     isAllDay: !hasTime,
-      //   }
-      // })
-      // calendar.createSchedules([].concat({
-      //   id: '123',
-      //   calendarId: 'task',
-      //   title: '任务',
-      //   category: ['task'],
-      //   dueDateClass: '',
-      //   start: day().format(),
-      //   // isAllDay: true,
-      // }))
-
       calendar.createSchedules(schedules)
 
       calendar.render()
 
     }
   }
+  const exportWeekly = async () => {
+    const [start, end] = showDate?.split(' ~ ') || []
+    const logs = await getWeekly(start, end) || []
+    setWeeklyModal({
+      visible: true,
+      content: logs.map(log => log.content).join('\n\n'),
+    })
+  }
 
   const onViewChange = (value: string) => {
     console.log('[faiz:] === onViewChange',value, calendarRef.current)
     calendarRef.current?.changeView(value)
     changeShowDate()
+    setShowExportWeekly(value === 'week')
   }
   const onClickToday = () => {
     calendarRef.current?.today()
@@ -144,9 +117,20 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             <span className="ml-4 text-xl">{ showDate }</span>
           </div>
 
-          <Button onClick={setSchedules} type="primary">Sync</Button>
+          <div>
+            { showExportWeekly && <Button className="mr-2" onClick={exportWeekly}>Export Weekly</Button> }
+            <Button onClick={setSchedules} type="primary">Sync</Button>
+          </div>
         </div>
         <div id="calendar"></div>
+        <Modal
+          closable={false}
+          visible={weeklyModal.visible}
+          onCancel={() => setWeeklyModal({ visible: false, content: '' })}
+          onOk={() => setWeeklyModal({ visible: false, content: '' })}
+        >
+          <Input.TextArea value={weeklyModal.content} rows={10} />
+        </Modal>
       </div>
     </div>
   )
