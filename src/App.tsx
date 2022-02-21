@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar from 'tui-calendar'
-import { Button, Select, Modal, Input, Typography } from 'antd'
-import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { Button, Select, Modal, Input, Typography, Form } from 'antd'
+import { LeftOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons'
 import day from 'dayjs'
 import 'tui-calendar/dist/tui-calendar.css'
 import 'antd/dist/antd.css'
@@ -30,6 +30,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   const [weeklyModal, setWeeklyModal] = useState({
     visible: false,
     content: '',
+  })
+  const [settingModal, setSettingModal] = useState({
+    visible: false,
   })
   const calendarRef = useRef<Calendar>()
 
@@ -118,18 +121,49 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           </div>
 
           <div>
-            { showExportWeekly && <Button className="mr-2" onClick={exportWeekly}>Export Weekly</Button> }
-            <Button onClick={setSchedules} type="primary">Sync</Button>
+            { showExportWeekly && <Button className="mr-4" onClick={exportWeekly}>Export Weekly</Button> }
+            <Button className="mr-4" onClick={setSchedules} type="primary">Sync</Button>
+            <Button onClick={() => setSettingModal({ visible: true })} shape="circle" icon={<SettingOutlined />}></Button>
           </div>
         </div>
         <div id="calendar"></div>
         <Modal
-          closable={false}
+          title="Weekly Logs"
           visible={weeklyModal.visible}
           onCancel={() => setWeeklyModal({ visible: false, content: '' })}
           onOk={() => setWeeklyModal({ visible: false, content: '' })}
         >
           <Input.TextArea value={weeklyModal.content} rows={10} />
+        </Modal>
+        <Modal
+          title="Calendar Setting"
+          visible={settingModal.visible}
+          onCancel={() => setSettingModal({ visible: false })}
+        >
+          <Form>
+            <Form.Item label="Default View">
+              <Select defaultValue={DEFAULT_OPTIONS.defaultView} onChange={onViewChange} style={{ width: '150px' }}>
+                <Select.Option value="day">Daily</Select.Option>
+                <Select.Option value="week">Weekly</Select.Option>
+                <Select.Option value="month">Monthly</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Week Start Day">
+              <Select defaultValue={DEFAULT_OPTIONS.week.startDayOfWeek} onChange={(value) => {
+                DEFAULT_OPTIONS.week.startDayOfWeek = value as number
+                calendarRef.current?.setOptions(DEFAULT_OPTIONS)
+              }} style={{ width: '150px' }}>
+                <Select.Option value={0}>Sunday</Select.Option>
+                <Select.Option value={1}>Monday</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Journal Date Format">
+              <Input />
+            </Form.Item>
+            <Form.Item label="Log Key">
+              <Input />
+            </Form.Item>
+          </Form>
         </Modal>
       </div>
     </div>

@@ -1,6 +1,6 @@
-import dayjs from "dayjs"
+import dayjs from 'dayjs'
 import en from 'dayjs/locale/en'
-import { ISchedule } from "tui-calendar"
+import { ISchedule } from 'tui-calendar'
 
 dayjs.locale({
   ...en,
@@ -93,10 +93,14 @@ export const getSchedules = async () => {
   // Daily Logs
   const keyword = logseq.settings?.logKey || DEFAULT_LOG_KEY
   const logs = await logseq.DB.q(`[[${keyword}]]`)
-  const _logs = logs?.filter(block => {
-    const _content = block.content?.trim()
-    return _content.length > 0 && _content !== `[[${keyword}]]` && block?.page?.journalDay && !block.scheduled && !block.deadline
-  }) || []
+  const _logs = logs
+                ?.filter(block => block.content?.trim() === `[[${keyword}]]`)
+                ?.map(block => Array.isArray(block.parent) ? block.parent : [])
+                ?.flat()
+                ?.filter(block => {
+                  const _content = block.content?.trim()
+                  return _content.length > 0 && block?.page?.journalDay && !block.scheduled && !block.deadline
+                }) || []
   console.log('[faiz:] === logs', _logs)
   calendatSchedules = calendatSchedules.concat(_logs?.map(block => {
     const date = block?.page?.journalDay
@@ -126,10 +130,14 @@ export const getWeekly = async (startDate, endDate) => {
   const _start = dayjs(startDate, SHOW_DATE_FORMAT).format(journalFormat)
   const _end = dayjs(endDate, SHOW_DATE_FORMAT).format(journalFormat)
   const logs = await logseq.DB.q(`(and [[${keyword}]] (between [[${_start}]] [[${_end}]]))`)
-  const _logs = logs?.filter(block => {
-    const _content = block.content?.trim()
-    return _content.length > 0 && _content !== `[[${keyword}]]`
-  })
+  const _logs = logs
+                  ?.filter(block => block.content?.trim() === `[[${keyword}]]`)
+                  ?.map(block => Array.isArray(block.parent) ? block.parent : [])
+                  ?.flat()
+                  ?.filter(block => {
+                    const _content = block.content?.trim()
+                    return _content.length > 0
+                  })
   console.log('[faiz:] === weekly logs', _logs)
   return _logs
 }
