@@ -12,6 +12,12 @@ if (isDevelopment) {
   console.log('=== logseq-plugin-calendar loaded ===')
   logseq.ready(() => {
 
+    logseq.on('ui:visible:changed', (e) => {
+      if (!e.visible) {
+        ReactDOM.unmountComponentAtNode(document.getElementById('root') as Element)
+      }
+    })
+
     logseq.provideModel({
       show() {
         renderApp('logseq')
@@ -23,6 +29,10 @@ if (isDevelopment) {
       key: 'logseq-plugin-calendar',
       template: '<a data-on-click="show" class="button"><i class="ti ti-window"></i></a>',
     })
+
+    window.faizNavigate = (e) => {
+      console.log('[faiz:] === faizNavigate', e)
+    }
 
   })
 }

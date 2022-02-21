@@ -10,6 +10,11 @@ dayjs.locale({
 export const SHOW_DATE_FORMAT = 'YYYY-MM-DD'
 export const DEFAULT_JOURNAL_FORMAT = 'YYYY-MM-DD ddd'
 export const DEFAULT_LOG_KEY = 'Daily Log'
+export const CALENDAR_VIEWS = [
+  { value: 'day', label: 'Daily' },
+  { value: 'week', label: 'Weekly' },
+  { value: 'month', label: 'Monthly' },
+]
 
 const DEFAULT_BLOCK_DEADLINE_DATE_FORMAT = "YYYYMMDD"
 const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_DATE_FORMAT) => {
@@ -39,6 +44,7 @@ export const getSchedules = async () => {
         id: block.id,
         calendarId: 'journal',
         title: block.content,
+        body: block.content,
         category: 'milestone',
         dueDateClass: '',
         start: genCalendarDate(block.deadline),
@@ -49,6 +55,7 @@ export const getSchedules = async () => {
         id: block.id,
         calendarId: 'journal',
         title: block.content,
+        body: block.content,
         category: 'time',
         dueDateClass: '',
         start: dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm').format(),
@@ -58,6 +65,7 @@ export const getSchedules = async () => {
         id: block.id,
         calendarId: 'journal',
         title: block.content,
+        body: block.content,
         category: 'allday',
         dueDateClass: '',
         start: genCalendarDate(block.scheduled),
@@ -84,6 +92,7 @@ export const getSchedules = async () => {
       id: block.id,
       calendarId: 'journal',
       title: block.content,
+      body: block.content,
       category: 'task',
       dueDateClass: '',
       start: genCalendarDate(block.page.journalDay),
@@ -110,6 +119,7 @@ export const getSchedules = async () => {
       id: block.id,
       calendarId: 'journal',
       title: block.content,
+      body: block.content,
       category: hasTime ? 'time' : 'allday',
       dueDateClass: '',
       start: hasTime ? dayjs(date + ' ' + time, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
