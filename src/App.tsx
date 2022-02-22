@@ -42,11 +42,7 @@ const getDefaultOptions = () => ({
   },
   template: {
     popupDetailBody: (schedule: ISchedule) => {
-      // const { detail } = schedule
-      // function nav() {
-      //   logseq.App.pushState('page', { name: detail })
-      // }
-      return `<a id="faiz-nav-detail" href="javascript:void(0);" data-block-id="${schedule.body}">Navigate To Block</a>`
+      return `<a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>`
     },
   },
 })
@@ -186,15 +182,20 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     })
     calendarRef.current.on('clickSchedule', function(info) {
       console.log('clickSchedule', info, document.querySelectorAll('.faiz-nav-detail'))
-      document.querySelector('#faiz-nav-detail')?.addEventListener('click', (e) => {
-        console.log('[faiz:] === click nav', e)
-        const dataset = (e.target as any)?.dataset
-        if (dataset.blockId) {
-          logseq.App.pushState('page', { name: dataset.blockId })
-          logseq.hideMainUI()
-        } else {
-          logseq.App.showMsg('error', 'blockId not found')
+      document.querySelector('#faiz-nav-detail')?.addEventListener('click', async (e) => {
+        const rawData = info.schedule.raw || {}
+        const { id: pageId, originalName } = rawData?.page
+        let pageName = originalName
+        let blockUuid = rawData?.uuid
+        // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
+        if (!pageName) {
+          const page = await logseq.Editor.getPage(pageId)
+          pageName = page?.originalName
+          const block = await logseq.Editor.getBlock(rawData.id)
+          blockUuid = block?.uuid
         }
+        logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
+        logseq.hideMainUI()
       }, { once: true })
     })
   }, [])

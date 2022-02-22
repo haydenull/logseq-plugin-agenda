@@ -22,14 +22,7 @@ const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_
 }
 
 export const getSchedules = async () => {
-  const page = await logseq.DB.datascriptQuery(`
-    [:find (pull ?block [*])
-      :where
-      [?block :block/page ?page]
-      [(get ?page :page/id) ?id]
-      [(= ?id "614")]
-    ]
-  `)
+  const page = await logseq.Editor.getPage(618)
   console.log('[faiz:] === page', page)
 
 
@@ -60,6 +53,7 @@ export const getSchedules = async () => {
         dueDateClass: '',
         start: genCalendarDate(block.deadline),
         isAllDay: false,
+        raw: block,
       }
     } else if (time) {
       return {
@@ -70,6 +64,7 @@ export const getSchedules = async () => {
         category: 'time',
         dueDateClass: '',
         start: dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm').format(),
+        raw: block,
       }
     } else {
       return {
@@ -81,6 +76,7 @@ export const getSchedules = async () => {
         dueDateClass: '',
         start: genCalendarDate(block.scheduled),
         isAllDay: true,
+        raw: block,
       }
     }
   }))
@@ -107,6 +103,7 @@ export const getSchedules = async () => {
       category: 'task',
       dueDateClass: '',
       start: genCalendarDate(block.page.journalDay),
+      raw: block,
     }
   }))
 
@@ -135,6 +132,7 @@ export const getSchedules = async () => {
       dueDateClass: '',
       start: hasTime ? dayjs(date + ' ' + time, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
       // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
+      raw: block,
     }
   }))
 
