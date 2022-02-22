@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
-import { Button, Select, Modal, Input, Form, message } from 'antd'
-import { LeftOutlined, RightOutlined, SettingOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import { Button, Select } from 'antd'
+import { LeftOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons'
 import day from 'dayjs'
-import 'tui-calendar/dist/tui-calendar.css'
-import 'antd/dist/antd.css'
-import './App.css'
 import { getSchedules, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util'
 import Settings, { ISettingForm } from './components/Settings'
 import Weekly from './components/Weekly'
+import 'tui-calendar/dist/tui-calendar.css'
+import 'antd/dist/antd.css'
+import './App.css'
 
 const getDefaultOptions = () => ({
   defaultView: logseq.settings?.defaultView || 'week',
