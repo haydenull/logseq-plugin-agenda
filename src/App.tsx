@@ -6,22 +6,9 @@ import day from 'dayjs'
 import 'tui-calendar/dist/tui-calendar.css'
 import 'antd/dist/antd.css'
 import './App.css'
-import { getSchedules, getWeekly, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util'
-import { useForm } from 'antd/lib/form/Form'
-
-type ISettingForm = Partial<{
-  defaultView: string
-  weekStartDay: 0 | 1
-  journalDateFormatter: string
-  logKey: string
-}>
-
-const getInitalSettingForm = (): ISettingForm => ({
-  defaultView: logseq.settings?.defaultView || 'week',
-  weekStartDay: logseq.settings?.weekStartDay || 0,
-  journalDateFormatter: logseq.settings?.journalDateFormatter || 'YYYY-MM-DD ddd',
-  logKey: logseq.settings?.logKey || 'Daily Log',
-})
+import { getSchedules, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util'
+import Settings, { ISettingForm } from './components/Settings'
+import Weekly from './components/Weekly'
 
 const getDefaultOptions = () => ({
   defaultView: logseq.settings?.defaultView || 'week',
@@ -55,14 +42,13 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   const [currentView, setCurrentView] = useState(DEFAULT_OPTIONS.defaultView)
   const [showDate, setShowDate] = useState<string>()
   const [showExportWeekly, setShowExportWeekly] = useState<boolean>(true)
-  const [weeklyModal, setWeeklyModal] = useState({
-    visible: false,
-    content: '',
-  })
+  const [weeklyModal, setWeeklyModal] = useState<{
+    visible: boolean
+    start?: string
+    end?: string
+  }>({ visible: false })
   const [settingModal, setSettingModal] = useState(false)
   const calendarRef = useRef<Calendar>()
-  const [settingForm] = useForm<ISettingForm>()
-
 
   const changeShowDate = () => {
     if (calendarRef.current) {
@@ -108,10 +94,10 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   }
   const exportWeekly = async () => {
     const [start, end] = showDate?.split(' ~ ') || []
-    const logs = await getWeekly(start, end) || []
     setWeeklyModal({
       visible: true,
-      content: logs.map(log => log.content).join('\n\n'),
+      start,
+      end,
     })
   }
 
@@ -137,24 +123,21 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     calendarRef.current?.next()
     changeShowDate()
   }
-  const onClickSettingSave = () => {
-    settingForm.validateFields().then(values => {
-      // const values = settingForm.getFieldsValue()
-      console.log('[faiz:] === values', values)
-      if (values.weekStartDay !== logseq.settings?.weekStartDay) {
-        calendarRef.current?.setOptions({
-          week: {
-            startDayOfWeek: values.weekStartDay,
-          },
-          month: {
-            startDayOfWeek: values.weekStartDay,
-          },
-        })
-      }
-      if (values.logKey !== logseq.settings?.logKey) setSchedules()
-      logseq.updateSettings(values)
-      setSettingModal(false)
-    })
+  const onSettingChange = (values: ISettingForm) => {
+    console.log('[faiz:] === values', values)
+    if (values.weekStartDay !== logseq.settings?.weekStartDay) {
+      calendarRef.current?.setOptions({
+        week: {
+          startDayOfWeek: values.weekStartDay,
+        },
+        month: {
+          startDayOfWeek: values.weekStartDay,
+        },
+      })
+    }
+    if (values.logKey !== logseq.settings?.logKey) setSchedules()
+    logseq.updateSettings(values)
+    setSettingModal(false)
   }
 
   useEffect(() => {
@@ -229,43 +212,17 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           </div>
         </div>
         <div id="calendar"></div>
-        <Modal
-          title="Weekly Logs"
+        <Weekly
           visible={weeklyModal.visible}
-          onCancel={() => setWeeklyModal({ visible: false, content: '' })}
-          onOk={() => setWeeklyModal({ visible: false, content: '' })}
-        >
-          <Input.TextArea value={weeklyModal.content} rows={10} />
-        </Modal>
-        <Modal
-          destroyOnClose
-          title="Calendar Setting"
-          okText="Save"
+          start={weeklyModal.start}
+          end={weeklyModal.end}
+          onCancel={() => setWeeklyModal({ visible: false })}
+        />
+        <Settings
           visible={settingModal}
           onCancel={() => setSettingModal(false)}
-          onOk={onClickSettingSave}
-        >
-          <Form initialValues={getInitalSettingForm()} form={settingForm} labelCol={{ span: 10 }} preserve={false}>
-            <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
-              <Select options={CALENDAR_VIEWS} />
-            </Form.Item>
-            <Form.Item label="Week Start Day" name="weekStartDay" rules={[{ required: true }]}>
-              <Select>
-                <Select.Option value={0}>Sunday</Select.Option>
-                <Select.Option value={1}>Monday</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Journal Date Formatter" required>
-              <div className="flex items-center">
-                <Form.Item name="journalDateFormatter" noStyle rules={[{ required: true }]} getValueFromEvent={(e) => e.target.value.trim()}><Input /></Form.Item>
-                <QuestionCircleOutlined className="ml-1" onClick={() => logseq.App.openExternalLink('https://day.js.org/docs/en/display/format')} />
-              </div>
-            </Form.Item>
-            <Form.Item label="Log Key" name="logKey" rules={[{ required: true }]} getValueFromEvent={(e) => e.target.value.trim()}>
-              <Input />
-            </Form.Item>
-          </Form>
-        </Modal>
+          onOk={onSettingChange}
+        />
       </div>
     </div>
   )

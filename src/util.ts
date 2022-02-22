@@ -22,10 +22,6 @@ const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_
 }
 
 export const getSchedules = async () => {
-  const page = await logseq.Editor.getPage(618)
-  console.log('[faiz:] === page', page)
-
-
   console.log('[faiz:] === getSchedules start ===')
   let calendatSchedules:ISchedule[] = []
   // const calendarSchedulesMap = new Map()
