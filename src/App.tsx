@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
-import { Button, Select, Modal, Input, Form } from 'antd'
+import { Button, Select, Modal, Input, Form, message } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import day from 'dayjs'
 import 'tui-calendar/dist/tui-calendar.css'
@@ -8,8 +8,6 @@ import 'antd/dist/antd.css'
 import './App.css'
 import { getSchedules, getWeekly, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util'
 import { useForm } from 'antd/lib/form/Form'
-
-import ScheduleDetailPopup from './components/ScheduleDetailPopup'
 
 type ISettingForm = Partial<{
   defaultView: string
@@ -48,7 +46,7 @@ const getDefaultOptions = () => ({
       // function nav() {
       //   logseq.App.pushState('page', { name: detail })
       // }
-      return `<a class="test" href="javascript:void(0);" onclick="alert(1)" data-block-id="${schedule.body}">Navigate To Block</a>`
+      return `<a id="faiz-nav-detail" href="javascript:void(0);" data-block-id="${schedule.body}">Navigate To Block</a>`
     },
   },
 })
@@ -58,7 +56,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const DEFAULT_OPTIONS = getDefaultOptions()
 
-  const [scheduleDetailPopupPosition, setScheduleDetailPopupPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
   const [currentView, setCurrentView] = useState(DEFAULT_OPTIONS.defaultView)
   const [showDate, setShowDate] = useState<string>()
   const [showExportWeekly, setShowExportWeekly] = useState<boolean>(true)
@@ -93,10 +90,19 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       //   id: '1',
       //   calendarId: 'journal',
       //   title: 'Daily Log test',
-      //   category: 'allday',
+      //   category: 'time',
       //   dueDateClass: '',
       //   start: day().format(),
-      //   isAllDay: true,
+      //   // isAllDay: true,
+      //   body: 'Daily Log test detail\n123',
+      // }, {
+      //   id: '1',
+      //   calendarId: 'journal',
+      //   title: 'Daily Log foo',
+      //   category: 'time',
+      //   dueDateClass: '',
+      //   start: day().format(),
+      //   // isAllDay: true,
       //   body: 'Daily Log test detail\n123',
       // }])
 
@@ -179,12 +185,17 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       console.log('clickMore', event.date, event.target)
     })
     calendarRef.current.on('clickSchedule', function(info) {
-      console.log('clickSchedule', info)
-      // info.event MouseEvent
-      setScheduleDetailPopupPosition({
-        x: info.event.clientX,
-        y: info.event.clientY,
-      })
+      console.log('clickSchedule', info, document.querySelectorAll('.faiz-nav-detail'))
+      document.querySelector('#faiz-nav-detail')?.addEventListener('click', (e) => {
+        console.log('[faiz:] === click nav', e)
+        const dataset = (e.target as any)?.dataset
+        if (dataset.blockId) {
+          logseq.App.pushState('page', { name: dataset.blockId })
+          logseq.hideMainUI()
+        } else {
+          logseq.App.showMsg('error', 'blockId not found')
+        }
+      }, { once: true })
     })
   }, [])
 
@@ -254,7 +265,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             </Form.Item>
           </Form>
         </Modal>
-        <ScheduleDetailPopup position={scheduleDetailPopupPosition} />
       </div>
     </div>
   )

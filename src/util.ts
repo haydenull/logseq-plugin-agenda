@@ -22,6 +22,17 @@ const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_
 }
 
 export const getSchedules = async () => {
+  const page = await logseq.DB.datascriptQuery(`
+    [:find (pull ?block [*])
+      :where
+      [?block :block/page ?page]
+      [(get ?page :page/id) ?id]
+      [(= ?id "614")]
+    ]
+  `)
+  console.log('[faiz:] === page', page)
+
+
   console.log('[faiz:] === getSchedules start ===')
   let calendatSchedules:ISchedule[] = []
   // const calendarSchedulesMap = new Map()
