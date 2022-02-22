@@ -21,10 +21,47 @@ const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_
   return dayjs(String(date), format).format()
 }
 
+export type ISettingsForm = {
+  defaultView: string
+  weekStartDay: 0 | 1
+  journalDateFormatter: string
+  logKey: string
+  calendarList: {
+    id: string
+    bgColor: string
+    textColor: string
+    borderColor: string
+    enabled: boolean
+  }[]
+}
+export const getInitalSettings = (): ISettingsForm => ({
+  defaultView: logseq.settings?.defaultView || 'week',
+  weekStartDay: logseq.settings?.weekStartDay || 0,
+  journalDateFormatter: logseq.settings?.journalDateFormatter || 'YYYY-MM-DD ddd',
+  logKey: logseq.settings?.logKey || 'Daily Log',
+  calendarList: logseq.settings?.calendarList || [
+    {
+      id: 'journal',
+      bgColor: '#047857',
+      textColor: '#fff',
+      borderColor: '#047857',
+      enabled: true,
+    },
+  ],
+})
+
 export const getSchedules = async () => {
   console.log('[faiz:] === getSchedules start ===')
   let calendatSchedules:ISchedule[] = []
-  // const calendarSchedulesMap = new Map()
+  const { calendarList = [] } = getInitalSettings()
+  const journalCalendar = calendarList.find(calendar => calendar.id === 'journal')
+  const customCalendarList = calendarList.filter(calendar => calendar.id !== 'journal')
+  const customCalendarPromises = await Promise.all(customCalendarList.map(calendar => logseq.Editor.getPage(calendar.id)))
+  const _customCalendarList = customCalendarPromises?.map(async (pageData, index) => {
+                                const pageId = pageData?.id
+                                return { ...customCalendarList[index], pageId }
+                              })
+  console.log('[faiz:] === customCalendarList', _customCalendarList)
 
   // Scheduled and Deadline
   const scheduledAndDeadlineBlocks = await logseq.DB.datascriptQuery(`
@@ -36,7 +73,6 @@ export const getSchedules = async () => {
       [(not= ?d "nil")]]
   `)
   calendatSchedules = calendatSchedules.concat(scheduledAndDeadlineBlocks.flat().map(block => {
-    // calendarSchedulesMap.set(block.id, block)
     const scheduledString = block.content?.split('\n')?.find(l => l.startsWith('SCHEDULED:'))?.trim()
     const time = / \d{2}:\d{2}[ >]/.exec(scheduledString)?.[1] || ''
     if (block.deadline) {
@@ -134,6 +170,36 @@ export const getSchedules = async () => {
 
   console.log('[faiz:] === calendatSchedules', calendatSchedules)
   return calendatSchedules
+}
+
+function genSchedule(params: {
+  blockData: any
+  calendarId: string
+  category: 'time' | 'allday' | 'milestone' | 'task'
+  start: string
+  calendarConfigs: ISettingsForm['calendarList']
+}) {
+  const { blockData, calendarId = 'journal', category = 'time', start, calendarConfigs } = params
+  let calendarConfig = calendarConfigs.find(config => config.id === 'journal')
+
+  // custom calendar
+  if (calendarId !== 'journal') {
+    calendarConfig = calendarConfigs.find(config => config.id === calendarId)
+  }
+
+  return {
+    id: blockData.id,
+    calendarId,
+    title: blockData.content,
+    body: blockData.content,
+    category,
+    dueDateClass: '',
+    start,
+    raw: blockData,
+    bgColor: calendarConfig?.bgColor,
+    textColor: calendarConfig?.textColor,
+    borderColor: calendarConfig?.borderColor,
+  }
 }
 
 /**

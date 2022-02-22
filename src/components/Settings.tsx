@@ -1,44 +1,18 @@
 import React, { useState } from 'react'
 import { Modal, Form, Select, Input, Button, Space, Switch } from 'antd'
 import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { CALENDAR_VIEWS } from '../util'
+import { CALENDAR_VIEWS, getInitalSettings, ISettingsForm } from '../util'
 import { useForm } from 'antd/lib/form/Form'
+import ColorPicker from './ColorPicker'
 
-export type ISettingForm = Partial<{
-  defaultView: string
-  weekStartDay: 0 | 1
-  journalDateFormatter: string
-  logKey: string
-  calendarList: {
-    id: string
-    bgColor: string
-    textColor: string
-    enabled: boolean
-  }[]
-}>
-
-const getInitalSettingForm = (): ISettingForm => ({
-  defaultView: logseq.settings?.defaultView || 'week',
-  weekStartDay: logseq.settings?.weekStartDay || 0,
-  journalDateFormatter: logseq.settings?.journalDateFormatter || 'YYYY-MM-DD ddd',
-  logKey: logseq.settings?.logKey || 'Daily Log',
-  calendarList: logseq.settings?.calendarList || [
-    {
-      id: 'journal',
-      bgColor: '#f5f5f5',
-      textColor: '#fff',
-      enabled: true,
-    },
-  ],
-})
 
 const Settings: React.FC<{
   visible: boolean
   onCancel: () => void
-  onOk: (values: ISettingForm) => void
+  onOk: (values: ISettingsForm) => void
   [key: string]: any
 }> = ({ visible, onCancel, onOk, ...props }) => {
-  const [settingForm] = useForm<ISettingForm>()
+  const [settingForm] = useForm<ISettingsForm>()
 
   const onClickSettingSave = () => {
     settingForm.validateFields().then(values => {
@@ -70,7 +44,7 @@ const Settings: React.FC<{
       onCancel={onCancel}
       onOk={onClickSettingSave}
     >
-      <Form initialValues={getInitalSettingForm()} form={settingForm} labelCol={{ span: 7 }} preserve={false}>
+      <Form initialValues={getInitalSettings()} form={settingForm} labelCol={{ span: 7 }} preserve={false}>
         <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
           <Select options={CALENDAR_VIEWS} />
         </Form.Item>
@@ -94,14 +68,14 @@ const Settings: React.FC<{
             {fields.map((field, index) => (
               <Form.Item required label={index === 0 ? 'Calendars' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
                 <div className="flex items-center justify-between">
-                  <Form.Item name={[field.name, 'id']} noStyle>
-                    <Input placeholder="Please input calendar key" disabled={index === 0} style={{ width: '180px' }} />
+                  <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
+                    <Input placeholder="Calendar key" disabled={index === 0} style={{ width: '180px' }} />
                   </Form.Item>
-                  <Form.Item name={[field.name, 'bgColor']} noStyle>
-                    <div>bg color</div>
+                  <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
+                    <ColorPicker text="background" />
                   </Form.Item>
-                  <Form.Item name={[field.name, 'textColor']} noStyle>
-                    <div>text color</div>
+                  <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
+                    <ColorPicker text="text" />
                   </Form.Item>
                   <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
                     <Switch size="small" />
@@ -111,8 +85,8 @@ const Settings: React.FC<{
               </Form.Item>
             ))}
             <Form.Item wrapperCol={{ offset: 7 }}>
-              <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                Add sights
+              <Button type="dashed" size="small" onClick={() => add()} block icon={<PlusOutlined />}>
+                Add Calendar
               </Button>
             </Form.Item>
           </>)}

@@ -3,8 +3,8 @@ import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Select } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons'
 import day from 'dayjs'
-import { getSchedules, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util'
-import Settings, { ISettingForm } from './components/Settings'
+import { getSchedules, SHOW_DATE_FORMAT, CALENDAR_VIEWS, ISettingsForm } from './util'
+import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
 import 'antd/dist/antd.css'
@@ -123,8 +123,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     calendarRef.current?.next()
     changeShowDate()
   }
-  const onSettingChange = (values: ISettingForm) => {
+  const onSettingChange = (values: ISettingsForm) => {
     console.log('[faiz:] === values', values)
+    logseq.updateSettings(values)
     if (values.weekStartDay !== logseq.settings?.weekStartDay) {
       calendarRef.current?.setOptions({
         week: {
@@ -135,8 +136,8 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         },
       })
     }
-    if (values.logKey !== logseq.settings?.logKey) setSchedules()
-    logseq.updateSettings(values)
+    // if (values.logKey !== logseq.settings?.logKey) setSchedules()
+    setSchedules()
     setSettingModal(false)
   }
 
