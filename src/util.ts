@@ -34,21 +34,23 @@ export type ISettingsForm = {
     enabled: boolean
   }[]
 }
-export const getInitalSettings = (): ISettingsForm => ({
-  defaultView: logseq.settings?.defaultView || 'week',
-  weekStartDay: logseq.settings?.weekStartDay || 0,
-  journalDateFormatter: logseq.settings?.journalDateFormatter || 'YYYY-MM-DD ddd',
-  logKey: logseq.settings?.logKey || 'Daily Log',
-  calendarList: logseq.settings?.calendarList || [
-    {
-      id: 'journal',
-      bgColor: '#047857',
-      textColor: '#fff',
-      borderColor: '#047857',
-      enabled: true,
-    },
-  ],
-})
+export const getInitalSettings = (): ISettingsForm => {
+  return {
+    defaultView: logseq.settings?.defaultView || 'week',
+    weekStartDay: logseq.settings?.weekStartDay || 0,
+    journalDateFormatter: logseq.settings?.journalDateFormatter || 'YYYY-MM-DD ddd',
+    logKey: logseq.settings?.logKey || 'Daily Log',
+    calendarList: logseq.settings?.calendarList || [
+      {
+        id: 'journal',
+        bgColor: '#047857',
+        textColor: '#fff',
+        borderColor: '#047857',
+        enabled: true,
+      },
+    ],
+  }
+}
 
 export const getSchedules = async () => {
   console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
@@ -235,8 +237,8 @@ function genSchedule(params: {
     dueDateClass: '',
     start,
     raw: blockData,
+    color: calendarConfig?.textColor,
     bgColor: calendarConfig?.bgColor,
-    textColor: calendarConfig?.textColor,
     borderColor: calendarConfig?.borderColor,
     isAllDay,
   }

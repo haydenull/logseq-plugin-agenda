@@ -18,7 +18,7 @@ const getDefaultOptions = () => ({
   isReadOnly: true,
   week: {
     startDayOfWeek: logseq.settings?.weekStartDay || 0,
-    narrowWeekend: true,
+    // narrowWeekend: true,
   },
   month: {
     startDayOfWeek: logseq.settings?.weekStartDay || 0,
@@ -137,7 +137,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       })
     }
     // if (values.logKey !== logseq.settings?.logKey) setSchedules()
-    setSchedules()
+
+    // exec after 500ms to make sure the settings are updated
+    setTimeout(() => setSchedules(), 500)
     setSettingModal(false)
   }
 
@@ -187,7 +189,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   return (
     <div className="w-screen h-screen flex items-center justify-center">
       <div className="w-screen h-screen fixed top-0 left-0 bg-black bg-opacity-50" onClick={() => logseq.hideMainUI()}></div>
-      <div className="w-5/6 h-5/6 flex flex-col overflow-hidden bg-white relative rounded text-black p-3">
+      <div className="w-5/6 flex flex-col overflow-hidden bg-white relative rounded text-black p-3">
         <div className="mb-2 flex items-center justify-between">
           <div>
             <Select
@@ -212,7 +214,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             <Button onClick={() => setSettingModal(true)} shape="circle" icon={<SettingOutlined />}></Button>
           </div>
         </div>
-        <div id="calendar"></div>
+        <div id="calendar" style={{ maxHeight: '606px' }}></div>
         <Weekly
           visible={weeklyModal.visible}
           start={weeklyModal.start}

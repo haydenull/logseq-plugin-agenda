@@ -69,13 +69,16 @@ const Settings: React.FC<{
               <Form.Item required label={index === 0 ? 'Calendars' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
                 <div className="flex items-center justify-between">
                   <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
-                    <Input placeholder="Calendar key" disabled={index === 0} style={{ width: '180px' }} />
+                    <Input placeholder="Calendar ID" disabled={index === 0} style={{ width: '110px' }} />
                   </Form.Item>
                   <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
                     <ColorPicker text="background" />
                   </Form.Item>
                   <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
                     <ColorPicker text="text" />
+                  </Form.Item>
+                  <Form.Item name={[field.name, 'borderColor']} noStyle rules={[{ required: true }]}>
+                    <ColorPicker text="border" />
                   </Form.Item>
                   <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
                     <Switch size="small" />
