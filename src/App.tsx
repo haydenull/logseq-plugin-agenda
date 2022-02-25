@@ -28,6 +28,7 @@ const getDefaultOptions = () => ({
     },
   },
   template: {
+    taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
     popupDetailBody: (schedule: ISchedule) => {
       return `<a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>`
     },

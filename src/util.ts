@@ -81,35 +81,17 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
   calendarSchedules = calendarSchedules.concat(scheduledAndDeadlineBlocks.flat().map(block => {
     const scheduledString = block.content?.split('\n')?.find(l => l.startsWith('SCHEDULED:'))?.trim()
     const time = / \d{2}:\d{2}[ >]/.exec(scheduledString)?.[1] || ''
+    // TODO: show overdue deadline and not done scheduled
     if (block.deadline) {
+      // DEADLINE
       return genSchedule({
         blockData: block,
-        category: 'milestone',
+        category: 'allday',
         start: genCalendarDate(block.deadline),
         calendarConfigs: _calendarConfigs,
       })
-      // return {
-      //   id: block.id,
-      //   calendarId: 'journal',
-      //   title: block.content,
-      //   body: block.content,
-      //   category: 'milestone',
-      //   dueDateClass: '',
-      //   start: genCalendarDate(block.deadline),
-      //   isAllDay: false,
-      //   raw: block,
-      // }
     } else if (time) {
-      // return {
-      //   id: block.id,
-      //   calendarId: 'journal',
-      //   title: block.content,
-      //   body: block.content,
-      //   category: 'time',
-      //   dueDateClass: '',
-      //   start: dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm').format(),
-      //   raw: block,
-      // }
+      // SCHEDULED with time
       return genSchedule({
         blockData: block,
         category: 'time',
@@ -117,17 +99,7 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
         calendarConfigs: _calendarConfigs,
       })
     } else {
-      // return {
-      //   id: block.id,
-      //   calendarId: 'journal',
-      //   title: block.content,
-      //   body: block.content,
-      //   category: 'allday',
-      //   dueDateClass: '',
-      //   start: genCalendarDate(block.scheduled),
-      //   isAllDay: true,
-      //   raw: block,
-      // }
+      // SCHEDULED without time
       return genSchedule({
         blockData: block,
         category: 'allday',
@@ -140,30 +112,13 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
 
 
   // Tasks(logseq block's marker is not nil except scheduled and deadline and in journal)
-  // const taskss = await logseq.DB.datascriptQuery(`
-  //   [:find (pull ?block [*])
-  //     :where
-  //     [?block :block/marker ?marker]
-  //     [?block :block/journal? true]
-  //     [(not= ?marker "nil")]]
-  // `)
   const tasks = await logseq.DB.q(`(and (task todo later now doing done))`)
   const _task = tasks?.filter(block => block?.page?.journalDay && !block.scheduled && !block.deadline) || []
   console.log('[faiz:] === tasks', _task)
   calendarSchedules = calendarSchedules.concat(_task?.map(block => {
-    // return {
-    //   id: block.id,
-    //   calendarId: 'journal',
-    //   title: block.content,
-    //   body: block.content,
-    //   category: 'task',
-    //   dueDateClass: '',
-    //   start: genCalendarDate(block.page.journalDay),
-    //   raw: block,
-    // }
     return genSchedule({
       blockData: block,
-      category: 'task',
+      category: 'allday',
       start: genCalendarDate(block.page.journalDay),
       calendarConfigs: _calendarConfigs,
       isJournal: true,
@@ -171,6 +126,7 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
   }))
 
   // Daily Logs
+  // TODO: support end time
   const keyword = logseq.settings?.logKey || DEFAULT_LOG_KEY
   const logs = await logseq.DB.q(`[[${keyword}]]`)
   const _logs = logs
@@ -186,17 +142,6 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
     const date = block?.page?.journalDay
     const time = block.content?.substr(0, 5)
     const hasTime = time.split(':')?.filter(num => !Number.isNaN(Number(num)))?.length === 2
-    // return {
-    //   id: block.id,
-    //   calendarId: 'journal',
-    //   title: block.content,
-    //   body: block.content,
-    //   category: hasTime ? 'time' : 'allday',
-    //   dueDateClass: '',
-    //   start: hasTime ? dayjs(date + ' ' + time, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
-    //   // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
-    //   raw: block,
-    // }
     return genSchedule({
       blockData: block,
       category: hasTime ? 'time' : 'allday',
@@ -214,12 +159,13 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
 function genSchedule(params: {
   blockData: any
   category: 'time' | 'allday' | 'milestone' | 'task'
-  start: string
+  start?: string
+  end?:string
   calendarConfigs: Array<ISettingsForm['calendarList'][number] & { pageId?: number }>
   isAllDay?: boolean
   isJournal?: boolean
 }) {
-  const { blockData, category = 'time', start, calendarConfigs, isAllDay, isJournal } = params
+  const { blockData, category = 'time', start, end, calendarConfigs, isAllDay, isJournal } = params
   const calendarId = calendarConfigs.find(calendar => calendar.pageId === blockData?.page?.id)?.id || 'journal'
 
   let calendarConfig = calendarConfigs.find(config => config.id === 'journal')
@@ -236,6 +182,7 @@ function genSchedule(params: {
     category,
     dueDateClass: '',
     start,
+    end,
     raw: blockData,
     color: calendarConfig?.textColor,
     bgColor: calendarConfig?.bgColor,
