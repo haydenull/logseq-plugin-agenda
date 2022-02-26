@@ -14,7 +14,60 @@ export const CALENDAR_VIEWS = [
   { value: 'day', label: 'Daily' },
   { value: 'week', label: 'Weekly' },
   { value: 'month', label: 'Monthly' },
+  { value: '2week', label: '2 Weeks' },
 ]
+export const CALENDAR_THEME = {
+  // month day grid cell 'day'
+  'month.holidayExceptThisMonth.color': '#f3acac',
+  'month.dayExceptThisMonth.color': '#bbb',
+  'month.weekend.backgroundColor': '#fafafa',
+  'month.day.fontSize': '16px',
+
+  // week daygrid 'daygrid'
+  'week.daygrid.borderRight': '1px solid #ddd',
+  'week.daygrid.backgroundColor': 'inherit',
+
+  'week.daygridLeft.width': '77px',
+  'week.daygridLeft.backgroundColor': '#a8def74d',
+  'week.daygridLeft.paddingRight': '5px',
+  'week.daygridLeft.borderRight': '1px solid #ddd',
+
+  'week.today.backgroundColor': '#b857d81f',
+  'week.weekend.backgroundColor': '#fafafa',
+
+  // week timegrid 'timegrid'
+  'week.timegridLeft.width': '77px',
+  'week.timegridLeft.backgroundColor': '#03a9f44d',
+  'week.timegridLeft.borderRight': '1px solid #ddd',
+  'week.timegridLeft.fontSize': '12px',
+  'week.timegridLeftTimezoneLabel.height': '51px',
+  'week.timegridLeftAdditionalTimezone.backgroundColor': '#fdfdfd',
+
+  'week.timegridOneHour.height': '48px',
+  'week.timegridHalfHour.height': '24px',
+  'week.timegridHalfHour.borderBottom': '1px dotted #f9f9f9',
+  'week.timegridHorizontalLine.borderBottom': '1px solid #eee',
+
+  'week.timegrid.paddingRight': '10px',
+  'week.timegrid.borderRight': '1px solid #ddd',
+  'week.timegridSchedule.borderRadius': '0',
+  'week.timegridSchedule.paddingLeft': '0',
+
+  'week.currentTime.color': '#135de6',
+  'week.currentTime.fontSize': '12px',
+  'week.currentTime.fontWeight': 'bold',
+
+  'week.pastTime.color': '#808080',
+  'week.pastTime.fontWeight': 'normal',
+
+  'week.futureTime.color': '#333',
+  'week.futureTime.fontWeight': 'normal',
+
+  'week.currentTimeLinePast.border': '1px solid rgba(19, 93, 230, 0.3)',
+  'week.currentTimeLineBullet.backgroundColor': '#135de6',
+  'week.currentTimeLineToday.border': '1px solid #135de6',
+  'week.currentTimeLineFuture.border': '1px solid #135de6',
+}
 
 const DEFAULT_BLOCK_DEADLINE_DATE_FORMAT = "YYYYMMDD"
 const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_DATE_FORMAT) => {
@@ -86,7 +139,7 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
       // DEADLINE
       return genSchedule({
         blockData: block,
-        category: 'allday',
+        category: isOverdue(block, block.deadline) ? 'task' : 'allday',
         start: genCalendarDate(block.deadline),
         calendarConfigs: _calendarConfigs,
       })
@@ -94,7 +147,7 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
       // SCHEDULED with time
       return genSchedule({
         blockData: block,
-        category: 'time',
+        category: isOverdue(block, block.scheduled) ? 'task' : 'time',
         start: dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm').format(),
         calendarConfigs: _calendarConfigs,
       })
@@ -102,7 +155,7 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
       // SCHEDULED without time
       return genSchedule({
         blockData: block,
-        category: 'allday',
+        category: isOverdue(block, block.scheduled) ? 'task' : 'allday',
         start: genCalendarDate(block.scheduled),
         calendarConfigs: _calendarConfigs,
         isAllDay: true,
@@ -111,14 +164,14 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
   }))
 
 
-  // Tasks(logseq block's marker is not nil except scheduled and deadline and in journal)
+  // Tasks(tasks in journal but without scheduled or deadline)
   const tasks = await logseq.DB.q(`(and (task todo later now doing done))`)
   const _task = tasks?.filter(block => block?.page?.journalDay && !block.scheduled && !block.deadline) || []
   console.log('[faiz:] === tasks', _task)
   calendarSchedules = calendarSchedules.concat(_task?.map(block => {
     return genSchedule({
       blockData: block,
-      category: 'allday',
+      category: isOverdue(block, block.page.journalDay) ? 'task' : 'allday',
       start: genCalendarDate(block.page.journalDay),
       calendarConfigs: _calendarConfigs,
       isJournal: true,
@@ -177,7 +230,7 @@ function genSchedule(params: {
   return {
     id: blockData.id,
     calendarId,
-    title: blockData.content,
+    title: blockData.content.split('\n')[0]?.replace(new RegExp(`^${blockData.marker}`), '')?.trim?.(),
     body: blockData.content,
     category,
     dueDateClass: '',
@@ -210,4 +263,18 @@ export const getWeekly = async (startDate, endDate) => {
                   })
   console.log('[faiz:] === weekly logs', _logs)
   return _logs
+}
+
+/**
+ * 判断是否过期
+ */
+export const isOverdue = (block: any, date) => {
+  console.log('[faiz:] === isOverdue', date, block)
+  if (block.marker && block.marker !== 'DONE') {
+    const now = dayjs()
+    const _date = dayjs(date, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT)
+    return now.isAfter(_date, 'day')
+  }
+  // 非 todo 及 done 的 block 不过期
+  return false
 }

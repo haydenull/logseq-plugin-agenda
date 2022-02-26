@@ -3,7 +3,7 @@ import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Select } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons'
 import day from 'dayjs'
-import { getSchedules, SHOW_DATE_FORMAT, CALENDAR_VIEWS, ISettingsForm } from './util'
+import { getSchedules, SHOW_DATE_FORMAT, CALENDAR_VIEWS, ISettingsForm, CALENDAR_THEME } from './util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
@@ -16,6 +16,7 @@ const getDefaultOptions = () => ({
   scheduleView: true,
   useDetailPopup: true,
   isReadOnly: true,
+  theme: CALENDAR_THEME,
   week: {
     startDayOfWeek: logseq.settings?.weekStartDay || 0,
     // narrowWeekend: true,
@@ -29,8 +30,9 @@ const getDefaultOptions = () => ({
   },
   template: {
     taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
+    task: (schedule: ISchedule) => '🔥' + schedule.title,
     popupDetailBody: (schedule: ISchedule) => {
-      return `<a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>`
+      return schedule.body?.split('\n').join('<br/>') + '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
     },
   },
 })
@@ -105,7 +107,23 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   const onViewChange = (value: string) => {
     setCurrentView(value)
     console.log('[faiz:] === onViewChange',value, calendarRef.current)
-    calendarRef.current?.changeView(value)
+    if (value === '2week') {
+      calendarRef.current?.changeView('month')
+      calendarRef.current?.setOptions({
+        month: {
+          visibleWeeksCount: 2,
+        },
+      })
+    } else if(value === 'month') {
+      calendarRef.current?.changeView('month')
+      calendarRef.current?.setOptions({
+        month: {
+          visibleWeeksCount: 6,
+        },
+      })
+    } else {
+      calendarRef.current?.changeView(value)
+    }
     changeShowDate()
     setShowExportWeekly(value === 'week')
   }
