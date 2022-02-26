@@ -227,10 +227,16 @@ function genSchedule(params: {
     calendarConfig = calendarConfigs.find(config => config.id === calendarId)
   }
 
+  const title = blockData.content
+                  .split('\n')[0]
+                  ?.replace(new RegExp(`^${blockData.marker}`), '')
+                  ?.replace(/^\d{2}:\d{2}/, '')
+                  ?.trim?.()
+
   return {
     id: blockData.id,
     calendarId,
-    title: blockData.content.split('\n')[0]?.replace(new RegExp(`^${blockData.marker}`), '')?.trim?.(),
+    title,
     body: blockData.content,
     category,
     dueDateClass: '',
