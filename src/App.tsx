@@ -3,12 +3,13 @@ import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Select } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons'
 import day from 'dayjs'
-import { getSchedules, SHOW_DATE_FORMAT, CALENDAR_VIEWS, ISettingsForm, CALENDAR_THEME } from './util'
+import { getSchedules, ISettingsForm } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
 import 'antd/dist/antd.css'
 import './App.css'
+import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 
 const getDefaultOptions = () => ({
   defaultView: logseq.settings?.defaultView || 'week',

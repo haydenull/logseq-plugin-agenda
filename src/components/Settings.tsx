@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { Modal, Form, Select, Input, Button, Space, Switch } from 'antd'
 import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { CALENDAR_VIEWS, getInitalSettings, ISettingsForm } from '../util'
+import { getInitalSettings, ISettingsForm } from '../util/util'
 import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
+import { CALENDAR_VIEWS } from '../util/constants'
 
 
 const Settings: React.FC<{

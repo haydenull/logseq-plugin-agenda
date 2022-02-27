@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { Modal, Input } from 'antd'
-import { getWeekly } from '../util'
+import { getWeekly } from '../util/util'
 
 const Weekly: React.FC<{
   visible: boolean
