@@ -188,7 +188,7 @@ const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarC
                 ?.flat()
                 ?.filter(block => {
                   const _content = block.content?.trim()
-                  return _content.length > 0 && block?.page?.journalDay && !block.scheduled && !block.deadline
+                  return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
                 }) || []
   console.log('[faiz:] === logs', _logs)
   calendarSchedules = calendarSchedules.concat(_logs?.map(block => {
@@ -274,11 +274,10 @@ export const getWeekly = async (startDate, endDate) => {
 /**
  * 判断是否过期
  */
-export const isOverdue = (block: any, date) => {
-  console.log('[faiz:] === isOverdue', date, block)
+export const isOverdue = (block: any, date: number | string) => {
   if (block.marker && block.marker !== 'DONE') {
     const now = dayjs()
-    const _date = dayjs(date, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT)
+    const _date = dayjs(String(date), DEFAULT_BLOCK_DEADLINE_DATE_FORMAT)
     return now.isAfter(_date, 'day')
   }
   // 非 todo 及 done 的 block 不过期
