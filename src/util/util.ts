@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import en from 'dayjs/locale/en'
 import { ISchedule } from 'tui-calendar'
-import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_LOG_KEY, SHOW_DATE_FORMAT } from './constants'
+import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_LOG_KEY, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
 
 dayjs.locale({
   ...en,
@@ -24,23 +24,18 @@ export type ISettingsForm = {
     textColor: string
     borderColor: string
     enabled: boolean
+    query: {
+      script: string
+      scheduleStart: string
+      scheduleEnd?: string
+      dateFormatter: string
+    }
   }[]
 }
 export const getInitalSettings = (): ISettingsForm => {
   return {
-    defaultView: logseq.settings?.defaultView || 'week',
-    weekStartDay: logseq.settings?.weekStartDay || 0,
-    journalDateFormatter: logseq.settings?.journalDateFormatter || 'YYYY-MM-DD ddd',
-    logKey: logseq.settings?.logKey || 'Daily Log',
-    calendarList: logseq.settings?.calendarList || [
-      {
-        id: 'journal',
-        bgColor: '#047857',
-        textColor: '#fff',
-        borderColor: '#047857',
-        enabled: true,
-      },
-    ],
+    ...DEFAULT_SETTINGS,
+    ...logseq.settings,
   }
 }
 

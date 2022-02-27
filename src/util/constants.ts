@@ -1,12 +1,39 @@
+import { ISettingsForm } from './util'
+
 export const SHOW_DATE_FORMAT = 'YYYY-MM-DD'
+
 export const DEFAULT_JOURNAL_FORMAT = 'YYYY-MM-DD ddd'
+
 export const DEFAULT_LOG_KEY = 'Daily Log'
+
 export const CALENDAR_VIEWS = [
   { value: 'day', label: 'Daily' },
   { value: 'week', label: 'Weekly' },
-  { value: 'month', label: 'Monthly' },
   { value: '2week', label: '2 Weeks' },
+  { value: 'month', label: 'Monthly' },
 ]
+
+export const DEFAULT_SETTINGS: ISettingsForm = {
+  defaultView: 'week',
+  weekStartDay: 0,
+  journalDateFormatter: 'YYYY-MM-DD ddd',
+  logKey: 'Daily Log',
+  calendarList: [
+    {
+      id: 'journal',
+      bgColor: '#047857',
+      textColor: '#fff',
+      borderColor: '#047857',
+      enabled: true,
+      query: {
+        script: '',
+        scheduleStart: '',
+        dateFormatter: '',
+      },
+    },
+  ],
+}
+
 export const CALENDAR_THEME = {
   // month day grid cell 'day'
   'month.holidayExceptThisMonth.color': '#f3acac',
