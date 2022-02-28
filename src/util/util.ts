@@ -13,6 +13,12 @@ const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_
   return dayjs(String(date), format).format()
 }
 
+export type ISettingsFormQuery = Partial<{
+  script: string
+  scheduleStart: string
+  scheduleEnd: string
+  dateFormatter: string
+}>
 export type ISettingsForm = {
   defaultView: string
   weekStartDay: 0 | 1
@@ -24,12 +30,7 @@ export type ISettingsForm = {
     textColor: string
     borderColor: string
     enabled: boolean
-    query: {
-      script: string
-      scheduleStart: string
-      scheduleEnd?: string
-      dateFormatter: string
-    }
+    query: ISettingsFormQuery
   }[]
 }
 export const getInitalSettings = (): ISettingsForm => {
