@@ -5,7 +5,7 @@ import { getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/ut
 import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
 import { CALENDAR_VIEWS } from '../util/constants'
-import Query from './Query'
+import Query from './QueryModal'
 
 
 const Settings: React.FC<{
@@ -16,9 +16,10 @@ const Settings: React.FC<{
 }> = ({ visible, onCancel, onOk, ...props }) => {
   const [settingForm] = useForm<ISettingsForm>()
 
-  const [queryEditor, setQueryEditor] = useState<ISettingsFormQuery & {
-    visible: boolean
-    calendarId: string
+  const [queryEditor, setQueryEditor] = useState<{
+    visible?: boolean
+    calendarId?: string
+    query?: ISettingsFormQuery
   }>()
 
   const onClickSettingSave = () => {
@@ -42,11 +43,16 @@ const Settings: React.FC<{
   // click query editor button
   const onClickCalendarFunction = (index: number) => {
     console.log('[faiz:] === onClickCalendarFunction', index, settingForm.getFieldsValue(['calendarList']))
-    const _calendarList = settingForm.getFieldsValue(['calendarList'], )
+    const { calendarList } = settingForm.getFieldsValue(['calendarList'], )
     setQueryEditor({
       visible: true,
-      ..._calendarList[index]?.query,
+      calendarId: calendarList[index].id,
+      query: calendarList[index]?.query,
     })
+  }
+  const onQuerySave = (values: ISettingsFormQuery) => {
+    console.log('[faiz:] === onQuerySave', values)
+    setQueryEditor({ visible: false })
   }
 
   return (
@@ -117,11 +123,11 @@ const Settings: React.FC<{
         </Form>
       </Modal>
       <Query
-        visible={queryEditor.visible}
-        calendarId={queryEditor.calendarId}
-        initialValues={queryEditor}
-        onCancel={() => setQueryEditor({ ...queryEditor, visible: false })}
-        onOk={(query) => {}}
+        visible={queryEditor?.visible}
+        calendarId={queryEditor?.calendarId}
+        initialValues={queryEditor?.query}
+        onCancel={() => setQueryEditor(() => ({ visible: false }))}
+        onOk={onQuerySave}
       />
     </>
   )

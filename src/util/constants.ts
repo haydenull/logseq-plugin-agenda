@@ -26,9 +26,65 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
       borderColor: '#047857',
       enabled: true,
       query: {
-        script: '',
-        scheduleStart: '',
-        dateFormatter: '',
+        schedule: [
+          // schedule tasks
+          {
+            script: `
+              [:find (pull ?block [*])
+                :where
+                [?block :block/marker ?marker]
+                [(get-else $ ?block :block/scheduled "nil") ?d]
+                [(not= ?d "nil")]
+                [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+            `,
+            scheduleStart: 'scheduled',
+            dateFormatter: 'YYYYMMDD',
+          },
+          // deadline tasks
+          {
+            script: `
+              [:find (pull ?block [*])
+                :where
+                [?block :block/marker ?marker]
+                [(get-else $ ?block :block/deadline "nil") ?d]
+                [(not= ?d "nil")]
+                [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+            `,
+            scheduleStart: 'deadline',
+            dateFormatter: 'YYYYMMDD',
+          },
+          // tasks with no deadline or scheduled but in journal
+          {
+            script: `
+              [:find (pull ?block [*])
+                :where
+                [?block :block/marker ?marker]
+                [(missing? $ ?block :block/scheduled)]
+                [(missing? $ ?block :block/deadline)]
+                [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]
+                [?block :block/page ?page]
+                [?page2 :page/journal? true]]
+            `,
+            scheduleStart: 'page.journalDay',
+            dateFormatter: 'YYYYMMDD',
+          },
+        ],
+        milestone: [
+          {
+            script: `
+              [:find (pull ?block [*])
+              :where
+                [?block :block/marker ?marker]
+                [(missing? $ ?block :block/scheduled)]
+                [(missing? $ ?block :block/deadline)]
+                [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]
+                [?block :block/page ?page]
+                [?page2 :page/journal? true]]
+            `,
+            scheduleStart: '',
+            dateFormatter: '',
+          }
+        ]
       },
     },
   ],

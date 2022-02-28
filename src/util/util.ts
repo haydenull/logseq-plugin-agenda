@@ -13,12 +13,16 @@ const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_
   return dayjs(String(date), format).format()
 }
 
-export type ISettingsFormQuery = Partial<{
+export type ISettingsFormQueryItem = Partial<{
   script: string
   scheduleStart: string
   scheduleEnd: string
   dateFormatter: string
 }>
+export type ISettingsFormQuery = {
+  schedule: ISettingsFormQueryItem[]
+  milestone: ISettingsFormQueryItem[]
+}
 export type ISettingsForm = {
   defaultView: string
   weekStartDay: 0 | 1
