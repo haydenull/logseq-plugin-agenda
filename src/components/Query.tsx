@@ -5,11 +5,10 @@ import QueryModal from './QueryModal'
 import { ISettingsFormQuery } from '../util/util'
 
 const Query: React.FC<{
-  value?: ISettingsFormQuery
-  onChange?: (values: ISettingsFormQuery) => void
-  initialValues?: ISettingsFormQuery
+  value?: ISettingsFormQuery[]
+  onChange?: (values: ISettingsFormQuery[]) => void
   calendarId?: string
-}> = ({ value, onChange, initialValues, calendarId }) => {
+}> = ({ value, onChange, calendarId }) => {
   const [visible, setVisible] = useState(false)
 
   return (

@@ -3,6 +3,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
 import './index.css'
+import { initializeSettings } from './util/util'
 
 const isDevelopment = import.meta.env.DEV
 
@@ -11,6 +12,8 @@ if (isDevelopment) {
 } else {
   console.log('=== logseq-plugin-calendar loaded ===')
   logseq.ready(() => {
+
+    initializeSettings()
 
     logseq.on('ui:visible:changed', (e) => {
       if (!e.visible) {

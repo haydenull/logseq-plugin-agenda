@@ -6,6 +6,9 @@ export const DEFAULT_JOURNAL_FORMAT = 'YYYY-MM-DD ddd'
 
 export const DEFAULT_LOG_KEY = 'Daily Log'
 
+// [(get-else $ ?block :block/scheduled "nil") ?d]
+// [(not= ?d "nil")]
+
 export const CALENDAR_VIEWS = [
   { value: 'day', label: 'Daily' },
   { value: 'week', label: 'Weekly' },
@@ -25,67 +28,63 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
       textColor: '#fff',
       borderColor: '#047857',
       enabled: true,
-      query: {
-        schedule: [
-          // schedule tasks
-          {
-            script: `
-              [:find (pull ?block [*])
-                :where
-                [?block :block/marker ?marker]
-                [(get-else $ ?block :block/scheduled "nil") ?d]
-                [(not= ?d "nil")]
-                [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
-            `,
-            scheduleStart: 'scheduled',
-            dateFormatter: 'YYYYMMDD',
-          },
-          // deadline tasks
-          {
-            script: `
-              [:find (pull ?block [*])
-                :where
-                [?block :block/marker ?marker]
-                [(get-else $ ?block :block/deadline "nil") ?d]
-                [(not= ?d "nil")]
-                [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
-            `,
-            scheduleStart: 'deadline',
-            dateFormatter: 'YYYYMMDD',
-          },
-          // tasks with no deadline or scheduled but in journal
-          {
-            script: `
-              [:find (pull ?block [*])
-                :where
-                [?block :block/marker ?marker]
-                [(missing? $ ?block :block/scheduled)]
-                [(missing? $ ?block :block/deadline)]
-                [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]
-                [?block :block/page ?page]
-                [?page2 :page/journal? true]]
-            `,
-            scheduleStart: 'page.journalDay',
-            dateFormatter: 'YYYYMMDD',
-          },
-        ],
-        milestone: [
-          {
-            script: `
-              [:find (pull ?block [*])
+      query: [
+        // schedule tasks
+        {
+          script: `
+            [:find (pull ?block [*])
               :where
-                [?block :block/marker ?marker]
-                [(missing? $ ?block :block/scheduled)]
-                [(missing? $ ?block :block/deadline)]
-                [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]
-                [?block :block/page ?page]
-                [?page2 :page/journal? true]]
-            `,
-            scheduleStart: '',
-            dateFormatter: '',
-          }
-        ]
-      },
+              [?block :block/marker ?marker]
+              [(missing? $ ?block :block/deadline)]
+              [(get-else $ ?block :block/scheduled "nil") ?d]
+              [(not= ?d "nil")]
+              [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+          `,
+          scheduleStart: 'scheduled',
+          dateFormatter: 'YYYYMMDD',
+        },
+        // deadline tasks
+        {
+          script: `
+            [:find (pull ?block [*])
+              :where
+              [?block :block/marker ?marker]
+              [(missing? $ ?block :block/scheduled)]
+              [(get-else $ ?block :block/deadline "nil") ?d]
+              [(not= ?d "nil")]
+              [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+          `,
+          scheduleStart: 'deadline',
+          dateFormatter: 'YYYYMMDD',
+        },
+        // tasks with no deadline or scheduled but in journal
+        {
+          script: `
+            [:find (pull ?block [*])
+              :where
+              [?block :block/page ?page]
+              [?page :block/journal? true]
+              [?block :block/marker ?marker]
+              [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]
+              [(missing? $ ?block :block/scheduled)]
+              [(missing? $ ?block :block/deadline)]]
+          `,
+          scheduleStart: 'page.journalDay',
+          dateFormatter: 'YYYYMMDD',
+        },
+        // milestone
+        {
+          script: `
+            [:find (pull ?block [*])
+              :where
+              [?rp :block/name "milestone"]
+              [?block :block/ref-pages ?rp]]
+          `,
+          scheduleStart: 'scheduled',
+          dateFormatter: 'YYYYMMDD',
+          isMilestone: true,
+        }
+      ],
     },
   ],
 }

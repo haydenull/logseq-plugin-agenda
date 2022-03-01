@@ -15,6 +15,7 @@
     "@logseq/libs": "^0.0.1-alpha.34",
     "antd": "^4.18.7",
     "dayjs": "^1.10.7",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-color": "^2.19.3",
     "react-dom": "^17.0.2",
