@@ -1,18 +1,15 @@
 import React, { useState } from 'react'
-import { Modal, Form, Select, Input, Button, Space, Switch, Row, Col } from 'antd'
-import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined, FunctionOutlined } from '@ant-design/icons'
+import { Modal, Form, Input, Button, Row, Col } from 'antd'
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { ISettingsForm, ISettingsFormQuery } from '../util/util'
 
 const QueryModal: React.FC<Partial<{
   visible: boolean
-  calendarId: string
   initialValues: ISettingsFormQuery
   onCancel: () => void
   onOk: (values: ISettingsForm['calendarList'][number]['query']) => void
   [key: string]: any
 }>> = ({ visible, calendarId, initialValues, onCancel, onOk, ...props }) => {
-
-  console.log('[faiz:] === initialValues', initialValues)
   const [form] = Form.useForm<ISettingsFormQuery>()
 
   const onSave = () => {
@@ -30,7 +27,7 @@ const QueryModal: React.FC<Partial<{
       onOk={onSave}
     >
       <div>
-        <Form initialValues={initialValues} form={form}>
+        <Form initialValues={initialValues} form={form} size="small">
           <Row gutter={24}>
             <Col span={12}>
               <h3>Schedules</h3>

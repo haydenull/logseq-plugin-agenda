@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Select } from 'antd'
-import { LeftOutlined, RightOutlined, SettingOutlined } from '@ant-design/icons'
+import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined } from '@ant-design/icons'
 import day from 'dayjs'
 import { getSchedules, ISettingsForm } from './util/util'
 import Settings from './components/Settings'
@@ -144,7 +144,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     changeShowDate()
   }
   const onSettingChange = (values: ISettingsForm) => {
-    console.log('[faiz:] === values', values)
+    console.log('[faiz:] === onSettingChange', values)
     logseq.updateSettings(values)
     if (values.weekStartDay !== logseq.settings?.weekStartDay) {
       calendarRef.current?.setOptions({
@@ -230,7 +230,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
           <div>
             { showExportWeekly && <Button className="mr-4" onClick={exportWeekly}>Export Weekly</Button> }
-            <Button className="mr-4" onClick={setSchedules} type="primary">Sync</Button>
+            <Button className="mr-4" onClick={setSchedules} type="primary" icon={<ReloadOutlined />}>Reload</Button>
             <Button onClick={() => setSettingModal(true)} shape="circle" icon={<SettingOutlined />}></Button>
           </div>
         </div>

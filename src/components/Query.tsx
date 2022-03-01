@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
 import { Button } from 'antd'
-import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined, FunctionOutlined } from '@ant-design/icons'
+import { FunctionOutlined } from '@ant-design/icons'
 import QueryModal from './QueryModal'
+import { ISettingsFormQuery } from '../util/util'
 
 const Query: React.FC<{
-  value?: number
-  onChange?: (value: number) => void
-}> = ({ value, onChange }) => {
+  value?: ISettingsFormQuery
+  onChange?: (values: ISettingsFormQuery) => void
+  initialValues?: ISettingsFormQuery
+  calendarId?: string
+}> = ({ value, onChange, initialValues, calendarId }) => {
   const [visible, setVisible] = useState(false)
 
   return (
@@ -14,6 +17,13 @@ const Query: React.FC<{
       <Button type="link" icon={<FunctionOutlined />} onClick={() => setVisible(true)} />
       <QueryModal
         visible={visible}
+        calendarId={calendarId}
+        initialValues={value}
+        onCancel={() => setVisible(false)}
+        onOk={(values) => {
+          onChange?.(values)
+          setVisible(false)
+        }}
       />
     </div>
   )

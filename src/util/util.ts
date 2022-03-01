@@ -222,3 +222,13 @@ export const isOverdue = (block: any, date: number | string) => {
   // 非 todo 及 done 的 block 不过期
   return false
 }
+
+export const initializeSettings = () => {
+  const settings = logseq.settings
+  // settings未初始化时手动初始化
+  if (!settings?.initialized) {
+    const _settings = getInitalSettings()
+    logseq.updateSettings({ ..._settings, initialized: true })
+    console.log('[faiz:] === initialize settings success', settings)
+  }
+}

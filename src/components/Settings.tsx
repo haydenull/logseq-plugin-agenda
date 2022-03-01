@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { Modal, Form, Select, Input, Button, Switch } from 'antd'
-import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined, FunctionOutlined } from '@ant-design/icons'
+import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/util'
 import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
 import { CALENDAR_VIEWS } from '../util/constants'
-import Query from './QueryModal'
+import Query from './Query'
 
 
 const Settings: React.FC<{
@@ -24,7 +24,6 @@ const Settings: React.FC<{
 
   const onClickSettingSave = () => {
     settingForm.validateFields().then(values => {
-      console.log('[faiz:] === values', values)
       onOk(values)
       // if (values.weekStartDay !== logseq.settings?.weekStartDay) {
       //   calendarRef.current?.setOptions({
@@ -39,20 +38,6 @@ const Settings: React.FC<{
       // if (values.logKey !== logseq.settings?.logKey) setSchedules()
       // logseq.updateSettings(values)
     })
-  }
-  // click query editor button
-  const onClickCalendarFunction = (index: number) => {
-    console.log('[faiz:] === onClickCalendarFunction', index, settingForm.getFieldsValue(['calendarList']))
-    const { calendarList } = settingForm.getFieldsValue(['calendarList'], )
-    setQueryEditor({
-      visible: true,
-      calendarId: calendarList[index].id,
-      query: calendarList[index]?.query,
-    })
-  }
-  const onQuerySave = (values: ISettingsFormQuery) => {
-    console.log('[faiz:] === onQuerySave', values)
-    setQueryEditor({ visible: false })
   }
 
   return (
@@ -104,7 +89,7 @@ const Settings: React.FC<{
                       <ColorPicker text="border" />
                     </Form.Item>
                     <Form.Item name={[field.name, 'query']} noStyle rules={[{ required: true }]}>
-                      <Button type="link" icon={<FunctionOutlined />} onClick={() => onClickCalendarFunction(field.name)} />
+                      <Query calendarId='' />
                     </Form.Item>
                     <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
                       <Switch size="small" />
@@ -122,13 +107,6 @@ const Settings: React.FC<{
           </Form.List>
         </Form>
       </Modal>
-      <Query
-        visible={queryEditor?.visible}
-        calendarId={queryEditor?.calendarId}
-        initialValues={queryEditor?.query}
-        onCancel={() => setQueryEditor(() => ({ visible: false }))}
-        onOk={onQuerySave}
-      />
     </>
   )
 }
