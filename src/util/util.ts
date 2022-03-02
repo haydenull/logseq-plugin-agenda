@@ -48,10 +48,38 @@ type IQueryWithCalendar = {
 }
 export const getSchedules = async () => {
   const testQuery = `
-  [:find (pull ?block [*])
+  [:find
+    (pull
+     ?b
+     [:db/id
+      :block/uuid
+      :block/parent
+      :block/left
+      :block/collapsed?
+      :block/format
+      :block/_refs
+      :block/path-refs
+      :block/tags
+      :block/content
+      :block/marker
+      :block/priority
+      :block/properties
+      :block/pre-block?
+      :block/scheduled
+      :block/deadline
+      :block/repeated?
+      :block/created-at
+      :block/updated-at
+      :block/file
+      :block/heading-level
+      {:block/refs
+        [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
+      {:block/page
+       [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
+      {:block/_parent ...}])
     :where
     [?rp :block/name "milestone"]
-    [?block :block/ref-pages ?rp]]
+    [?b :block/refs ?rp]]
   `
   const test = await logseq.DB.datascriptQuery(testQuery)
   console.log('[faiz:] === test', testQuery, test)

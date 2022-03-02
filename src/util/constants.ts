@@ -78,7 +78,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
             [:find (pull ?block [*])
               :where
               [?rp :block/name "milestone"]
-              [?block :block/ref-pages ?rp]]
+              [?block :block/refs ?rp]]
           `,
           scheduleStart: 'scheduled',
           dateFormatter: 'YYYYMMDD',
