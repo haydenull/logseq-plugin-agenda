@@ -50,7 +50,7 @@ export const getSchedules = async () => {
   const testQuery = `
   [:find
     (pull
-     ?b
+     ?block
      [:db/id
       :block/uuid
       :block/parent
@@ -78,8 +78,9 @@ export const getSchedules = async () => {
        [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
       {:block/_parent ...}])
     :where
-    [?rp :block/name "milestone"]
-    [?b :block/refs ?rp]]
+    [?page :block/name ?name]
+    [?block :block/page ?page]
+    (not [(contains? #{"高中教务系统"} ?name)])]
   `
   const test = await logseq.DB.datascriptQuery(testQuery)
   console.log('[faiz:] === test', testQuery, test)
@@ -107,18 +108,18 @@ export const getSchedules = async () => {
     const { calendarConfig, query } = queryWithCalendar
     const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone } = query
     const blocks = await logseq.DB.datascriptQuery(script)
-    const blockPromiseList = flattenDeep(blocks).map(async block => {
-      const pageId = block.page?.id
-      const page = await logseq.Editor.getPage(pageId)
-      return {
-        ...block,
-        page,
-      }
-    })
-    const _blocks = await Promise.all(blockPromiseList)
-    console.log('[faiz:] === search blocks by query: ', script, _blocks)
+    // const blockPromiseList = flattenDeep(blocks).map(async block => {
+    //   const pageId = block.page?.id
+    //   const page = await logseq.Editor.getPage(pageId)
+    //   return {
+    //     ...block,
+    //     page,
+    //   }
+    // })
+    // const _blocks = await Promise.all(blockPromiseList)
+    console.log('[faiz:] === search blocks by query: ', script, blocks)
 
-    return flattenDeep(_blocks).map(block => {
+    return flattenDeep(blocks).map(block => {
 
       const start = get(block, scheduleStart, undefined)
       const end = get(block, scheduleEnd, undefined)

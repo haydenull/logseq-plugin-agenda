@@ -36,8 +36,10 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
               :where
               [?block :block/marker ?marker]
               [(missing? $ ?block :block/deadline)]
-              [(get-else $ ?block :block/scheduled "nil") ?d]
-              [(not= ?d "nil")]
+              (not [(missing? $ ?block :block/scheduled)])
+              [?page :block/name ?pname]
+              [?block :block/page ?page]
+              (not [(contains? #{"高中教务系统"} ?pname)])
               [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
           `,
           scheduleStart: 'scheduled',
@@ -52,6 +54,9 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
               [(missing? $ ?block :block/scheduled)]
               [(get-else $ ?block :block/deadline "nil") ?d]
               [(not= ?d "nil")]
+              [?page :block/name ?pname]
+              [?block :block/page ?page]
+              (not [(contains? #{"高中教务系统"} ?pname)])
               [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
           `,
           scheduleStart: 'deadline',
@@ -60,7 +65,30 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
         // tasks with no deadline or scheduled but in journal
         {
           script: `
-            [:find (pull ?block [*])
+            [:find (pull
+              ?block
+              [:block/uuid
+               :block/parent
+               :block/left
+               :block/collapsed?
+               :block/format
+               :block/_refs
+               :block/path-refs
+               :block/tags
+               :block/content
+               :block/marker
+               :block/priority
+               :block/properties
+               :block/pre-block?
+               :block/scheduled
+               :block/deadline
+               :block/repeated?
+               :block/created-at
+               :block/updated-at
+               :block/file
+               :block/heading-level
+               {:block/page
+                [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}])
               :where
               [?block :block/page ?page]
               [?page :block/journal? true]
@@ -69,7 +97,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
               [(missing? $ ?block :block/scheduled)]
               [(missing? $ ?block :block/deadline)]]
           `,
-          scheduleStart: 'page.journalDay',
+          scheduleStart: 'page.journal-day',
           dateFormatter: 'YYYYMMDD',
         },
         // milestone
@@ -77,6 +105,9 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
           script: `
             [:find (pull ?block [*])
               :where
+              [?page :block/name ?pname]
+              [?block :block/page ?page]
+              (not [(contains? #{"高中教务系统"} ?pname)])
               [?rp :block/name "milestone"]
               [?block :block/refs ?rp]]
           `,
