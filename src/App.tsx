@@ -12,7 +12,7 @@ import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 
 const getDefaultOptions = () => ({
-  defaultView: logseq.settings?.defaultView || 'week',
+  defaultView: logseq.settings?.defaultView === '2week' ? 'month' : (logseq.settings?.defaultView || 'week'),
   taskView: true,
   scheduleView: true,
   useDetailPopup: true,
@@ -28,6 +28,7 @@ const getDefaultOptions = () => ({
       console.log('[faiz:] === scheduleFilter', schedule)
       return Boolean(schedule.isVisible)
     },
+    visibleWeeksCount: logseq.settings?.defaultView === '2week' ? 2 : 6,
   },
   template: {
     taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
