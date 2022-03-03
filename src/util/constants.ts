@@ -6,9 +6,6 @@ export const DEFAULT_JOURNAL_FORMAT = 'YYYY-MM-DD ddd'
 
 export const DEFAULT_LOG_KEY = 'Daily Log'
 
-// [(get-else $ ?block :block/scheduled "nil") ?d]
-// [(not= ?d "nil")]
-
 export const CALENDAR_VIEWS = [
   { value: 'day', label: 'Daily' },
   { value: 'week', label: 'Weekly' },
@@ -32,15 +29,15 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
         // schedule tasks
         {
           script: `
-            [:find (pull ?block [*])
-              :where
-              [?block :block/marker ?marker]
-              [(missing? $ ?block :block/deadline)]
-              (not [(missing? $ ?block :block/scheduled)])
-              [?page :block/name ?pname]
-              [?block :block/page ?page]
-              (not [(contains? #{"高中教务系统"} ?pname)])
-              [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+[:find (pull ?block [*])
+  :where
+  [?block :block/marker ?marker]
+  [(missing? $ ?block :block/deadline)]
+  (not [(missing? $ ?block :block/scheduled)])
+  [?page :block/name ?pname]
+  [?block :block/page ?page]
+  (not [(contains? #{"高中教务系统"} ?pname)])
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
           `,
           scheduleStart: 'scheduled',
           dateFormatter: 'YYYYMMDD',
@@ -48,16 +45,16 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
         // deadline tasks
         {
           script: `
-            [:find (pull ?block [*])
-              :where
-              [?block :block/marker ?marker]
-              [(missing? $ ?block :block/scheduled)]
-              [(get-else $ ?block :block/deadline "nil") ?d]
-              [(not= ?d "nil")]
-              [?page :block/name ?pname]
-              [?block :block/page ?page]
-              (not [(contains? #{"高中教务系统"} ?pname)])
-              [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+[:find (pull ?block [*])
+  :where
+  [?block :block/marker ?marker]
+  [(missing? $ ?block :block/scheduled)]
+  [(get-else $ ?block :block/deadline "nil") ?d]
+  [(not= ?d "nil")]
+  [?page :block/name ?pname]
+  [?block :block/page ?page]
+  (not [(contains? #{"高中教务系统"} ?pname)])
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
           `,
           scheduleStart: 'deadline',
           dateFormatter: 'YYYYMMDD',
@@ -65,37 +62,37 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
         // tasks with no deadline or scheduled but in journal
         {
           script: `
-            [:find (pull
-              ?block
-              [:block/uuid
-               :block/parent
-               :block/left
-               :block/collapsed?
-               :block/format
-               :block/_refs
-               :block/path-refs
-               :block/tags
-               :block/content
-               :block/marker
-               :block/priority
-               :block/properties
-               :block/pre-block?
-               :block/scheduled
-               :block/deadline
-               :block/repeated?
-               :block/created-at
-               :block/updated-at
-               :block/file
-               :block/heading-level
-               {:block/page
-                [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}])
-              :where
-              [?block :block/page ?page]
-              [?page :block/journal? true]
-              [?block :block/marker ?marker]
-              [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]
-              [(missing? $ ?block :block/scheduled)]
-              [(missing? $ ?block :block/deadline)]]
+[:find (pull
+  ?block
+  [:block/uuid
+    :block/parent
+    :block/left
+    :block/collapsed?
+    :block/format
+    :block/_refs
+    :block/path-refs
+    :block/tags
+    :block/content
+    :block/marker
+    :block/priority
+    :block/properties
+    :block/pre-block?
+    :block/scheduled
+    :block/deadline
+    :block/repeated?
+    :block/created-at
+    :block/updated-at
+    :block/file
+    :block/heading-level
+    {:block/page
+    [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}])
+  :where
+  [?block :block/page ?page]
+  [?page :block/journal? true]
+  [?block :block/marker ?marker]
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]
+  [(missing? $ ?block :block/scheduled)]
+  [(missing? $ ?block :block/deadline)]]
           `,
           scheduleStart: 'page.journal-day',
           dateFormatter: 'YYYYMMDD',
@@ -103,13 +100,108 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
         // milestone
         {
           script: `
-            [:find (pull ?block [*])
-              :where
-              [?page :block/name ?pname]
-              [?block :block/page ?page]
-              (not [(contains? #{"高中教务系统"} ?pname)])
-              [?rp :block/name "milestone"]
-              [?block :block/refs ?rp]]
+[:find (pull ?block [*])
+  :where
+  [?page :block/name ?pname]
+  [?block :block/page ?page]
+  (not [(contains? #{"高中教务系统"} ?pname)])
+  [?rp :block/name "milestone"]
+  [?block :block/refs ?rp]]
+          `,
+          scheduleStart: 'scheduled',
+          dateFormatter: 'YYYYMMDD',
+          isMilestone: true,
+        }
+      ],
+    },
+    {
+      id: 'xxxxx',
+      bgColor: '#047857',
+      textColor: '#fff',
+      borderColor: '#047857',
+      enabled: true,
+      query: [
+        // schedule tasks
+        {
+          script: `
+[:find (pull ?block [*])
+  :where
+  [?block :block/marker ?marker]
+  [(missing? $ ?block :block/deadline)]
+  (not [(missing? $ ?block :block/scheduled)])
+  [?page :block/name ?pname]
+  [?block :block/page ?page]
+  (not [(contains? #{"高中教务系统"} ?pname)])
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+          `,
+          scheduleStart: 'scheduled',
+          dateFormatter: 'YYYYMMDD',
+        },
+        // deadline tasks
+        {
+          script: `
+[:find (pull ?block [*])
+  :where
+  [?block :block/marker ?marker]
+  [(missing? $ ?block :block/scheduled)]
+  [(get-else $ ?block :block/deadline "nil") ?d]
+  [(not= ?d "nil")]
+  [?page :block/name ?pname]
+  [?block :block/page ?page]
+  (not [(contains? #{"高中教务系统"} ?pname)])
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+          `,
+          scheduleStart: 'deadline',
+          dateFormatter: 'YYYYMMDD',
+        },
+        // tasks with no deadline or scheduled but in journal
+        {
+          script: `
+[:find (pull
+  ?block
+  [:block/uuid
+    :block/parent
+    :block/left
+    :block/collapsed?
+    :block/format
+    :block/_refs
+    :block/path-refs
+    :block/tags
+    :block/content
+    :block/marker
+    :block/priority
+    :block/properties
+    :block/pre-block?
+    :block/scheduled
+    :block/deadline
+    :block/repeated?
+    :block/created-at
+    :block/updated-at
+    :block/file
+    :block/heading-level
+    {:block/page
+    [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}])
+  :where
+  [?block :block/page ?page]
+  [?page :block/journal? true]
+  [?block :block/marker ?marker]
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]
+  [(missing? $ ?block :block/scheduled)]
+  [(missing? $ ?block :block/deadline)]]
+          `,
+          scheduleStart: 'page.journal-day',
+          dateFormatter: 'YYYYMMDD',
+        },
+        // milestone
+        {
+          script: `
+[:find (pull ?block [*])
+  :where
+  [?page :block/name ?pname]
+  [?block :block/page ?page]
+  (not [(contains? #{"高中教务系统"} ?pname)])
+  [?rp :block/name "milestone"]
+  [?block :block/refs ?rp]]
           `,
           scheduleStart: 'scheduled',
           dateFormatter: 'YYYYMMDD',

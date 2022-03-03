@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import { Modal, Form, Select, Input, Button, Switch } from 'antd'
 import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/util'
+import { genDefaultQuery, getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/util'
 import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
 import { CALENDAR_VIEWS } from '../util/constants'
 import Query from './Query'
+import CreateCalendarModal from './CreateCalendarModal'
 
 
+const initialValues = getInitalSettings()
 const Settings: React.FC<{
   visible: boolean
   onCancel: () => void
@@ -16,22 +18,23 @@ const Settings: React.FC<{
 }> = ({ visible, onCancel, onOk, ...props }) => {
   const [settingForm] = useForm<ISettingsForm>()
 
+  const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
+
+  console.log('[faiz:] === initialValues settings', initialValues)
+
   const onClickSettingSave = () => {
     settingForm.validateFields().then(values => {
       onOk(values)
-      // if (values.weekStartDay !== logseq.settings?.weekStartDay) {
-      //   calendarRef.current?.setOptions({
-      //     week: {
-      //       startDayOfWeek: values.weekStartDay,
-      //     },
-      //     month: {
-      //       startDayOfWeek: values.weekStartDay,
-      //     },
-      //   })
-      // }
-      // if (values.logKey !== logseq.settings?.logKey) setSchedules()
-      // logseq.updateSettings(values)
     })
+  }
+  const onCreateCalendarModalOk = (calendarId: string) => {
+    settingForm.setFieldsValue({
+      calendarList: [
+        ...settingForm.getFieldValue('calendarList'),
+        genDefaultQuery(calendarId),
+      ]
+    })
+    setCreateCalendarModalVisible(false)
   }
 
   return (
@@ -46,7 +49,7 @@ const Settings: React.FC<{
         onCancel={onCancel}
         onOk={onClickSettingSave}
       >
-        <Form initialValues={getInitalSettings()} form={settingForm} labelCol={{ span: 7 }} preserve={false}>
+        <Form initialValues={initialValues} labelCol={{ span: 7 }} preserve={false} form={settingForm} onValuesChange={(value) => console.log('[faiz:] === onValuesChange', value)}>
           <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
             <Select options={CALENDAR_VIEWS} />
           </Form.Item>
@@ -83,23 +86,31 @@ const Settings: React.FC<{
                       <ColorPicker text="border" />
                     </Form.Item>
                     <Form.Item name={[field.name, 'query']} noStyle rules={[{ required: true }]}>
-                      <Query calendarId='' />
+                      <Query calendarId='query' />
                     </Form.Item>
                     <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
                       <Switch size="small" />
                     </Form.Item>
-                    {index !== 0 ? <MinusCircleOutlined onClick={() => remove(field.name)} /> : <div style={{ width: '14px' }}></div>}
+                    {index !== 0 ? <MinusCircleOutlined onClick={() => {
+                      console.log('[faiz:] === remove', field.name, field)
+                      remove(field.name)
+                    }} /> : <div style={{ width: '14px' }}></div>}
                   </div>
                 </Form.Item>
               ))}
               <Form.Item wrapperCol={{ offset: 7 }}>
-                <Button type="dashed" size="small" onClick={() => add()} block icon={<PlusOutlined />}>
+                <Button type="dashed" size="small" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
                   Add Calendar
                 </Button>
               </Form.Item>
             </>)}
           </Form.List>
         </Form>
+        <CreateCalendarModal
+          visible={createCalendarModalVisible}
+          onSave={onCreateCalendarModalOk}
+          onCancel={() => setCreateCalendarModalVisible(false)}
+        />
       </Modal>
     </>
   )

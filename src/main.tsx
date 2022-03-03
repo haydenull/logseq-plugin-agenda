@@ -30,7 +30,7 @@ if (isDevelopment) {
 
     logseq.App.registerUIItem('toolbar', {
       key: 'logseq-plugin-agenda',
-      template: '<a data-on-click="show" class="button"><i class="ti ti-window"></i></a>',
+      template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
 
     window.faizNavigate = (e) => {

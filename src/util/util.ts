@@ -387,3 +387,63 @@ export const initializeSettings = () => {
     console.log('[faiz:] === initialize settings success', logseq.settings)
   }
 }
+
+export const genDefaultQuery = (pageName: string) => {
+  return {
+    id: pageName,
+    bgColor: '#b8e986',
+    textColor: '#4a4a4a',
+    borderColor: '#047857',
+    enabled: true,
+    query: [
+      // scheduled tasks
+      {
+        script: `
+[:find (pull ?block [*])
+:where
+[?block :block/marker ?marker]
+[(missing? $ ?block :block/deadline)]
+(not [(missing? $ ?block :block/scheduled)])
+[?page :block/name ?pname]
+[?block :block/page ?page]
+[(contains? #{"${pageName}"} ?pname)]
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+        `,
+        scheduleStart: 'scheduled',
+        dateFormatter: 'YYYYMMDD',
+      },
+      // deadline tasks
+      {
+        script: `
+[:find (pull ?block [*])
+:where
+[?block :block/marker ?marker]
+[(missing? $ ?block :block/scheduled)]
+[(get-else $ ?block :block/deadline "nil") ?d]
+[(not= ?d "nil")]
+[?page :block/name ?pname]
+[?block :block/page ?page]
+[(contains? #{"${pageName}"} ?pname)]
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+        `,
+        scheduleStart: 'deadline',
+        dateFormatter: 'YYYYMMDD',
+      },
+      // milestone
+      {
+        script: `
+[:find (pull ?block [*])
+:where
+[?page :block/name ?pname]
+[?block :block/page ?page]
+[(contains? #{"${pageName}"} ?pname)]
+[?rp :block/name "milestone"]
+[?block :block/refs ?rp]]
+        `,
+        scheduleStart: 'scheduled',
+        dateFormatter: 'YYYYMMDD',
+        isMilestone: true,
+      }
+    ],
+  }
+}
