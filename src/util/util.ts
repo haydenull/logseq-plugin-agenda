@@ -89,7 +89,7 @@ export const getSchedules = async () => {
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
-  const { calendarList: calendarConfigs = [] } = getInitalSettings()
+  const { calendarList: calendarConfigs = [], logKey } = getInitalSettings()
   console.log('[faiz:] === calendarConfigs', calendarConfigs)
   const customCalendarConfigs = calendarConfigs.filter(config => config.enabled)
 
@@ -108,15 +108,6 @@ export const getSchedules = async () => {
     const { calendarConfig, query } = queryWithCalendar
     const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone } = query
     const blocks = await logseq.DB.datascriptQuery(script)
-    // const blockPromiseList = flattenDeep(blocks).map(async block => {
-    //   const pageId = block.page?.id
-    //   const page = await logseq.Editor.getPage(pageId)
-    //   return {
-    //     ...block,
-    //     page,
-    //   }
-    // })
-    // const _blocks = await Promise.all(blockPromiseList)
     console.log('[faiz:] === search blocks by query: ', script, blocks)
 
     return flattenDeep(blocks).map(block => {
@@ -281,32 +272,32 @@ export const getSchedules = async () => {
 //     })
 //   }))
 
-//   // Daily Logs
-//   // TODO: support end time
-//   const keyword = logseq.settings?.logKey || DEFAULT_LOG_KEY
-//   const logs = await logseq.DB.q(`[[${keyword}]]`)
-//   const _logs = logs
-//                 ?.filter(block => block.content?.trim() === `[[${keyword}]]`)
-//                 ?.map(block => Array.isArray(block.parent) ? block.parent : [])
-//                 ?.flat()
-//                 ?.filter(block => {
-//                   const _content = block.content?.trim()
-//                   return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
-//                 }) || []
-//   console.log('[faiz:] === logs', _logs)
-//   calendarSchedules = calendarSchedules.concat(_logs?.map(block => {
-//     const date = block?.page?.journalDay
-//     const time = block.content?.substr(0, 5)
-//     const hasTime = time.split(':')?.filter(num => !Number.isNaN(Number(num)))?.length === 2
-//     return genSchedule({
-//       blockData: block,
-//       category: hasTime ? 'time' : 'allday',
-//       start: hasTime ? dayjs(date + ' ' + time, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
-//       // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
-//       calendarConfigs: _calendarConfigs,
-//       isJournal: true,
-//     })
-//   }))
+  // Daily Logs
+  // TODO: support end time
+  if (logKey) {
+    const logs = await logseq.DB.q(`[[${logKey}]]`)
+    const _logs = logs
+                  ?.filter(block => block.content?.trim() === `[[${logKey}]]`)
+                  ?.map(block => Array.isArray(block.parent) ? block.parent : [])
+                  ?.flat()
+                  ?.filter(block => {
+                    const _content = block.content?.trim()
+                    return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
+                  }) || []
+    console.log('[faiz:] === logs', _logs)
+    calendarSchedules = calendarSchedules.concat(_logs?.map(block => {
+      const date = block?.page?.journalDay
+      const time = block.content?.substr(0, 5)
+      const hasTime = time.split(':')?.filter(num => !Number.isNaN(Number(num)))?.length === 2
+      return genSchedule({
+        blockData: block,
+        category: hasTime ? 'time' : 'allday',
+        start: hasTime ? dayjs(date + ' ' + time, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
+        // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
+        calendarConfig: customCalendarConfigs[0],
+      })
+    }))
+  }
 
   console.log('[faiz:] === final calendarSchedules', calendarSchedules)
   return calendarSchedules
@@ -320,9 +311,8 @@ function genSchedule(params: {
   end?:string
   calendarConfig: ISettingsForm['calendarList'][number]
   isAllDay?: boolean
-  isJournal?: boolean
 }) {
-  const { blockData, category = 'time', start, end, calendarConfig, isAllDay, isJournal } = params
+  const { blockData, category = 'time', start, end, calendarConfig, isAllDay } = params
   // const calendarId = calendarConfigs.find(calendar => calendar.pageId === blockData?.page?.id)?.id || 'journal'
 
   // let calendarConfig = calendarConfigs.find(config => config.id === 'journal')

@@ -10,7 +10,7 @@ const isDevelopment = import.meta.env.DEV
 if (isDevelopment) {
   renderApp('browser')
 } else {
-  console.log('=== logseq-plugin-calendar loaded ===')
+  console.log('=== logseq-plugin-agenda loaded ===')
   logseq.ready(() => {
 
     initializeSettings()
@@ -29,7 +29,7 @@ if (isDevelopment) {
     })
 
     logseq.App.registerUIItem('toolbar', {
-      key: 'logseq-plugin-calendar',
+      key: 'logseq-plugin-agenda',
       template: '<a data-on-click="show" class="button"><i class="ti ti-window"></i></a>',
     })
 

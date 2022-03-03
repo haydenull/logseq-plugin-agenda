@@ -1,9 +1,9 @@
 {
-  "name": "logseq-plugin-calendar",
+  "name": "logseq-plugin-agenda",
   "version": "1.0.0",
   "main": "dist/index.html",
   "logseq": {
-    "id": "logseq-plugin-calendar",
+    "id": "logseq-plugin-agenda",
     "icon": "logo.png"
   },
   "scripts": {

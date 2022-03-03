@@ -17,7 +17,7 @@ export const CALENDAR_VIEWS = [
 ]
 
 export const DEFAULT_SETTINGS: ISettingsForm = {
-  defaultView: 'week',
+  defaultView: 'month',
   weekStartDay: 0,
   journalDateFormatter: 'YYYY-MM-DD ddd',
   logKey: 'Daily Log',

@@ -16,12 +16,6 @@ const Settings: React.FC<{
 }> = ({ visible, onCancel, onOk, ...props }) => {
   const [settingForm] = useForm<ISettingsForm>()
 
-  const [queryEditor, setQueryEditor] = useState<{
-    visible?: boolean
-    calendarId?: string
-    query?: ISettingsFormQuery
-  }>()
-
   const onClickSettingSave = () => {
     settingForm.validateFields().then(values => {
       onOk(values)
@@ -68,7 +62,7 @@ const Settings: React.FC<{
               <QuestionCircleOutlined className="ml-1" onClick={() => logseq.App.openExternalLink('https://day.js.org/docs/en/display/format')} />
             </div>
           </Form.Item>
-          <Form.Item label="Log Key" name="logKey" rules={[{ required: true }]} getValueFromEvent={(e) => e.target.value.trim()}>
+          <Form.Item label="Log Key" name="logKey" getValueFromEvent={(e) => e.target.value.trim()}>
             <Input />
           </Form.Item>
           <Form.List name="calendarList">

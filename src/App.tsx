@@ -11,42 +11,45 @@ import 'antd/dist/antd.css'
 import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 
-const getDefaultOptions = () => ({
-  defaultView: logseq.settings?.defaultView === '2week' ? 'month' : (logseq.settings?.defaultView || 'week'),
-  taskView: true,
-  scheduleView: true,
-  useDetailPopup: true,
-  isReadOnly: true,
-  theme: CALENDAR_THEME,
-  week: {
-    startDayOfWeek: logseq.settings?.weekStartDay || 0,
-    // narrowWeekend: true,
-  },
-  month: {
-    startDayOfWeek: logseq.settings?.weekStartDay || 0,
-    scheduleFilter: (schedule: ISchedule) => {
-      console.log('[faiz:] === scheduleFilter', schedule)
-      return Boolean(schedule.isVisible)
+const getDefaultOptions = () => {
+  let defaultView = logseq.settings?.defaultView || 'month'
+  if (logseq.settings?.defaultView === '2week') defaultView = 'month'
+  return {
+    defaultView,
+    taskView: true,
+    scheduleView: true,
+    useDetailPopup: true,
+    isReadOnly: true,
+    theme: CALENDAR_THEME,
+    week: {
+      startDayOfWeek: logseq.settings?.weekStartDay || 0,
+      // narrowWeekend: true,
     },
-    visibleWeeksCount: logseq.settings?.defaultView === '2week' ? 2 : 6,
-  },
-  template: {
-    taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
-    task: (schedule: ISchedule) => '🔥' + schedule.title,
-    popupDetailBody: (schedule: ISchedule) => {
-      return schedule.body?.split('\n').join('<br/>') + '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
+    month: {
+      startDayOfWeek: logseq.settings?.weekStartDay || 0,
+      scheduleFilter: (schedule: ISchedule) => {
+        console.log('[faiz:] === scheduleFilter', schedule)
+        return Boolean(schedule.isVisible)
+      },
+      visibleWeeksCount: logseq.settings?.defaultView === '2week' ? 2 : 6,
     },
-  },
-})
-
+    template: {
+      taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
+      task: (schedule: ISchedule) => '🔥' + schedule.title,
+      popupDetailBody: (schedule: ISchedule) => {
+        return schedule.body?.split('\n').join('<br/>') + '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
+      },
+    },
+  }
+}
 
 const App: React.FC<{ env: string }> = ({ env }) => {
 
   const DEFAULT_OPTIONS = getDefaultOptions()
 
-  const [currentView, setCurrentView] = useState(DEFAULT_OPTIONS.defaultView)
+  const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
   const [showDate, setShowDate] = useState<string>()
-  const [showExportWeekly, setShowExportWeekly] = useState<boolean>(true)
+  const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey))
   const [weeklyModal, setWeeklyModal] = useState<{
     visible: boolean
     start?: string
@@ -127,7 +130,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       calendarRef.current?.changeView(value)
     }
     changeShowDate()
-    setShowExportWeekly(value === 'week')
+    setShowExportWeekly(logseq.settings?.logKey && value === 'week')
   }
   const onClickToday = () => {
     calendarRef.current?.today()
@@ -139,7 +142,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   }
   const onClickNext = () => {
     // logseq.App.pushState('page', { uuid: '6212fe1a-0b30-4c2a-b688-b1a7db33c822' })
-    // logseq.App.pushState('page', { name: '07:44 logseq-plugin-calendar' })
+    // logseq.App.pushState('page', { name: '07:44 logseq-plugin-agenda' })
     // logseq.App.pushState('page', { id: 525 })
     calendarRef.current?.next()
     changeShowDate()
