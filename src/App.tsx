@@ -28,7 +28,6 @@ const getDefaultOptions = () => {
     month: {
       startDayOfWeek: logseq.settings?.weekStartDay || 0,
       scheduleFilter: (schedule: ISchedule) => {
-        console.log('[faiz:] === scheduleFilter', schedule)
         return Boolean(schedule.isVisible)
       },
       visibleWeeksCount: logseq.settings?.defaultView === '2week' ? 2 : 6,
@@ -111,7 +110,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const onViewChange = (value: string) => {
     setCurrentView(value)
-    console.log('[faiz:] === onViewChange',value, calendarRef.current)
     if (value === '2week') {
       calendarRef.current?.changeView('month')
       calendarRef.current?.setOptions({
@@ -187,11 +185,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         setCurrentView('day')
       }
     })
-    calendarRef.current.on('clickMore', function(event) {
-      console.log('clickMore', event.date, event.target)
-    })
     calendarRef.current.on('clickSchedule', function(info) {
-      console.log('clickSchedule', info, document.querySelectorAll('.faiz-nav-detail'))
       document.querySelector('#faiz-nav-detail')?.addEventListener('click', async (e) => {
         const rawData = info.schedule.raw || {}
         const { id: pageId, originalName } = rawData?.page

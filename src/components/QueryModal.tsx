@@ -12,8 +12,6 @@ const QueryModal: React.FC<Partial<{
 }>> = ({ visible, calendarId, initialValues, onCancel, onOk, ...props }) => {
   const [form] = Form.useForm<ISettingsFormQuery>()
 
-  console.log('[faiz:] === initialValues', initialValues)
-
   const onSave = () => {
     const _values = form.getFieldsValue(true)
     onOk?.(_values?.query)

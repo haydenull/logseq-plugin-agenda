@@ -9,7 +9,6 @@ import Query from './Query'
 import CreateCalendarModal from './CreateCalendarModal'
 
 
-const initialValues = getInitalSettings()
 const Settings: React.FC<{
   visible: boolean
   onCancel: () => void
@@ -20,10 +19,11 @@ const Settings: React.FC<{
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
 
-  console.log('[faiz:] === initialValues settings', initialValues)
+  const initialValues = getInitalSettings()
 
   const onClickSettingSave = () => {
     settingForm.validateFields().then(values => {
+      console.log('[faiz:] === onClickSettingSave', values)
       onOk(values)
     })
   }
@@ -37,6 +37,8 @@ const Settings: React.FC<{
     setCreateCalendarModalVisible(false)
   }
 
+  console.log('[faiz:] === initialValues', initialValues)
+
   return (
     <>
       <Modal
@@ -49,7 +51,7 @@ const Settings: React.FC<{
         onCancel={onCancel}
         onOk={onClickSettingSave}
       >
-        <Form initialValues={initialValues} labelCol={{ span: 7 }} preserve={false} form={settingForm} onValuesChange={(value) => console.log('[faiz:] === onValuesChange', value)}>
+        <Form initialValues={initialValues} labelCol={{ span: 7 }} preserve={true} form={settingForm}>
           <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
             <Select options={CALENDAR_VIEWS} />
           </Form.Item>
@@ -91,10 +93,7 @@ const Settings: React.FC<{
                     <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
                       <Switch size="small" />
                     </Form.Item>
-                    {index !== 0 ? <MinusCircleOutlined onClick={() => {
-                      console.log('[faiz:] === remove', field.name, field)
-                      remove(field.name)
-                    }} /> : <div style={{ width: '14px' }}></div>}
+                    {index !== 0 ? <MinusCircleOutlined onClick={() => remove(field.name)} /> : <div style={{ width: '14px' }}></div>}
                   </div>
                 </Form.Item>
               ))}

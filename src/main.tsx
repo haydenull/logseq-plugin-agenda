@@ -33,10 +33,6 @@ if (isDevelopment) {
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
 
-    window.faizNavigate = (e) => {
-      console.log('[faiz:] === faizNavigate', e)
-    }
-
   })
 }
 

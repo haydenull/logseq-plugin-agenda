@@ -90,7 +90,6 @@ export const getSchedules = async () => {
 
   // get calendar configs
   const { calendarList: calendarConfigs = [], logKey } = getInitalSettings()
-  console.log('[faiz:] === calendarConfigs', calendarConfigs)
   const customCalendarConfigs = calendarConfigs.filter(config => config.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
@@ -299,7 +298,6 @@ export const getSchedules = async () => {
     }))
   }
 
-  console.log('[faiz:] === final calendarSchedules', calendarSchedules)
   return calendarSchedules
 }
 
@@ -361,7 +359,6 @@ export const getWeekly = async (startDate, endDate) => {
                     const _content = block.content?.trim()
                     return _content.length > 0
                   })
-  console.log('[faiz:] === weekly logs', _logs)
   return _logs
 }
 
