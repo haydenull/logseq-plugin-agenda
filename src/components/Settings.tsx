@@ -50,15 +50,14 @@ const Settings: React.FC<{
         footer={
           <div className="flex justify-between" onClick={e => e?.stopPropagation?.()}>
             <Popconfirm
-              title="Are you sure you want to restore default setting?"
+              title={<span>Are you sure you want to restore default setting?<br />This is an irreversible operation.</span>}
               onConfirm={() => {
                 logseq.updateSettings({ calendarList: 1 })
                 logseq.updateSettings(DEFAULT_SETTINGS)
                 window.location.reload()
               }}
-              onCancel={() => { }}
             >
-              <Button type="link" onClick={onCancel}>Restore Defaults</Button>
+              <Button type="link">Restore Defaults</Button>
             </Popconfirm>
             <div>
               <Button onClick={onCancel}>Cancel</Button>
