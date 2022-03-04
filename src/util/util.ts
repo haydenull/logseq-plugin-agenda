@@ -42,6 +42,39 @@ export const getInitalSettings = (): ISettingsForm => {
   }
 }
 
+// {:query
+//   [:find
+//    (pull
+//     ?b
+//     [:db/id
+//      :block/uuid
+//      :block/parent
+//      :block/left
+//      :block/collapsed?
+//      :block/format
+//      :block/refs
+//      :block/_refs
+//      :block/path-refs
+//      :block/tags
+//      :block/content
+//      :block/marker
+//      :block/priority
+//      :block/properties
+//      :block/pre-block?
+//      :block/scheduled
+//      :block/deadline
+//      :block/repeated?
+//      :block/created-at
+//      :block/updated-at
+//      :block/file
+//      :block/heading-level
+//      {:block/page
+//       [:db/id :block/name :block/original-name :block/journal-day]}
+//      {:block/_parent ...}])
+//    :where
+//    [?b :block/path-refs [:block/name "daily log"]]],
+//   :query-string "[[Daily Log]]"}
+
 type IQueryWithCalendar = {
   calendarConfig: ISettingsForm['calendarList'][number]
   query: ISettingsFormQuery
@@ -458,3 +491,5 @@ export const genDefaultQuery = (pageName: string) => {
     ],
   }
 }
+
+export const log = (msg, color='blue') => console.log(`%c${msg}`, `color:${color}`)

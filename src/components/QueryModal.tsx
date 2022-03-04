@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { Modal, Form, Input, Button, Row, Col, Radio } from 'antd'
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { ISettingsForm, ISettingsFormQuery } from '../util/util'
+import { Modal, Form, Input, Button, Row, Col, Radio, Tooltip } from 'antd'
+import { MinusCircleOutlined, PlusOutlined, PlayCircleOutlined } from '@ant-design/icons'
+import { ISettingsForm, ISettingsFormQuery, log } from '../util/util'
 
 const QueryModal: React.FC<Partial<{
   visible: boolean
@@ -15,6 +15,24 @@ const QueryModal: React.FC<Partial<{
   const onSave = () => {
     const _values = form.getFieldsValue(true)
     onOk?.(_values?.query)
+  }
+
+  const onClickPlay = async (index) => {
+    const queryItem = form.getFieldsValue(true)?.query[index]
+    if (queryItem) {
+      console.log('')
+      log('[faiz:] === start exec your query:\n', 'blue')
+      console.log(queryItem?.script)
+      try {
+        const res = await logseq.DB.datascriptQuery(queryItem.script)
+        log('[faiz:] === exec your query success:\n', 'green')
+        console.log(res)
+      } catch (error) {
+        log('[faiz:] === exec your query failed:\n', 'red')
+        console.error(error)
+      }
+      console.log('')
+    }
   }
 
   return (
@@ -58,7 +76,12 @@ const QueryModal: React.FC<Partial<{
                       </Col>
                     </Row>
                   </Form.Item>
-                  { index !== 0 && <MinusCircleOutlined className="absolute bottom-4 right-4" onClick={() => remove(field.name)} /> }
+                  <div className="absolute bottom-4 right-4">
+                    <Tooltip title="Execute this query statement in DevTool">
+                      <PlayCircleOutlined onClick={() => onClickPlay(index)} />
+                    </Tooltip>
+                    { index !== 0 && <MinusCircleOutlined className="ml-2" onClick={() => remove(field.name)} /> }
+                  </div>
                 </div>
               ))}
               <Form.Item>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { Modal, Form, Select, Input, Button, Switch } from 'antd'
+import { Modal, Form, Select, Input, Button, Switch, Tooltip, Popconfirm } from 'antd'
 import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { genDefaultQuery, getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/util'
 import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
-import { CALENDAR_VIEWS } from '../util/constants'
+import { CALENDAR_VIEWS, DEFAULT_SETTINGS } from '../util/constants'
 import Query from './Query'
 import CreateCalendarModal from './CreateCalendarModal'
 
@@ -46,10 +46,26 @@ const Settings: React.FC<{
         width={700}
         destroyOnClose
         title="Calendar Setting"
-        okText="Save"
         visible={visible}
-        onCancel={onCancel}
-        onOk={onClickSettingSave}
+        footer={
+          <div className="flex justify-between" onClick={e => e?.stopPropagation?.()}>
+            <Popconfirm
+              title="Are you sure you want to restore default setting?"
+              onConfirm={() => {
+                logseq.updateSettings({ calendarList: 1 })
+                logseq.updateSettings(DEFAULT_SETTINGS)
+                window.location.reload()
+              }}
+              onCancel={() => { }}
+            >
+              <Button type="link" onClick={onCancel}>Restore Defaults</Button>
+            </Popconfirm>
+            <div>
+              <Button onClick={onCancel}>Cancel</Button>
+              <Button type="primary" onClick={onClickSettingSave}>Save</Button>
+            </div>
+          </div>
+        }
       >
         <Form initialValues={initialValues} labelCol={{ span: 7 }} preserve={true} form={settingForm}>
           <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
@@ -64,7 +80,9 @@ const Settings: React.FC<{
           <Form.Item label="Journal Date Formatter" required labelCol={{ span: 9 }}>
             <div className="flex items-center">
               <Form.Item name="journalDateFormatter" noStyle rules={[{ required: true }]} getValueFromEvent={(e) => e.target.value.trim()}><Input /></Form.Item>
-              <QuestionCircleOutlined className="ml-1" onClick={() => logseq.App.openExternalLink('https://day.js.org/docs/en/display/format')} />
+              <Tooltip title="View Formatter's rules">
+                <QuestionCircleOutlined className="ml-1" onClick={() => logseq.App.openExternalLink('https://day.js.org/docs/en/display/format')} />
+              </Tooltip>
             </div>
           </Form.Item>
           <Form.Item label="Log Key" name="logKey" getValueFromEvent={(e) => e.target.value.trim()}>

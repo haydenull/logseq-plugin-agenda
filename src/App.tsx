@@ -147,6 +147,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   }
   const onSettingChange = (values: ISettingsForm) => {
     console.log('[faiz:] === onSettingChange', values)
+    logseq.updateSettings({calendarList: 1})
     logseq.updateSettings(values)
     if (values.weekStartDay !== logseq.settings?.weekStartDay) {
       calendarRef.current?.setOptions({
