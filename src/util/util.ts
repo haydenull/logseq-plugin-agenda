@@ -47,43 +47,43 @@ type IQueryWithCalendar = {
   query: ISettingsFormQuery
 }
 export const getSchedules = async () => {
-  const testQuery = `
-  [:find
-    (pull
-     ?block
-     [:db/id
-      :block/uuid
-      :block/parent
-      :block/left
-      :block/collapsed?
-      :block/format
-      :block/_refs
-      :block/path-refs
-      :block/tags
-      :block/content
-      :block/marker
-      :block/priority
-      :block/properties
-      :block/pre-block?
-      :block/scheduled
-      :block/deadline
-      :block/repeated?
-      :block/created-at
-      :block/updated-at
-      :block/file
-      :block/heading-level
-      {:block/refs
-        [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
-      {:block/page
-       [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
-      {:block/_parent ...}])
-    :where
-    [?page :block/name ?name]
-    [?block :block/page ?page]
-    (not [(contains? #{"高中教务系统"} ?name)])]
-  `
-  const test = await logseq.DB.datascriptQuery(testQuery)
-  console.log('[faiz:] === test', testQuery, test)
+  // const testQuery = `
+  // [:find
+  //   (pull
+  //    ?block
+  //    [:db/id
+  //     :block/uuid
+  //     :block/parent
+  //     :block/left
+  //     :block/collapsed?
+  //     :block/format
+  //     :block/_refs
+  //     :block/path-refs
+  //     :block/tags
+  //     :block/content
+  //     :block/marker
+  //     :block/priority
+  //     :block/properties
+  //     :block/pre-block?
+  //     :block/scheduled
+  //     :block/deadline
+  //     :block/repeated?
+  //     :block/created-at
+  //     :block/updated-at
+  //     :block/file
+  //     :block/heading-level
+  //     {:block/refs
+  //       [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
+  //     {:block/page
+  //      [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
+  //     {:block/_parent ...}])
+  //   :where
+  //   [?page :block/name ?name]
+  //   [?block :block/page ?page]
+  //   (not [(contains? #{"高中教务系统"} ?name)])]
+  // `
+  // const test = await logseq.DB.datascriptQuery(testQuery)
+  // console.log('[faiz:] === test', testQuery, test)
 
   console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
   let calendarSchedules:ISchedule[] = []
@@ -150,8 +150,22 @@ export const getSchedules = async () => {
     })
   })
 
-  const scheduleRes = await Promise.all(queryPromiseList)
-  calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleRes))
+  const scheduleRes = await Promise.allSettled(queryPromiseList)
+  const scheduleResFulfilled:ISchedule[] = []
+  scheduleRes.forEach((res, index) => {
+    if (res.status === 'fulfilled') {
+      scheduleResFulfilled.push(res.value)
+    } else {
+      console.error('[faiz:] === scheduleRes error: ', scheduleQueryList[index], res)
+      const { calendarConfig, query } = scheduleQueryList[index]
+      const msg = `Query Exec Error:
+calendar: ${calendarConfig.id}
+query: ${query.script}
+message: ${res.reason.message}`
+      logseq.App.showMsg(msg, 'error')
+    }
+  })
+  calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleResFulfilled))
 
   // TODO: 同步执行
     // schedule.forEach(async (scheduleConfig, index) => {
