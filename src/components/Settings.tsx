@@ -23,7 +23,6 @@ const Settings: React.FC<{
 
   const onClickSettingSave = () => {
     settingForm.validateFields().then(values => {
-      console.log('[faiz:] === onClickSettingSave', values)
       onOk(values)
     })
   }
@@ -47,14 +46,14 @@ const Settings: React.FC<{
         destroyOnClose
         title="Calendar Setting"
         visible={visible}
+        onCancel={onCancel}
         footer={
           <div className="flex justify-between" onClick={e => e?.stopPropagation?.()}>
             <Popconfirm
               title={<span>Are you sure you want to restore default setting?<br />This is an irreversible operation.</span>}
               onConfirm={() => {
-                logseq.updateSettings({ calendarList: 1 })
-                logseq.updateSettings(DEFAULT_SETTINGS)
-                window.location.reload()
+                settingForm.setFieldsValue(DEFAULT_SETTINGS)
+                onClickSettingSave()
               }}
             >
               <Button type="link">Restore Defaults</Button>
