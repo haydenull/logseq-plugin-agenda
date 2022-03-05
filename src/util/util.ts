@@ -42,82 +42,11 @@ export const getInitalSettings = (): ISettingsForm => {
   }
 }
 
-// {:query
-//   [:find
-//    (pull
-//     ?b
-//     [:db/id
-//      :block/uuid
-//      :block/parent
-//      :block/left
-//      :block/collapsed?
-//      :block/format
-//      :block/refs
-//      :block/_refs
-//      :block/path-refs
-//      :block/tags
-//      :block/content
-//      :block/marker
-//      :block/priority
-//      :block/properties
-//      :block/pre-block?
-//      :block/scheduled
-//      :block/deadline
-//      :block/repeated?
-//      :block/created-at
-//      :block/updated-at
-//      :block/file
-//      :block/heading-level
-//      {:block/page
-//       [:db/id :block/name :block/original-name :block/journal-day]}
-//      {:block/_parent ...}])
-//    :where
-//    [?b :block/path-refs [:block/name "daily log"]]],
-//   :query-string "[[Daily Log]]"}
-
 type IQueryWithCalendar = {
   calendarConfig: ISettingsForm['calendarList'][number]
   query: ISettingsFormQuery
 }
 export const getSchedules = async () => {
-  // const testQuery = `
-  // [:find
-  //   (pull
-  //    ?block
-  //    [:db/id
-  //     :block/uuid
-  //     :block/parent
-  //     :block/left
-  //     :block/collapsed?
-  //     :block/format
-  //     :block/_refs
-  //     :block/path-refs
-  //     :block/tags
-  //     :block/content
-  //     :block/marker
-  //     :block/priority
-  //     :block/properties
-  //     :block/pre-block?
-  //     :block/scheduled
-  //     :block/deadline
-  //     :block/repeated?
-  //     :block/created-at
-  //     :block/updated-at
-  //     :block/file
-  //     :block/heading-level
-  //     {:block/refs
-  //       [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
-  //     {:block/page
-  //      [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
-  //     {:block/_parent ...}])
-  //   :where
-  //   [?page :block/name ?name]
-  //   [?block :block/page ?page]
-  //   (not [(contains? #{"高中教务系统"} ?name)])]
-  // `
-  // const test = await logseq.DB.datascriptQuery(testQuery)
-  // console.log('[faiz:] === test', testQuery, test)
-
   console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
   let calendarSchedules:ISchedule[] = []
 
@@ -210,124 +139,6 @@ message: ${res.reason.message}`
   })
   calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleResFulfilled))
 
-  // TODO: 同步执行
-    // schedule.forEach(async (scheduleConfig, index) => {
-    //   const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter } = scheduleConfig
-    //   if (script.length > 0) {
-    //     const blocks = await logseq.DB.datascriptQuery(script)
-    //     console.log('[faiz:] === schedule blocks', index, blocks)
-    //     calendarSchedules.concat(flattenDeep(blocks).map(block => {
-
-    //       const start = get(block, scheduleStart, undefined)
-    //       const end = get(block, scheduleEnd, undefined)
-    //       let hasTime = /[HhMm]+/.test(dateFormatter || '')
-
-    //       let _start = start && genCalendarDate(start, dateFormatter)
-    //       let _end = end && genCalendarDate(end, dateFormatter)
-    //       if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
-    //         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart}:`))?.trim()
-    //         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
-    //         if (time) {
-    //           _start = dayjs(`${start} ${time}`, 'YYYYMMDD HH:mm').format()
-    //           hasTime = true
-    //         }
-    //       }
-    //       if (end && ['scheduled', 'deadline'].includes(scheduleEnd)) {
-    //         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleEnd}:`))?.trim()
-    //         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
-    //         if (time) {
-    //           _end = dayjs(`${end} ${time}`, 'YYYYMMDD HH:mm').format()
-    //           hasTime = true
-    //         }
-    //       }
-
-    //       let _category: 'time' | 'allday' | 'task' | 'milestone' = hasTime ? 'time' : 'allday'
-    //       if (isOverdue(block, end || start)) _category = 'task'
-
-
-    //       return genSchedule({
-    //         blockData: block,
-    //         category: _category,
-    //         start: _start,
-    //         end: _end,
-    //         calendarConfig: calendar,
-    //       })
-
-    //     }))
-    //   }
-    // })
-  // })
-
-
-
-
-//   const journalCalendar = calendarConfigs.find(calendar => calendar.id === 'journal')
-//   const customCalendarConfigs = calendarConfigs.filter(calendar => calendar.id !== 'journal' && calendar.enabled)
-//   const customCalendarPromises = await Promise.all(customCalendarConfigs.map(calendar => logseq.Editor.getPage(calendar.id)))
-//   const _customCalendarConfigs = customCalendarPromises?.map((pageData, index) => {
-//                                 const pageId = pageData?.id
-//                                 return { ...customCalendarConfigs[index], pageId }
-//                               })
-// const _calendarConfigs = journalCalendar ? [journalCalendar, ..._customCalendarConfigs] : _customCalendarConfigs
-//   console.log('[faiz:] === customCalendarConfigs', _calendarConfigs)
-
-//   // Scheduled and Deadline
-//   const scheduledAndDeadlineBlocks = await logseq.DB.datascriptQuery(`
-//     [:find (pull ?block [*])
-//       :where
-//       (or
-//         [?block :block/scheduled ?d]
-//         [?block :block/deadline ?d])
-//       [(not= ?d "nil")]]
-//   `)
-//   console.log('[faiz:] === scheduledAndDeadlineBlocks', scheduledAndDeadlineBlocks)
-//   calendarSchedules = calendarSchedules.concat(scheduledAndDeadlineBlocks.flat().map(block => {
-//     const scheduledString = block.content?.split('\n')?.find(l => l.startsWith('SCHEDULED:'))?.trim()
-//     const time = / (\d{2}:\d{2})[ >]/.exec(scheduledString)?.[1] || ''
-//     // TODO: show overdue deadline and not done scheduled
-//     if (block.deadline) {
-//       // DEADLINE
-//       return genSchedule({
-//         blockData: block,
-//         category: isOverdue(block, block.deadline) ? 'task' : 'allday',
-//         start: genCalendarDate(block.deadline),
-//         calendarConfigs: _calendarConfigs,
-//       })
-//     } else if (time) {
-//       // SCHEDULED with time
-//       return genSchedule({
-//         blockData: block,
-//         category: isOverdue(block, block.scheduled) ? 'task' : 'time',
-//         start: dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm').format(),
-//         calendarConfigs: _calendarConfigs,
-//       })
-//     } else {
-//       // SCHEDULED without time
-//       return genSchedule({
-//         blockData: block,
-//         category: isOverdue(block, block.scheduled) ? 'task' : 'allday',
-//         start: genCalendarDate(block.scheduled),
-//         calendarConfigs: _calendarConfigs,
-//         isAllDay: true,
-//       })
-//     }
-//   }))
-
-
-//   // Tasks(tasks in journal but without scheduled or deadline)
-//   const tasks = await logseq.DB.q(`(and (task todo later now doing done))`)
-//   const _task = tasks?.filter(block => block?.page?.journalDay && !block.scheduled && !block.deadline) || []
-//   console.log('[faiz:] === tasks', _task)
-//   calendarSchedules = calendarSchedules.concat(_task?.map(block => {
-//     return genSchedule({
-//       blockData: block,
-//       category: isOverdue(block, block.page.journalDay) ? 'task' : 'allday',
-//       start: genCalendarDate(block.page.journalDay),
-//       calendarConfigs: _calendarConfigs,
-//       isJournal: true,
-//     })
-//   }))
-
   // Daily Logs
   // TODO: support end time
   if (logKey) {
@@ -343,13 +154,12 @@ message: ${res.reason.message}`
     console.log('[faiz:] === logs', _logs)
     calendarSchedules = calendarSchedules.concat(_logs?.map(block => {
       const date = block?.page?.journalDay
-      const time = block.content?.substr(0, 5)
-      const hasTime = time.split(':')?.filter(num => !Number.isNaN(Number(num)))?.length === 2
+      const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
       return genSchedule({
         blockData: block,
-        category: hasTime ? 'time' : 'allday',
-        start: hasTime ? dayjs(date + ' ' + time, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
-        // end: hasTime ? day(date + ' ' + time, 'YYYYMMDD HH:mm').add(1, 'hour').format() : day(date, 'YYYYMMDD').add(1, 'day').format(),
+        category: (_startTime || _endTime) ? 'time' : 'allday',
+        start: _startTime ? dayjs(date + ' ' + _startTime, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
+        end: _endTime ? dayjs(date + ' ' + _endTime, 'YYYYMMDD HH:mm').format() : undefined,
         calendarConfig: customCalendarConfigs[0],
       })
     }))
@@ -368,18 +178,10 @@ function genSchedule(params: {
   isAllDay?: boolean
 }) {
   const { blockData, category = 'time', start, end, calendarConfig, isAllDay } = params
-  // const calendarId = calendarConfigs.find(calendar => calendar.pageId === blockData?.page?.id)?.id || 'journal'
-
-  // let calendarConfig = calendarConfigs.find(config => config.id === 'journal')
-  // // if is custom calendar
-  // if (!isJournal && calendarId !== 'journal') {
-  //   calendarConfig = calendarConfigs.find(config => config.id === calendarId)
-  // }
-
   const title = blockData.content
                   .split('\n')[0]
-                  ?.replace(new RegExp(`^${blockData.marker}`), '')
-                  ?.replace(/^\d{2}:\d{2}/, '')
+                  ?.replace(new RegExp(`^${blockData.marker} `), '')
+                  ?.replace(/^(\d{2}:\d{2})(-\d{2}:\d{2})*/, '')
                   ?.trim?.()
   const isDone = blockData.marker === 'DONE'
   return {
@@ -431,6 +233,19 @@ export const isOverdue = (block: any, date: number | string) => {
   }
   // 非 todo 及 done 的 block 不过期
   return false
+}
+
+/**
+ * 提取时间信息
+ * eg: '12:00 foo' => { start: '12:00', end: undefined }
+ * eg: '12:00-13:00 foo' => { start: '12:00', end: '13:00' }
+ * eg: 'foo' => { start: undefined, end: undefined }
+ */
+export const getTimeInfo = (content: string) => {
+  const reg = /^(\d{2}:\d{2})(-\d{2}:\d{2})*/
+  const res = content.match(reg)
+  if (res) return { start: res[1], end: res[2]?.slice(1) }
+  return { start: undefined, end: undefined }
 }
 
 export const initializeSettings = () => {

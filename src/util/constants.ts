@@ -34,10 +34,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   [?block :block/marker ?marker]
   [(missing? $ ?block :block/deadline)]
   (not [(missing? $ ?block :block/scheduled)])
-  [?page :block/name ?pname]
-  [?block :block/page ?page]
-  (not [(contains? #{"高中教务系统"} ?pname)])
-  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
           `,
           scheduleStart: 'scheduled',
           dateFormatter: 'YYYYMMDD',
@@ -49,12 +46,8 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   :where
   [?block :block/marker ?marker]
   [(missing? $ ?block :block/scheduled)]
-  [(get-else $ ?block :block/deadline "nil") ?d]
-  [(not= ?d "nil")]
-  [?page :block/name ?pname]
-  [?block :block/page ?page]
-  (not [(contains? #{"高中教务系统"} ?pname)])
-  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+  (not [(missing? $ ?block :block/deadline)])
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
           `,
           scheduleStart: 'deadline',
           dateFormatter: 'YYYYMMDD',
