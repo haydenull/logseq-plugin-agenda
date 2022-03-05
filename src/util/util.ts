@@ -159,7 +159,7 @@ message: ${res.reason.message}`
         category: (_startTime || _endTime) ? 'time' : 'allday',
         start: _startTime ? dayjs(date + ' ' + _startTime, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
         end: _endTime ? dayjs(date + ' ' + _endTime, 'YYYYMMDD HH:mm').format() : undefined,
-        calendarConfig: customCalendarConfigs[0],
+        calendarConfig: DEFAULT_SETTINGS.calendarList[0],
       })
     }))
   }
