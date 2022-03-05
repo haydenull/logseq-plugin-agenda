@@ -80,7 +80,7 @@ export const getSchedules = async () => {
       let _start = start && genCalendarDate(start, dateFormatter)
       let _end = end && genCalendarDate(end, dateFormatter)
       if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
-        const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart}:`))?.trim()
+        const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
         if (time) {
           _start = dayjs(`${start} ${time}`, 'YYYYMMDD HH:mm').format()
@@ -88,7 +88,7 @@ export const getSchedules = async () => {
         }
       }
       if (end && ['scheduled', 'deadline'].includes(scheduleEnd)) {
-        const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleEnd}:`))?.trim()
+        const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleEnd.toUpperCase()}:`))?.trim()
         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
         if (time) {
           _end = dayjs(`${end} ${time}`, 'YYYYMMDD HH:mm').format()
@@ -140,7 +140,6 @@ message: ${res.reason.message}`
   calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleResFulfilled))
 
   // Daily Logs
-  // TODO: support end time
   if (logKey) {
     const logs = await logseq.DB.q(`[[${logKey}]]`)
     const _logs = logs
@@ -277,7 +276,7 @@ export const genDefaultQuery = (pageName: string) => {
 [?page :block/name ?pname]
 [?block :block/page ?page]
 [(contains? #{"${pageName}"} ?pname)]
-[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
         `,
         scheduleStart: 'scheduled',
         dateFormatter: 'YYYYMMDD',
@@ -294,7 +293,7 @@ export const genDefaultQuery = (pageName: string) => {
 [?page :block/name ?pname]
 [?block :block/page ?page]
 [(contains? #{"${pageName}"} ?pname)]
-[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]]
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
         `,
         scheduleStart: 'deadline',
         dateFormatter: 'YYYYMMDD',

@@ -4,20 +4,21 @@
 [![latest release version](https://img.shields.io/github/v/release/haydenull/logseq-plugin-agenda)](https://github.com/haydenull/logseq-plugin-agenda/releases)
 [![License](https://img.shields.io/github/license/haydenull/logseq-plugin-agenda?color=blue)](https://github.com/haydenull/logseq-plugin-agenda/blob/main/LICENSE)
 
-English | [简体中文](./README-zh_CN.md)
+[English](./README.md) | 简体中文
 
 ## Demo
-### show all task in your notes
+
+### 展示所有笔记中的日程
 ![defaultCalendar](./defaultCalendar.gif)
 
-### create your own calendar
+### 创建自己的日历
 ![customCalendar](./customCalendar.gif)
 
-### show task in your journal
+### 展示日记中的日程
 ![journal](./journal.gif)
 
-### show your daily log
+### 展示每日日志
 ![dailyLog](./dailyLog.gif)
 
-## Settings
-Wait for complete document.
+## 设置
+等待完善文档
