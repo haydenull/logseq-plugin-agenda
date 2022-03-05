@@ -83,7 +83,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   [?block :block/page ?page]
   [?page :block/journal? true]
   [?block :block/marker ?marker]
-  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING"} ?marker)]
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]
   [(missing? $ ?block :block/scheduled)]
   [(missing? $ ?block :block/deadline)]]
           `,
@@ -95,9 +95,6 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
           script: `
 [:find (pull ?block [*])
   :where
-  [?page :block/name ?pname]
-  [?block :block/page ?page]
-  (not [(contains? #{"高中教务系统"} ?pname)])
   [?rp :block/name "milestone"]
   [?block :block/refs ?rp]]
           `,
