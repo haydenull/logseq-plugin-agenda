@@ -20,6 +20,34 @@
 * ✨ add docs ([196d2a7](https://github.com/haydenull/logseq-plugin-agenda/commit/196d2a7c005c1af442adcb5f302e0400fb7cf010))
 * ✨ add exec query btton [skip ci] ([4ebb51f](https://github.com/haydenull/logseq-plugin-agenda/commit/4ebb51fdd6eedb84a0f0929596af60bc49568641))
 * ✨ add textColor picker[skip ci] ([6001967](https://github.com/haydenull/logseq-plugin-agenda/commit/6001967813facf182d4ec94c195d4533c8524c7b))
+* ✨ ensure log calendar has style ([6c41748](https://github.com/haydenull/logseq-plugin-agenda/commit/6c417487fa21eb7dbcdda714fe5caf9fa0bb2d2c))
+* ✨ 集成 tui-calendar ([09f16b6](https://github.com/haydenull/logseq-plugin-agenda/commit/09f16b6f6e8d68527f4bbe5f91a531b1bcf453f4))
+* add overdue [skip ci] ([f7368c8](https://github.com/haydenull/logseq-plugin-agenda/commit/f7368c801db24dc10064f8ffb1225be9c5729e07))
+* add setting modal ([5152b47](https://github.com/haydenull/logseq-plugin-agenda/commit/5152b4759bde0ba25e110eb888899ef20f9f4996))
+* show daily log in calendar ([9b6971e](https://github.com/haydenull/logseq-plugin-agenda/commit/9b6971ee0f2d67c88893ba23467efc7fcb083794))
+
+# 1.0.0 (2022-03-05)
+
+
+### Bug Fixes
+
+* [skip ci] fix isOverdue error ([a4575e4](https://github.com/haydenull/logseq-plugin-agenda/commit/a4575e40a5fd88ef089eec8286f54290924cb9b7))
+* 🐛 [skip ci] restore button close settings modal ([9544979](https://github.com/haydenull/logseq-plugin-agenda/commit/9544979e3362321290e6fe1221ee2eca49d61bfd))
+* 🐛 2week default view init error[skip ci] ([a063155](https://github.com/haydenull/logseq-plugin-agenda/commit/a063155ab1c3869425c9983ea27e033d1ea3f168))
+* remove default filter page[skip ci] ([5f581ca](https://github.com/haydenull/logseq-plugin-agenda/commit/5f581ca114e75b8d09080dadac0b492f04e6b88b))
+* settings close & restore defaults[skip ci] ([4d89085](https://github.com/haydenull/logseq-plugin-agenda/commit/4d89085a27632082b54fae7af82016b8bc4519d0))
+
+
+### Features
+
+* [skip ci] daily log add time range ([4c9ca92](https://github.com/haydenull/logseq-plugin-agenda/commit/4c9ca92dd5192ac4e2158359be676576fc13fb41))
+* [skip ci] show overdue in today, show DONE status ([f793eb1](https://github.com/haydenull/logseq-plugin-agenda/commit/f793eb18ecb071dc3cb00712f5e48637ec867a69))
+* ✨ [skip ci] change logo ([50e9152](https://github.com/haydenull/logseq-plugin-agenda/commit/50e9152b17ac41daaf37514ce2fff38c024abd8d))
+* ✨ [skip ci]add default calendar query ([83c64c5](https://github.com/haydenull/logseq-plugin-agenda/commit/83c64c57309e2d8382e6f775d94cad0381120337))
+* ✨ add categorys input [skip ci] ([9e16b14](https://github.com/haydenull/logseq-plugin-agenda/commit/9e16b148ff1515ac188f00c688641fe048bff9a9))
+* ✨ add docs ([196d2a7](https://github.com/haydenull/logseq-plugin-agenda/commit/196d2a7c005c1af442adcb5f302e0400fb7cf010))
+* ✨ add exec query btton [skip ci] ([4ebb51f](https://github.com/haydenull/logseq-plugin-agenda/commit/4ebb51fdd6eedb84a0f0929596af60bc49568641))
+* ✨ add textColor picker[skip ci] ([6001967](https://github.com/haydenull/logseq-plugin-agenda/commit/6001967813facf182d4ec94c195d4533c8524c7b))
 * ✨ 集成 tui-calendar ([09f16b6](https://github.com/haydenull/logseq-plugin-agenda/commit/09f16b6f6e8d68527f4bbe5f91a531b1bcf453f4))
 * add overdue [skip ci] ([f7368c8](https://github.com/haydenull/logseq-plugin-agenda/commit/f7368c801db24dc10064f8ffb1225be9c5729e07))
 * add setting modal ([5152b47](https://github.com/haydenull/logseq-plugin-agenda/commit/5152b4759bde0ba25e110eb888899ef20f9f4996))
