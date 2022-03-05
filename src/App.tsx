@@ -82,7 +82,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       //   category: 'time',
       //   dueDateClass: '',
       //   start: day().format(),
-      //   // isAllDay: true,
+      //   isAllDay: true,
       //   body: 'Daily Log test detail\n123',
       // }, {
       //   id: '1',
@@ -93,6 +93,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       //   start: day().format(),
       //   // isAllDay: true,
       //   body: 'Daily Log test detail\n123',
+      //   customStyle: 'opacity: 0.6;',
       // }])
 
       calendar.render()

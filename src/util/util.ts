@@ -169,17 +169,27 @@ export const getSchedules = async () => {
 
       let _category: ICategory = hasTime ? 'time' : 'allday'
       if (isMilestone) _category = 'milestone'
-      if (!isMilestone && isOverdue(block, end || start)) _category = 'task'
+      const _isOverdue = isOverdue(block, end || start)
+      if (!isMilestone && _isOverdue) _category = 'task'
 
-
-      return genSchedule({
+      const schedule = genSchedule({
         blockData: block,
         category: _category,
         start: _start,
         end: _end,
         calendarConfig,
       })
-
+      // show overdue tasks in today
+      return _isOverdue
+        ? [
+          schedule,
+          genSchedule({
+            blockData: block,
+            category: _category,
+            calendarConfig,
+          })
+        ]
+        : schedule
     })
   })
 
@@ -371,7 +381,7 @@ function genSchedule(params: {
                   ?.replace(new RegExp(`^${blockData.marker}`), '')
                   ?.replace(/^\d{2}:\d{2}/, '')
                   ?.trim?.()
-
+  const isDone = blockData.marker === 'DONE'
   return {
     id: blockData.id,
     calendarId: calendarConfig.id,
@@ -386,6 +396,7 @@ function genSchedule(params: {
     bgColor: calendarConfig?.bgColor,
     borderColor: calendarConfig?.borderColor,
     isAllDay,
+    customStyle: isDone ? 'opacity: 0.65;' : '',
   }
 }
 
