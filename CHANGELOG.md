@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.0.0...v1.1.0) (2022-03-07)
+
+
+### Features
+
+* 24H format in week and daily view ([69e6916](https://github.com/haydenull/logseq-plugin-agenda/commit/69e6916834bcd80c4669408f478813d98fdbf4a7))
+
 # 1.0.0 (2022-03-05)
 
 
