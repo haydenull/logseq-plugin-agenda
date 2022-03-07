@@ -39,7 +39,7 @@ const QueryModal: React.FC<Partial<{
     <Modal
       {...props}
       width={980}
-      title={`${calendarId} Calendar Query`}
+      title="Calendar Query"
       visible={visible}
       onCancel={onCancel}
       onOk={onSave}

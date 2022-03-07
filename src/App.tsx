@@ -30,7 +30,7 @@ const getDefaultOptions = () => {
       scheduleFilter: (schedule: ISchedule) => {
         return Boolean(schedule.isVisible)
       },
-      visibleWeeksCount: logseq.settings?.defaultView === '2week' ? 2 : 6,
+      visibleWeeksCount: logseq.settings?.defaultView === '2week' ? 2 : undefined,
     },
     template: {
       taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
@@ -133,7 +133,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       calendarRef.current?.changeView('month')
       calendarRef.current?.setOptions({
         month: {
-          visibleWeeksCount: 6,
+          visibleWeeksCount: undefined,
         },
       })
     } else {
