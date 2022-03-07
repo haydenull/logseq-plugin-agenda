@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Select } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined } from '@ant-design/icons'
-import day from 'dayjs'
+import dayjs from 'dayjs'
 import { getSchedules, ISettingsForm } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
@@ -35,6 +35,11 @@ const getDefaultOptions = () => {
     template: {
       taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
       task: (schedule: ISchedule) => '🔥' + schedule.title,
+      timegridDisplayPrimayTime: function(time) {
+        // will be deprecated. use 'timegridDisplayPrimaryTime'
+        if (time.hour < 10) return '0' + time.hour + ':00'
+        return time.hour + ':00'
+      },
       popupDetailBody: (schedule: ISchedule) => {
         return schedule.body?.split('\n').join('<br/>') + '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
       },
@@ -59,8 +64,8 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const changeShowDate = () => {
     if (calendarRef.current) {
-      const dateRangeStart = day(calendarRef.current.getDateRangeStart().getTime())
-      const dateRangeEnd = day(calendarRef.current.getDateRangeEnd().getTime())
+      const dateRangeStart = dayjs(calendarRef.current.getDateRangeStart().getTime())
+      const dateRangeEnd = dayjs(calendarRef.current.getDateRangeEnd().getTime())
       if (dateRangeStart.isSame(dateRangeEnd, 'day')) {
         setShowDate(dateRangeStart.format(SHOW_DATE_FORMAT))
       } else {
@@ -81,19 +86,25 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       //   title: 'Daily Log test',
       //   category: 'time',
       //   dueDateClass: '',
-      //   start: day().format(),
+      //   start: dayjs().format(),
       //   isAllDay: true,
       //   body: 'Daily Log test detail\n123',
+      //   bgColor: '#7ed3fd',
+      //   color: '#222',
+      //   borderColor: '#98dbfd',
       // }, {
       //   id: '1',
       //   calendarId: 'journal',
       //   title: 'Daily Log foo',
       //   category: 'time',
       //   dueDateClass: '',
-      //   start: day().format(),
+      //   start: dayjs().format(),
       //   // isAllDay: true,
       //   body: 'Daily Log test detail\n123',
-      //   customStyle: 'opacity: 0.6;',
+      //   bgColor: '#7ed3fd',
+      //   color: '#333',
+      //   borderColor: '#98dbfd',
+      //   // customStyle: 'opacity: 0.6;',
       // }])
 
       calendar.render()

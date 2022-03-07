@@ -107,6 +107,14 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   ],
 }
 
+export const DAILY_LOG_CONFIG = {
+  id: 'log',
+  bgColor: '#e5f5fd',
+  textColor: '#111',
+  borderColor: '#e5f5fd',
+  enabled: true,
+}
+
 export const CALENDAR_THEME = {
   // month day grid cell 'day'
   'month.holidayExceptThisMonth.color': '#f3acac',

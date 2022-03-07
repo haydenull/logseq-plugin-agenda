@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { flattenDeep, get } from 'lodash'
 import en from 'dayjs/locale/en'
 import { ISchedule } from 'tui-calendar'
-import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_LOG_KEY, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
+import { DAILY_LOG_CONFIG, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_LOG_KEY, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
 
 dayjs.locale({
   ...en,
@@ -160,6 +160,7 @@ message: ${res.reason.message}`
         start: _startTime ? dayjs(date + ' ' + _startTime, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
         end: _endTime ? dayjs(date + ' ' + _endTime, 'YYYYMMDD HH:mm').format() : undefined,
         calendarConfig: DEFAULT_SETTINGS.calendarList[0],
+        // calendarConfig: DAILY_LOG_CONFIG as ISettingsForm['calendarList'][number],
       })
     }))
   }
