@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.1.0...v1.1.1) (2022-03-07)
+
+
+### Bug Fixes
+
+* 🐛 month view date dange error ([f7f7628](https://github.com/haydenull/logseq-plugin-agenda/commit/f7f762815d215980cd13117db0b42e0e52b7e904))
+
 # [1.1.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.0.0...v1.1.0) (2022-03-07)
 
 
