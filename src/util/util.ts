@@ -207,7 +207,7 @@ function genSchedule(params: {
  */
 export const getWeekly = async (startDate, endDate) => {
   const keyword = logseq.settings?.logKey || DEFAULT_LOG_KEY
-  const journalFormat = logseq.settings?.journalFormat || DEFAULT_JOURNAL_FORMAT
+  const journalFormat = logseq.settings?.journalDateFormatter || DEFAULT_JOURNAL_FORMAT
   const _start = dayjs(startDate, SHOW_DATE_FORMAT).format(journalFormat)
   const _end = dayjs(endDate, SHOW_DATE_FORMAT).format(journalFormat)
   const logs = await logseq.DB.q(`(and [[${keyword}]] (between [[${_start}]] [[${_end}]]))`)
