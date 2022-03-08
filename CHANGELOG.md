@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.1.1...v1.1.2) (2022-03-08)
+
+
+### Bug Fixes
+
+* 🐛 fix export weekly query format error ([6b559ca](https://github.com/haydenull/logseq-plugin-agenda/commit/6b559ca6fb3aa0f80eeaf7bc6a9502b96a538453))
+
 ## [1.1.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.1.0...v1.1.1) (2022-03-07)
 
 
