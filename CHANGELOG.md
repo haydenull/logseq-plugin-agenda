@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.2.0...v1.3.0) (2022-03-09)
+
+
+### Features
+
+* ✨ support dark mode ([8883ce1](https://github.com/haydenull/logseq-plugin-agenda/commit/8883ce1cfa6a353f6760bfe11bbe2141f63281d7))
+
 # [1.2.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.1.2...v1.2.0) (2022-03-09)
 
 
