@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { flattenDeep, get } from 'lodash'
 import en from 'dayjs/locale/en'
 import { ISchedule } from 'tui-calendar'
-import { DAILY_LOG_CONFIG, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_LOG_KEY, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
+import { DAILY_LOG_CONFIG, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
 
 dayjs.locale({
   ...en,
@@ -25,7 +25,13 @@ export type ISettingsForm = {
   defaultView: string
   weekStartDay: 0 | 1
   journalDateFormatter: string
-  logKey: string
+  logKey?: {
+    id: string
+    bgColor: string
+    textColor: string
+    borderColor: string
+    enabled: boolean
+  }
   calendarList: {
     id: string
     bgColor: string
@@ -36,9 +42,18 @@ export type ISettingsForm = {
   }[]
 }
 export const getInitalSettings = (): ISettingsForm => {
+  let logKey = logseq.settings?.logKey
+  // 适配 logKey 参数变化
+  if (typeof logKey === 'string') {
+    logKey = {
+      ...DEFAULT_SETTINGS.logKey,
+      id: logKey,
+    }
+  }
   return {
     ...DEFAULT_SETTINGS,
     ...logseq.settings,
+    logKey,
   }
 }
 
@@ -140,10 +155,10 @@ message: ${res.reason.message}`
   calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleResFulfilled))
 
   // Daily Logs
-  if (logKey) {
-    const logs = await logseq.DB.q(`[[${logKey}]]`)
+  if (logKey?.enabled) {
+    const logs = await logseq.DB.q(`[[${logKey.id}]]`)
     const _logs = logs
-                  ?.filter(block => block.content?.trim() === `[[${logKey}]]`)
+                  ?.filter(block => block.content?.trim() === `[[${logKey.id}]]`)
                   ?.map(block => Array.isArray(block.parent) ? block.parent : [])
                   ?.flat()
                   ?.filter(block => {
@@ -159,8 +174,7 @@ message: ${res.reason.message}`
         category: (_startTime || _endTime) ? 'time' : 'allday',
         start: _startTime ? dayjs(date + ' ' + _startTime, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
         end: _endTime ? dayjs(date + ' ' + _endTime, 'YYYYMMDD HH:mm').format() : undefined,
-        calendarConfig: DEFAULT_SETTINGS.calendarList[0],
-        // calendarConfig: DAILY_LOG_CONFIG as ISettingsForm['calendarList'][number],
+        calendarConfig: logKey,
       })
     }))
   }
@@ -174,7 +188,7 @@ function genSchedule(params: {
   category: ICategory
   start?: string
   end?:string
-  calendarConfig: ISettingsForm['calendarList'][number]
+  calendarConfig: Omit<ISettingsForm['calendarList'][number], 'query'>
   isAllDay?: boolean
 }) {
   const { blockData, category = 'time', start, end, calendarConfig, isAllDay } = params
@@ -206,7 +220,7 @@ function genSchedule(params: {
  * 获取周报
  */
 export const getWeekly = async (startDate, endDate) => {
-  const keyword = logseq.settings?.logKey || DEFAULT_LOG_KEY
+  const keyword = logseq.settings?.logKey?.id || DEFAULT_SETTINGS.logKey?.id
   const journalFormat = logseq.settings?.journalDateFormatter || DEFAULT_JOURNAL_FORMAT
   const _start = dayjs(startDate, SHOW_DATE_FORMAT).format(journalFormat)
   const _end = dayjs(endDate, SHOW_DATE_FORMAT).format(journalFormat)

@@ -83,8 +83,25 @@ const Settings: React.FC<{
               </Tooltip>
             </div>
           </Form.Item>
-          <Form.Item label="Log Key" name="logKey" getValueFromEvent={(e) => e.target.value.trim()}>
-            <Input />
+          <Form.Item label="Log Key" required>
+            <div className="flex items-center justify-between">
+              <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
+                <Input style={{ width: '110px' }} />
+              </Form.Item>
+              <Form.Item name={['logKey', 'bgColor']} noStyle rules={[{ required: true }]}>
+                <ColorPicker text="background" />
+              </Form.Item>
+              <Form.Item name={['logKey', 'textColor']} noStyle rules={[{ required: true }]}>
+                <ColorPicker text="text" />
+              </Form.Item>
+              <Form.Item name={['logKey', 'borderColor']} noStyle rules={[{ required: true }]}>
+                <ColorPicker text="border" />
+              </Form.Item>
+              <Form.Item name={['logKey', 'enabled']} noStyle valuePropName="checked">
+                <Switch size="small" />
+              </Form.Item>
+              <div style={{ width: '60px' }}></div>
+            </div>
           </Form.Item>
           <Form.List name="calendarList">
             {(fields, { add, remove }) => (<>

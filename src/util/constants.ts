@@ -17,7 +17,13 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   defaultView: 'month',
   weekStartDay: 0,
   journalDateFormatter: 'YYYY-MM-DD ddd',
-  logKey: 'Daily Log',
+  logKey: {
+    id: DEFAULT_LOG_KEY,
+    bgColor: '#047857',
+    textColor: '#fff',
+    borderColor: '#047857',
+    enabled: true,
+  },
   calendarList: [
     {
       id: 'journal',

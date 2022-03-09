@@ -53,7 +53,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
   const [showDate, setShowDate] = useState<string>()
-  const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey) && logseq.settings?.defaultView === 'week')
+  const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
   const [weeklyModal, setWeeklyModal] = useState<{
     visible: boolean
     start?: string
@@ -140,7 +140,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       calendarRef.current?.changeView(value)
     }
     changeShowDate()
-    setShowExportWeekly(logseq.settings?.logKey && value === 'week')
+    setShowExportWeekly(logseq.settings?.logKey?.enabled && value === 'week')
   }
   const onClickToday = () => {
     calendarRef.current?.today()
@@ -171,7 +171,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         },
       })
     }
-    setShowExportWeekly(Boolean(values.logKey) && currentView === 'week')
+    setShowExportWeekly(Boolean(values.logKey?.enabled) && currentView === 'week')
     // if (values.logKey !== logseq.settings?.logKey) setSchedules()
 
     // exec after 500ms to make sure the settings are updated
