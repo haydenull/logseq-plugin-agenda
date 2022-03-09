@@ -7,7 +7,6 @@ import { getSchedules, ISettingsForm, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
-import 'antd/dist/antd.css'
 import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 
