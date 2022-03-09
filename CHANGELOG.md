@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.1.2...v1.2.0) (2022-03-09)
+
+
+### Features
+
+* support style config for log event ([d920c5c](https://github.com/haydenull/logseq-plugin-agenda/commit/d920c5c78cd9b05c55205ef4ef920df9af2ba5cc))
+
 ## [1.1.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.1.1...v1.1.2) (2022-03-08)
 
 
