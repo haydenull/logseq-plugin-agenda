@@ -4,7 +4,7 @@ import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-
 import { genDefaultQuery, getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/util'
 import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
-import { CALENDAR_VIEWS, DEFAULT_SETTINGS } from '../util/constants'
+import { CALENDAR_VIEWS, DEFAULT_SETTINGS, THEME } from '../util/constants'
 import Query from './Query'
 import CreateCalendarModal from './CreateCalendarModal'
 
@@ -66,6 +66,9 @@ const Settings: React.FC<{
         }
       >
         <Form initialValues={initialValues} labelCol={{ span: 7 }} preserve={true} form={settingForm}>
+          <Form.Item label="Theme" name="theme">
+            <Select options={THEME} />
+          </Form.Item>
           <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
             <Select options={CALENDAR_VIEWS} />
           </Form.Item>

@@ -22,6 +22,7 @@ export type ISettingsFormQuery = Partial<{
   isMilestone: boolean
 }>
 export type ISettingsForm = {
+  theme?: 'light' | 'dark' | 'auto'
   defaultView: string
   weekStartDay: 0 | 1
   journalDateFormatter: string
@@ -333,3 +334,20 @@ export const genDefaultQuery = (pageName: string) => {
 }
 
 export const log = (msg, color='blue') => console.log(`%c${msg}`, `color:${color}`)
+
+export const setPluginTheme = (theme: 'dark' | 'light') => {
+  const html = document.querySelector('html')
+  if (theme === 'dark') {
+    html?.classList.add('dark')
+  } else {
+    html?.classList.remove('dark')
+  }
+}
+export const managePluginTheme = async () => {
+  const { theme } = logseq.settings as ISettingsForm & {disabled: boolean}
+  if (theme === 'dark') return setPluginTheme('dark')
+  if (theme === 'light') return setPluginTheme('light')
+
+  const logseqTheme = await logseq.App.getStateFromStore<'dark' | 'light'>('ui/theme')
+  setPluginTheme(logseqTheme)
+}

@@ -7,3 +7,10 @@ html, body {
 #root {
   @apply w-screen h-screen;
 }
+
+.dark {
+  filter: invert(1) hue-rotate(180deg);
+}
+.dark .mask {
+  filter: invert(1) hue-rotate(180deg);
+}

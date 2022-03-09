@@ -3,7 +3,7 @@ import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Select } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { getSchedules, ISettingsForm } from './util/util'
+import { getSchedules, ISettingsForm, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
@@ -175,11 +175,15 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     // if (values.logKey !== logseq.settings?.logKey) setSchedules()
 
     // exec after 500ms to make sure the settings are updated
-    setTimeout(() => setSchedules(), 500)
+    setTimeout(() => {
+      managePluginTheme()
+      setSchedules()
+    }, 500)
     setSettingModal(false)
   }
 
   useEffect(() => {
+    managePluginTheme()
     calendarRef.current = new Calendar('#calendar', {
       ...DEFAULT_OPTIONS,
       // template: {
@@ -220,7 +224,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   return (
     <div className="w-screen h-screen flex items-center justify-center">
-      <div className="w-screen h-screen fixed top-0 left-0 bg-black bg-opacity-50" onClick={() => logseq.hideMainUI()}></div>
+      <div className="mask w-screen h-screen fixed top-0 left-0 bg-black bg-opacity-50" onClick={() => logseq.hideMainUI()}></div>
       <div className="w-5/6 flex flex-col overflow-hidden bg-white relative rounded text-black p-3">
         <div className="mb-2 flex items-center justify-between">
           <div>

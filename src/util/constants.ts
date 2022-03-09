@@ -13,7 +13,14 @@ export const CALENDAR_VIEWS = [
   { value: 'month', label: 'Monthly' },
 ]
 
+export const THEME = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'auto', label: 'Auto' },
+]
+
 export const DEFAULT_SETTINGS: ISettingsForm = {
+  theme: 'auto',
   defaultView: 'month',
   weekStartDay: 0,
   journalDateFormatter: 'YYYY-MM-DD ddd',
