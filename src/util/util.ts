@@ -159,7 +159,12 @@ message: ${res.reason.message}`
   if (logKey?.enabled) {
     const logs = await logseq.DB.q(`[[${logKey.id}]]`)
     const _logs = logs
-                  ?.filter(block => block.content?.trim() === `[[${logKey.id}]]`)
+                  ?.filter(block => {
+                    if (block.headingLevel && block.format === 'markdown') {
+                      block.content = block.content.replace(new RegExp(`^#{${block.headingLevel}} `), '')
+                    }
+                    return block.content?.trim() === `[[${logKey.id}]]`
+                  })
                   ?.map(block => Array.isArray(block.parent) ? block.parent : [])
                   ?.flat()
                   ?.filter(block => {
