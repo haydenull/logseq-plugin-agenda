@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.3.0...v1.3.1) (2022-03-10)
+
+
+### Bug Fixes
+
+* Identidy heading logKey ([27281b3](https://github.com/haydenull/logseq-plugin-agenda/commit/27281b3c53e3e6e8fd48b9cbd055ad064bcbaa14))
+
 # [1.3.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.2.0...v1.3.0) (2022-03-09)
 
 
