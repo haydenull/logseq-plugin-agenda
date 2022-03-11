@@ -26,6 +26,10 @@ export type ISettingsForm = {
   defaultView: string
   weekStartDay: 0 | 1
   journalDateFormatter: string
+  defaultDuration: {
+    unit: string
+    value: number
+  },
   logKey?: {
     id: string
     bgColor: string
@@ -67,7 +71,7 @@ export const getSchedules = async () => {
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
-  const { calendarList: calendarConfigs = [], logKey } = getInitalSettings()
+  const { calendarList: calendarConfigs = [], logKey, defaultDuration } = getInitalSettings()
   const customCalendarConfigs = calendarConfigs.filter(config => config.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
@@ -196,14 +200,22 @@ function genSchedule(params: {
   end?:string
   calendarConfig: Omit<ISettingsForm['calendarList'][number], 'query'>
   isAllDay?: boolean
+  defaultDuration?: ISettingsForm['defaultDuration']
 }) {
-  const { blockData, category = 'time', start, end, calendarConfig, isAllDay } = params
+  const { blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration } = params
   const title = blockData.content
                   .split('\n')[0]
                   ?.replace(new RegExp(`^${blockData.marker} `), '')
                   ?.replace(/^(\d{2}:\d{2})(-\d{2}:\d{2})*/, '')
                   ?.trim?.()
   const isDone = blockData.marker === 'DONE'
+
+  const { defaultDuration: _defaultDuration } = DEFAULT_SETTINGS
+  let _end = end
+  if (category === 'time' && !end && defaultDuration) {
+    _end = dayjs(start).add(defaultDuration.value | _defaultDuration.value, defaultDuration.unit || _defaultDuration.unit).format()
+  }
+
   return {
     id: blockData.id,
     calendarId: calendarConfig.id,
@@ -212,7 +224,7 @@ function genSchedule(params: {
     category,
     dueDateClass: '',
     start,
-    end,
+    end: _end,
     raw: blockData,
     color: calendarConfig?.textColor,
     bgColor: calendarConfig?.bgColor,

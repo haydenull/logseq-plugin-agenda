@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import { Modal, Form, Select, Input, Button, Switch, Tooltip, Popconfirm } from 'antd'
+import { Modal, Form, Select, Input, Button, Switch, Tooltip, Popconfirm, InputNumber } from 'antd'
 import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { genDefaultQuery, getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/util'
 import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
-import { CALENDAR_VIEWS, DEFAULT_SETTINGS, THEME } from '../util/constants'
+import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, THEME } from '../util/constants'
 import Query from './Query'
 import CreateCalendarModal from './CreateCalendarModal'
 
@@ -85,6 +85,15 @@ const Settings: React.FC<{
                 <QuestionCircleOutlined className="ml-1" onClick={() => logseq.App.openExternalLink('https://day.js.org/docs/en/display/format')} />
               </Tooltip>
             </div>
+          </Form.Item>
+          <Form.Item label="Default Duration" name={["defaultDuration", 'value']}>
+            <InputNumber
+              addonAfter={
+                <Form.Item name={["defaultDuration", 'unit']} noStyle>
+                  <Select style={{ width: 80 }} options={DURATION_UNITS} />
+                </Form.Item>
+              }
+            />
           </Form.Item>
           <Form.Item label="Log Key" required>
             <div className="flex items-center justify-between">

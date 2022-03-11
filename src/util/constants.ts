@@ -24,6 +24,10 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   defaultView: 'month',
   weekStartDay: 0,
   journalDateFormatter: 'YYYY-MM-DD ddd',
+  defaultDuration: {
+    value: 0.5,
+    unit: 'hour',
+  },
   logKey: {
     id: DEFAULT_LOG_KEY,
     bgColor: '#047857',
@@ -182,3 +186,12 @@ export const CALENDAR_THEME = {
 }
 
 export const DEFAULT_BLOCK_DEADLINE_DATE_FORMAT = "YYYYMMDD"
+
+export const DURATION_UNITS = [
+  { value: 'd', label: 'day' },
+  { value: 'w', label: 'week' },
+  { value: 'M', label: 'month' },
+  { value: 'y', label: 'year' },
+  { value: 'h', label: 'hour' },
+  { value: 'm', label: 'minute' },
+]
