@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.3.1...v1.4.0) (2022-03-11)
+
+
+### Features
+
+* ✨ add full screen btn & support custom duration ([87eaf1f](https://github.com/haydenull/logseq-plugin-agenda/commit/87eaf1fbfa361093d3445f17e3e163e2ae88996e))
+
 ## [1.3.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.3.0...v1.3.1) (2022-03-10)
 
 
