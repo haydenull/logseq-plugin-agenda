@@ -10,7 +10,7 @@
 
 我们将带有 `"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"` 的笔记称作任务。
 ### 展示所有笔记中的日程
-![defaultCalendar](./defaultCalendar.gif)
+![defaultCalendar](./screenshots/defaultCalendar.gif)
 journal 日历会收集所有设置了`scheduled` 或 `deadline`的任务，并且以`scheduled` `deadline`为开始时间。
 
 当 `scheduled` `deadline` 设置了时间时, 会认为是 `time` 日程。会显示在时间线中。
@@ -18,16 +18,16 @@ journal 日历会收集所有设置了`scheduled` 或 `deadline`的任务，并�
 否则认为是 `allday` 日程。
 
 ### 创建自己的日历
-![customCalendar](./customCalendar.gif)
+![customCalendar](./screenshots/customCalendar.gif)
 
 ### 展示日记中的日程
-![journal](./journal.gif)
+![journal](./screenshots/journal.gif)
 journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的任务，并且以 journals 的日期为任务时间。
 
 它会被认作 `allday` 任务。
 
 ### 展示每日日志
-![dailyLog](./dailyLog.gif)
+![dailyLog](./screenshots/dailyLog.gif)
 
 ## 设置
 
@@ -59,7 +59,7 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 
 #### 默认日历 journal
 
-![journalCalendar](./JournalCalendar.png)
+![journalCalendar](./screenshots/JournalCalendar.png)
 
 默认的 journal 日历将会收集以下信息并展示在日历中:
 1. 所有有 scheduled 或 deadline 的任务(使用 `scheduled` `deadline` 作为任务计划时间)
@@ -71,4 +71,44 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 
 > 所有日历的 query 都是开放可修改的, 你可以根据需求自己定制
 
-等待完善文档
+那么如何定制自己的日历呢?
+
+答案是新建日历,然后修改 [query](https://logseq.github.io/#/page/advanced%20queries)
+
+插件会以填写的 query script 作为参数调用[logseq.DB.datascriptQuery](https://logseq.github.io/plugins/interfaces/IDBProxy.html#datascriptQuery) API, 然后将结果展示在日历中.
+
+让我来解释一下有哪些配置项:
+1. `script`: 作为 datascriptQuery 的参数, 查询所有符合要求的 block
+2. `schedule start`: datascriptQuery 查询的 block 取出 `schedule start` 指定的字段作为 schedule 开始时间
+3. `schedule end`: datascriptQuery 查询的 block 取出 `schedule end` 指定的字段作为 schedule 结束时间
+4. `date formatter`: 日期格式, 以此为参数使用 [dayjs](https://day.js.org/docs/en/display/format) 将 `schedule start` `schedule end` 转换为日期
+5. `is milestone`: 是否是里程碑, 如果是, 则会展示在日历 Milestone 中
+
+示例:
+
+当前我们有一个 test-agenda 的笔记:
+
+其中 custom calenda demo 具有 start end 属性, 我们想让它显示在日历中,而 common text 不显示.
+
+![test-agenda](./screenshots/test-agenda.png)
+
+我们使用如下 query script 查询位于 test-agenda 页面中的 block:
+
+```clojure
+[:find (pull ?block [*])
+:where
+[?block :block/properties ?p]
+[(get ?p :start) ?s]
+[(get ?p :end) ?e]
+[?page :block/name ?pname]
+[?block :block/page ?page]
+[(contains? #{"test-agenda"} ?pname)]]
+```
+
+完整配置如下图:
+
+![customQuery](./screenshots/customQuery.png)
+
+那么最终日历中会显示以下内容:
+
+![customCalendar](./screenshots/customQueryCalendar.png)

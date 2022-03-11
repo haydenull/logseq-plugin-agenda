@@ -77,7 +77,7 @@ const QueryModal: React.FC<Partial<{
                     </Row>
                   </Form.Item>
                   <div className="absolute bottom-4 right-4">
-                    <Tooltip title="Execute this query statement in DevTool">
+                    <Tooltip title="Execute this query statement in DevTools">
                       <PlayCircleOutlined onClick={() => onClickPlay(index)} />
                     </Tooltip>
                     { index !== 0 && <MinusCircleOutlined className="ml-2" onClick={() => remove(field.name)} /> }

@@ -98,7 +98,7 @@ export const getSchedules = async () => {
       let hasTime = /[Hhm]+/.test(dateFormatter || '')
 
       let _start = start && genCalendarDate(start, dateFormatter)
-      let _end = end && genCalendarDate(end, dateFormatter)
+      let _end = end && (hasTime ? genCalendarDate(end, dateFormatter) : dayjs(end, dateFormatter).endOf('day').format())
       if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
@@ -224,7 +224,7 @@ function genSchedule(params: {
   return {
     id: blockData.id,
     calendarId: calendarConfig.id,
-    title,
+    title: isDone ? `✅${title}` : title,
     body: blockData.content,
     category,
     dueDateClass: '',
@@ -235,7 +235,7 @@ function genSchedule(params: {
     bgColor: calendarConfig?.bgColor,
     borderColor: calendarConfig?.borderColor,
     isAllDay,
-    customStyle: isDone ? 'opacity: 0.65;' : '',
+    customStyle: isDone ? 'opacity: 0.6;' : '',
   }
 }
 

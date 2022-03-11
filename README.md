@@ -9,7 +9,7 @@ English | [简体中文](./README-zh_CN.md)
 ## Demo
 We will call notes with `"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"` as tasks.
 ### show all task in your notes
-![defaultCalendar](./defaultCalendar.gif)
+![defaultCalendar](./screenshots/defaultCalendar.gif)
 journal calendar will collect all tasks with `scheduled` or `deadline` and start time is `scheduled` or `deadline`.
 
 When `scheduled` `deadline` set time, it will be treated as `time` agenda. It will be shown in time line.
@@ -17,13 +17,13 @@ When `scheduled` `deadline` set time, it will be treated as `time` agenda. It wi
 Otherwise, it will be treated as `all day` agenda.
 
 ### create your own calendar
-![customCalendar](./customCalendar.gif)
+![customCalendar](./screenshots/customCalendar.gif)
 
 ### show task in your journal
-![journal](./journal.gif)
+![journal](./screenshots/journal.gif)
 
 ### show your daily log
-![dailyLog](./dailyLog.gif)
+![dailyLog](./screenshots/dailyLog.gif)
 
 ## Settings
 
@@ -53,7 +53,7 @@ There are three situations:
 ### Calendars
 
 #### Default Calendar journal
-![journalCalendar](./JournalCalendar.png)
+![journalCalendar](./screenshots/JournalCalendar.png)
 
 The default Journal calendar will collect the following information and display in the calendar:
 1. All tasks with Scheduled or Deadline (using `scheduled`` deadline` as agenda planning time)
