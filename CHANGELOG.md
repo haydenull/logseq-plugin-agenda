@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.4.0...v1.4.1) (2022-03-11)
+
+
+### Bug Fixes
+
+* 🐛 set end time to day end ([8679df3](https://github.com/haydenull/logseq-plugin-agenda/commit/8679df342317cdaa54d6ac264304b9154d3e866e))
+
 # [1.4.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.3.1...v1.4.0) (2022-03-11)
 
 
