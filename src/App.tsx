@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Select } from 'antd'
-import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined } from '@ant-design/icons'
+import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { getSchedules, ISettingsForm, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
@@ -50,6 +50,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const DEFAULT_OPTIONS = getDefaultOptions()
 
+  const [isFullScreen, setIsFullScreen] = useState(false)
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
   const [showDate, setShowDate] = useState<string>()
   const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
@@ -156,6 +157,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     calendarRef.current?.next()
     changeShowDate()
   }
+  const onClickFullScreen = () => {
+    setIsFullScreen(_isFullScreen => !_isFullScreen)
+  }
   const onSettingChange = (values: ISettingsForm) => {
     console.log('[faiz:] === onSettingChange', values)
     logseq.updateSettings({calendarList: 1})
@@ -224,7 +228,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   return (
     <div className="w-screen h-screen flex items-center justify-center">
       <div className="mask w-screen h-screen fixed top-0 left-0 bg-black bg-opacity-50" onClick={() => logseq.hideMainUI()}></div>
-      <div className="w-5/6 flex flex-col overflow-hidden bg-white relative rounded text-black p-3">
+      <div className={`${isFullScreen ? 'w-full h-full' : 'w-5/6'} flex flex-col justify-center overflow-hidden bg-white relative rounded text-black p-3`}>
         <div className="mb-2 flex items-center justify-between">
           <div>
             <Select
@@ -246,10 +250,12 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           <div>
             { showExportWeekly && <Button className="mr-4" onClick={exportWeekly}>Export Weekly</Button> }
             <Button className="mr-4" onClick={setSchedules} type="primary" icon={<ReloadOutlined />}>Reload</Button>
-            <Button onClick={() => setSettingModal(true)} shape="circle" icon={<SettingOutlined />}></Button>
+            <Button className="mr-4" onClick={() => setSettingModal(true)} shape="circle" icon={<SettingOutlined />}></Button>
+            <Button onClick={onClickFullScreen} shape="circle" icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button>
           </div>
         </div>
-        <div id="calendar" style={{ maxHeight: '606px' }}></div>
+        {/* <div id="calendar" style={{ maxHeight: '606px' }}></div> */}
+        <div id="calendar"></div>
         <Weekly
           visible={weeklyModal.visible}
           start={weeklyModal.start}

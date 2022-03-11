@@ -127,6 +127,7 @@ export const getSchedules = async () => {
         start: _start,
         end: _end,
         calendarConfig,
+        defaultDuration,
       })
       // show overdue tasks in today
       return _isOverdue
@@ -136,6 +137,7 @@ export const getSchedules = async () => {
             blockData: block,
             category: _category,
             calendarConfig,
+            defaultDuration,
           })
         ]
         : schedule
@@ -185,6 +187,7 @@ message: ${res.reason.message}`
         start: _startTime ? dayjs(date + ' ' + _startTime, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
         end: _endTime ? dayjs(date + ' ' + _endTime, 'YYYYMMDD HH:mm').format() : undefined,
         calendarConfig: logKey,
+        defaultDuration,
       })
     }))
   }
@@ -213,7 +216,9 @@ function genSchedule(params: {
   const { defaultDuration: _defaultDuration } = DEFAULT_SETTINGS
   let _end = end
   if (category === 'time' && !end && defaultDuration) {
-    _end = dayjs(start).add(defaultDuration.value | _defaultDuration.value, defaultDuration.unit || _defaultDuration.unit).format()
+    const value = defaultDuration.value || _defaultDuration.value
+    const unit = defaultDuration.unit || _defaultDuration.unit
+    _end = dayjs(start).add(value, unit).format()
   }
 
   return {
