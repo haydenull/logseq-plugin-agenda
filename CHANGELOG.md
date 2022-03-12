@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.4.1...v1.5.0) (2022-03-12)
+
+
+### Features
+
+* support subscription calendar ([c5a31b3](https://github.com/haydenull/logseq-plugin-agenda/commit/c5a31b363b9055d094db119bd86a7eea0ff510fe))
+
 ## [1.4.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.4.0...v1.4.1) (2022-03-11)
 
 
