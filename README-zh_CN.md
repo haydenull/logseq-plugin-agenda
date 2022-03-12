@@ -13,6 +13,7 @@
 - 支持显示过期任务
 - 支持显示里程碑
 - 支持收集每日日志, 导出周报
+- 支持订阅日历（基础事件）
 - 支持深色模式
 
 ## Demo
@@ -88,8 +89,8 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 
 让我来解释一下有哪些配置项:
 1. `script`: 作为 datascriptQuery 的参数, 查询所有符合要求的 block
-2. `schedule start`: 从 datascriptQuery 查询的 block 取出 `schedule start` 指定的字段作为 schedule 开始时间
-3. `schedule end`: 从 datascriptQuery 查询的 block 取出 `schedule end` 指定的字段作为 schedule 结束时间
+2. `schedule start`: 从 datascriptQuery 查询的 block 取出 `schedule start` 指定的字段作为 agenda 开始时间
+3. `schedule end`: 从 datascriptQuery 查询的 block 取出 `schedule end` 指定的字段作为 agenda 结束时间
 4. `date formatter`: 日期格式, 以此为参数使用 [dayjs](https://day.js.org/docs/en/display/format) 将 `schedule start` `schedule end` 转换为可用的日期
 5. `is milestone`: 是否是里程碑, 如果是, 则会展示在日历的 Milestone 中
 
@@ -121,3 +122,8 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 那么最终日历中会显示以下内容:
 
 ![customCalendar](./screenshots/customQueryCalendar.png)
+
+### 订阅日历
+订阅日历与自定义配置一样，只不过少了 query，多了订阅 url。
+
+> 目前只支持了简单的事件，没有周期事件等功能。
