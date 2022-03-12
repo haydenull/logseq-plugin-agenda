@@ -3,6 +3,9 @@ import { flattenDeep, get } from 'lodash'
 import en from 'dayjs/locale/en'
 import { ISchedule } from 'tui-calendar'
 import { DAILY_LOG_CONFIG, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
+import axios from 'axios'
+import ical from 'ical.js'
+// import ical from 'node-ical'
 
 dayjs.locale({
   ...en,
@@ -14,6 +17,13 @@ const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_
   return dayjs(String(date), format).format()
 }
 
+type ICustomCalendar = {
+  id: string
+  bgColor: string
+  textColor: string
+  borderColor: string
+  enabled: boolean
+}
 export type ISettingsFormQuery = Partial<{
   script: string
   scheduleStart: string
@@ -30,21 +40,9 @@ export type ISettingsForm = {
     unit: string
     value: number
   },
-  logKey?: {
-    id: string
-    bgColor: string
-    textColor: string
-    borderColor: string
-    enabled: boolean
-  }
-  calendarList: {
-    id: string
-    bgColor: string
-    textColor: string
-    borderColor: string
-    enabled: boolean
-    query: ISettingsFormQuery[]
-  }[]
+  logKey?: ICustomCalendar
+  calendarList: Array<ICustomCalendar & { query: ISettingsFormQuery[] }>
+  subscriptionList?: Array<ICustomCalendar & { url: string }>
 }
 export const getInitalSettings = (): ISettingsForm => {
   let logKey = logseq.settings?.logKey
@@ -71,7 +69,7 @@ export const getSchedules = async () => {
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
-  const { calendarList: calendarConfigs = [], logKey, defaultDuration } = getInitalSettings()
+  const { calendarList: calendarConfigs = [], logKey, defaultDuration, subscriptionList } = getInitalSettings()
   const customCalendarConfigs = calendarConfigs.filter(config => config.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
@@ -177,7 +175,7 @@ message: ${res.reason.message}`
                     const _content = block.content?.trim()
                     return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
                   }) || []
-    console.log('[faiz:] === logs', _logs)
+
     calendarSchedules = calendarSchedules.concat(_logs?.map(block => {
       const date = block?.page?.journalDay
       const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
@@ -191,6 +189,10 @@ message: ${res.reason.message}`
       })
     }))
   }
+
+  const subSchedules = await getSubCalendarSchedules(subscriptionList, defaultDuration)
+
+  calendarSchedules = calendarSchedules.concat(subSchedules)
 
   return calendarSchedules
 }
@@ -372,4 +374,66 @@ export const managePluginTheme = async () => {
 
   const logseqTheme = await logseq.App.getStateFromStore<'dark' | 'light'>('ui/theme')
   setPluginTheme(logseqTheme)
+}
+
+/**
+ * get ical data
+ */
+export const getSubCalendarSchedules = async (subscriptionCalendarList: ISettingsForm['subscriptionList'], defaultDuration?: ISettingsForm['defaultDuration']) => {
+  const enabledCalendarList = subscriptionCalendarList?.filter(calendar => calendar.enabled)
+  if (!enabledCalendarList?.length) return []
+
+  const resList = await Promise.allSettled(enabledCalendarList.map(calendar => axios(calendar.url)))
+  // const resList = await Promise.allSettled(subscriptionCalendarList.map(calendar => ical.fromURL(calendar.url)))
+
+  let schedules = []
+  resList.forEach((res, index) => {
+    if (res.status === 'rejected') return logseq.App.showMsg(`Get Calendar ${enabledCalendarList[index].id} data error\n${res.reason}`, 'error')
+    const data = ical.parse(res.value.data)
+    const { events } = parseVCalendar(data)
+
+    schedules = schedules.concat(events.map(event => {
+      const { dtstart, dtend, summary, description } = event
+      const hasTime = dtstart.type === 'date-time'
+      return genSchedule({
+        blockData: { id: new Date().valueOf(), content: `${summary.value}\n${description.value}`, subscription: true },
+        category: hasTime ? 'time' : 'allday',
+        start: dayjs(dtstart.value).format(),
+        end: dtend ? dayjs(dtend.value).format() : undefined,
+        calendarConfig: enabledCalendarList[index],
+        defaultDuration,
+      })
+    }))
+  })
+
+  return schedules
+}
+
+export const parseVCalendar = (data: any) => {
+  function arrDataToObj(arr: any[]) {
+    return arr.reduce((res, cur) => {
+      return {
+        ...res,
+        [cur[0]]: {
+          type: cur[2],
+          value: cur[3],
+        }
+      }
+    }, {})
+  }
+  const [calendarType, info, components] = data
+
+  const events = components
+                  .filter(component => component[0] === 'vevent')
+                  .map(component => {
+                    const [type, info, /*properties*/] = component
+                    return arrDataToObj(info)
+                  })
+
+  return {
+    type: calendarType,
+    info: arrDataToObj(info),
+    events,
+  }
+
 }

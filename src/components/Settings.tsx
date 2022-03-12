@@ -36,8 +36,6 @@ const Settings: React.FC<{
     setCreateCalendarModalVisible(false)
   }
 
-  console.log('[faiz:] === initialValues', initialValues)
-
   return (
     <>
       <Modal
@@ -145,6 +143,40 @@ const Settings: React.FC<{
               <Form.Item wrapperCol={{ offset: 7 }}>
                 <Button type="dashed" size="small" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
                   Add Calendar
+                </Button>
+              </Form.Item>
+            </>)}
+          </Form.List>
+          <Form.List name="subscriptionList">
+            {(fields, { add, remove }) => (<>
+              {fields.map((field, index) => (
+                <Form.Item label={index === 0 ? 'Subscriptions' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
+                  <div className="flex items-center justify-between">
+                    <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
+                      <Input placeholder="Calendar ID" style={{ width: '100px' }} />
+                    </Form.Item>
+                    <Form.Item name={[field.name, 'url']} noStyle rules={[{ required: true }]}>
+                      <Input placeholder="Url" style={{ width: '100px' }} />
+                    </Form.Item>
+                    <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
+                      <ColorPicker text="background" />
+                    </Form.Item>
+                    <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
+                      <ColorPicker text="text" />
+                    </Form.Item>
+                    <Form.Item name={[field.name, 'borderColor']} noStyle rules={[{ required: true }]}>
+                      <ColorPicker text="border" />
+                    </Form.Item>
+                    <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
+                      <Switch size="small" />
+                    </Form.Item>
+                    <MinusCircleOutlined onClick={() => remove(field.name)} />
+                  </div>
+                </Form.Item>
+              ))}
+              <Form.Item wrapperCol={{ offset: 7 }}>
+                <Button type="dashed" size="small" onClick={add} block icon={<PlusOutlined />}>
+                  Add Subscription
                 </Button>
               </Form.Item>
             </>)}

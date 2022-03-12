@@ -40,7 +40,9 @@ const getDefaultOptions = () => {
         return time.hour + ':00'
       },
       popupDetailBody: (schedule: ISchedule) => {
-        return schedule.body?.split('\n').join('<br/>') + '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
+        const calendar = `<br/><b>Calendar: ${schedule.calendarId}</b>`
+        const navBtn = schedule.raw?.subscription ? '' : '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
+        return schedule.body?.split('\n').join('<br/>') + calendar + navBtn
       },
     },
   }
@@ -161,8 +163,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     setIsFullScreen(_isFullScreen => !_isFullScreen)
   }
   const onSettingChange = (values: ISettingsForm) => {
-    console.log('[faiz:] === onSettingChange', values)
-    logseq.updateSettings({calendarList: 1})
+    logseq.updateSettings({calendarList: 1, subscriptionList: 1})
     logseq.updateSettings(values)
     if (values.weekStartDay !== logseq.settings?.weekStartDay) {
       calendarRef.current?.setOptions({
