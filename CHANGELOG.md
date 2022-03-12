@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.5.1...v1.5.2) (2022-03-12)
+
+
+### Bug Fixes
+
+* update subscription config error when subscription is empty ([2c9ab2d](https://github.com/haydenull/logseq-plugin-agenda/commit/2c9ab2dfd027aff1dbe9e89040d814587b42f99f))
+
 ## [1.5.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.5.0...v1.5.1) (2022-03-12)
 
 
