@@ -122,6 +122,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
       ],
     },
   ],
+  subscriptionList: [],
 }
 
 export const DAILY_LOG_CONFIG = {

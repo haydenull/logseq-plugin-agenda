@@ -175,7 +175,7 @@ const Settings: React.FC<{
                 </Form.Item>
               ))}
               <Form.Item wrapperCol={{ offset: 7 }}>
-                <Button type="dashed" size="small" onClick={add} block icon={<PlusOutlined />}>
+                <Button type="dashed" size="small" onClick={() => add()} block icon={<PlusOutlined />}>
                   Add Subscription
                 </Button>
               </Form.Item>
