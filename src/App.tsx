@@ -164,7 +164,8 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   }
   const onSettingChange = (values: ISettingsForm) => {
     logseq.updateSettings({calendarList: 1, subscriptionList: 1})
-    logseq.updateSettings(values)
+    // ensure subscription list is array
+    logseq.updateSettings({subscriptionList: [], ...values})
     if (values.weekStartDay !== logseq.settings?.weekStartDay) {
       calendarRef.current?.setOptions({
         week: {

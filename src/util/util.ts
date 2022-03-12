@@ -380,11 +380,11 @@ export const managePluginTheme = async () => {
  * get ical data
  */
 export const getSubCalendarSchedules = async (subscriptionCalendarList: ISettingsForm['subscriptionList'], defaultDuration?: ISettingsForm['defaultDuration']) => {
+  if (!Array.isArray(subscriptionCalendarList)) return []
   const enabledCalendarList = subscriptionCalendarList?.filter(calendar => calendar.enabled)
   if (!enabledCalendarList?.length) return []
 
   const resList = await Promise.allSettled(enabledCalendarList.map(calendar => axios(calendar.url)))
-  // const resList = await Promise.allSettled(subscriptionCalendarList.map(calendar => ical.fromURL(calendar.url)))
 
   let schedules = []
   resList.forEach((res, index) => {

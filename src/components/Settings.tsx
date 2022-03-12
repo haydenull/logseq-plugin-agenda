@@ -155,7 +155,7 @@ const Settings: React.FC<{
                     <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
                       <Input placeholder="Calendar ID" style={{ width: '100px' }} />
                     </Form.Item>
-                    <Form.Item name={[field.name, 'url']} noStyle rules={[{ required: true }]}>
+                    <Form.Item name={[field.name, 'url']} noStyle rules={[{ required: true, type: 'url' }]}>
                       <Input placeholder="Url" style={{ width: '100px' }} />
                     </Form.Item>
                     <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
