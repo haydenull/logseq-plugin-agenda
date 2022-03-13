@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.5.2...v1.6.0) (2022-03-13)
+
+
+### Features
+
+* ✨ supports simple query ([a65131f](https://github.com/haydenull/logseq-plugin-agenda/commit/a65131f7743d11556d8f7ab3e3a09bf097ef9dbf))
+
 ## [1.5.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.5.1...v1.5.2) (2022-03-12)
 
 
