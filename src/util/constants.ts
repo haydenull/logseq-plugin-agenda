@@ -55,6 +55,8 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
           `,
           scheduleStart: 'scheduled',
           dateFormatter: 'YYYYMMDD',
+          queryType: 'advanced',
+          isMilestone: false,
         },
         // deadline tasks
         {
@@ -68,6 +70,8 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
           `,
           scheduleStart: 'deadline',
           dateFormatter: 'YYYYMMDD',
+          queryType: 'advanced',
+          isMilestone: false,
         },
         // tasks with no deadline or scheduled but in journal
         {
@@ -106,6 +110,8 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
           `,
           scheduleStart: 'page.journal-day',
           dateFormatter: 'YYYYMMDD',
+          isMilestone: false,
+          queryType: 'advanced',
         },
         // milestone
         {
@@ -118,6 +124,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
           scheduleStart: 'scheduled',
           dateFormatter: 'YYYYMMDD',
           isMilestone: true,
+          queryType: 'advanced',
         }
       ],
     },

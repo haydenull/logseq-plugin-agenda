@@ -30,6 +30,7 @@ export type ISettingsFormQuery = Partial<{
   scheduleEnd: string
   dateFormatter: string
   isMilestone: boolean
+  queryType: 'query' | 'advanced'
 }>
 export type ISettingsForm = {
   theme?: 'light' | 'dark' | 'auto'

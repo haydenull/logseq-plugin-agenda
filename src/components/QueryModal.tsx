@@ -24,7 +24,12 @@ const QueryModal: React.FC<Partial<{
       log('[faiz:] === start exec your query:\n', 'blue')
       console.log(queryItem?.script)
       try {
-        const res = await logseq.DB.datascriptQuery(queryItem.script)
+        let res
+        if (queryItem?.queryType === 'query') {
+          res = await logseq.DB.q(queryItem?.script)
+        } else {
+          res = await logseq.DB.datascriptQuery(queryItem.script)
+        }
         log('[faiz:] === exec your query success:\n', 'green')
         console.log(res)
       } catch (error) {
@@ -58,19 +63,25 @@ const QueryModal: React.FC<Partial<{
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <Form.Item label="scheduleStart" name={[field.name, 'scheduleStart']} labelCol={{ span: 7 }}>
-                          <Input />
-                        </Form.Item>
-                        <Form.Item label="scheduleEnd" name={[field.name, 'scheduleEnd']} labelCol={{ span: 7 }}>
-                          <Input />
-                        </Form.Item>
-                        <Form.Item label="dateFormatter" name={[field.name, 'dateFormatter']} labelCol={{ span: 7 }}>
-                          <Input />
-                        </Form.Item>
-                        <Form.Item label="is milestone" name={[field.name, 'isMilestone']} labelCol={{ span: 7 }}>
+                        <Form.Item label="Query Type" name={[field.name, 'queryType']} labelCol={{ span: 7 }}>
                           <Radio.Group>
-                            <Radio value={true}>yes</Radio>
-                            <Radio value={false}>no</Radio>
+                            <Radio value="query">Query</Radio>
+                            <Radio value="advanced">Advanced Query</Radio>
+                          </Radio.Group>
+                        </Form.Item>
+                        <Form.Item label="Schedule Start" name={[field.name, 'scheduleStart']} labelCol={{ span: 7 }}>
+                          <Input />
+                        </Form.Item>
+                        <Form.Item label="Schedule End" name={[field.name, 'scheduleEnd']} labelCol={{ span: 7 }}>
+                          <Input />
+                        </Form.Item>
+                        <Form.Item label="Date Formatter" name={[field.name, 'dateFormatter']} labelCol={{ span: 7 }}>
+                          <Input />
+                        </Form.Item>
+                        <Form.Item label="Is Milestone" name={[field.name, 'isMilestone']} labelCol={{ span: 7 }}>
+                          <Radio.Group>
+                            <Radio value={true}>Yes</Radio>
+                            <Radio value={false}>No</Radio>
                           </Radio.Group>
                         </Form.Item>
                       </Col>
