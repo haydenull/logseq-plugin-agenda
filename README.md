@@ -17,6 +17,11 @@ English | [简体中文](./README-zh_CN.md)
 - Supports subscription calendar(basic event)
 - Supports dark mode
 
+![MonthView](./screenshots/monthView.png)
+![WeeklyView](./screenshots/weeklyView.png)
+![settings](./screenshots/settings.png)
+![query](./screenshots/query.png)
+
 ## Demo
 We will call notes with `"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"` as tasks.
 ### show all task in your notes

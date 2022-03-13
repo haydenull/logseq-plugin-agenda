@@ -17,6 +17,11 @@
 - 支持订阅日历（基础事件）
 - 支持深色模式
 
+![MonthView](./screenshots/monthView.png)
+![WeeklyView](./screenshots/weeklyView.png)
+![settings](./screenshots/settings.png)
+![query](./screenshots/query.png)
+
 ## Demo
 
 我们将带有 `"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"` 的笔记称作任务。其他笔记称作日程。
