@@ -10,6 +10,7 @@ English | [简体中文](./README-zh_CN.md)
 - Supports multiple views: single day, week, double week, month
 - Supports changing start day of week
 - Supports flexible custom calendar(both simple query and advanced query)
+- Supports debugging query
 - Supports show overdue tasks
 - Supports Milestone
 - Supports daily log and export weekly log
@@ -90,6 +91,10 @@ Let me explain what the configuration items are:
 3. `schedule end`: Take the field specified by `schedule end` from the block of the datascriptQuery query as the agenda end time.
 4. `date formatter`: The date formatter. Use this as dayjs parameter to  convert `schedule start` `schedule end` to an available date.
 5. `is milestone`: Whether the block is a milestone. If it is, the block will be displayed in the calendar as a milestone.
+
+If you don't konw how to fill `schedule start` `schedule end`, you can open DevTools and click the play button:
+
+![queryDebug](./screenshots/queryDebug.png)
 
 Example:
 

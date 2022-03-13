@@ -10,6 +10,7 @@
 - 支持多种视图: 单日 周 双周 月
 - 支持设置周开始日期
 - 支持非常灵活的自定义日历(同时支持 simple query 和 advanced query)
+- 支持调试 query
 - 支持显示过期任务
 - 支持显示里程碑
 - 支持收集每日日志, 导出周报
@@ -94,6 +95,10 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 3. `schedule end`: 从 datascriptQuery 查询的 block 取出 `schedule end` 指定的字段作为 agenda 结束时间
 4. `date formatter`: 日期格式, 以此为参数使用 [dayjs](https://day.js.org/docs/en/display/format) 将 `schedule start` `schedule end` 转换为可用的日期
 5. `is milestone`: 是否是里程碑, 如果是, 则会展示在日历的 Milestone 中
+
+如果你不知道如何填写 `schedule start` `schedule end`, 可以打开控制台, 然后点击 play 按钮:
+
+![queryDebug](./screenshots/queryDebug.png)
 
 示例:
 
