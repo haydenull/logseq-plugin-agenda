@@ -9,7 +9,7 @@ English | [简体中文](./README-zh_CN.md)
 ## Features
 - Supports multiple views: single day, week, double week, month
 - Supports changing start day of week
-- Supports flexible custom calendar
+- Supports flexible custom calendar(both simple query and advanced query)
 - Supports show overdue tasks
 - Supports Milestone
 - Supports daily log and export weekly log
@@ -79,26 +79,37 @@ The behavior is the same as the journal calendar, but the lookup range changes t
 
 So how to create a custom calendar?
 
-Click the add calendar button, and fill in the calendar name, and edit [query](https://logseq.github.io/#/page/advanced%20queries).
+Click the add calendar button, and fill in the calendar name, and edit [query](https://logseq.github.io/#/page/Queries).
 
-The plugin will call [logseq.DB.datascriptQuery](https://logseq.github.io/plugins/interfaces/IDBProxy.html#datascriptQuery) API with the query you specified. and the result will be displayed in the calendar.
+The plugin will call [logseq.DB.datascriptQuery](https://logseq.github.io/plugins/interfaces/IDBProxy.html#datascriptQuery) or [logseq.DB.a](https://logseq.github.io/plugins/interfaces/IDBProxy.html#q) API with the query you specified. and the result will be displayed in the calendar.
 
 Let me explain what the configuration items are:
 1. `script`: As a parameter to datascriptQuery, query all block that meets the requirements.
-2. `schedule start`: Take the field specified by 'schedule start' from the block of the datascriptQuery query as the agenda start time.
-3. `schedule end`: Take the field specified by 'schedule end' from the block of the datascriptQuery query as the agenda end time.
-4. `date formatter: The date formatter. Use this as dayjs parameter to  convert 'schedule start' 'schedule end' to an available date.
-5. `is milestone: Whether the block is a milestone. If it is, the block will be displayed in the calendar as a milestone.
+2. `query type`: The type of query, can be [Simple Query](https://logseq.github.io/#/page/Queries) or [Advanced Query](https://logseq.github.io/#/page/AdvancedQueries).
+2. `schedule start`: Take the field specified by `schedule start` from the block of the datascriptQuery query as the agenda start time.
+3. `schedule end`: Take the field specified by `schedule end` from the block of the datascriptQuery query as the agenda end time.
+4. `date formatter`: The date formatter. Use this as dayjs parameter to  convert `schedule start` `schedule end` to an available date.
+5. `is milestone`: Whether the block is a milestone. If it is, the block will be displayed in the calendar as a milestone.
 
 Example:
 
 Currently we have a test-agenda note:
 
-where the custom calendar demo has the 'start' 'end' attribute, we want it to be displayed in the calendar and the common text is not.
+where the custom calendar demo has the `start` `end` attribute, we want it to be displayed in the calendar and the common text is not.
 
 ![test-agenda](./screenshots/test-agenda.png)
 
+##### Use [Simple Query](https://logseq.github.io/#/page/Queries)
+
 We use the following query script to query the block located in the test-agenda page:
+
+`(and (page "test-agenda") (property end) (property start))`
+
+![customQuerySimple](./screenshots/customQuerySimple.png)
+
+##### Use [Advanced Query](https://logseq.github.io/#/page/advanced%20queries)
+
+If you want to use the advanced query, you can use the following script:
 
 ```clojure
 [:find (pull ?block [*])
@@ -115,7 +126,7 @@ The complete configuration is as follows:
 
 ![customQuery](./screenshots/customQuery.png)
 
-The following will appear:
+The above two methods are equivalent .The following will appear:
 
 ![customCalendar](./screenshots/customQueryCalendar.png)
 

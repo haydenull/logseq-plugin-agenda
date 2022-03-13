@@ -29,7 +29,7 @@ export type ISettingsFormQuery = Partial<{
   scheduleEnd: string
   dateFormatter: string
   isMilestone: boolean
-  queryType: 'query' | 'advanced'
+  queryType: 'simple' | 'advanced'
 }>
 export type ISettingsForm = {
   theme?: 'light' | 'dark' | 'auto'
@@ -87,7 +87,7 @@ export const getSchedules = async () => {
     const { calendarConfig, query } = queryWithCalendar
     const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone, queryType } = query
     let blocks: any[] = []
-    if (queryType === 'query') {
+    if (queryType === 'simple') {
       blocks = await logseq.DB.q(script) || []
     } else {
       blocks = await logseq.DB.datascriptQuery(script)

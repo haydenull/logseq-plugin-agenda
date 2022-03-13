@@ -9,7 +9,7 @@
 ## 功能
 - 支持多种视图: 单日 周 双周 月
 - 支持设置周开始日期
-- 支持非常灵活的自定义日历
+- 支持非常灵活的自定义日历(同时支持 simple query 和 advanced query)
 - 支持显示过期任务
 - 支持显示里程碑
 - 支持收集每日日志, 导出周报
@@ -83,12 +83,13 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 
 那么如何定制玩去属于自己的日历呢?
 
-答案是新建日历,然后修改 [query](https://logseq.github.io/#/page/advanced%20queries)
+答案是新建日历,然后修改 [query](https://logseq.github.io/#/page/Queries)
 
-插件会以填写的 query script 作为参数调用[logseq.DB.datascriptQuery](https://logseq.github.io/plugins/interfaces/IDBProxy.html#datascriptQuery) API, 然后将结果展示在日历中.
+插件会以填写的 query script 作为参数调用[logseq.DB.datascriptQuery](https://logseq.github.io/plugins/interfaces/IDBProxy.html#datascriptQuery) 或 [logseq.DB.a](https://logseq.github.io/plugins/interfaces/IDBProxy.html#q)API, 然后将结果展示在日历中.
 
 让我来解释一下有哪些配置项:
 1. `script`: 作为 datascriptQuery 的参数, 查询所有符合要求的 block
+2. `query type`: query 的类型, 可以是 [Simple Query](https://logseq.github.io/#/page/Queries) 或 [Advanced Query](https://logseq.github.io/#/page/AdvancedQueries)
 2. `schedule start`: 从 datascriptQuery 查询的 block 取出 `schedule start` 指定的字段作为 agenda 开始时间
 3. `schedule end`: 从 datascriptQuery 查询的 block 取出 `schedule end` 指定的字段作为 agenda 结束时间
 4. `date formatter`: 日期格式, 以此为参数使用 [dayjs](https://day.js.org/docs/en/display/format) 将 `schedule start` `schedule end` 转换为可用的日期
@@ -102,7 +103,18 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 
 ![test-agenda](./screenshots/test-agenda.png)
 
+
+##### 使用 [Simple Query](https://logseq.github.io/#/page/Queries)
+
 我们使用如下 query script 查询位于 test-agenda 页面中的 block:
+
+`(and (page "test-agenda") (property end) (property start))`
+
+![customQuerySimple](./screenshots/customQuerySimple.png)
+
+##### 使用 [advanced query](https://logseq.github.io/#/page/advanced%20queries)
+
+如果你更喜欢advanced query, 配置如下:
 
 ```clojure
 [:find (pull ?block [*])
@@ -119,7 +131,7 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 
 ![customQuery](./screenshots/customQuery.png)
 
-那么最终日历中会显示以下内容:
+以上两种方式是等效的,最终日历中会显示以下内容:
 
 ![customCalendar](./screenshots/customQueryCalendar.png)
 

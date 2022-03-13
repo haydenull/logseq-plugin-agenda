@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { Modal, Form, Input, Button, Row, Col, Radio, Tooltip } from 'antd'
 import { MinusCircleOutlined, PlusOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import { ISettingsForm, ISettingsFormQuery, log } from '../util/util'
@@ -25,7 +24,7 @@ const QueryModal: React.FC<Partial<{
       console.log(queryItem?.script)
       try {
         let res
-        if (queryItem?.queryType === 'query') {
+        if (queryItem?.queryType === 'simple') {
           res = await logseq.DB.q(queryItem?.script)
         } else {
           res = await logseq.DB.datascriptQuery(queryItem.script)
@@ -65,7 +64,7 @@ const QueryModal: React.FC<Partial<{
                       <Col span={12}>
                         <Form.Item label="Query Type" name={[field.name, 'queryType']} labelCol={{ span: 7 }}>
                           <Radio.Group>
-                            <Radio value="query">Query</Radio>
+                            <Radio value="simple">Simple Query</Radio>
                             <Radio value="advanced">Advanced Query</Radio>
                           </Radio.Group>
                         </Form.Item>
