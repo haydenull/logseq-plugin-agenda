@@ -131,7 +131,7 @@ const Settings: React.FC<{
                       <ColorPicker text="border" />
                     </Form.Item>
                     <Form.Item name={[field.name, 'query']} noStyle rules={[{ required: true }]}>
-                            <Query calendarId='query' />
+                      <Query calendarId='query' />
                     </Form.Item>
                     <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
                       <Switch size="small" />
@@ -150,7 +150,7 @@ const Settings: React.FC<{
           <Form.List name="subscriptionList">
             {(fields, { add, remove }) => (<>
               {fields.map((field, index) => (
-                <Form.Item label={index === 0 ? 'Subscriptions' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
+                <Form.Item label={index === 0 ? 'Subscription' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
                   <div className="flex items-center justify-between">
                     <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
                       <Input placeholder="Calendar ID" style={{ width: '100px' }} />

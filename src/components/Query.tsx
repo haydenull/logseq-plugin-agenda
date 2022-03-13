@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button } from 'antd'
+import { Button, Tooltip } from 'antd'
 import { FunctionOutlined } from '@ant-design/icons'
 import QueryModal from './QueryModal'
 import { ISettingsFormQuery } from '../util/util'
@@ -13,7 +13,9 @@ const Query: React.FC<{
 
   return (
     <div>
-      <Button type="link" icon={<FunctionOutlined />} onClick={() => setVisible(true)} />
+      <Tooltip title="Edit Calendar Queries">
+        <Button type="link" icon={<FunctionOutlined />} onClick={() => setVisible(true)} />
+      </Tooltip>
       <QueryModal
         visible={visible}
         calendarId={calendarId}
