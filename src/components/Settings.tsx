@@ -42,13 +42,13 @@ const Settings: React.FC<{
         {...props}
         width={700}
         destroyOnClose
-        title="Calendar Setting"
+        title="Calendar Settings"
         visible={visible}
         onCancel={onCancel}
         footer={
           <div className="flex justify-between" onClick={e => e?.stopPropagation?.()}>
             <Popconfirm
-              title={<span>Are you sure you want to restore default setting?<br />This is an irreversible operation.</span>}
+              title={<span>Are you sure you want to restore default settings?<br />This is an irreversible operation.</span>}
               onConfirm={() => {
                 settingForm.setFieldsValue(DEFAULT_SETTINGS)
                 onClickSettingSave()
@@ -116,7 +116,7 @@ const Settings: React.FC<{
           <Form.List name="calendarList">
             {(fields, { add, remove }) => (<>
               {fields.map((field, index) => (
-                <Form.Item required label={index === 0 ? 'Calendars' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
+                <Form.Item required label={index === 0 ? 'Calendar' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
                   <div className="flex items-center justify-between">
                     <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
                       <Input placeholder="Calendar ID" disabled={index === 0} style={{ width: '110px' }} />
@@ -131,7 +131,7 @@ const Settings: React.FC<{
                       <ColorPicker text="border" />
                     </Form.Item>
                     <Form.Item name={[field.name, 'query']} noStyle rules={[{ required: true }]}>
-                      <Query calendarId='query' />
+                            <Query calendarId='query' />
                     </Form.Item>
                     <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
                       <Switch size="small" />
