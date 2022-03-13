@@ -43,7 +43,7 @@ const QueryModal: React.FC<Partial<{
     <Modal
       {...props}
       width={980}
-      title="Calendar Query"
+      title="Calendar Queries (saved searches)"
       visible={visible}
       onCancel={onCancel}
       onOk={onSave}
