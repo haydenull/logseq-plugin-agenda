@@ -2,10 +2,9 @@ import dayjs from 'dayjs'
 import { flattenDeep, get } from 'lodash'
 import en from 'dayjs/locale/en'
 import { ISchedule } from 'tui-calendar'
-import { DAILY_LOG_CONFIG, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
+import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
 import axios from 'axios'
 import ical from 'ical.js'
-// import ical from 'node-ical'
 
 dayjs.locale({
   ...en,
@@ -86,8 +85,13 @@ export const getSchedules = async () => {
 
   const queryPromiseList = scheduleQueryList.map(async queryWithCalendar => {
     const { calendarConfig, query } = queryWithCalendar
-    const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone } = query
-    const blocks = await logseq.DB.datascriptQuery(script)
+    const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone, queryType } = query
+    let blocks: any[] = []
+    if (queryType === 'query') {
+      blocks = await logseq.DB.q(script) || []
+    } else {
+      blocks = await logseq.DB.datascriptQuery(script)
+    }
     console.log('[faiz:] === search blocks by query: ', script, blocks)
 
     return flattenDeep(blocks).map(block => {

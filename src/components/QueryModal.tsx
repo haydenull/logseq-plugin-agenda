@@ -59,7 +59,7 @@ const QueryModal: React.FC<Partial<{
                     <Row gutter={16}>
                       <Col span={12}>
                         <Form.Item label="script" name={[field.name, 'script']} labelCol={{ span: 4 }}>
-                          <Input.TextArea rows={8} />
+                          <Input.TextArea rows={10} />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
