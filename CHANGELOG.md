@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.6.0...v1.7.0) (2022-03-13)
+
+
+### Features
+
+* Optimize the calendar experience on widescreen & add fx tooltip ([ab209a7](https://github.com/haydenull/logseq-plugin-agenda/commit/ab209a7447c485bed690bd49af1b343cb8c180bd))
+
 # [1.6.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.5.2...v1.6.0) (2022-03-13)
 
 
