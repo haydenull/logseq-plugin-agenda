@@ -88,34 +88,34 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     if (calendar) {
       calendar.clear()
 
-      // const schedules = await getSchedules()
-      // calendar.createSchedules(schedules)
-      calendar.createSchedules([{
-        id: '1',
-        calendarId: 'journal',
-        title: 'Daily Log test',
-        category: 'time',
-        dueDateClass: '',
-        start: formatISO(new Date()),
-        isAllDay: true,
-        body: 'Daily Log test detail\n123',
-        bgColor: '#7ed3fd',
-        color: '#222',
-        borderColor: '#98dbfd',
-      }, {
-        id: '1',
-        calendarId: 'journal',
-        title: 'Daily Log foo',
-        category: 'time',
-        dueDateClass: '',
-        start: formatISO(new Date()),
-        // isAllDay: true,
-        body: 'Daily Log test detail\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123',
-        bgColor: '#7ed3fd',
-        color: '#333',
-        borderColor: '#98dbfd',
-        // customStyle: 'opacity: 0.6;',
-      }])
+      const schedules = await getSchedules()
+      calendar.createSchedules(schedules)
+      // calendar.createSchedules([{
+      //   id: '1',
+      //   calendarId: 'journal',
+      //   title: 'Daily Log test',
+      //   category: 'time',
+      //   dueDateClass: '',
+      //   start: formatISO(new Date()),
+      //   isAllDay: true,
+      //   body: 'Daily Log test detail\n123',
+      //   bgColor: '#7ed3fd',
+      //   color: '#222',
+      //   borderColor: '#98dbfd',
+      // }, {
+      //   id: '1',
+      //   calendarId: 'journal',
+      //   title: 'Daily Log foo',
+      //   category: 'time',
+      //   dueDateClass: '',
+      //   start: formatISO(new Date()),
+      //   // isAllDay: true,
+      //   body: 'Daily Log test detail\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123',
+      //   bgColor: '#7ed3fd',
+      //   color: '#333',
+      //   borderColor: '#98dbfd',
+      //   // customStyle: 'opacity: 0.6;',
+      // }])
 
       calendar.render()
 

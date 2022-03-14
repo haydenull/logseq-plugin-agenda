@@ -6,8 +6,9 @@
 
 [English](./README.md) | 简体中文
 
-**原本的 journalDateFormatter 配置需要用户去读 dayjs 文档才能正确填写，1.8.0 版本移除了 journalDateFormatter 设置，改为自行从 logseq 获取，非常遗憾的是这个改动影响了原本的日期解析，如果你遇到报错 `Use `yyyy` instead of `YYYY` (in `YYYYMMDD`) for formatting` ，请请在设置中点击 fx 按钮，将所有的 `YYYYMMDD` 改为 `yyyyMMdd`**
+**原本的 journalDateFormatter 配置需要用户去读 dayjs 文档才能正确填写，1.8.1 版本移除了 journalDateFormatter 设置，改为自行从 logseq 获取，非常遗憾的是这个改动影响了原本的日期解析，如果你遇到报错 `Use `yyyy` instead of `YYYY` (in `YYYYMMDD`) for formatting` ，请请在设置中点击 fx 按钮，将所有的 `YYYYMMDD` 改为 `yyyyMMdd`**
 
+现在插件使用 [date-fns](https://date-fns.org/v2.28.0/docs/parse) 解析日期。
 
 ## 功能
 - 支持多种视图: 单日 周 双周 月
