@@ -1,3 +1,16 @@
+# [1.9.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.8.1...v1.9.0) (2022-03-14)
+
+
+### Bug Fixes
+
+* upgrade @logseq/libs ([bcaab73](https://github.com/haydenull/logseq-plugin-agenda/commit/bcaab730e7dd6ed3a763ae1b41cb9115db3eef19))
+
+
+### Features
+
+* ✨ [skip ci] supports copy when export weekly ([2750964](https://github.com/haydenull/logseq-plugin-agenda/commit/2750964327532eaea7245ad777ebaec100a9471a))
+* ✨ [skip ci] supports navigate to journal note ([cda2c28](https://github.com/haydenull/logseq-plugin-agenda/commit/cda2c28d69713716eb9e998151492e50b35cc3c9))
+
 ## [1.8.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.8.0...v1.8.1) (2022-03-14)
 
 
