@@ -9,6 +9,8 @@ import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
+import ModifySchedule from './components/ModifySchedule'
+import type { IAgendaForm } from './components/ModifySchedule'
 
 const getDefaultOptions = () => {
   let defaultView = logseq.settings?.defaultView || 'month'
@@ -18,8 +20,10 @@ const getDefaultOptions = () => {
     taskView: true,
     scheduleView: true,
     useDetailPopup: true,
-    isReadOnly: true,
+    isReadOnly: false,
+    disableClick: true,
     theme: CALENDAR_THEME,
+    usageStatistics: false,
     week: {
       startDayOfWeek: logseq.settings?.weekStartDay || 0,
       // narrowWeekend: true,
@@ -67,6 +71,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     end?: string
   }>({ visible: false })
   const [settingModal, setSettingModal] = useState(false)
+  const [modifyScheduleModal, setModifyScheduleModal] = useState<{ visible: boolean, values?: Omit<IAgendaForm, 'title' | 'calendarId'> }>({
+    visible: false,
+  })
   const calendarRef = useRef<Calendar>()
 
   const changeShowDate = () => {
@@ -240,6 +247,24 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           logseq.hideMainUI()
         }, { once: true })
       })
+      calendarRef.current.on('beforeCreateSchedule', function(event) {
+        console.log('[faiz:] === beforeCreateSchedule', event)
+        setModifyScheduleModal({
+          visible: true,
+          values: {
+            start: event.start,
+            end: event.end,
+            isAllDay: event.isAllDay,
+          }
+        })
+        calendarRef.current?.render()
+      })
+      calendarRef.current.on('beforeUpdateSchedule', function(event) {
+        console.log('[faiz:] === beforeUpdateSchedule', event)
+      })
+      calendarRef.current.on('beforeDeleteSchedule', function(event) {
+        console.log('[faiz:] === beforeDeleteSchedule', event)
+      })
     }, 0)
   }, [])
 
@@ -291,6 +316,11 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           visible={settingModal}
           onCancel={() => setSettingModal(false)}
           onOk={onSettingChange}
+        />
+        <ModifySchedule
+          visible={modifyScheduleModal.visible}
+          initialValues={modifyScheduleModal.values}
+          onCancel={() => setModifyScheduleModal({ visible: false })}
         />
       </div>
     </div>

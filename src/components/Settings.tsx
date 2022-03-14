@@ -26,7 +26,7 @@ const Settings: React.FC<{
       onOk(values)
     })
   }
-  const onCreateCalendarModalOk = (calendarId: string) => {
+  const onCreateCalendarModalOk = ({ name: calendarId, agenda = false }) => {
     settingForm.setFieldsValue({
       calendarList: [
         ...settingForm.getFieldValue('calendarList'),

@@ -372,6 +372,35 @@ export const genDefaultQuery = (pageName: string) => {
   }
 }
 
+// TODO: 完善默认配置
+export const genAgendaQuery = (pageName: string) => {
+  return {
+    id: pageName,
+    bgColor: '#b8e986',
+    textColor: '#4a4a4a',
+    borderColor: '#047857',
+    enabled: true,
+    query: [
+      {
+        script: `
+[:find (pull ?block [*])
+:where
+[?block :block/marker ?marker]
+[(missing? $ ?block :block/deadline)]
+(not [(missing? $ ?block :block/scheduled)])
+[?page :block/name ?pname]
+[?block :block/page ?page]
+[(contains? #{"${pageName}"} ?pname)]
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
+        `,
+        scheduleStart: 'properties.agenda-start',
+        scheduleEnd: 'properties.agenda-end',
+        dateFormatter: 'yyyy-MM-dd',
+      },
+    ]
+  }
+}
+
 export const log = (msg, color='blue') => console.log(`%c${msg}`, `color:${color}`)
 
 export const setPluginTheme = (theme: 'dark' | 'light') => {
