@@ -1,19 +1,19 @@
-import dayjs from 'dayjs'
+import { addHours, addMinutes, endOfDay, format, formatISO, isAfter, parse, parseISO } from 'date-fns'
 import { flattenDeep, get } from 'lodash'
-import en from 'dayjs/locale/en'
+// import en from 'dayjs/locale/en'
 import { ISchedule } from 'tui-calendar'
 import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
 import axios from 'axios'
 import ical from 'ical.js'
 
-dayjs.locale({
-  ...en,
-  weekStart: 1,
-})
+// dayjs.locale({
+//   ...en,
+//   weekStart: 1,
+// })
 
 
 const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_DATE_FORMAT) => {
-  return dayjs(String(date), format).format()
+  return formatISO(parse('' + date, format, new Date()))
 }
 
 type ICustomCalendar = {
@@ -35,7 +35,7 @@ export type ISettingsForm = {
   theme?: 'light' | 'dark' | 'auto'
   defaultView: string
   weekStartDay: 0 | 1
-  journalDateFormatter: string
+  // journalDateFormatter: string
   defaultDuration: {
     unit: string
     value: number
@@ -96,17 +96,18 @@ export const getSchedules = async () => {
 
     return flattenDeep(blocks).map(block => {
 
+      const _dateFormatter = ['scheduled', 'deadline'].includes(scheduleStart || scheduleEnd) ? DEFAULT_BLOCK_DEADLINE_DATE_FORMAT : dateFormatter || DEFAULT_JOURNAL_FORMAT
       const start = get(block, scheduleStart, undefined)
       const end = get(block, scheduleEnd, undefined)
-      let hasTime = /[Hhm]+/.test(dateFormatter || '')
+      let hasTime = /[Hhm]+/.test(_dateFormatter || '')
 
-      let _start = start && genCalendarDate(start, dateFormatter)
-      let _end = end && (hasTime ? genCalendarDate(end, dateFormatter) : dayjs(end, dateFormatter).endOf('day').format())
+      let _start = start && genCalendarDate(start, _dateFormatter)
+      let _end = end && (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
       if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
         if (time) {
-          _start = dayjs(`${start} ${time}`, 'YYYYMMDD HH:mm').format()
+          _start = formatISO(parse(`${start} ${time}`, 'yyyyMMdd HH:mm', new Date()))
           hasTime = true
         }
       }
@@ -114,14 +115,14 @@ export const getSchedules = async () => {
         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleEnd.toUpperCase()}:`))?.trim()
         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
         if (time) {
-          _end = dayjs(`${end} ${time}`, 'YYYYMMDD HH:mm').format()
+          _end = formatISO(parse(_end, 'yyyyMMdd HH:mm', new Date()))
           hasTime = true
         }
       }
 
       let _category: ICategory = hasTime ? 'time' : 'allday'
       if (isMilestone) _category = 'milestone'
-      const _isOverdue = isOverdue(block, end || start)
+      const _isOverdue = isOverdue(block, _end || _start)
       if (!isMilestone && _isOverdue) _category = 'task'
 
       const schedule = genSchedule({
@@ -187,8 +188,8 @@ message: ${res.reason.message}`
       return genSchedule({
         blockData: block,
         category: (_startTime || _endTime) ? 'time' : 'allday',
-        start: _startTime ? dayjs(date + ' ' + _startTime, 'YYYYMMDD HH:mm').format() : genCalendarDate(date),
-        end: _endTime ? dayjs(date + ' ' + _endTime, 'YYYYMMDD HH:mm').format() : undefined,
+        start: _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
+        end: _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
         calendarConfig: logKey,
         defaultDuration,
       })
@@ -222,10 +223,11 @@ function genSchedule(params: {
 
   const { defaultDuration: _defaultDuration } = DEFAULT_SETTINGS
   let _end = end
-  if (category === 'time' && !end && defaultDuration) {
+  if (category === 'time' && !end && start && defaultDuration) {
     const value = defaultDuration.value || _defaultDuration.value
     const unit = defaultDuration.unit || _defaultDuration.unit
-    _end = dayjs(start).add(value, unit).format()
+    const addDuration = unit === 'm' ? addMinutes : addHours
+    _end = formatISO(addDuration(parseISO(start), value))
   }
 
   return {
@@ -251,9 +253,12 @@ function genSchedule(params: {
  */
 export const getWeekly = async (startDate, endDate) => {
   const keyword = logseq.settings?.logKey?.id || DEFAULT_SETTINGS.logKey?.id
-  const journalFormat = logseq.settings?.journalDateFormatter || DEFAULT_JOURNAL_FORMAT
-  const _start = dayjs(startDate, SHOW_DATE_FORMAT).format(journalFormat)
-  const _end = dayjs(endDate, SHOW_DATE_FORMAT).format(journalFormat)
+  const res = await logseq.App.getUserConfigs()
+  console.log('[faiz:] === { preferredDateFormat }', res)
+ const { preferredDateFormat } = res
+  const journalFormat = preferredDateFormat || DEFAULT_JOURNAL_FORMAT
+  const _start = format(parse(startDate, SHOW_DATE_FORMAT, new Date()), journalFormat)
+  const _end = format(parse(endDate, SHOW_DATE_FORMAT, new Date()), journalFormat)
   const logs = await logseq.DB.q(`(and [[${keyword}]] (between [[${_start}]] [[${_end}]]))`)
   const _logs = logs
                   ?.filter(block => block.content?.trim() === `[[${keyword}]]`)
@@ -269,11 +274,9 @@ export const getWeekly = async (startDate, endDate) => {
 /**
  * 判断是否过期
  */
-export const isOverdue = (block: any, date: number | string) => {
+export const isOverdue = (block: any, date: string) => {
   if (block.marker && block.marker !== 'DONE') {
-    const now = dayjs()
-    const _date = dayjs(String(date), DEFAULT_BLOCK_DEADLINE_DATE_FORMAT)
-    return now.isAfter(_date, 'day')
+    return isAfter(new Date(), parseISO(date))
   }
   // 非 todo 及 done 的 block 不过期
   return false
@@ -324,7 +327,7 @@ export const genDefaultQuery = (pageName: string) => {
 [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
         `,
         scheduleStart: 'scheduled',
-        dateFormatter: 'YYYYMMDD',
+        dateFormatter: 'yyyyMMdd',
       },
       // deadline tasks
       {
@@ -341,7 +344,7 @@ export const genDefaultQuery = (pageName: string) => {
 [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
         `,
         scheduleStart: 'deadline',
-        dateFormatter: 'YYYYMMDD',
+        dateFormatter: 'yyyyMMdd',
       },
       // milestone
       {
@@ -355,7 +358,7 @@ export const genDefaultQuery = (pageName: string) => {
 [?block :block/refs ?rp]]
         `,
         scheduleStart: 'scheduled',
-        dateFormatter: 'YYYYMMDD',
+        dateFormatter: 'yyyyMMdd',
         isMilestone: true,
       }
     ],
@@ -403,8 +406,8 @@ export const getSubCalendarSchedules = async (subscriptionCalendarList: ISetting
       return genSchedule({
         blockData: { id: new Date().valueOf(), content: `${summary.value}\n${description.value}`, subscription: true },
         category: hasTime ? 'time' : 'allday',
-        start: dayjs(dtstart.value).format(),
-        end: dtend ? dayjs(dtend.value).format() : undefined,
+        start: dtstart.value,
+        end: dtend ? dtend.value : undefined,
         calendarConfig: enabledCalendarList[index],
         defaultDuration,
       })

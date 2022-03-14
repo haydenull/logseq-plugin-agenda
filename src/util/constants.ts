@@ -1,8 +1,8 @@
 import { ISettingsForm } from './util'
 
-export const SHOW_DATE_FORMAT = 'YYYY-MM-DD'
+export const SHOW_DATE_FORMAT = 'yyyy-MM-dd'
 
-export const DEFAULT_JOURNAL_FORMAT = 'YYYY-MM-DD ddd'
+export const DEFAULT_JOURNAL_FORMAT = 'yyyy-MM-dd EEE'
 
 export const DEFAULT_LOG_KEY = 'Daily Log'
 
@@ -23,7 +23,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   theme: 'auto',
   defaultView: 'month',
   weekStartDay: 0,
-  journalDateFormatter: 'YYYY-MM-DD ddd',
+  // journalDateFormatter: 'YYYY-MM-DD ddd',
   defaultDuration: {
     value: 0.5,
     unit: 'h',
@@ -54,7 +54,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
           `,
           scheduleStart: 'scheduled',
-          dateFormatter: 'YYYYMMDD',
+          dateFormatter: 'yyyyMMdd',
           queryType: 'advanced',
           isMilestone: false,
         },
@@ -69,7 +69,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
           `,
           scheduleStart: 'deadline',
-          dateFormatter: 'YYYYMMDD',
+          dateFormatter: 'yyyyMMdd',
           queryType: 'advanced',
           isMilestone: false,
         },
@@ -109,7 +109,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   [(missing? $ ?block :block/deadline)]]
           `,
           scheduleStart: 'page.journal-day',
-          dateFormatter: 'YYYYMMDD',
+          dateFormatter: 'yyyyMMdd',
           isMilestone: false,
           queryType: 'advanced',
         },
@@ -122,7 +122,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   [?block :block/refs ?rp]]
           `,
           scheduleStart: 'scheduled',
-          dateFormatter: 'YYYYMMDD',
+          dateFormatter: 'yyyyMMdd',
           isMilestone: true,
           queryType: 'advanced',
         }
@@ -193,7 +193,7 @@ export const CALENDAR_THEME = {
   'week.currentTimeLineFuture.border': '1px solid #135de6',
 }
 
-export const DEFAULT_BLOCK_DEADLINE_DATE_FORMAT = "YYYYMMDD"
+export const DEFAULT_BLOCK_DEADLINE_DATE_FORMAT = "yyyyMMdd"
 
 export const DURATION_UNITS = [
   // { value: 'w', label: 'week' },

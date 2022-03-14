@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Select } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
+import { format, formatISO, isSameDay } from 'date-fns'
 import { getSchedules, ISettingsForm, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
+import { parseISO } from 'date-fns/esm'
 
 const getDefaultOptions = () => {
   let defaultView = logseq.settings?.defaultView || 'month'
@@ -42,7 +44,13 @@ const getDefaultOptions = () => {
       popupDetailBody: (schedule: ISchedule) => {
         const calendar = `<br/><b>Calendar: ${schedule.calendarId}</b>`
         const navBtn = schedule.raw?.subscription ? '' : '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
-        return schedule.body?.split('\n').join('<br/>') + calendar + navBtn
+        return `
+          <div class="calendar-popup-detail-content">
+            ${schedule.body?.split('\n').join('<br/>')}
+          </div>
+          ${calendar}
+          ${navBtn}
+        `
       },
     },
   }
@@ -66,12 +74,12 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const changeShowDate = () => {
     if (calendarRef.current) {
-      const dateRangeStart = dayjs(calendarRef.current.getDateRangeStart().getTime())
-      const dateRangeEnd = dayjs(calendarRef.current.getDateRangeEnd().getTime())
-      if (dateRangeStart.isSame(dateRangeEnd, 'day')) {
-        setShowDate(dateRangeStart.format(SHOW_DATE_FORMAT))
+      const dateRangeStart = calendarRef.current.getDateRangeStart().getTime()
+      const dateRangeEnd = calendarRef.current.getDateRangeEnd().getTime()
+      if (isSameDay(dateRangeStart, dateRangeEnd)) {
+        setShowDate(format(dateRangeStart, SHOW_DATE_FORMAT))
       } else {
-        setShowDate(dateRangeStart.format(SHOW_DATE_FORMAT) + ' ~ ' + dateRangeEnd.format(SHOW_DATE_FORMAT))
+        setShowDate(format(dateRangeStart, SHOW_DATE_FORMAT) + ' ~ ' + format(dateRangeEnd, SHOW_DATE_FORMAT))
       }
     }
   }
@@ -80,34 +88,34 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     if (calendar) {
       calendar.clear()
 
-      const schedules = await getSchedules()
-      calendar.createSchedules(schedules)
-      // calendar.createSchedules([{
-      //   id: '1',
-      //   calendarId: 'journal',
-      //   title: 'Daily Log test',
-      //   category: 'time',
-      //   dueDateClass: '',
-      //   start: dayjs().format(),
-      //   isAllDay: true,
-      //   body: 'Daily Log test detail\n123',
-      //   bgColor: '#7ed3fd',
-      //   color: '#222',
-      //   borderColor: '#98dbfd',
-      // }, {
-      //   id: '1',
-      //   calendarId: 'journal',
-      //   title: 'Daily Log foo',
-      //   category: 'time',
-      //   dueDateClass: '',
-      //   start: dayjs().format(),
-      //   // isAllDay: true,
-      //   body: 'Daily Log test detail\n123',
-      //   bgColor: '#7ed3fd',
-      //   color: '#333',
-      //   borderColor: '#98dbfd',
-      //   // customStyle: 'opacity: 0.6;',
-      // }])
+      // const schedules = await getSchedules()
+      // calendar.createSchedules(schedules)
+      calendar.createSchedules([{
+        id: '1',
+        calendarId: 'journal',
+        title: 'Daily Log test',
+        category: 'time',
+        dueDateClass: '',
+        start: formatISO(new Date()),
+        isAllDay: true,
+        body: 'Daily Log test detail\n123',
+        bgColor: '#7ed3fd',
+        color: '#222',
+        borderColor: '#98dbfd',
+      }, {
+        id: '1',
+        calendarId: 'journal',
+        title: 'Daily Log foo',
+        category: 'time',
+        dueDateClass: '',
+        start: formatISO(new Date()),
+        // isAllDay: true,
+        body: 'Daily Log test detail\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123',
+        bgColor: '#7ed3fd',
+        color: '#333',
+        borderColor: '#98dbfd',
+        // customStyle: 'opacity: 0.6;',
+      }])
 
       calendar.render()
 

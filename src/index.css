@@ -14,3 +14,8 @@ html, body {
 .dark .mask {
   filter: invert(1) hue-rotate(180deg);
 }
+
+.calendar-popup-detail-content {
+  max-height: 200px;
+  overflow-y: auto;
+}

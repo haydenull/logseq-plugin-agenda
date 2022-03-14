@@ -76,14 +76,6 @@ const Settings: React.FC<{
               <Select.Option value={1}>Monday</Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Journal Date Formatter" required labelCol={{ span: 9 }}>
-            <div className="flex items-center">
-              <Form.Item name="journalDateFormatter" noStyle rules={[{ required: true }]} getValueFromEvent={(e) => e.target.value.trim()}><Input /></Form.Item>
-              <Tooltip title="View Formatter's rules">
-                <QuestionCircleOutlined className="ml-1" onClick={() => logseq.App.openExternalLink('https://day.js.org/docs/en/display/format')} />
-              </Tooltip>
-            </div>
-          </Form.Item>
           <Form.Item label="Default Duration" name={["defaultDuration", 'value']}>
             <InputNumber
               addonAfter={
