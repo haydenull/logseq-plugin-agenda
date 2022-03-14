@@ -62,9 +62,7 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 
 ~~依据自己每日日记的格式填写,例如我的日记是 `2022-03-07 Mon`,那么就填写 `YYYYMMDD ddd`~~
 
-1.8.1 版本移除了 journalDateFormatter 设置，改为自行从 logseq 获取，非常遗憾的是这个改动影响了原本的日期解析，如果你遇到报错 `Use `yyyy` instead of `YYYY` (in `YYYYMMDD`) for formatting` ，请在设置中点击 fx 按钮，将所有的 `YYYYMMDD` 改为 `yyyyMMdd`
-
-[文档](https://day.js.org/docs/en/display/format)
+**1.8.1 版本移除了 journalDateFormatter 设置，改为自行从 logseq 获取，非常遗憾的是这个改动影响了原本的日期解析，如果你遇到报错 `Use `yyyy` instead of `YYYY` (in `YYYYMMDD`) for formatting` ，请在设置中点击 fx 按钮，将所有的 `YYYYMMDD` 改为 `yyyyMMdd`**
 
 ### Log Key
 每日日志的关键字
@@ -155,3 +153,5 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 订阅日历与自定义配置一样，只不过少了 query，多了订阅 url。
 
 > 目前只支持了简单的事件，没有周期事件等功能。
+
+**一些日历如 Google Calendar 有跨域限制, 从应用市场安装的插件使用 lsp 协议加载, 可能请求失败. 可以尝试从 [release](https://github.com/haydenull/logseq-plugin-agenda/releases) 下载安装包手动加载插件**
