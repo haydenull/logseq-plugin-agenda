@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { Modal, Input } from 'antd'
-import { getWeekly } from '../util/util'
+import { copyToClipboard, getWeekly } from '../util/util'
 
 const Weekly: React.FC<{
   visible: boolean
@@ -26,9 +26,13 @@ const Weekly: React.FC<{
       {...props}
       destroyOnClose
       title="Weekly Logs"
+      okText="Copy And Close"
       visible={visible}
       onCancel={onCancel}
-      onOk={onCancel}
+      onOk={() => {
+        copyToClipboard(content || '')
+        onCancel()
+      }}
     >
       <Input.TextArea value={content} onChange={e => setContent(e.target.value)} rows={10} />
     </Modal>
