@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.7.0...v1.8.0) (2022-03-14)
+
+
+### Features
+
+* auto get logseq formatter config & optimze Long calendar item view ([d0125ca](https://github.com/haydenull/logseq-plugin-agenda/commit/d0125ca7e17522a69046dadbedb7cba058284626))
+
 # [1.7.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.6.0...v1.7.0) (2022-03-13)
 
 
