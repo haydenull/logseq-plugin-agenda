@@ -1,16 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
-import { Button, Select } from 'antd'
+import { Button, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
-// import dayjs from 'dayjs'
-import { format, formatISO, isSameDay } from 'date-fns'
+import { format, isSameDay, parse } from 'date-fns'
 import { getSchedules, ISettingsForm, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
-import { parseISO } from 'date-fns/esm'
 
 const getDefaultOptions = () => {
   let defaultView = logseq.settings?.defaultView || 'month'
@@ -37,7 +35,6 @@ const getDefaultOptions = () => {
       taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
       task: (schedule: ISchedule) => '🔥' + schedule.title,
       timegridDisplayPrimayTime: function(time) {
-        // will be deprecated. use 'timegridDisplayPrimaryTime'
         if (time.hour < 10) return '0' + time.hour + ':00'
         return time.hour + ':00'
       },
@@ -194,6 +191,14 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     }, 500)
     setSettingModal(false)
   }
+  const onClickShowDate = async () => {
+    if (currentView === 'day' && showDate) {
+      const { preferredDateFormat } = await logseq.App.getUserConfigs()
+      const date = format(parse(showDate, SHOW_DATE_FORMAT, new Date()), preferredDateFormat)
+      logseq.App.pushState('page', { name: date })
+      logseq.hideMainUI()
+    }
+  }
 
   useEffect(() => {
     managePluginTheme()
@@ -254,7 +259,15 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
             <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
 
-            <span className="ml-4 text-xl h-full items-center inline-block" style={{ height: '34px', lineHeight: '34px' }}>{ showDate }</span>
+            <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
+              <span
+                className={`ml-4 text-xl h-full items-center inline-block ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
+                style={{ height: '34px', lineHeight: '34px' }}
+                onClick={onClickShowDate}
+              >
+                { showDate }
+              </span>
+            </Tooltip>
           </div>
 
           <div>
@@ -264,7 +277,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             <Button onClick={onClickFullScreen} shape="circle" icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button>
           </div>
         </div>
-        {/* <div id="calendar" style={{ maxHeight: '606px' }}></div> */}
         <div id="calendar"></div>
         <Weekly
           visible={weeklyModal.visible}

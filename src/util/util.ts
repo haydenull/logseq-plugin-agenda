@@ -253,9 +253,7 @@ function genSchedule(params: {
  */
 export const getWeekly = async (startDate, endDate) => {
   const keyword = logseq.settings?.logKey?.id || DEFAULT_SETTINGS.logKey?.id
-  const res = await logseq.App.getUserConfigs()
-  console.log('[faiz:] === { preferredDateFormat }', res)
- const { preferredDateFormat } = res
+  const { preferredDateFormat } = await logseq.App.getUserConfigs()
   const journalFormat = preferredDateFormat || DEFAULT_JOURNAL_FORMAT
   const _start = format(parse(startDate, SHOW_DATE_FORMAT, new Date()), journalFormat)
   const _end = format(parse(endDate, SHOW_DATE_FORMAT, new Date()), journalFormat)
