@@ -6,7 +6,7 @@
 
 [English](./README.md) | 简体中文
 
-**原本的 journalDateFormatter 配置需要用户去读 dayjs 文档才能正确填写，1.8.1 版本移除了 journalDateFormatter 设置，改为自行从 logseq 获取，非常遗憾的是这个改动影响了原本的日期解析，如果你遇到报错 `Use `yyyy` instead of `YYYY` (in `YYYYMMDD`) for formatting` ，请请在设置中点击 fx 按钮，将所有的 `YYYYMMDD` 改为 `yyyyMMdd`**
+**原本的 journalDateFormatter 配置需要用户理解 dayjs 文档才能正确填写，1.8.1 版本移除了 journalDateFormatter 设置，改为自行从 logseq 获取，非常遗憾的是这个改动影响了原本的日期解析，如果你遇到报错 `Use `yyyy` instead of `YYYY` (in `YYYYMMDD`) for formatting` ，请在设置中点击 fx 按钮，将所有的 `YYYYMMDD` 改为 `yyyyMMdd`**
 
 现在插件使用 [date-fns](https://date-fns.org/v2.28.0/docs/parse) 解析日期。
 
@@ -57,10 +57,12 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 ### Week Start Day
 周开始日
 
-### Journal Date Formatter
-日记日期格式
+### ~~Journal Date Formatter(废弃)~~
+~~日记日期格式~~
 
-依据自己每日日记的格式填写,例如我的日记是 `2022-03-07 Mon`,那么就填写 `YYYYMMDD ddd`
+~~依据自己每日日记的格式填写,例如我的日记是 `2022-03-07 Mon`,那么就填写 `YYYYMMDD ddd`~~
+
+1.8.1 版本移除了 journalDateFormatter 设置，改为自行从 logseq 获取，非常遗憾的是这个改动影响了原本的日期解析，如果你遇到报错 `Use `yyyy` instead of `YYYY` (in `YYYYMMDD`) for formatting` ，请在设置中点击 fx 按钮，将所有的 `YYYYMMDD` 改为 `yyyyMMdd`
 
 [文档](https://day.js.org/docs/en/display/format)
 
@@ -102,7 +104,7 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 2. `query type`: query 的类型, 可以是 [Simple Query](https://logseq.github.io/#/page/Queries) 或 [Advanced Query](https://logseq.github.io/#/page/AdvancedQueries)
 2. `schedule start`: 从 datascriptQuery 查询的 block 取出 `schedule start` 指定的字段作为 agenda 开始时间
 3. `schedule end`: 从 datascriptQuery 查询的 block 取出 `schedule end` 指定的字段作为 agenda 结束时间
-4. `date formatter`: 日期格式, 以此为参数使用 [dayjs](https://day.js.org/docs/en/display/format) 将 `schedule start` `schedule end` 转换为可用的日期
+4. `date formatter`: 日期格式, 以此为参数使用 [date-fns](https://date-fns.org/v2.28.0/docs/parse) 将 `schedule start` `schedule end` 转换为可用的日期
 5. `is milestone`: 是否是里程碑, 如果是, 则会展示在日历的 Milestone 中
 
 如果你不知道如何填写 `schedule start` `schedule end`, 可以打开控制台, 然后点击 play 按钮:

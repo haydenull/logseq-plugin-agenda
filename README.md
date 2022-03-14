@@ -54,12 +54,13 @@ default view
 ### Week Start Day
 default week start day
 
-### Journal Date Formatter
-default journal date formatter
+### ~~Journal Date Formatter(Removed)~~
+~~default journal date formatter~~
 
-Fill in the format of your daily diary, for example my diary is `2022-03-07 Mon`, then fill in the` YYYYMMDD DDD`.
+~~Fill in the format of your daily diary, for example my diary is `2022-03-07 Mon`, then fill in the` YYYYMMDD DDD`.~~
 
-[document](https://day.js.org/docs/en/display/format)
+**1.8.1 版本移除了 journalDateFormatter 设置，改为自行从 logseq 获取，非常遗憾的是这个改动影响了原本的日期解析，如果你遇到报错 `Use `yyyy` instead of `YYYY` (in `YYYYMMDD`) for formatting` ，请在设置中点击 fx 按钮，将所有的 `YYYYMMDD` 改为 `yyyyMMdd`**
+
 
 ### Log Key
 Daily log key.
@@ -98,7 +99,7 @@ Let me explain what the configuration items are:
 2. `query type`: The type of query, can be [Simple Query](https://logseq.github.io/#/page/Queries) or [Advanced Query](https://logseq.github.io/#/page/AdvancedQueries).
 2. `schedule start`: Take the field specified by `schedule start` from the block of the datascriptQuery query as the agenda start time.
 3. `schedule end`: Take the field specified by `schedule end` from the block of the datascriptQuery query as the agenda end time.
-4. `date formatter`: The date formatter. Use this as dayjs parameter to  convert `schedule start` `schedule end` to an available date.
+4. `date formatter`: The date formatter. Use this as [date-fns](https://date-fns.org/v2.28.0/docs/parse) parameter to  convert `schedule start` `schedule end` to an available date.
 5. `is milestone`: Whether the block is a milestone. If it is, the block will be displayed in the calendar as a milestone.
 
 If you don't konw how to fill `schedule start` `schedule end`, you can open DevTools and click the play button:
