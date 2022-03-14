@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.8.0...v1.8.1) (2022-03-14)
+
+
+### Bug Fixes
+
+* remove debug code ([6832b54](https://github.com/haydenull/logseq-plugin-agenda/commit/6832b54b2a0b952cd63b5e862d04e268803ba78b))
+
 # [1.8.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.7.0...v1.8.0) (2022-03-14)
 
 
