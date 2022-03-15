@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.0...v1.9.1) (2022-03-15)
+
+
+### Bug Fixes
+
+* 🐛 fix today's task always overdue ([186d2cf](https://github.com/haydenull/logseq-plugin-agenda/commit/186d2cfa0ab41c3eb5b2666a404a3824de09b1b9))
+
 # [1.9.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.8.1...v1.9.0) (2022-03-14)
 
 
