@@ -1,4 +1,4 @@
-import { addHours, addMinutes, endOfDay, format, formatISO, isAfter, parse, parseISO } from 'date-fns'
+import { addHours, addMinutes, endOfDay, format, formatISO, isAfter, parse, parseISO, startOfDay } from 'date-fns'
 import { flattenDeep, get } from 'lodash'
 // import en from 'dayjs/locale/en'
 import { ISchedule } from 'tui-calendar'
@@ -274,7 +274,7 @@ export const getWeekly = async (startDate, endDate) => {
  */
 export const isOverdue = (block: any, date: string) => {
   if (block.marker && block.marker !== 'DONE') {
-    return isAfter(new Date(), parseISO(date))
+    return isAfter(startOfDay(new Date()), parseISO(date))
   }
   // 非 todo 及 done 的 block 不过期
   return false
