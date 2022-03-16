@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
-import { format, isSameDay, parse } from 'date-fns'
+import { format, formatISO, isSameDay, parse } from 'date-fns'
 import { getSchedules, ISettingsForm, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
@@ -93,7 +93,8 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       //   title: 'Daily Log test',
       //   category: 'time',
       //   dueDateClass: '',
-      //   start: formatISO(new Date()),
+      //   start: '2022-03-14',
+      //   end: '2022-03-15T00:00:00',
       //   isAllDay: true,
       //   body: 'Daily Log test detail\n123',
       //   bgColor: '#7ed3fd',

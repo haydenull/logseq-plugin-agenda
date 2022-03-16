@@ -132,6 +132,7 @@ export const getSchedules = async () => {
         end: _end,
         calendarConfig,
         defaultDuration,
+        isAllDay: !hasTime,
       })
       // show overdue tasks in today
       return _isOverdue
@@ -142,7 +143,8 @@ export const getSchedules = async () => {
             category: _category,
             calendarConfig,
             defaultDuration,
-          })
+            isAllDay: !hasTime,
+          }),
         ]
         : schedule
     })
@@ -185,19 +187,26 @@ message: ${res.reason.message}`
     calendarSchedules = calendarSchedules.concat(_logs?.map(block => {
       const date = block?.page?.journalDay
       const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
+      const hasTime = _startTime || _endTime
       return genSchedule({
         blockData: block,
-        category: (_startTime || _endTime) ? 'time' : 'allday',
+        category: hasTime ? 'time' : 'allday',
         start: _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
         end: _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
         calendarConfig: logKey,
         defaultDuration,
+        isAllDay: !hasTime,
       })
     }))
   }
 
-  const subSchedules = await getSubCalendarSchedules(subscriptionList, defaultDuration)
-
+  let subSchedules = []
+  try {
+    subSchedules = await getSubCalendarSchedules(subscriptionList, defaultDuration)
+  } catch (error) {
+    console.log('[faiz:] === getSubCalendarSchedules error', error)
+    logseq.App.showMsg('Get Subscription Schedule Error', 'error')
+  }
   calendarSchedules = calendarSchedules.concat(subSchedules)
 
   return calendarSchedules
@@ -395,21 +404,26 @@ export const getSubCalendarSchedules = async (subscriptionCalendarList: ISetting
   let schedules = []
   resList.forEach((res, index) => {
     if (res.status === 'rejected') return logseq.App.showMsg(`Get Calendar ${enabledCalendarList[index].id} data error\n${res.reason}`, 'error')
-    const data = ical.parse(res.value.data)
-    const { events } = parseVCalendar(data)
-
-    schedules = schedules.concat(events.map(event => {
-      const { dtstart, dtend, summary, description } = event
-      const hasTime = dtstart.type === 'date-time'
-      return genSchedule({
-        blockData: { id: new Date().valueOf(), content: `${summary.value}\n${description.value}`, subscription: true },
-        category: hasTime ? 'time' : 'allday',
-        start: dtstart.value,
-        end: dtend ? dtend.value : undefined,
-        calendarConfig: enabledCalendarList[index],
-        defaultDuration,
-      })
-    }))
+    try {
+      const data = ical.parse(res.value.data)
+      const { events } = parseVCalendar(data)
+      schedules = schedules.concat(events.map(event => {
+        const { dtstart, dtend, summary, description } = event
+        const hasTime = dtstart.type === 'date-time'
+        return genSchedule({
+          blockData: { id: new Date().valueOf(), content: `${summary.value}\n${description?.value || ''}`, subscription: true },
+          category: hasTime ? 'time' : 'allday',
+          start: dtstart.value,
+          end: dtend ? (hasTime ? dtend?.value : formatISO(parseISO(dtend?.value))) : undefined,
+          calendarConfig: enabledCalendarList[index],
+          defaultDuration,
+          isAllDay: !hasTime,
+        })
+      }))
+    } catch (error) {
+      logseq.App.showMsg(`Parse Calendar ${enabledCalendarList[index].id} data error\n${error}`, 'error')
+      console.log('[faiz:] === Parse Calendar error', error)
+    }
   })
 
   return schedules
