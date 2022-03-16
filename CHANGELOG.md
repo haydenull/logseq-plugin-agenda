@@ -1,3 +1,11 @@
+## [1.9.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.3...v1.9.4) (2022-03-16)
+
+
+### Bug Fixes
+
+* 🐛 milestone overwrite by allday ([b314ac8](https://github.com/haydenull/logseq-plugin-agenda/commit/b314ac845b64fa48fd6385ec44fbf15623462a93))
+* 🐛 parse subscription calendar end date error ([2be2880](https://github.com/haydenull/logseq-plugin-agenda/commit/2be28803abc5e94d5f77a9ef542e47de3973e323))
+
 ## [1.9.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.2...v1.9.3) (2022-03-16)
 
 
