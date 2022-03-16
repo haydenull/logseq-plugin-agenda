@@ -153,5 +153,3 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 订阅日历与自定义配置一样，只不过少了 query，多了订阅 url。
 
 > 目前只支持了简单的事件，没有周期事件等功能。
-
-**一些日历如 Google Calendar 有跨域限制, 从应用市场安装的插件使用 lsp 协议加载, 可能请求失败. 可以尝试从 [release](https://github.com/haydenull/logseq-plugin-agenda/releases) 下载安装包手动加载插件**

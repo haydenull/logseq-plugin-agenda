@@ -150,5 +150,3 @@ The above two methods are equivalent .The following will appear:
 Subscription is the same as a custom calendar configuration, except that there is no query and url are added.
 
 > At present, only simple events are supported, and there are no functions such as periodic events.
-
-**Some of the subscription calendars(eg: Google Calendar) has corss origin policy. The Plugin runs in an iframe with lsp protocol when it installed from the Marketplace, and the iframe can't access the calendar API. You can download the plugin from [release](https://github.com/haydenull/logseq-plugin-agenda/releases) and load it manually.**
