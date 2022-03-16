@@ -1,3 +1,10 @@
+## [1.9.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.2...v1.9.3) (2022-03-16)
+
+
+### Bug Fixes
+
+* 🐛 Adapt effect true ([a06a46b](https://github.com/haydenull/logseq-plugin-agenda/commit/a06a46b3e9fbd1af34c5660dfcbf3efb9c3dc04a))
+
 ## [1.9.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.1...v1.9.2) (2022-03-16)
 
 
