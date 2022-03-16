@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.1...v1.9.2) (2022-03-16)
+
+
+### Bug Fixes
+
+* week view cannot scroll to current time load by file protocol ([f338448](https://github.com/haydenull/logseq-plugin-agenda/commit/f3384489daebff91062b09a6425f800ecc1f38e7))
+
 ## [1.9.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.0...v1.9.1) (2022-03-15)
 
 
