@@ -235,7 +235,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             const page = await logseq.Editor.getPage(pageId)
             pageName = page?.originalName
           }
-          const { blockUuid } = await logseq.Editor.getBlock(rawData.id) || { blockUuid: undefined }
+          const { uuid: blockUuid } = await logseq.Editor.getBlock(rawData.id) || { uuid: '' }
           logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
           logseq.hideMainUI()
         }, { once: true })

@@ -411,7 +411,7 @@ export const getSubCalendarSchedules = async (subscriptionCalendarList: ISetting
         const { dtstart, dtend, summary, description } = event
         const hasTime = dtstart.type === 'date-time'
         return genSchedule({
-          blockData: { id: new Date().valueOf(), content: `${summary.value}\n${description?.value || ''}`, subscription: true },
+          blockData: { id: new Date().valueOf(), content: `${summary?.value || 'no summary'}\n${description?.value || ''}`, subscription: true },
           category: hasTime ? 'time' : 'allday',
           start: dtstart.value,
           end: dtend ? (hasTime ? dtend?.value : formatISO(parseISO(dtend?.value))) : undefined,
