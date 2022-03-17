@@ -1,3 +1,10 @@
+## [1.9.5](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.4...v1.9.5) (2022-03-17)
+
+
+### Bug Fixes
+
+* 🐛 errors caused by no summary ([53f042f](https://github.com/haydenull/logseq-plugin-agenda/commit/53f042fccd2b925639390b826d79d973e6dd101e))
+
 ## [1.9.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.3...v1.9.4) (2022-03-16)
 
 
