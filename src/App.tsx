@@ -228,16 +228,14 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       calendarRef.current.on('clickSchedule', function(info) {
         document.querySelector('#faiz-nav-detail')?.addEventListener('click', async (e) => {
           const rawData = info.schedule.raw || {}
-          const { id: pageId, originalName } = rawData?.page
+          const { id: pageId, originalName } = rawData?.page || {}
           let pageName = originalName
-          let blockUuid = rawData?.uuid
           // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
           if (!pageName) {
             const page = await logseq.Editor.getPage(pageId)
             pageName = page?.originalName
-            const block = await logseq.Editor.getBlock(rawData.id)
-            blockUuid = block?.uuid
           }
+          const { blockUuid } = await logseq.Editor.getBlock(rawData.id) || { blockUuid: undefined }
           logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
           logseq.hideMainUI()
         }, { once: true })
