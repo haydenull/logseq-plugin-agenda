@@ -11,6 +11,7 @@ import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
 import type { IAgendaForm } from './components/ModifySchedule'
+import dayjs from 'dayjs'
 
 const getDefaultOptions = () => {
   let defaultView = logseq.settings?.defaultView || 'month'
@@ -248,13 +249,13 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         }, { once: true })
       })
       calendarRef.current.on('beforeCreateSchedule', function(event) {
-        console.log('[faiz:] === beforeCreateSchedule', event)
+        console.log('[faiz:] === beforeCreateSchedule', event, typeof event.start, dayjs(event.start))
         setModifyScheduleModal({
           visible: true,
           values: {
-            start: event.start,
-            end: event.end,
-            isAllDay: event.isAllDay,
+            start: dayjs(event.start),
+            end: dayjs(event.end),
+            isAllDay: event.triggerEventName === 'dblclick',
           }
         })
         calendarRef.current?.render()
@@ -317,11 +318,19 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           onCancel={() => setSettingModal(false)}
           onOk={onSettingChange}
         />
-        <ModifySchedule
-          visible={modifyScheduleModal.visible}
-          initialValues={modifyScheduleModal.values}
-          onCancel={() => setModifyScheduleModal({ visible: false })}
-        />
+        {
+          modifyScheduleModal.visible
+          ? <ModifySchedule
+            visible={modifyScheduleModal.visible}
+            initialValues={modifyScheduleModal.values}
+            onCancel={() => setModifyScheduleModal({ visible: false })}
+            onSave={() => {
+              setModifyScheduleModal({ visible: false })
+              setSchedules()
+            }}
+          />
+          : null
+        }
       </div>
     </div>
   )

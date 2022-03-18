@@ -1,47 +1,51 @@
 import React, { useEffect, useState } from 'react'
 import { DatePicker, Form, Input, Modal, Radio, Select } from 'antd'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
+import { ICustomCalendar, ISettingsForm } from '../util/util'
+import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 
 export type IAgendaForm = {
   calendarId: string
   title: string
-  start: number
-  end: number
+  start: Dayjs
+  end: Dayjs
   isAllDay?: boolean
 }
 
 const ModifySchedule: React.FC<{
   visible: boolean
   initialValues?: Omit<IAgendaForm, 'title' | 'calendarId'>
-  onSave?: (params: IAgendaForm) => void
+  onSave?: () => void
   onCancel?: () => void
 }> = ({ visible, initialValues, onCancel, onSave }) => {
-  const [agendaCalendars, setAgendaCalendars] = useState<{label: string; value: string}[]>([])
-  const [showTime, setShowTime] = useState(false)
+  const [agendaCalendars, setAgendaCalendars] = useState<ICustomCalendar[]>([])
+  const [showTime, setShowTime] = useState(!initialValues?.isAllDay)
 
   const [form] = Form.useForm()
 
   const onFormChange = (changedValues, allValues) => {
-    if (changedValues.isAllDay) {
+    if (changedValues.isAllDay !== undefined) {
       setShowTime(!changedValues.isAllDay)
     }
   }
   const onClickSave = () => {
     form.validateFields().then(async values => {
-      const { calendarId, title, start, end, allDay } = values
+      const { calendarId, title, start, end, isAllDay } = values
       const startDate = dayjs(start).format('YYYY-MM-DD')
       const endDate = dayjs(end).format('YYYY-MM-DD')
-      const startTime = dayjs(start).format('HH:mm:ss')
-      const endTime = dayjs(end).format('HH:mm:ss')
-      const params = {
-        calendarId,
-        title,
-        start: `${startDate}T${startTime}`,
-        end: `${endDate}T${endTime}`,
-        allDay,
-      }
+      const startTime = dayjs(start).format('HH:mm')
+      const endTime = dayjs(end).format('HH:mm')
       console.log('[faiz:] === onClickSave', values)
-      // onSave(params)
+
+      await logseq.Editor.insertBlock(calendarId?.value, `TODO ${title}`, {
+        isPageBlock: true,
+        sibling: true,
+        properties: {
+          start: isAllDay ? startDate : `${startDate} ${startTime}`,
+          end: isAllDay ? endDate : `${endDate} ${endTime}`,
+        },
+      })
+      onSave?.()
     })
   }
   const onClickCancel = () => {
@@ -49,14 +53,21 @@ const ModifySchedule: React.FC<{
   }
 
   useEffect(() => {
-    logseq.DB.q(`(page-property agenda "true")`)
-      .then(pages => {
-        if (pages && pages?.length > 0) {
-          setAgendaCalendars(pages.map(page => ({ label: page.originalName, value: page.originalName })))
-          return
-        }
-        logseq.App.showMsg('No agenda page found', 'error')
-      })
+    const { calendarList } = logseq.settings as unknown as ISettingsForm
+    const calendarPagePromises = calendarList.map(calendar => logseq.Editor.getPage(calendar.id))
+    Promise.all(calendarPagePromises).then((pages: (PageEntity | null)[]) => {
+      console.log('[faiz:] === page', pages)
+      // calendarList[index].isAgenda = page.pro
+      const agendaPages = pages
+                            .map((page, index) => {
+                              if (!page) return page
+                              if ((page as any)?.properties?.agenda !== true) return null
+                              return calendarList[index]
+                            })
+                            .filter(Boolean)
+      if (agendaPages?.length <= 0) return logseq.App.showMsg('No agenda page found\nPlease create an agenda calendar first', 'error')
+      setAgendaCalendars(agendaPages as ICustomCalendar[])
+    })
   }, [])
 
   return (
@@ -71,19 +82,26 @@ const ModifySchedule: React.FC<{
         onValuesChange={onFormChange}
         initialValues={initialValues}
       >
-        <Form.Item name="calendarId" label="Calendar">
-          <Select options={agendaCalendars} />
+        <Form.Item name="calendarId" label="Calendar" rules={[{ required: true }]}>
+          <Select labelInValue>
+            {agendaCalendars.map(calendar => (
+              <Select.Option key={calendar.id} value={calendar.id}>
+                <span style={{ width: '12px', height: '12px', display: 'inline-block', backgroundColor: calendar.bgColor, verticalAlign: 'middle', marginRight: '5px', borderRadius: '4px'}}></span>
+                {calendar.id}
+              </Select.Option>
+            ))}
+          </Select>
         </Form.Item>
-        <Form.Item name="title" label="Agenda Title">
+        <Form.Item name="title" label="Agenda Title" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="start" label="Start">
-          <DatePicker showTime={showTime} />
+        <Form.Item name="start" label="Start" rules={[{ required: true }]}>
+          <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} />
         </Form.Item>
         <Form.Item name="end" label="End">
-          <DatePicker showTime={showTime} />
+          <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} />
         </Form.Item>
-        <Form.Item name="isAllDay" label="All Day">
+        <Form.Item name="isAllDay" label="All Day" rules={[{ required: true }]}>
           <Radio.Group>
             <Radio value={true}>Yes</Radio>
             <Radio value={false}>No</Radio>

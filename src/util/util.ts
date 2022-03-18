@@ -16,7 +16,7 @@ const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_
   return formatISO(parse('' + date, format, new Date()))
 }
 
-type ICustomCalendar = {
+export type ICustomCalendar = {
   id: string
   bgColor: string
   textColor: string
@@ -101,8 +101,15 @@ export const getSchedules = async () => {
       const end = get(block, scheduleEnd, undefined)
       let hasTime = /[Hhm]+/.test(_dateFormatter || '')
 
-      let _start = start && genCalendarDate(start, _dateFormatter)
-      let _end = end && (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
+      let _start
+      let _end
+      try {
+        _start = start && genCalendarDate(start, _dateFormatter)
+        _end = end && (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
+      } catch (err) {
+        console.log('[faiz:] === parse calendar date error: ', err)
+        return []
+      }
       if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
