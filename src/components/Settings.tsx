@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Modal, Form, Select, Input, Button, Switch, Tooltip, Popconfirm, InputNumber } from 'antd'
 import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { genDefaultQuery, getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/util'
+import { genAgendaQuery, genDefaultQuery, getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/util'
 import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
 import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, THEME } from '../util/constants'
@@ -26,11 +26,11 @@ const Settings: React.FC<{
       onOk(values)
     })
   }
-  const onCreateCalendarModalOk = (calendarId: string) => {
+  const onCreateCalendarModalOk = ({ name: calendarId, agenda = false }) => {
     settingForm.setFieldsValue({
       calendarList: [
         ...settingForm.getFieldValue('calendarList'),
-        genDefaultQuery(calendarId),
+        agenda ? genAgendaQuery(calendarId) : genDefaultQuery(calendarId),
       ]
     })
     setCreateCalendarModalVisible(false)

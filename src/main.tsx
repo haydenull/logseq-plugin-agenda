@@ -1,9 +1,15 @@
 import '@logseq/libs'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import dayjs from 'dayjs'
+import weekday from 'dayjs/plugin/weekday'
+import localeData from 'dayjs/plugin/localeData'
 import App from './App'
 import './index.css'
 import { initializeSettings } from './util/util'
+
+dayjs.extend(weekday)
+dayjs.extend(localeData)
 
 const isDevelopment = import.meta.env.DEV
 

@@ -16,7 +16,7 @@ const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_
   return formatISO(parse('' + date, format, new Date()))
 }
 
-type ICustomCalendar = {
+export type ICustomCalendar = {
   id: string
   bgColor: string
   textColor: string
@@ -101,8 +101,15 @@ export const getSchedules = async () => {
       const end = get(block, scheduleEnd, undefined)
       let hasTime = /[Hhm]+/.test(_dateFormatter || '')
 
-      let _start = start && genCalendarDate(start, _dateFormatter)
-      let _end = end && (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
+      let _start
+      let _end
+      try {
+        _start = start && genCalendarDate(start, _dateFormatter)
+        _end = end && (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
+      } catch (err) {
+        console.warn('[faiz:] === parse calendar date error: ', err, block, query)
+        return []
+      }
       if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
@@ -213,22 +220,24 @@ message: ${res.reason.message}`
 }
 
 type ICategory = 'time' | 'allday' | 'milestone' | 'task'
-function genSchedule(params: {
+export function genSchedule(params: {
   blockData: any
   category: ICategory
   start?: string
   end?:string
   calendarConfig: Omit<ISettingsForm['calendarList'][number], 'query'>
   isAllDay?: boolean
+  isReadOnly?: boolean
   defaultDuration?: ISettingsForm['defaultDuration']
 }) {
-  const { blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration } = params
+  const { blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
   const title = blockData.content
                   .split('\n')[0]
                   ?.replace(new RegExp(`^${blockData.marker} `), '')
                   ?.replace(/^(\d{2}:\d{2})(-\d{2}:\d{2})*/, '')
                   ?.trim?.()
   const isDone = blockData.marker === 'DONE'
+  const isSupportEdit = isReadOnly === undefined ? blockData.page?.properties?.agenda === true : !isReadOnly
 
   const { defaultDuration: _defaultDuration } = DEFAULT_SETTINGS
   let _end = end
@@ -254,6 +263,7 @@ function genSchedule(params: {
     borderColor: calendarConfig?.borderColor,
     isAllDay,
     customStyle: isDone ? 'opacity: 0.6;' : '',
+    isReadOnly: !isSupportEdit,
   }
 }
 
@@ -372,6 +382,94 @@ export const genDefaultQuery = (pageName: string) => {
   }
 }
 
+export const genAgendaQuery = (pageName: string) => {
+  return {
+    id: pageName,
+    bgColor: '#b8e986',
+    textColor: '#4a4a4a',
+    borderColor: '#047857',
+    enabled: true,
+    query: [
+      {
+        script: `
+[:find (pull
+  ?block
+  [:block/uuid
+    :db/id
+    :block/parent
+    :block/left
+    :block/collapsed?
+    :block/format
+    :block/_refs
+    :block/path-refs
+    :block/tags
+    :block/content
+    :block/marker
+    :block/priority
+    :block/properties
+    :block/pre-block?
+    :block/scheduled
+    :block/deadline
+    :block/repeated?
+    :block/created-at
+    :block/updated-at
+    :block/file
+    :block/heading-level
+    {:block/page
+    [:db/id :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}])
+:where
+[?block :block/marker ?marker]
+[?page :block/name ?pname]
+[?block :block/page ?page]
+[(contains? #{"${pageName}"} ?pname)]
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
+        `,
+        scheduleStart: 'properties.start',
+        scheduleEnd: 'properties.end',
+        dateFormatter: 'yyyy-MM-dd',
+      },
+      {
+        script: `
+[:find (pull
+  ?block
+  [:block/uuid
+    :db/id
+    :block/parent
+    :block/left
+    :block/collapsed?
+    :block/format
+    :block/_refs
+    :block/path-refs
+    :block/tags
+    :block/content
+    :block/marker
+    :block/priority
+    :block/properties
+    :block/pre-block?
+    :block/scheduled
+    :block/deadline
+    :block/repeated?
+    :block/created-at
+    :block/updated-at
+    :block/file
+    :block/heading-level
+    {:block/page
+    [:db/id :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}])
+:where
+[?block :block/marker ?marker]
+[?page :block/name ?pname]
+[?block :block/page ?page]
+[(contains? #{"${pageName}"} ?pname)]
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
+        `,
+        scheduleStart: 'properties.start',
+        scheduleEnd: 'properties.end',
+        dateFormatter: 'yyyy-MM-dd HH:mm',
+      },
+    ]
+  }
+}
+
 export const log = (msg, color='blue') => console.log(`%c${msg}`, `color:${color}`)
 
 export const setPluginTheme = (theme: 'dark' | 'light') => {
@@ -465,4 +563,18 @@ export const copyToClipboard = (text: string) => {
   textArea.select()
   document.execCommand('copy')
   document.body.removeChild(textArea)
+}
+
+export const updateBlock = async (blockId: number, content: string | false, properties?: Record<string, any>) => {
+  const block = await logseq.Editor.getBlock(blockId)
+  if (!block) {
+    logseq.App.showMsg('Block not found', 'error')
+    return Promise.reject(new Error('Block not found'))
+  }
+  if (content) {
+    // propteties param not working
+    await logseq.Editor.updateBlock(block.uuid, content)
+  }
+  const upsertBlockPropertyPromises = Object.keys(properties || {}).map(key => logseq.Editor.upsertBlockProperty(block.uuid, key, properties?.[key]))
+  return Promise.allSettled(upsertBlockPropertyPromises)
 }

@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
-import { Button, Select, Tooltip } from 'antd'
+import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
 import { format, formatISO, isSameDay, parse } from 'date-fns'
-import { getSchedules, ISettingsForm, managePluginTheme } from './util/util'
+import { genSchedule, getSchedules, ISettingsForm, managePluginTheme, updateBlock } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
+import ModifySchedule from './components/ModifySchedule'
+import type { IScheduleValue } from './components/ModifySchedule'
+import dayjs, { Dayjs } from 'dayjs'
 
 const getDefaultOptions = () => {
   let defaultView = logseq.settings?.defaultView || 'month'
@@ -18,8 +21,10 @@ const getDefaultOptions = () => {
     taskView: true,
     scheduleView: true,
     useDetailPopup: true,
-    isReadOnly: true,
+    isReadOnly: false,
+    disableClick: true,
     theme: CALENDAR_THEME,
+    usageStatistics: false,
     week: {
       startDayOfWeek: logseq.settings?.weekStartDay || 0,
       // narrowWeekend: true,
@@ -67,6 +72,14 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     end?: string
   }>({ visible: false })
   const [settingModal, setSettingModal] = useState(false)
+  const [modifyScheduleModal, setModifyScheduleModal] = useState<{
+    visible: boolean
+    type?: 'create' | 'update'
+    values?: IScheduleValue
+  }>({
+    visible: false,
+    type: 'create',
+  })
   const calendarRef = useRef<Calendar>()
 
   const changeShowDate = () => {
@@ -115,7 +128,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       //   // customStyle: 'opacity: 0.6;',
       // }])
 
-      calendar.render()
+      // calendar.render()
 
     }
   }
@@ -240,6 +253,64 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           logseq.hideMainUI()
         }, { once: true })
       })
+      calendarRef.current.on('beforeCreateSchedule', function(event) {
+        console.log('[faiz:] === beforeCreateSchedule', event, typeof event.start, dayjs(event.start))
+        setModifyScheduleModal({
+          visible: true,
+          type: 'create',
+          values: {
+            start: dayjs(event.start),
+            end: dayjs(event.end),
+            isAllDay: event.triggerEventName === 'dblclick',
+          }
+        })
+      })
+      calendarRef.current.on('beforeUpdateSchedule', async function(event) {
+        console.log('[faiz:] === beforeUpdateSchedule', event)
+        const { schedule, changes, triggerEventName } = event
+        if (triggerEventName === 'click') {
+          setModifyScheduleModal({
+            visible: true,
+            type: 'update',
+            values: {
+              id: schedule.id,
+              start: dayjs(schedule.start),
+              end: dayjs(schedule.end),
+              isAllDay: schedule.isAllDay,
+              calendarId: schedule.calendarId,
+              title: schedule.raw?.content?.split('\n')[0],
+              raw: schedule.raw,
+            },
+          })
+        } else if (changes) {
+          let properties = {}
+          let scheduleChanges = {}
+          Object.keys(changes).forEach(key => {
+            if (schedule.isAllDay) {
+              properties[key] = dayjs(changes[key]).format('YYYY-MM-DD')
+            } else {
+              properties[key] = dayjs(changes[key]).format('YYYY-MM-DD HH:mm')
+            }
+            scheduleChanges[key] = dayjs(changes[key]).format()
+          })
+          calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
+          await updateBlock(schedule.id, false, properties)
+        }
+      })
+      calendarRef.current.on('beforeDeleteSchedule', function(event) {
+        console.log('[faiz:] === beforeDeleteSchedule', event)
+        const { schedule } = event
+        Modal.confirm({
+          title: 'Are you sure delete this schedule?',
+          content: <div className="whitespace-pre-line">{schedule.raw?.content}</div>,
+          onOk: async () => {
+            const block = await logseq.Editor.getBlock(schedule.raw?.id)
+            if (!block) return logseq.App.showMsg('Block not found', 'error')
+            logseq.Editor.removeBlock(block?.uuid)
+            calendarRef.current?.deleteSchedule(schedule.id, schedule.calendarId)
+          },
+        })
+      })
     }, 0)
   }, [])
 
@@ -292,6 +363,20 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           onCancel={() => setSettingModal(false)}
           onOk={onSettingChange}
         />
+        {
+          modifyScheduleModal.visible
+          ? <ModifySchedule
+            visible={modifyScheduleModal.visible}
+            type={modifyScheduleModal.type}
+            initialValues={modifyScheduleModal.values}
+            calendar={calendarRef.current}
+            onCancel={() => setModifyScheduleModal({ visible: false })}
+            onSave={() => {
+              setModifyScheduleModal({ visible: false })
+            }}
+          />
+          : null
+        }
       </div>
     </div>
   )
