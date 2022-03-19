@@ -236,6 +236,7 @@ function genSchedule(params: {
                   ?.replace(/^(\d{2}:\d{2})(-\d{2}:\d{2})*/, '')
                   ?.trim?.()
   const isDone = blockData.marker === 'DONE'
+  const isSupportEdit = blockData.page?.properties?.agenda === true
 
   const { defaultDuration: _defaultDuration } = DEFAULT_SETTINGS
   let _end = end
@@ -261,6 +262,7 @@ function genSchedule(params: {
     borderColor: calendarConfig?.borderColor,
     isAllDay,
     customStyle: isDone ? 'opacity: 0.6;' : '',
+    isReadOnly: !isSupportEdit,
   }
 }
 
@@ -379,7 +381,6 @@ export const genDefaultQuery = (pageName: string) => {
   }
 }
 
-// TODO: 完善默认配置
 export const genAgendaQuery = (pageName: string) => {
   return {
     id: pageName,
@@ -573,6 +574,4 @@ export const updateBlock = async (blockId: number, content: string, properties?:
   await logseq.Editor.updateBlock(block.uuid, content)
   const upsertBlockPropertyPromises = Object.keys(properties || {}).map(key => logseq.Editor.upsertBlockProperty(block.uuid, key, properties?.[key]))
   return Promise.allSettled(upsertBlockPropertyPromises)
-  // await logseq.Editor.upsertBlockProperty(block.uuid, 'start', isAllDay ? startDate : `${startDate} ${startTime}`)
-  // await logseq.Editor.upsertBlockProperty(block.uuid, 'end', isAllDay ? endDate : `${endDate} ${endTime}`)
 }

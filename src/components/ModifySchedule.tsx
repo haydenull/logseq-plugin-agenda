@@ -55,7 +55,6 @@ const ModifySchedule: React.FC<{
           },
         })
       } else if (calendarId !== initialValues?.calendarId && initialValues?.id) {
-        console.log('[faiz:] === move')
         // move
         const block = await logseq.Editor.getBlock(initialValues.id)
         if (!block) return logseq.App.showMsg('Block not found')
@@ -71,7 +70,7 @@ const ModifySchedule: React.FC<{
         // logseq.Editor.moveBlock(block?.uuid, page.uuid)
       } else if (initialValues?.id) {
         // update
-        updateBlock(initialValues.id, title, {
+        await updateBlock(initialValues.id, title, {
           start: isAllDay ? startDate : `${startDate} ${startTime}`,
           end: isAllDay ? endDate : `${endDate} ${endTime}`,
         })
