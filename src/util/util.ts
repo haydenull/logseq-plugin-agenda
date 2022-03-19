@@ -107,7 +107,7 @@ export const getSchedules = async () => {
         _start = start && genCalendarDate(start, _dateFormatter)
         _end = end && (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
       } catch (err) {
-        console.log('[faiz:] === parse calendar date error: ', err)
+        console.warn('[faiz:] === parse calendar date error: ', err, block, query)
         return []
       }
       if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {

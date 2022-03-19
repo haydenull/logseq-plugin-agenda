@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
-import { Button, Select, Tooltip } from 'antd'
+import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
 import { format, formatISO, isSameDay, parse } from 'date-fns'
 import { getSchedules, ISettingsForm, managePluginTheme } from './util/util'
@@ -10,7 +10,7 @@ import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
-import type { IAgendaForm } from './components/ModifySchedule'
+import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs from 'dayjs'
 
 const getDefaultOptions = () => {
@@ -72,8 +72,13 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     end?: string
   }>({ visible: false })
   const [settingModal, setSettingModal] = useState(false)
-  const [modifyScheduleModal, setModifyScheduleModal] = useState<{ visible: boolean, values?: Omit<IAgendaForm, 'title' | 'calendarId'> }>({
+  const [modifyScheduleModal, setModifyScheduleModal] = useState<{
+    visible: boolean
+    type?: 'create' | 'update'
+    values?: IScheduleValue
+  }>({
     visible: false,
+    type: 'create',
   })
   const calendarRef = useRef<Calendar>()
 
@@ -252,6 +257,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         console.log('[faiz:] === beforeCreateSchedule', event, typeof event.start, dayjs(event.start))
         setModifyScheduleModal({
           visible: true,
+          type: 'create',
           values: {
             start: dayjs(event.start),
             end: dayjs(event.end),
@@ -262,9 +268,34 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       })
       calendarRef.current.on('beforeUpdateSchedule', function(event) {
         console.log('[faiz:] === beforeUpdateSchedule', event)
+        const { schedule } = event
+        setModifyScheduleModal({
+          visible: true,
+          type: 'update',
+          values: {
+            id: schedule.id,
+            start: dayjs(schedule.start),
+            end: dayjs(schedule.end),
+            isAllDay: schedule.isAllDay,
+            calendarId: schedule.calendarId,
+            title: schedule.raw?.content?.split('\n')[0],
+            raw: schedule.raw,
+          },
+        })
       })
       calendarRef.current.on('beforeDeleteSchedule', function(event) {
         console.log('[faiz:] === beforeDeleteSchedule', event)
+        const { schedule } = event
+        Modal.confirm({
+          title: 'Are you sure delete this schedule?',
+          content: <div className="whitespace-pre-line">{schedule.raw?.content}</div>,
+          onOk: async () => {
+            const block = await logseq.Editor.getBlock(schedule.raw?.id)
+            if (!block) return logseq.App.showMsg('Block not found', 'error')
+            logseq.Editor.removeBlock(block?.uuid)
+            setSchedules()
+          },
+        })
       })
     }, 0)
   }, [])
@@ -322,6 +353,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           modifyScheduleModal.visible
           ? <ModifySchedule
             visible={modifyScheduleModal.visible}
+            type={modifyScheduleModal.type}
             initialValues={modifyScheduleModal.values}
             onCancel={() => setModifyScheduleModal({ visible: false })}
             onSave={() => {

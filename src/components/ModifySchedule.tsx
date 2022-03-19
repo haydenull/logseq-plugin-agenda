@@ -4,20 +4,22 @@ import dayjs, { Dayjs } from 'dayjs'
 import { ICustomCalendar, ISettingsForm } from '../util/util'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 
-export type IAgendaForm = {
+export type IScheduleForm = {
   calendarId: string
   title: string
   start: Dayjs
   end: Dayjs
   isAllDay?: boolean
 }
+export type IScheduleValue = Partial<IScheduleForm> & { id?: number; raw?: any }
 
 const ModifySchedule: React.FC<{
   visible: boolean
-  initialValues?: Omit<IAgendaForm, 'title' | 'calendarId'>
+  initialValues?: IScheduleValue
+  type?: 'create' | 'update'
   onSave?: () => void
   onCancel?: () => void
-}> = ({ visible, initialValues, onCancel, onSave }) => {
+}> = ({ visible, initialValues, onCancel, onSave, type='create' }) => {
   const [agendaCalendars, setAgendaCalendars] = useState<ICustomCalendar[]>([])
   const [showTime, setShowTime] = useState(!initialValues?.isAllDay)
 
@@ -26,6 +28,11 @@ const ModifySchedule: React.FC<{
   const onFormChange = (changedValues, allValues) => {
     if (changedValues.isAllDay !== undefined) {
       setShowTime(!changedValues.isAllDay)
+    }
+    if (changedValues.start !== undefined) {
+      form.setFieldsValue({
+        end: changedValues.start.add(1, 'hour'),
+      })
     }
   }
   const onClickSave = () => {
@@ -37,14 +44,22 @@ const ModifySchedule: React.FC<{
       const endTime = dayjs(end).format('HH:mm')
       console.log('[faiz:] === onClickSave', values)
 
-      await logseq.Editor.insertBlock(calendarId?.value, `TODO ${title}`, {
-        isPageBlock: true,
-        sibling: true,
-        properties: {
-          start: isAllDay ? startDate : `${startDate} ${startTime}`,
-          end: isAllDay ? endDate : `${endDate} ${endTime}`,
-        },
-      })
+      if (type === 'create') {
+        await logseq.Editor.insertBlock(calendarId?.value, `TODO ${title}`, {
+          isPageBlock: true,
+          sibling: true,
+          properties: {
+            start: isAllDay ? startDate : `${startDate} ${startTime}`,
+            end: isAllDay ? endDate : `${endDate} ${endTime}`,
+          },
+        })
+      } else if (initialValues?.id) {
+        const block = await logseq.Editor.getBlock(initialValues.id)
+        if (!block) return logseq.App.showMsg('Block not found', 'error')
+        await logseq.Editor.updateBlock(block?.uuid, title)
+        await logseq.Editor.upsertBlockProperty(block?.uuid, 'start', isAllDay ? startDate : `${startDate} ${startTime}`)
+        await logseq.Editor.upsertBlockProperty(block?.uuid, 'end', isAllDay ? endDate : `${endDate} ${endTime}`)
+      }
       onSave?.()
     })
   }
@@ -98,7 +113,7 @@ const ModifySchedule: React.FC<{
         <Form.Item name="start" label="Start" rules={[{ required: true }]}>
           <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} />
         </Form.Item>
-        <Form.Item name="end" label="End">
+        <Form.Item name="end" label="End" rules={[{ required: true }]}>
           <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} />
         </Form.Item>
         <Form.Item name="isAllDay" label="All Day" rules={[{ required: true }]}>
