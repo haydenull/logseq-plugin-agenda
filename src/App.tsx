@@ -3,7 +3,7 @@ import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
 import { format, formatISO, isSameDay, parse } from 'date-fns'
-import { getSchedules, ISettingsForm, managePluginTheme } from './util/util'
+import { getSchedules, ISettingsForm, managePluginTheme, updateBlock } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
@@ -11,7 +11,7 @@ import './App.css'
 import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
 import type { IScheduleValue } from './components/ModifySchedule'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 
 const getDefaultOptions = () => {
   let defaultView = logseq.settings?.defaultView || 'month'
@@ -266,22 +266,35 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         })
         calendarRef.current?.render()
       })
-      calendarRef.current.on('beforeUpdateSchedule', function(event) {
+      calendarRef.current.on('beforeUpdateSchedule', async function(event) {
         console.log('[faiz:] === beforeUpdateSchedule', event)
-        const { schedule } = event
-        setModifyScheduleModal({
-          visible: true,
-          type: 'update',
-          values: {
-            id: schedule.id,
-            start: dayjs(schedule.start),
-            end: dayjs(schedule.end),
-            isAllDay: schedule.isAllDay,
-            calendarId: schedule.calendarId,
-            title: schedule.raw?.content?.split('\n')[0],
-            raw: schedule.raw,
-          },
-        })
+        const { schedule, changes, triggerEventName } = event
+        if (triggerEventName === 'click') {
+          setModifyScheduleModal({
+            visible: true,
+            type: 'update',
+            values: {
+              id: schedule.id,
+              start: dayjs(schedule.start),
+              end: dayjs(schedule.end),
+              isAllDay: schedule.isAllDay,
+              calendarId: schedule.calendarId,
+              title: schedule.raw?.content?.split('\n')[0],
+              raw: schedule.raw,
+            },
+          })
+        } else if (changes) {
+          let properties = {}
+          Object.keys(changes).forEach(key => {
+            if (schedule.isAllDay) {
+              properties[key] = dayjs(changes[key]).format('YYYY-MM-DD')
+            } else {
+              properties[key] = dayjs(changes[key]).format('YYYY-MM-DD HH:mm')
+            }
+          })
+          await updateBlock(schedule.id, false, properties)
+          setSchedules()
+        }
       })
       calendarRef.current.on('beforeDeleteSchedule', function(event) {
         console.log('[faiz:] === beforeDeleteSchedule', event)
