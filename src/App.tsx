@@ -370,7 +370,10 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             type={modifyScheduleModal.type}
             initialValues={modifyScheduleModal.values}
             calendar={calendarRef.current}
-            onCancel={() => setModifyScheduleModal({ visible: false })}
+            onCancel={() => {
+              setModifyScheduleModal({ visible: false })
+              calendarRef.current?.render()
+            }}
             onSave={() => {
               setModifyScheduleModal({ visible: false })
             }}

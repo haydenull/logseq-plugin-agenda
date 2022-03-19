@@ -149,7 +149,7 @@ const ModifySchedule: React.FC<{
       <Form
         form={form}
         onValuesChange={onFormChange}
-        initialValues={{ ...initialValues, calendarId: { value: initialValues?.calendarId } }}
+        initialValues={{ ...initialValues, calendarId: initialValues?.calendarId ? { value: initialValues?.calendarId } : undefined }}
       >
         <Form.Item name="calendarId" label="Calendar" rules={[{ required: true }]}>
           <Select labelInValue>
