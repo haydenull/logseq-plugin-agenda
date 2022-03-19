@@ -1,3 +1,20 @@
+# [1.10.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.5...v1.10.0) (2022-03-19)
+
+
+### Bug Fixes
+
+* Drag edit stutter ([ee830ee](https://github.com/haydenull/logseq-plugin-agenda/commit/ee830ee2f14e29dd1a2fc6fb66b46890d32e1bcc))
+* Non-agedas scheduled editing are prohibited ([67500b8](https://github.com/haydenull/logseq-plugin-agenda/commit/67500b84c0e696d6b8291fd12d077fe3ff5b65b3))
+
+
+### Features
+
+* ✨ supports create agenda from calendar view[skip ci] ([f6bd009](https://github.com/haydenull/logseq-plugin-agenda/commit/f6bd009bea3601af518da16aceb420bbe8c0e8cc))
+* create an agenda calendar & move schedule between different calendar ([61ba939](https://github.com/haydenull/logseq-plugin-agenda/commit/61ba939c547f7ef9cc435c5bc75f712f727606c1))
+* supports edit schedule by drag ([51562c0](https://github.com/haydenull/logseq-plugin-agenda/commit/51562c02a0b99a8dfc2b5382e563c487cb3a8661))
+* supports update and delete ([db91df0](https://github.com/haydenull/logseq-plugin-agenda/commit/db91df0f26680da98d1178fea6ce9d71451d6e1d))
+* update schedule by tui calendar ([99f16ae](https://github.com/haydenull/logseq-plugin-agenda/commit/99f16aeb2751d506805e932213ab6fa7aa97fc03))
+
 ## [1.9.5](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.4...v1.9.5) (2022-03-17)
 
 
