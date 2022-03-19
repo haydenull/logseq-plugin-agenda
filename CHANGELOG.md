@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.0...v1.10.1) (2022-03-19)
+
+
+### Bug Fixes
+
+* rerender calendar after cancel edit ([b70185b](https://github.com/haydenull/logseq-plugin-agenda/commit/b70185befb6eb438c5c5e34f937a1ac79e3cb319))
+
 # [1.10.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.9.5...v1.10.0) (2022-03-19)
 
 
