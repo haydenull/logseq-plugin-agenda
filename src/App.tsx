@@ -293,8 +293,8 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             }
             scheduleChanges[key] = dayjs(changes[key]).format()
           })
-          await updateBlock(schedule.id, false, properties)
           calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
+          await updateBlock(schedule.id, false, properties)
         }
       })
       calendarRef.current.on('beforeDeleteSchedule', function(event) {
