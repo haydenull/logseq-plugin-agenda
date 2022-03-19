@@ -390,19 +390,79 @@ export const genAgendaQuery = (pageName: string) => {
     query: [
       {
         script: `
-[:find (pull ?block [*])
+[:find (pull
+  ?block
+  [:block/uuid
+    :db/id
+    :block/parent
+    :block/left
+    :block/collapsed?
+    :block/format
+    :block/_refs
+    :block/path-refs
+    :block/tags
+    :block/content
+    :block/marker
+    :block/priority
+    :block/properties
+    :block/pre-block?
+    :block/scheduled
+    :block/deadline
+    :block/repeated?
+    :block/created-at
+    :block/updated-at
+    :block/file
+    :block/heading-level
+    {:block/page
+    [:db/id :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}])
 :where
 [?block :block/marker ?marker]
-[(missing? $ ?block :block/deadline)]
-(not [(missing? $ ?block :block/scheduled)])
 [?page :block/name ?pname]
 [?block :block/page ?page]
 [(contains? #{"${pageName}"} ?pname)]
 [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
         `,
-        scheduleStart: 'properties.agenda-start',
-        scheduleEnd: 'properties.agenda-end',
+        scheduleStart: 'properties.start',
+        scheduleEnd: 'properties.end',
         dateFormatter: 'yyyy-MM-dd',
+      },
+      {
+        script: `
+[:find (pull
+  ?block
+  [:block/uuid
+    :db/id
+    :block/parent
+    :block/left
+    :block/collapsed?
+    :block/format
+    :block/_refs
+    :block/path-refs
+    :block/tags
+    :block/content
+    :block/marker
+    :block/priority
+    :block/properties
+    :block/pre-block?
+    :block/scheduled
+    :block/deadline
+    :block/repeated?
+    :block/created-at
+    :block/updated-at
+    :block/file
+    :block/heading-level
+    {:block/page
+    [:db/id :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}])
+:where
+[?block :block/marker ?marker]
+[?page :block/name ?pname]
+[?block :block/page ?page]
+[(contains? #{"${pageName}"} ?pname)]
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
+        `,
+        scheduleStart: 'properties.start',
+        scheduleEnd: 'properties.end',
+        dateFormatter: 'yyyy-MM-dd HH:mm',
       },
     ]
   }
@@ -501,4 +561,18 @@ export const copyToClipboard = (text: string) => {
   textArea.select()
   document.execCommand('copy')
   document.body.removeChild(textArea)
+}
+
+export const updateBlock = async (blockId: number, content: string, properties?: Record<string, any>) => {
+  const block = await logseq.Editor.getBlock(blockId)
+  if (!block) {
+    logseq.App.showMsg('Block not found', 'error')
+    return Promise.reject(new Error('Block not found'))
+  }
+  // propteties param not working
+  await logseq.Editor.updateBlock(block.uuid, content)
+  const upsertBlockPropertyPromises = Object.keys(properties || {}).map(key => logseq.Editor.upsertBlockProperty(block.uuid, key, properties?.[key]))
+  return Promise.allSettled(upsertBlockPropertyPromises)
+  // await logseq.Editor.upsertBlockProperty(block.uuid, 'start', isAllDay ? startDate : `${startDate} ${startTime}`)
+  // await logseq.Editor.upsertBlockProperty(block.uuid, 'end', isAllDay ? endDate : `${endDate} ${endTime}`)
 }

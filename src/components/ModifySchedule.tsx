@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { DatePicker, Form, Input, Modal, Radio, Select } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
-import { ICustomCalendar, ISettingsForm } from '../util/util'
+import { ICustomCalendar, ISettingsForm, updateBlock } from '../util/util'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 
 export type IScheduleForm = {
@@ -45,6 +45,7 @@ const ModifySchedule: React.FC<{
       console.log('[faiz:] === onClickSave', values)
 
       if (type === 'create') {
+        // create
         await logseq.Editor.insertBlock(calendarId?.value, `TODO ${title}`, {
           isPageBlock: true,
           sibling: true,
@@ -53,12 +54,27 @@ const ModifySchedule: React.FC<{
             end: isAllDay ? endDate : `${endDate} ${endTime}`,
           },
         })
-      } else if (initialValues?.id) {
+      } else if (calendarId !== initialValues?.calendarId && initialValues?.id) {
+        console.log('[faiz:] === move')
+        // move
         const block = await logseq.Editor.getBlock(initialValues.id)
-        if (!block) return logseq.App.showMsg('Block not found', 'error')
-        await logseq.Editor.updateBlock(block?.uuid, title)
-        await logseq.Editor.upsertBlockProperty(block?.uuid, 'start', isAllDay ? startDate : `${startDate} ${startTime}`)
-        await logseq.Editor.upsertBlockProperty(block?.uuid, 'end', isAllDay ? endDate : `${endDate} ${endTime}`)
+        if (!block) return logseq.App.showMsg('Block not found')
+        const page = await logseq.Editor.getPage(calendarId?.value)
+        if (!page) return logseq.App.showMsg('Calendar page not found')
+        await logseq.Editor.removeBlock(block.uuid)
+        await logseq.Editor.insertBlock(calendarId?.value, block.content, {
+          isPageBlock: true,
+          sibling: true,
+          properties: block.properties,
+        })
+        // MoveBlock does not appear to support moving between pages
+        // logseq.Editor.moveBlock(block?.uuid, page.uuid)
+      } else if (initialValues?.id) {
+        // update
+        updateBlock(initialValues.id, title, {
+          start: isAllDay ? startDate : `${startDate} ${startTime}`,
+          end: isAllDay ? endDate : `${endDate} ${endTime}`,
+        })
       }
       onSave?.()
     })
@@ -72,7 +88,7 @@ const ModifySchedule: React.FC<{
     const calendarPagePromises = calendarList.map(calendar => logseq.Editor.getPage(calendar.id))
     Promise.all(calendarPagePromises).then((pages: (PageEntity | null)[]) => {
       console.log('[faiz:] === page', pages)
-      // calendarList[index].isAgenda = page.pro
+
       const agendaPages = pages
                             .map((page, index) => {
                               if (!page) return page
