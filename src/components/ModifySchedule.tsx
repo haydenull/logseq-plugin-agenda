@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { DatePicker, Form, Input, Modal, Radio, Select } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
-import { ICustomCalendar, ISettingsForm, updateBlock } from '../util/util'
+import { ICustomCalendar, ISettingsForm, updateBlock, genSchedule } from '../util/util'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
+import Calendar from 'tui-calendar'
 
 export type IScheduleForm = {
   calendarId: string
@@ -17,10 +18,11 @@ const ModifySchedule: React.FC<{
   visible: boolean
   initialValues?: IScheduleValue
   type?: 'create' | 'update'
+  calendar?: Calendar
   onSave?: () => void
   onCancel?: () => void
-}> = ({ visible, initialValues, onCancel, onSave, type='create' }) => {
-  const [agendaCalendars, setAgendaCalendars] = useState<ICustomCalendar[]>([])
+}> = ({ visible, initialValues, onCancel, onSave, type='create', calendar }) => {
+  const [agendaCalendars, setAgendaCalendars] = useState<ISettingsForm['calendarList']>([])
   const [showTime, setShowTime] = useState(!initialValues?.isAllDay)
 
   const [form] = Form.useForm()
@@ -42,11 +44,12 @@ const ModifySchedule: React.FC<{
       const endDate = dayjs(end).format('YYYY-MM-DD')
       const startTime = dayjs(start).format('HH:mm')
       const endTime = dayjs(end).format('HH:mm')
+      const calendarConfig = agendaCalendars.find(c => c.id === calendarId?.value)
       console.log('[faiz:] === onClickSave', values)
 
       if (type === 'create') {
         // create
-        await logseq.Editor.insertBlock(calendarId?.value, `TODO ${title}`, {
+        const block = await logseq.Editor.insertBlock(calendarId?.value, `TODO ${title}`, {
           isPageBlock: true,
           sibling: true,
           properties: {
@@ -54,18 +57,43 @@ const ModifySchedule: React.FC<{
             end: isAllDay ? endDate : `${endDate} ${endTime}`,
           },
         })
-      } else if (calendarId !== initialValues?.calendarId && initialValues?.id) {
+        if (!block) return
+        const _block = await logseq.Editor.getBlock(block.uuid)
+        console.log('[faiz:] === block', block, _block)
+        calendar?.createSchedules([genSchedule({
+          blockData: _block,
+          category: isAllDay ? 'allday' : 'time',
+          start: dayjs(start).format(),
+          end: dayjs(end).format(),
+          // @ts-ignore
+          calendarConfig,
+          isAllDay,
+          isReadOnly: false,
+        })])
+      } else if (calendarId?.value !== initialValues?.calendarId && initialValues?.id) {
         // move
         const block = await logseq.Editor.getBlock(initialValues.id)
-        if (!block) return logseq.App.showMsg('Block not found')
+        if (!block) return logseq.App.showMsg('Block not found', 'error')
         const page = await logseq.Editor.getPage(calendarId?.value)
         if (!page) return logseq.App.showMsg('Calendar page not found')
         await logseq.Editor.removeBlock(block.uuid)
-        await logseq.Editor.insertBlock(calendarId?.value, block.content, {
+        const newBlock = await logseq.Editor.insertBlock(calendarId?.value, block.content, {
           isPageBlock: true,
           sibling: true,
           properties: block.properties,
         })
+        if (!newBlock || !initialValues.calendarId) return
+        const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
+        calendar?.updateSchedule(initialValues.id as unknown as string, initialValues.calendarId, genSchedule({
+          blockData: _newBlock,
+          category: isAllDay ? 'allday' : 'time',
+          start: dayjs(start).format(),
+          end: dayjs(end).format(),
+          // @ts-ignore
+          calendarConfig,
+          isAllDay,
+          isReadOnly: false,
+        }))
         // MoveBlock does not appear to support moving between pages
         // logseq.Editor.moveBlock(block?.uuid, page.uuid)
       } else if (initialValues?.id) {
@@ -74,6 +102,17 @@ const ModifySchedule: React.FC<{
           start: isAllDay ? startDate : `${startDate} ${startTime}`,
           end: isAllDay ? endDate : `${endDate} ${endTime}`,
         })
+        const _newBlock = await logseq.Editor.getBlock(initialValues.id)
+        calendar?.updateSchedule(initialValues.id as unknown as string, calendarId?.value,  genSchedule({
+          blockData: _newBlock,
+          category: isAllDay ? 'allday' : 'time',
+          start: dayjs(start).format(),
+          end: dayjs(end).format(),
+          // @ts-ignore
+          calendarConfig,
+          isAllDay,
+          isReadOnly: false,
+        }))
       }
       onSave?.()
     })
@@ -94,9 +133,9 @@ const ModifySchedule: React.FC<{
                               if ((page as any)?.properties?.agenda !== true) return null
                               return calendarList[index]
                             })
-                            .filter(Boolean)
+                            .filter(function<T>(item: T | null): item is T { return Boolean(item) })
       if (agendaPages?.length <= 0) return logseq.App.showMsg('No agenda page found\nPlease create an agenda calendar first', 'error')
-      setAgendaCalendars(agendaPages as ICustomCalendar[])
+      setAgendaCalendars(agendaPages)
     })
   }, [])
 
@@ -110,7 +149,7 @@ const ModifySchedule: React.FC<{
       <Form
         form={form}
         onValuesChange={onFormChange}
-        initialValues={initialValues}
+        initialValues={{ ...initialValues, calendarId: { value: initialValues?.calendarId } }}
       >
         <Form.Item name="calendarId" label="Calendar" rules={[{ required: true }]}>
           <Select labelInValue>

@@ -220,23 +220,24 @@ message: ${res.reason.message}`
 }
 
 type ICategory = 'time' | 'allday' | 'milestone' | 'task'
-function genSchedule(params: {
+export function genSchedule(params: {
   blockData: any
   category: ICategory
   start?: string
   end?:string
   calendarConfig: Omit<ISettingsForm['calendarList'][number], 'query'>
   isAllDay?: boolean
+  isReadOnly?: boolean
   defaultDuration?: ISettingsForm['defaultDuration']
 }) {
-  const { blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration } = params
+  const { blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
   const title = blockData.content
                   .split('\n')[0]
                   ?.replace(new RegExp(`^${blockData.marker} `), '')
                   ?.replace(/^(\d{2}:\d{2})(-\d{2}:\d{2})*/, '')
                   ?.trim?.()
   const isDone = blockData.marker === 'DONE'
-  const isSupportEdit = blockData.page?.properties?.agenda === true
+  const isSupportEdit = isReadOnly === undefined ? blockData.page?.properties?.agenda === true : !isReadOnly
 
   const { defaultDuration: _defaultDuration } = DEFAULT_SETTINGS
   let _end = end

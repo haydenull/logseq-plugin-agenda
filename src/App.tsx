@@ -3,7 +3,7 @@ import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
 import { format, formatISO, isSameDay, parse } from 'date-fns'
-import { getSchedules, ISettingsForm, managePluginTheme, updateBlock } from './util/util'
+import { genSchedule, getSchedules, ISettingsForm, managePluginTheme, updateBlock } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import 'tui-calendar/dist/tui-calendar.css'
@@ -128,7 +128,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       //   // customStyle: 'opacity: 0.6;',
       // }])
 
-      calendar.render()
+      // calendar.render()
 
     }
   }
@@ -264,7 +264,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             isAllDay: event.triggerEventName === 'dblclick',
           }
         })
-        calendarRef.current?.render()
       })
       calendarRef.current.on('beforeUpdateSchedule', async function(event) {
         console.log('[faiz:] === beforeUpdateSchedule', event)
@@ -285,15 +284,17 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           })
         } else if (changes) {
           let properties = {}
+          let scheduleChanges = {}
           Object.keys(changes).forEach(key => {
             if (schedule.isAllDay) {
               properties[key] = dayjs(changes[key]).format('YYYY-MM-DD')
             } else {
               properties[key] = dayjs(changes[key]).format('YYYY-MM-DD HH:mm')
             }
+            scheduleChanges[key] = dayjs(changes[key]).format()
           })
           await updateBlock(schedule.id, false, properties)
-          setSchedules()
+          calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
         }
       })
       calendarRef.current.on('beforeDeleteSchedule', function(event) {
@@ -306,7 +307,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             const block = await logseq.Editor.getBlock(schedule.raw?.id)
             if (!block) return logseq.App.showMsg('Block not found', 'error')
             logseq.Editor.removeBlock(block?.uuid)
-            setSchedules()
+            calendarRef.current?.deleteSchedule(schedule.id, schedule.calendarId)
           },
         })
       })
@@ -368,10 +369,10 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             visible={modifyScheduleModal.visible}
             type={modifyScheduleModal.type}
             initialValues={modifyScheduleModal.values}
+            calendar={calendarRef.current}
             onCancel={() => setModifyScheduleModal({ visible: false })}
             onSave={() => {
               setModifyScheduleModal({ visible: false })
-              setSchedules()
             }}
           />
           : null
