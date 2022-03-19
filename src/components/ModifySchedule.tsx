@@ -77,14 +77,17 @@ const ModifySchedule: React.FC<{
         const page = await logseq.Editor.getPage(calendarId?.value)
         if (!page) return logseq.App.showMsg('Calendar page not found')
         await logseq.Editor.removeBlock(block.uuid)
-        const newBlock = await logseq.Editor.insertBlock(calendarId?.value, block.content, {
+        const newBlock = await logseq.Editor.insertBlock(calendarId?.value, title, {
           isPageBlock: true,
           sibling: true,
           properties: block.properties,
         })
         if (!newBlock || !initialValues.calendarId) return
         const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
-        calendar?.updateSchedule(initialValues.id as unknown as string, initialValues.calendarId, genSchedule({
+        console.log('[faiz:] === _newBlock', _newBlock)
+        // updateSchedule can't update id, so we need to create new schedule after delete old one
+        calendar?.deleteSchedule(initialValues.id as unknown as string, initialValues.calendarId)
+        calendar?.createSchedules([genSchedule({
           blockData: _newBlock,
           category: isAllDay ? 'allday' : 'time',
           start: dayjs(start).format(),
@@ -93,7 +96,8 @@ const ModifySchedule: React.FC<{
           calendarConfig,
           isAllDay,
           isReadOnly: false,
-        }))
+        })])
+        // calendar?.updateSchedule(initialValues.id as unknown as string, initialValues.calendarId, )
         // MoveBlock does not appear to support moving between pages
         // logseq.Editor.moveBlock(block?.uuid, page.uuid)
       } else if (initialValues?.id) {
