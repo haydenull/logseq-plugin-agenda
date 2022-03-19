@@ -20,11 +20,13 @@
 - 支持收集每日日志, 导出周报
 - 支持订阅日历（基础事件）
 - 支持深色模式
+- 支持新建 编辑日程
 
 ![MonthView](./screenshots/monthView.png)
 ![WeeklyView](./screenshots/weeklyView.png)
 ![settings](./screenshots/settings.png)
 ![query](./screenshots/query.png)
+![agenda](./screenshots/modifyAgenda.png)
 
 ## Demo
 

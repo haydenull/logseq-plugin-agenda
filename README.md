@@ -20,11 +20,13 @@ The plugin now uses [date-fns](https://date-fns.org/v2.28.0/docs/parse) to resol
 - Supports daily log and export weekly log
 - Supports subscription calendar(basic event)
 - Supports dark mode
+- Supports create and edit agenda
 
 ![MonthView](./screenshots/monthView.png)
 ![WeeklyView](./screenshots/weeklyView.png)
 ![settings](./screenshots/settings.png)
 ![query](./screenshots/query.png)
+![agenda](./screenshots/modifyAgenda.png)
 
 ## Demo
 We will call notes with `"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"` as tasks.
