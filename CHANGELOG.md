@@ -1,3 +1,10 @@
+## [1.10.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.1...v1.10.2) (2022-03-19)
+
+
+### Bug Fixes
+
+* get block err after change event's calendar ([077a6f8](https://github.com/haydenull/logseq-plugin-agenda/commit/077a6f8ced84867f868b99565bf16ecb4b29b315))
+
 ## [1.10.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.0...v1.10.1) (2022-03-19)
 
 
