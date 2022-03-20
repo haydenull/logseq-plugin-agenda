@@ -4,3 +4,5 @@ dist
 dist-ssr
 *.local
 .vscode
+.temp
+.cache
