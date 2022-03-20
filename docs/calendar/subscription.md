@@ -1,4 +1,4 @@
-# Subscribe Calendar
+# Subscription
 
 Subscription is the same as a custom calendar configuration, except that there is no query and url are added.
 

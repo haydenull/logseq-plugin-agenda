@@ -31,7 +31,7 @@ The plugin now uses [date-fns](https://date-fns.org/v2.28.0/docs/parse) to parse
 ## Log Key
 Daily log key.
 
-click [here](/event/dailylog) to see details
+click [here](../event/dailylog.md) to see details
 
 ## Default Duration
 event default duration
@@ -40,10 +40,10 @@ add default duration based on start time
 
 ## Calendar
 
-Plugin will create a default calendar named journal after download. Click [here](/event/journal) to see details.
+Plugin will create a default calendar named journal after download. Click [here](../event/journal.md) to see details.
 
-If you want to add your own calendar, click [here](/calendar) to see custom calendar document.
+If you want to add your own calendar, click [here](../calendar/README.md) to see custom calendar document.
 
 
 ## Subscription
-Subscribe online calendar, click [here](/calendar/subscription) to see details.
+Subscribe online calendar, click [here](..//calendar/subscription.md) to see details.

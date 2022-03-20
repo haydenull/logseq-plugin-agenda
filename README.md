@@ -56,14 +56,6 @@ default view
 ### Week Start Day
 default week start day
 
-### ~~Journal Date Formatter(Removed)~~
-~~default journal date formatter~~
-
-~~Fill in the format of your daily diary, for example my diary is `2022-03-07 Mon`, then fill in the` YYYYMMDD DDD`.~~
-
-**The original journalDateFormatter configuration required the user to read the dayjs document to fill in correctly, Version 1.8.1 removes the journalDateFormatter setting. Instead, I got it from logseq on my own, which unfortunately affected the original date parsing. If you get the error 'Use 'yyyyy' instead of 'YYYY' (in 'YYYYMMDD') for formatting', please click the fx button in the settings to change all `YYYYMMDD` to `yyyyMMdd`**
-
-
 ### Log Key
 Daily log key.
 
@@ -94,7 +86,7 @@ So how to create a custom calendar?
 
 Click the add calendar button, and fill in the calendar name, and edit [query](https://logseq.github.io/#/page/Queries).
 
-The plugin will call [logseq.DB.datascriptQuery](https://logseq.github.io/plugins/interfaces/IDBProxy.html#datascriptQuery) or [logseq.DB.a](https://logseq.github.io/plugins/interfaces/IDBProxy.html#q) API with the query you specified. and the result will be displayed in the calendar.
+The plugin will call [logseq.DB.datascriptQuery](https://logseq.github.io/plugins/interfaces/IDBProxy.html#datascriptQuery) or [logseq.DB.q](https://logseq.github.io/plugins/interfaces/IDBProxy.html#q) API with the query you specified. and the result will be displayed in the calendar.
 
 Let me explain what the configuration items are:
 1. `script`: As a parameter to datascriptQuery, query all block that meets the requirements.

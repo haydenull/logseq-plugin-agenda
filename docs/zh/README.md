@@ -1,4 +1,4 @@
-# logseq-plugin-agenda
+# 介绍
 > logseq 日历插件
 
 [![latest release version](https://img.shields.io/github/v/release/haydenull/logseq-plugin-agenda)](https://github.com/haydenull/logseq-plugin-agenda/releases)

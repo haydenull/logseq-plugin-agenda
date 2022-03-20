@@ -34,7 +34,7 @@
 ## Log Key
 每日日志的关键字
 
-点击 [这里](/zh/event/dailylog) 查看详情
+点击 [这里](../event/dailylog.md) 查看详情
 
 ## Default Duration
 事件默认时长
@@ -44,10 +44,10 @@
 ## Calendar
 日历
 
-下载插件后会默认创建一个名为 journal 的默认日历, 点击 [这里](/zh/event/journal) 查看详情
+下载插件后会默认创建一个名为 journal 的默认日历, 点击 [这里](../event/journal.md) 查看详情
 
-如果你想添加自己的日历, 点击 [这里](/zh/calendar) 查看自定义日历文档
+如果你想添加自己的日历, 点击 [这里](../calendar/README.md) 查看自定义日历文档
 
 
 ## Subscription
-订阅在线日历, 点击 [这里](/zh/calendar/subscription) 查看详情
+订阅在线日历, 点击 [这里](../calendar/subscription.md) 查看详情

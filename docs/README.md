@@ -1,4 +1,4 @@
-# logseq-plugin-agenda
+# Introduction
 > A calendar plugin for logseq
 
 [![latest release version](https://img.shields.io/github/v/release/haydenull/logseq-plugin-agenda)](https://github.com/haydenull/logseq-plugin-agenda/releases)

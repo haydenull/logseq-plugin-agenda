@@ -165,7 +165,7 @@ const ModifySchedule: React.FC<{
             ))}
           </Select>
         </Form.Item>
-        <Form.Item name="title" label="Agenda Title" rules={[{ required: true }]}>
+        <Form.Item name="title" label="Schedule Title" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
         <Form.Item name="start" label="Start" rules={[{ required: true }]}>
