@@ -51,6 +51,10 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 ### 展示每日日志
 ![dailyLog](./screenshots/dailyLog.gif)
 
+### 创建与编辑日程
+![createAgendaCalendar](./screenshots/createAgendaCalendar.gif)
+![editAgendaCalendar](./screenshots/editAgendaCalendar.gif)
+
 ## 设置
 
 ### Default View

@@ -48,6 +48,10 @@ journal calendar will collect all tasks without `scheduled` or `deadline` in jou
 ### show your daily log
 ![dailyLog](./screenshots/dailyLog.gif)
 
+### Create and edit agenda
+![createAgendaCalendar](./screenshots/createAgendaCalendar.gif)
+![editAgendaCalendar](./screenshots/editAgendaCalendar.gif)
+
 ## Settings
 
 ### Default View
@@ -61,7 +65,7 @@ default week start day
 
 ~~Fill in the format of your daily diary, for example my diary is `2022-03-07 Mon`, then fill in the` YYYYMMDD DDD`.~~
 
-**1.8.1 版本移除了 journalDateFormatter 设置，改为自行从 logseq 获取，非常遗憾的是这个改动影响了原本的日期解析，如果你遇到报错 `Use `yyyy` instead of `YYYY` (in `YYYYMMDD`) for formatting` ，请在设置中点击 fx 按钮，将所有的 `YYYYMMDD` 改为 `yyyyMMdd`**
+**The original journalDateFormatter configuration required the user to read the dayjs document to fill in correctly, Version 1.8.1 removes the journalDateFormatter setting. Instead, I got it from logseq on my own, which unfortunately affected the original date parsing. If you get the error 'Use 'yyyyy' instead of 'YYYY' (in 'YYYYMMDD') for formatting', please click the fx button in the settings to change all `YYYYMMDD` to `yyyyMMdd`**
 
 
 ### Log Key
