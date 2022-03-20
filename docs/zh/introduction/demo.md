@@ -22,5 +22,5 @@ journal 日历会收集所有 journals 中的没有 `scheduled` `deadline` 的�
 ![dailyLog](../../../screenshots/dailyLog.gif)
 
 ## 创建与编辑日程
-![createAgendaCalendar](../../../screenshots/createAgendaCalendar.gif)
+![createAgendaCalendar](../../../screenshots/createAgenda.gif)
 ![editAgendaCalendar](../../../screenshots/editAgendaCalendar.gif)

@@ -4,6 +4,9 @@ import type { DefaultThemeOptions } from '@vuepress/theme-default'
 import { sidebar } from './configs'
 
 export default defineUserConfig<DefaultThemeOptions>({
+  head:[
+    ['link', { rel: 'icon', href: '/images/favicon.ico' }],
+  ],
   locales: {
     // 键名是该语言所属的子路径
     // 作为特例，默认语言可以使用 '/' 作为其路径。

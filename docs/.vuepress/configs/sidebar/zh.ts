@@ -25,9 +25,16 @@ export const zh: SidebarConfig = {
     {
       text: '自定义日历',
       children: [
-        '/zh/calendar/customCalendar.md',
-        '/zh/calendar/agendaCalendar.md',
-        '/zh/calendar/subscriptionCalendar.md',
+        '/zh/calendar/custom.md',
+        '/zh/calendar/agenda.md',
+        '/zh/calendar/subscription.md',
+      ],
+    },
+    {
+      text: '其他',
+      children: [
+        '/zh/other/query.md',
+        '/zh/other/testQuery.md',
       ],
     }
   ],
