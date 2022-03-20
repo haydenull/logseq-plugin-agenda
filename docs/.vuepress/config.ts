@@ -13,7 +13,7 @@ export default defineUserConfig<DefaultThemeOptions>({
     '/': {
       lang: 'en-US', // 将会被设置为 <html> 的 lang 属性
       title: 'Logseq Plugin Agenda',
-      description: 'A calendar for logseq'
+      description: 'A calendar plugin for logseq'
     },
     '/zh/': {
       lang: 'zh-CN',
