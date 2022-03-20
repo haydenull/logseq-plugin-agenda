@@ -1,3 +1,10 @@
+## [1.10.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.2...v1.10.3) (2022-03-20)
+
+
+### Bug Fixes
+
+* modify schedule title text ([42df1ce](https://github.com/haydenull/logseq-plugin-agenda/commit/42df1ce311b1383e39e2a9a68a663071c28e9c31))
+
 ## [1.10.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.1...v1.10.2) (2022-03-19)
 
 
