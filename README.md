@@ -1,14 +1,10 @@
 # logseq-plugin-agenda
-> A plugin for logseq to show agenda
+> A calendar plugin for logseq
 
 [![latest release version](https://img.shields.io/github/v/release/haydenull/logseq-plugin-agenda)](https://github.com/haydenull/logseq-plugin-agenda/releases)
 [![License](https://img.shields.io/github/license/haydenull/logseq-plugin-agenda?color=blue)](https://github.com/haydenull/logseq-plugin-agenda/blob/main/LICENSE)
 
-English | [简体中文](./README-zh_CN.md)
-
-**The original journalDateFormatter configuration required the user to read the dayjs document to fill in correctly, Version 1.8.1 removes the journalDateFormatter setting. Instead, I got it from logseq on my own, which unfortunately affected the original date parsing. If you get the error 'Use 'yyyyy' instead of 'YYYY' (in 'YYYYMMDD') for formatting', please click the fx button in the settings to change all `YYYYMMDD` to `yyyyMMdd`**
-
-The plugin now uses [date-fns](https://date-fns.org/v2.28.0/docs/parse) to resolve dates.
+Click [here](https://haydenull.github.io/logseq-plugin-agenda/) for the full documentation
 
 ## Features
 - Supports multiple views: single day, week, double week, month
