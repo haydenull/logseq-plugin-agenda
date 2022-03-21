@@ -1,3 +1,10 @@
+## [1.10.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.3...v1.10.4) (2022-03-21)
+
+
+### Bug Fixes
+
+* 🐛 Overdue tasks incorrectly displayed in allday ([016e064](https://github.com/haydenull/logseq-plugin-agenda/commit/016e06462e4fe780b8c5e055d47ab4f3884b73a0))
+
 ## [1.10.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.2...v1.10.3) (2022-03-20)
 
 
