@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { DatePicker, Form, Input, Modal, Radio, Select } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
-import { ICustomCalendar, ISettingsForm, updateBlock, genSchedule } from '../util/util'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import Calendar from 'tui-calendar'
+import type { ISettingsForm } from '../util/type'
+import { genSchedule } from '../util/schedule'
+import { updateBlock } from '../util/logseq'
 
 export type IScheduleForm = {
   calendarId: string

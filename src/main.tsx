@@ -6,7 +6,7 @@ import weekday from 'dayjs/plugin/weekday'
 import localeData from 'dayjs/plugin/localeData'
 import App from './App'
 import './index.css'
-import { initializeSettings } from './util/util'
+import { initializeSettings } from './util/baseInfo'
 
 dayjs.extend(weekday)
 dayjs.extend(localeData)

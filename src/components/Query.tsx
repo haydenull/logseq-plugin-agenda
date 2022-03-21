@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Button, Tooltip } from 'antd'
 import { FunctionOutlined } from '@ant-design/icons'
 import QueryModal from './QueryModal'
-import { ISettingsFormQuery } from '../util/util'
+import type { ISettingsFormQuery } from '../util/type'
 
 const Query: React.FC<{
   value?: ISettingsFormQuery[]
