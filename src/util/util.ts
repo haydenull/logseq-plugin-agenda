@@ -139,7 +139,7 @@ export const getSchedules = async () => {
         end: _end,
         calendarConfig,
         defaultDuration,
-        isAllDay: !isMilestone && !hasTime,
+        isAllDay: !isMilestone && !hasTime && !_isOverdue,
       })
       // show overdue tasks in today
       return _isOverdue
@@ -150,7 +150,7 @@ export const getSchedules = async () => {
             category: _category,
             calendarConfig,
             defaultDuration,
-            isAllDay: !isMilestone && !hasTime,
+            isAllDay: !isMilestone && !hasTime && !_isOverdue,
           }),
         ]
         : schedule
