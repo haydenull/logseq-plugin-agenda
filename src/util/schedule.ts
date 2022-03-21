@@ -4,7 +4,6 @@ import { addHours, addMinutes, endOfDay, format, formatISO, isAfter, parse, pars
 import { getInitalSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
 import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS } from './constants'
-import { genCalendarDate } from './util'
 import { getSubCalendarSchedules } from './subscription'
 
 export const getSchedules = async () => {
@@ -232,4 +231,8 @@ export function genSchedule(params: {
     customStyle: isDone ? 'opacity: 0.6;' : '',
     isReadOnly: !isSupportEdit,
   }
+}
+
+export const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_DATE_FORMAT) => {
+  return formatISO(parse('' + date, format, new Date()))
 }
