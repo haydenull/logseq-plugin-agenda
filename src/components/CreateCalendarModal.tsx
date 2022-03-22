@@ -11,8 +11,8 @@ const CreateCalendarModal: React.FC<{
     const page = await logseq.Editor.getPage(name)
     console.log('[faiz:] === createAgendaPage getPage', page)
     if (page) {
-      logseq.App.showMsg('The page with the same name already exists', 'error')
-      return { success: false }
+      logseq.App.showMsg('The page with the same name already exists\nPlease add properties to the page manually\nagenda:: true', 'error')
+      return { success: true }
     }
 
 
@@ -26,7 +26,6 @@ const CreateCalendarModal: React.FC<{
       title="Create Calendar"
       visible={visible}
       onOk={() => {
-
         form.validateFields().then(async values => {
           const name = values.calendarId.trim()
           if (values.agenda) {

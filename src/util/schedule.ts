@@ -4,7 +4,6 @@ import { addHours, addMinutes, endOfDay, format, formatISO, isAfter, parse, pars
 import { getInitalSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
 import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS } from './constants'
-import { getSubCalendarSchedules } from './subscription'
 
 export const getSchedules = async () => {
   // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
@@ -36,8 +35,7 @@ export const getSchedules = async () => {
     }
     console.log('[faiz:] === search blocks by query: ', script, blocks)
 
-    return flattenDeep(blocks).map(block => {
-
+    const buildSchedulePromiseList = flattenDeep(blocks).map(async block => {
       const _dateFormatter = ['scheduled', 'deadline'].includes(scheduleStart || scheduleEnd) ? DEFAULT_BLOCK_DEADLINE_DATE_FORMAT : dateFormatter || DEFAULT_JOURNAL_FORMAT
       const start = get(block, scheduleStart, undefined)
       const end = get(block, scheduleEnd, undefined)
@@ -74,7 +72,7 @@ export const getSchedules = async () => {
       const _isOverdue = isOverdue(block, _end || _start)
       if (!isMilestone && _isOverdue) _category = 'task'
 
-      const schedule = genSchedule({
+      const schedule = await genSchedule({
         blockData: block,
         category: _category,
         start: _start,
@@ -87,7 +85,7 @@ export const getSchedules = async () => {
       return _isOverdue
         ? [
           schedule,
-          genSchedule({
+          await genSchedule({
             blockData: block,
             category: _category,
             calendarConfig,
@@ -97,6 +95,7 @@ export const getSchedules = async () => {
         ]
         : schedule
     })
+    return Promise.all(buildSchedulePromiseList)
   })
 
   const scheduleRes = await Promise.allSettled(queryPromiseList)
@@ -132,12 +131,11 @@ message: ${res.reason.message}`
                     const _content = block.content?.trim()
                     return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
                   }) || []
-
-    calendarSchedules = calendarSchedules.concat(_logs?.map(block => {
+    const _logSchedulePromises = _logs?.map(async block => {
       const date = block?.page?.journalDay
       const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
       const hasTime = _startTime || _endTime
-      return genSchedule({
+      return await genSchedule({
         blockData: block,
         category: hasTime ? 'time' : 'allday',
         start: _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
@@ -146,17 +144,10 @@ message: ${res.reason.message}`
         defaultDuration,
         isAllDay: !hasTime,
       })
-    }))
+    })
+    const _logSchedules = await Promise.all(_logSchedulePromises)
+    calendarSchedules = calendarSchedules.concat(_logSchedules)
   }
-
-  // let subSchedules = []
-  // try {
-  //   subSchedules = await getSubCalendarSchedules(subscriptionList, defaultDuration)
-  // } catch (error) {
-  //   console.log('[faiz:] === getSubCalendarSchedules error', error)
-  //   logseq.App.showMsg('Get Subscription Schedule Error', 'error')
-  // }
-  // calendarSchedules = calendarSchedules.concat(subSchedules)
 
   return calendarSchedules
 }
@@ -186,7 +177,24 @@ export const isOverdue = (block: any, date: string) => {
   return { start: undefined, end: undefined }
 }
 
-export function genSchedule(params: {
+/**
+ * 填充 block reference 内容
+ */
+export const fillBlockReference = async (blockContent: string) => {
+  const BLOCK_REFERENCE_REG = /\(\([0-9a-z\-]{30,}\)\)/
+
+  if (BLOCK_REFERENCE_REG.test(blockContent)) {
+    const uuid = BLOCK_REFERENCE_REG.exec(blockContent)?.[0]?.replace('((', '')?.replace('))', '')
+    if (uuid) {
+      const referenceData = await logseq.Editor.getBlock(uuid)
+      return blockContent.replace(BLOCK_REFERENCE_REG, referenceData?.content || '')
+    }
+  }
+
+  return blockContent
+}
+
+export async function genSchedule(params: {
   blockData: any
   category: ICategory
   start?: string
@@ -197,11 +205,16 @@ export function genSchedule(params: {
   defaultDuration?: ISettingsForm['defaultDuration']
 }) {
   const { blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
-  const title = blockData.content
+  const page = await logseq.Editor.getPage(blockData?.page?.id)
+  blockData.page = page
+
+  let title = blockData.content
                   .split('\n')[0]
                   ?.replace(new RegExp(`^${blockData.marker} `), '')
                   ?.replace(/^(\d{2}:\d{2})(-\d{2}:\d{2})*/, '')
                   ?.trim?.()
+  title = await fillBlockReference(title)
+  title = title?.split('\n')[0]
   const isDone = blockData.marker === 'DONE'
   const isSupportEdit = isReadOnly === undefined ? blockData.page?.properties?.agenda === true : !isReadOnly
 
@@ -218,7 +231,7 @@ export function genSchedule(params: {
     id: blockData.id,
     calendarId: calendarConfig.id,
     title: isDone ? `✅${title}` : title,
-    body: blockData.content,
+    body: await fillBlockReference(blockData.content),
     category,
     dueDateClass: '',
     start,

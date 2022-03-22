@@ -1,3 +1,4 @@
+import type { ISchedule } from 'tui-calendar'
 import axios from 'axios'
 import { formatISO, parseISO } from 'date-fns'
 import ical from 'ical.js'
@@ -14,16 +15,18 @@ import { ISettingsForm } from './type'
 
   const resList = await Promise.allSettled(enabledCalendarList.map(calendar => axios(calendar.url)))
 
-  let schedules = []
-  resList.forEach((res, index) => {
-    if (res.status === 'rejected') return logseq.App.showMsg(`Get Calendar ${enabledCalendarList[index].id} data error\n${res.reason}`, 'error')
+  const subPromiseList = resList.map(async (res, index) => {
+    if (res.status === 'rejected') {
+      logseq.App.showMsg(`Get Calendar ${enabledCalendarList[index].id} data error\n${res.reason}`, 'error')
+      return []
+    }
     try {
       const data = ical.parse(res.value.data)
       const { events } = parseVCalendar(data)
-      schedules = schedules.concat(events.map(event => {
+      const buildEventPromiseList: Promise<ISchedule>[] = events.map(async event => {
         const { dtstart, dtend, summary, description } = event
         const hasTime = dtstart.type === 'date-time'
-        return genSchedule({
+        return await genSchedule({
           blockData: { id: new Date().valueOf(), content: `${summary?.value || 'no summary'}\n${description?.value || ''}`, subscription: true },
           category: hasTime ? 'time' : 'allday',
           start: dtstart.value,
@@ -32,12 +35,21 @@ import { ISettingsForm } from './type'
           defaultDuration,
           isAllDay: !hasTime,
         })
-      }))
+      })
+      return Promise.all(buildEventPromiseList)
     } catch (error) {
       logseq.App.showMsg(`Parse Calendar ${enabledCalendarList[index].id} data error\n${error}`, 'error')
       console.log('[faiz:] === Parse Calendar error', error)
+      return []
     }
   })
+
+  const schedulePromiseList = await Promise.allSettled(subPromiseList)
+  let schedules: ISchedule[] = schedulePromiseList
+                    .filter(item => item?.status === 'fulfilled')
+                    // @ts-ignore
+                    .map(item => item?.value)
+                    ?.flat()
 
   return schedules
 }
