@@ -62,7 +62,7 @@ const ModifySchedule: React.FC<{
         if (!block) return
         const _block = await logseq.Editor.getBlock(block.uuid)
         console.log('[faiz:] === block', block, _block)
-        calendar?.createSchedules([genSchedule({
+        calendar?.createSchedules([await genSchedule({
           blockData: _block,
           category: isAllDay ? 'allday' : 'time',
           start: dayjs(start).format(),
@@ -89,7 +89,7 @@ const ModifySchedule: React.FC<{
         console.log('[faiz:] === _newBlock', _newBlock)
         // updateSchedule can't update id, so we need to create new schedule after delete old one
         calendar?.deleteSchedule(initialValues.id as unknown as string, initialValues.calendarId)
-        calendar?.createSchedules([genSchedule({
+        calendar?.createSchedules([await genSchedule({
           blockData: _newBlock,
           category: isAllDay ? 'allday' : 'time',
           start: dayjs(start).format(),
@@ -109,7 +109,7 @@ const ModifySchedule: React.FC<{
           end: isAllDay ? endDate : `${endDate} ${endTime}`,
         })
         const _newBlock = await logseq.Editor.getBlock(initialValues.id)
-        calendar?.updateSchedule(initialValues.id as unknown as string, calendarId?.value,  genSchedule({
+        calendar?.updateSchedule(initialValues.id as unknown as string, calendarId?.value,  await genSchedule({
           blockData: _newBlock,
           category: isAllDay ? 'allday' : 'time',
           start: dayjs(start).format(),
