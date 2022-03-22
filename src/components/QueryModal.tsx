@@ -1,6 +1,7 @@
 import { Modal, Form, Input, Button, Row, Col, Radio, Tooltip } from 'antd'
 import { MinusCircleOutlined, PlusOutlined, PlayCircleOutlined } from '@ant-design/icons'
-import { ISettingsForm, ISettingsFormQuery, log } from '../util/util'
+import { log } from '../util/util'
+import type { ISettingsForm, ISettingsFormQuery } from '../util/type'
 
 const QueryModal: React.FC<Partial<{
   visible: boolean

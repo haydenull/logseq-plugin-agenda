@@ -1,4 +1,4 @@
-import { ISettingsForm } from './util'
+import { ISettingsForm } from './type'
 
 export const SHOW_DATE_FORMAT = 'yyyy-MM-dd'
 

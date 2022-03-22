@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
-import { Modal, Form, Select, Input, Button, Switch, Tooltip, Popconfirm, InputNumber } from 'antd'
-import { QuestionCircleOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { genAgendaQuery, genDefaultQuery, getInitalSettings, ISettingsForm, ISettingsFormQuery } from '../util/util'
+import { Modal, Form, Select, Input, Button, Switch, Popconfirm, InputNumber } from 'antd'
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
 import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, THEME } from '../util/constants'
 import Query from './Query'
 import CreateCalendarModal from './CreateCalendarModal'
+import type { ISettingsForm } from '../util/type'
+import { getInitalSettings, genAgendaQuery, genDefaultQuery } from '../util/baseInfo'
 
 
 const Settings: React.FC<{

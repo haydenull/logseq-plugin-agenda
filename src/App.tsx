@@ -2,65 +2,25 @@ import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
-import { format, formatISO, isSameDay, parse } from 'date-fns'
-import { genSchedule, getSchedules, ISettingsForm, managePluginTheme, updateBlock } from './util/util'
+import { format, isSameDay, parse } from 'date-fns'
+import { managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
-import 'tui-calendar/dist/tui-calendar.css'
-import './App.css'
-import { CALENDAR_THEME, SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
+import { SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
 import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs, { Dayjs } from 'dayjs'
-
-const getDefaultOptions = () => {
-  let defaultView = logseq.settings?.defaultView || 'month'
-  if (logseq.settings?.defaultView === '2week') defaultView = 'month'
-  return {
-    defaultView,
-    taskView: true,
-    scheduleView: true,
-    useDetailPopup: true,
-    isReadOnly: false,
-    disableClick: true,
-    theme: CALENDAR_THEME,
-    usageStatistics: false,
-    week: {
-      startDayOfWeek: logseq.settings?.weekStartDay || 0,
-      // narrowWeekend: true,
-    },
-    month: {
-      startDayOfWeek: logseq.settings?.weekStartDay || 0,
-      scheduleFilter: (schedule: ISchedule) => {
-        return Boolean(schedule.isVisible)
-      },
-      visibleWeeksCount: logseq.settings?.defaultView === '2week' ? 2 : undefined,
-    },
-    template: {
-      taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
-      task: (schedule: ISchedule) => '🔥' + schedule.title,
-      timegridDisplayPrimayTime: function(time) {
-        if (time.hour < 10) return '0' + time.hour + ':00'
-        return time.hour + ':00'
-      },
-      popupDetailBody: (schedule: ISchedule) => {
-        const calendar = `<br/><b>Calendar: ${schedule.calendarId}</b>`
-        const navBtn = schedule.raw?.subscription ? '' : '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
-        return `
-          <div class="calendar-popup-detail-content">
-            ${schedule.body?.split('\n').join('<br/>')}
-          </div>
-          ${calendar}
-          ${navBtn}
-        `
-      },
-    },
-  }
-}
+import { getSchedules } from './util/schedule'
+import { ISettingsForm } from './util/type'
+import { updateBlock } from './util/logseq'
+import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
+import 'tui-calendar/dist/tui-calendar.css'
+import './App.css'
+import { getSubCalendarSchedules } from './util/subscription'
 
 const App: React.FC<{ env: string }> = ({ env }) => {
 
-  const DEFAULT_OPTIONS = getDefaultOptions()
+  const calendarOptions = getDefaultCalendarOptions()
 
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
@@ -100,6 +60,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
       const schedules = await getSchedules()
       calendar.createSchedules(schedules)
+      const { subscriptionList } = await getInitalSettings()
+      const subscriptionSchedules = await getSubCalendarSchedules(subscriptionList)
+      calendar.createSchedules(subscriptionSchedules)
       // calendar.createSchedules([{
       //   id: '1',
       //   calendarId: 'journal',
@@ -132,7 +95,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
     }
   }
-  const exportWeekly = async () => {
+  const onClickExportWeekly = async () => {
     const [start, end] = showDate?.split(' ~ ') || []
     setWeeklyModal({
       visible: true,
@@ -172,9 +135,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     changeShowDate()
   }
   const onClickNext = () => {
-    // logseq.App.pushState('page', { uuid: '6212fe1a-0b30-4c2a-b688-b1a7db33c822' })
-    // logseq.App.pushState('page', { name: '07:44 logseq-plugin-agenda' })
-    // logseq.App.pushState('page', { id: 525 })
     calendarRef.current?.next()
     changeShowDate()
   }
@@ -220,7 +180,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     // The bug manifests as the weekly view cannot auto scroll to the current time
     setTimeout(() => {
       calendarRef.current = new Calendar('#calendar', {
-        ...DEFAULT_OPTIONS,
+        ...calendarOptions,
         // template: {
         //   // monthDayname: function(dayname) {
         //   //   return '<span class="calendar-week-dayname-name">' + dayname.label + '</span>';
@@ -322,7 +282,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           <div>
             <Select
               value={currentView}
-              defaultValue={DEFAULT_OPTIONS.defaultView}
+              defaultValue={calendarOptions.defaultView}
               onChange={onViewChange}
               options={CALENDAR_VIEWS}
               style={{ width: '100px' }}
@@ -345,7 +305,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           </div>
 
           <div>
-            { showExportWeekly && <Button className="mr-4" onClick={exportWeekly}>Export Weekly</Button> }
+            { showExportWeekly && <Button className="mr-4" onClick={onClickExportWeekly}>Export Weekly</Button> }
             <Button className="mr-4" onClick={setSchedules} type="primary" icon={<ReloadOutlined />}>Reload</Button>
             <Button className="mr-4" onClick={() => setSettingModal(true)} shape="circle" icon={<SettingOutlined />}></Button>
             <Button onClick={onClickFullScreen} shape="circle" icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button>
