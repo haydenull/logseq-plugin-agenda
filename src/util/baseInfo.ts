@@ -144,80 +144,18 @@ export const genAgendaQuery = (pageName: string) => {
     enabled: true,
     query: [
       {
-        script: `
-[:find (pull
-  ?block
-  [:block/uuid
-    :db/id
-    :block/parent
-    :block/left
-    :block/collapsed?
-    :block/format
-    :block/_refs
-    :block/path-refs
-    :block/tags
-    :block/content
-    :block/marker
-    :block/priority
-    :block/properties
-    :block/pre-block?
-    :block/scheduled
-    :block/deadline
-    :block/repeated?
-    :block/created-at
-    :block/updated-at
-    :block/file
-    :block/heading-level
-    {:block/page
-    [:db/id :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}])
-:where
-[?block :block/marker ?marker]
-[?page :block/name ?pname]
-[?block :block/page ?page]
-[(contains? #{"${pageName}"} ?pname)]
-[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
-        `,
+        script: `(and (page "${pageName}") (property end) (property start))`,
         scheduleStart: 'properties.start',
         scheduleEnd: 'properties.end',
         dateFormatter: 'yyyy-MM-dd',
+        queryType: 'simple',
       },
       {
-        script: `
-[:find (pull
-  ?block
-  [:block/uuid
-    :db/id
-    :block/parent
-    :block/left
-    :block/collapsed?
-    :block/format
-    :block/_refs
-    :block/path-refs
-    :block/tags
-    :block/content
-    :block/marker
-    :block/priority
-    :block/properties
-    :block/pre-block?
-    :block/scheduled
-    :block/deadline
-    :block/repeated?
-    :block/created-at
-    :block/updated-at
-    :block/file
-    :block/heading-level
-    {:block/page
-    [:db/id :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}])
-:where
-[?block :block/marker ?marker]
-[?page :block/name ?pname]
-[?block :block/page ?page]
-[(contains? #{"${pageName}"} ?pname)]
-[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
-        `,
+        script: `(and (page "${pageName}") (property end) (property start))`,
         scheduleStart: 'properties.start',
         scheduleEnd: 'properties.end',
         dateFormatter: 'yyyy-MM-dd HH:mm',
+        queryType: 'simple',
       },
     ]
   }
