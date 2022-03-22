@@ -1,3 +1,12 @@
+# [1.11.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.4...v1.11.0) (2022-03-22)
+
+
+### Features
+
+* add time grid config ([6e93c9d](https://github.com/haydenull/logseq-plugin-agenda/commit/6e93c9d34458619a4ae30f299456c65a5ea0a12f))
+* Allows the creation of an existing agenda calendar for a page ([41eddd3](https://github.com/haydenull/logseq-plugin-agenda/commit/41eddd3a9e1ec51b4575ca3bba212ec3b8e100c0))
+* supports display block reference ([abca9d2](https://github.com/haydenull/logseq-plugin-agenda/commit/abca9d2191307b83ce7ea320e93968bc499560a9))
+
 ## [1.10.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.3...v1.10.4) (2022-03-21)
 
 
