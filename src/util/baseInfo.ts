@@ -43,6 +43,8 @@ export const getDefaultCalendarOptions = () => {
     week: {
       startDayOfWeek: logseq.settings?.weekStartDay || 0,
       // narrowWeekend: true,
+      hourStart: logseq.settings?.weekHourStart || 0,
+      hourEnd: logseq.settings?.weekHourEnd || 24,
     },
     month: {
       startDayOfWeek: logseq.settings?.weekStartDay || 0,

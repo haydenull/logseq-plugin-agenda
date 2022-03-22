@@ -77,6 +77,17 @@ const Settings: React.FC<{
               <Select.Option value={1}>Monday</Select.Option>
             </Select>
           </Form.Item>
+          <Form.Item label="Time Grid">
+            <div className="flex items-center">
+              <Form.Item noStyle name="weekHourStart">
+                <InputNumber min={0} max={24} />
+              </Form.Item>
+              <span className="px-2">-</span>
+              <Form.Item noStyle name="weekHourEnd">
+                <InputNumber min={0} max={24} />
+              </Form.Item>
+            </div>
+          </Form.Item>
           <Form.Item label="Default Duration" name={["defaultDuration", 'value']}>
             <InputNumber
               addonAfter={
