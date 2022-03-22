@@ -149,14 +149,14 @@ message: ${res.reason.message}`
     }))
   }
 
-  let subSchedules = []
-  try {
-    subSchedules = await getSubCalendarSchedules(subscriptionList, defaultDuration)
-  } catch (error) {
-    console.log('[faiz:] === getSubCalendarSchedules error', error)
-    logseq.App.showMsg('Get Subscription Schedule Error', 'error')
-  }
-  calendarSchedules = calendarSchedules.concat(subSchedules)
+  // let subSchedules = []
+  // try {
+  //   subSchedules = await getSubCalendarSchedules(subscriptionList, defaultDuration)
+  // } catch (error) {
+  //   console.log('[faiz:] === getSubCalendarSchedules error', error)
+  //   logseq.App.showMsg('Get Subscription Schedule Error', 'error')
+  // }
+  // calendarSchedules = calendarSchedules.concat(subSchedules)
 
   return calendarSchedules
 }

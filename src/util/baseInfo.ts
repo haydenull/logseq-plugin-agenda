@@ -1,4 +1,5 @@
-import { DEFAULT_SETTINGS } from './constants'
+import { ISchedule } from 'tui-calendar'
+import { CALENDAR_THEME, DEFAULT_SETTINGS } from './constants'
 import { ISettingsForm } from './type'
 
 export const getInitalSettings = (): ISettingsForm => {
@@ -24,6 +25,51 @@ export const initializeSettings = () => {
     const _settings = getInitalSettings()
     logseq.updateSettings({ ..._settings, initialized: true })
     console.log('[faiz:] === initialize settings success', logseq.settings)
+  }
+}
+
+export const getDefaultCalendarOptions = () => {
+  let defaultView = logseq.settings?.defaultView || 'month'
+  if (logseq.settings?.defaultView === '2week') defaultView = 'month'
+  return {
+    defaultView,
+    taskView: true,
+    scheduleView: true,
+    useDetailPopup: true,
+    isReadOnly: false,
+    disableClick: true,
+    theme: CALENDAR_THEME,
+    usageStatistics: false,
+    week: {
+      startDayOfWeek: logseq.settings?.weekStartDay || 0,
+      // narrowWeekend: true,
+    },
+    month: {
+      startDayOfWeek: logseq.settings?.weekStartDay || 0,
+      scheduleFilter: (schedule: ISchedule) => {
+        return Boolean(schedule.isVisible)
+      },
+      visibleWeeksCount: logseq.settings?.defaultView === '2week' ? 2 : undefined,
+    },
+    template: {
+      taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
+      task: (schedule: ISchedule) => '🔥' + schedule.title,
+      timegridDisplayPrimayTime: function(time) {
+        if (time.hour < 10) return '0' + time.hour + ':00'
+        return time.hour + ':00'
+      },
+      popupDetailBody: (schedule: ISchedule) => {
+        const calendar = `<br/><b>Calendar: ${schedule.calendarId}</b>`
+        const navBtn = schedule.raw?.subscription ? '' : '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
+        return `
+          <div class="calendar-popup-detail-content">
+            ${schedule.body?.split('\n').join('<br/>')}
+          </div>
+          ${calendar}
+          ${navBtn}
+        `
+      },
+    },
   }
 }
 
