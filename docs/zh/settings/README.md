@@ -20,6 +20,9 @@
 - Sunday: 星期日
 - Monday: 星期一
 
+## Time Grid
+设置周视图与日视图中的时间网格的开始与结束时间。均为0-24的数字。
+
 ## ~~Journal Date Formatter(废弃)~~
 ~~日记日期格式~~
 

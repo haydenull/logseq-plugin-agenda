@@ -17,6 +17,9 @@
 - Sunday
 - Monday
 
+## Time Grid
+Set the start and end time of the time grid in the week view and daily view. All are 0-24.
+
 ## ~~Journal Date Formatter(Removed)~~
 ~~default journal date formatter~~
 
