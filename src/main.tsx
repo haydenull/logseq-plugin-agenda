@@ -38,6 +38,13 @@ if (isDevelopment) {
       key: 'logseq-plugin-agenda',
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
+    logseq.App.registerCommandPalette({
+      key: 'logseq-plugin-agenda:show',
+      label: 'Show Agenda',
+    }, data => {
+      renderApp('logseq')
+      logseq.showMainUI()
+    })
 
   })
 }

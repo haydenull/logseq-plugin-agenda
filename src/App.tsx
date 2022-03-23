@@ -3,7 +3,7 @@ import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { format, isSameDay, parse } from 'date-fns'
-import { managePluginTheme } from './util/util'
+import { listenEsc, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import { SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
@@ -290,6 +290,13 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         })
       })
     }, 0)
+  }, [])
+  useEffect(() => {
+    const callback = () => logseq.hideMainUI()
+    listenEsc(callback)
+    return () => {
+      document.removeEventListener('keyup', callback)
+    }
   }, [])
 
   return (
