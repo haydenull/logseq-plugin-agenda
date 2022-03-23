@@ -35,6 +35,7 @@ export const en: SidebarConfig = {
       children: [
         '/other/query.md',
         '/other/testQuery.md',
+        '/other/command.md',
       ],
     }
   ],

@@ -35,6 +35,7 @@ export const zh: SidebarConfig = {
       children: [
         '/zh/other/query.md',
         '/zh/other/testQuery.md',
+        '/zh/other/command.md',
       ],
     }
   ],
