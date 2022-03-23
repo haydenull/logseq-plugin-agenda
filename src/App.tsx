@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Modal, Select, Tooltip } from 'antd'
-import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons'
+import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { format, isSameDay, parse } from 'date-fns'
 import { managePluginTheme } from './util/util'
 import Settings from './components/Settings'
@@ -17,12 +17,14 @@ import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
 import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
 import { getSubCalendarSchedules } from './util/subscription'
+import Sidebar from './components/Sidebar'
 
 const App: React.FC<{ env: string }> = ({ env }) => {
 
   const calendarOptions = getDefaultCalendarOptions()
 
   const [isFullScreen, setIsFullScreen] = useState(false)
+  const [isFold, setIsFold] = useState(false)
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
   const [showDate, setShowDate] = useState<string>()
   const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
@@ -53,6 +55,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       }
     }
   }
+  const toggleFold = () => setIsFold(_isFold => !_isFold)
   const setSchedules = async () => {
     const calendar = calendarRef.current
     if (calendar) {
@@ -277,9 +280,11 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   return (
     <div className="w-screen h-screen flex items-center justify-center">
       <div className="mask w-screen h-screen fixed top-0 left-0 bg-black bg-opacity-50" onClick={() => logseq.hideMainUI()}></div>
+      {/* ========= title bar start ========= */}
       <div className={`${isFullScreen ? 'w-full h-full' : 'w-5/6'} flex flex-col justify-center overflow-hidden bg-white relative rounded text-black p-3`} style={{ maxWidth: isFullScreen ? 'none' : '1200px' }}>
         <div className="mb-2 flex items-center justify-between">
-          <div>
+          <div className="flex items-center">
+            <Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />} />
             <Select
               value={currentView}
               defaultValue={calendarOptions.defaultView}
@@ -311,7 +316,17 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             <Button onClick={onClickFullScreen} shape="circle" icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button>
           </div>
         </div>
-        <div id="calendar"></div>
+        {/* ========= title bar end ========= */}
+
+        {/* ========= content start ========= */}
+        <div className="flex">
+          <div className={`transition-all ${isFold ? 'w-0' : 'w-40'}`}>
+            <Sidebar />
+          </div>
+          <div id="calendar" className="flex-1"></div>
+        </div>
+        {/* ========= content end ========= */}
+
         <Weekly
           visible={weeklyModal.visible}
           start={weeklyModal.start}
