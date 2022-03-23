@@ -1,3 +1,11 @@
+# [1.12.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.11.0...v1.12.0) (2022-03-23)
+
+
+### Features
+
+* ✨ add command palette and esc shortcut ([179a806](https://github.com/haydenull/logseq-plugin-agenda/commit/179a806911cae0942af32891cfb27c689633539b))
+* ✨ add sidebar ([1325a74](https://github.com/haydenull/logseq-plugin-agenda/commit/1325a746c955450d1341975dd8fef627fd515059))
+
 # [1.11.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.10.4...v1.11.0) (2022-03-22)
 
 
