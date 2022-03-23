@@ -1,27 +1,77 @@
 import React, { useState } from 'react'
-import { Collapse } from 'antd'
-import { getInitalSettings } from '../util/baseInfo'
+import { Collapse, Tooltip, Typography } from 'antd'
+import { DownOutlined } from '@ant-design/icons'
+import Checkbox from './Checkbox'
+import { ICustomCalendar } from '../util/type'
 
-const Sidebar: React.FC<{}> = () => {
-  const { calendarList, subscriptionList } = getInitalSettings()
+const Sidebar: React.FC<{
+  onShowCalendarChange?: (showCalendar: string[]) => void
+  calendarList?: ICustomCalendar[]
+  subscriptionList?: ICustomCalendar[]
+}> = ({ onShowCalendarChange, calendarList = [], subscriptionList = [] }) => {
+  const [collapseActiveKeys, setCollapseActiveKeys] = useState<string[]>(['calendar', 'subscription'])
+
+  const [checkedCalendarList, setCheckedCalendarList] = useState<string[]>(calendarList.map(calendar => calendar.id)?.concat(subscriptionList?.map(subscription => subscription.id)))
+
+  const onCheck = (checkedCalendarId: string, checked: boolean) => {
+    let newCheckedCalendarList = checkedCalendarList.filter(calendarId => calendarId !== checkedCalendarId)
+    if (checked) {
+      newCheckedCalendarList = checkedCalendarList.concat(checkedCalendarId)
+    }
+    setCheckedCalendarList(newCheckedCalendarList)
+    onShowCalendarChange?.(newCheckedCalendarList)
+  }
+  const renderCollapsePanelHeader = (title: string) => {
+    return <span className="text-gray-400 text-xs">{title}</span>
+  }
 
   return (
-    <div>
-      <Collapse>
-        <Collapse.Panel header="Calendar" key="1">
-          {
-            calendarList?.filter(calendar => calendar.enabled).map(calendar => (
-              <div key={calendar.id}>{calendar.id}</div>
-            ))
-          }
+    <div className="sidebar pt-2">
+      <Collapse
+        ghost
+        expandIconPosition="right"
+        activeKey={collapseActiveKeys}
+        expandIcon={({ isActive }) => <span className="opacity-50"><DownOutlined rotate={isActive ? 0 : -90} /></span>}
+        onChange={key => setCollapseActiveKeys(typeof key === 'string' ? [key] : key)}
+      >
+        <Collapse.Panel header={renderCollapsePanelHeader('Calendar')} key="calendar">
+            {
+              calendarList.map(calendar => (
+                <Checkbox
+                  className="mb-1 cursor-pointer flex items-center"
+                  key={calendar.id}
+                  color={calendar.bgColor}
+                  checked={checkedCalendarList?.includes(calendar.id)}
+                  onChange={(checked) => onCheck(calendar.id, checked)}
+                >
+                  <Tooltip title={calendar.id} placement="right">
+                    <span className="singlge-line-ellipsis flex-1">{calendar.id}</span>
+                  </Tooltip>
+                </Checkbox>
+              ))
+            }
         </Collapse.Panel>
-        <Collapse.Panel header="Subscription" key="2">
-          {
-            subscriptionList?.filter(subscription => subscription.enabled).map(subscription => (
-              <div key={subscription.id}>{subscription.id}</div>
-            ))
-          }
-        </Collapse.Panel>
+        {
+          subscriptionList?.length > 0 && (
+            <Collapse.Panel header={renderCollapsePanelHeader('Subscription')} key="subscription" className="mt-3">
+              {
+                subscriptionList.map(subscription => (
+                  <Checkbox
+                    className="mb-1 cursor-pointer flex items-center"
+                    key={subscription.id}
+                    color={subscription.bgColor}
+                    checked={checkedCalendarList?.includes(subscription.id)}
+                    onChange={(checked) => onCheck(subscription.id, checked)}
+                  >
+                    <Tooltip title={subscription.id} placement="right">
+                      <span className="singlge-line-ellipsis flex-1">{subscription.id}</span>
+                    </Tooltip>
+                  </Checkbox>
+                ))
+              }
+            </Collapse.Panel>
+          )
+        }
       </Collapse>
     </div>
   )

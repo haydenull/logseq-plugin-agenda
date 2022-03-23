@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
@@ -11,7 +11,7 @@ import ModifySchedule from './components/ModifySchedule'
 import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs, { Dayjs } from 'dayjs'
 import { getSchedules } from './util/schedule'
-import { ISettingsForm } from './util/type'
+import { ICustomCalendar, ISettingsForm } from './util/type'
 import { updateBlock } from './util/logseq'
 import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
 import 'tui-calendar/dist/tui-calendar.css'
@@ -23,8 +23,12 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const calendarOptions = getDefaultCalendarOptions()
 
+  const { calendarList, subscriptionList, logKey } = getInitalSettings()
+  const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar.enabled))
+  const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription.enabled) : []
+
   const [isFullScreen, setIsFullScreen] = useState(false)
-  const [isFold, setIsFold] = useState(false)
+  const [isFold, setIsFold] = useState(true)
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
   const [showDate, setShowDate] = useState<string>()
   const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
@@ -176,6 +180,17 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       logseq.hideMainUI()
     }
   }
+  const onShowCalendarChange = (showCalendarList: string[]) => {
+    const enabledCalendarIds = enabledCalendarList.concat(enabledSubscriptionList)?.map(calendar => calendar.id)
+
+    enabledCalendarIds.forEach(calendarId => {
+      if (showCalendarList.includes(calendarId)) {
+        calendarRef.current?.toggleSchedules(calendarId, false)
+      } else {
+        calendarRef.current?.toggleSchedules(calendarId, true)
+      }
+    })
+  }
 
   useEffect(() => {
     managePluginTheme()
@@ -284,7 +299,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       <div className={`${isFullScreen ? 'w-full h-full' : 'w-5/6'} flex flex-col justify-center overflow-hidden bg-white relative rounded text-black p-3`} style={{ maxWidth: isFullScreen ? 'none' : '1200px' }}>
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center">
-            <Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />} />
+            <Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
             <Select
               value={currentView}
               defaultValue={calendarOptions.defaultView}
@@ -320,10 +335,14 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
         {/* ========= content start ========= */}
         <div className="flex">
-          <div className={`transition-all ${isFold ? 'w-0' : 'w-40'}`}>
-            <Sidebar />
+          <div className={`transition-all overflow-hidden bg-gray-100 mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
+            <Sidebar
+              onShowCalendarChange={onShowCalendarChange}
+              calendarList={enabledCalendarList}
+              subscriptionList={enabledSubscriptionList}
+            />
           </div>
-          <div id="calendar" className="flex-1"></div>
+          <div id="calendar" className="flex-1" style={{ height: '624px' }}></div>
         </div>
         {/* ========= content end ========= */}
 

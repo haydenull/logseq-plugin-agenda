@@ -8,6 +8,19 @@ html, body {
   @apply w-screen h-screen;
 }
 
+.sidebar .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  padding: 4px 10px;
+}
+.sidebar .ant-collapse-ghost > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
+  padding: 2px 10px;
+}
+
+.singlge-line-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .dark {
   filter: invert(1) hue-rotate(180deg);
 }
@@ -18,4 +31,29 @@ html, body {
 .calendar-popup-detail-content {
   max-height: 200px;
   overflow-y: auto;
+}
+
+.check-box {
+  position: relative;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  /* border: 2px solid #409eff; */
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.check-box.checked::before {
+  content: "";
+  box-sizing: border-box;
+  display: inline-block;
+  width: 6px;
+  height: 9px;
+  border: 2px solid #ddd;
+  border-top: 0;
+  border-left: 0;
+  position: absolute;
+  left: 5px;
+  top: 7px;
+  transform: translateY(-50%) rotate(45deg);
 }
