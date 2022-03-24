@@ -3,9 +3,10 @@ import { DatePicker, Form, Input, Modal, Radio, Select } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import Calendar from 'tui-calendar'
-import type { ISettingsForm } from '../util/type'
+import type { ICustomCalendar, ISettingsForm } from '../util/type'
 import { genSchedule } from '../util/schedule'
 import { updateBlock } from '../util/logseq'
+import { format } from 'date-fns'
 
 export type IScheduleForm = {
   calendarId: string
@@ -48,10 +49,29 @@ const ModifySchedule: React.FC<{
       const endTime = dayjs(end).format('HH:mm')
       const calendarConfig = agendaCalendars.find(c => c.id === calendarId?.value)
       console.log('[faiz:] === onClickSave', values)
+      const { preferredDateFormat } = await logseq.App.getUserConfigs()
+
+      let oldCalendarId = initialValues?.calendarId
+      if (initialValues?.calendarId === 'journal') {
+        const oldStart = initialValues?.start
+        if(oldStart) oldCalendarId = format(oldStart?.valueOf(), preferredDateFormat)
+      }
+
+      let newCalendarId = calendarId?.value
+      if (calendarId?.value === 'journal') {
+        console.log('[faiz:] === values', values)
+        const journalName = format(start.valueOf(), preferredDateFormat)
+        const newPage = await logseq.Editor.createPage(journalName, { journal: true })
+        if (newPage) newCalendarId = newPage.originalName
+        console.log('[faiz:] === journalName', journalName, newPage)
+        // const newPage = await logseq.Editor.createPage()
+      }
+      console.log('[faiz:] === onClickSave faiz', oldCalendarId, newCalendarId)
+      return
 
       if (type === 'create') {
         // create
-        const block = await logseq.Editor.insertBlock(calendarId?.value, `TODO ${title}`, {
+        const block = await logseq.Editor.insertBlock(newCalendarId, `TODO ${title}`, {
           isPageBlock: true,
           sibling: true,
           properties: {
@@ -140,8 +160,8 @@ const ModifySchedule: React.FC<{
                               return calendarList[index]
                             })
                             .filter(function<T>(item: T | null): item is T { return Boolean(item) })
-      if (agendaPages?.length <= 0) return logseq.App.showMsg('No agenda page found\nPlease create an agenda calendar first', 'error')
-      setAgendaCalendars(agendaPages)
+      // if (agendaPages?.length <= 0) return logseq.App.showMsg('No agenda page found\nYou can create an agenda calendar first', 'warning')
+      setAgendaCalendars([calendarList[0]].concat(agendaPages))
     })
   }, [])
 
