@@ -5,7 +5,7 @@ import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import Calendar from 'tui-calendar'
 import type { ICustomCalendar, ISettingsForm } from '../util/type'
 import { genSchedule } from '../util/schedule'
-import { updateBlock } from '../util/logseq'
+import { moveBlockToNewPage, updateBlock } from '../util/logseq'
 import { format } from 'date-fns'
 
 export type IScheduleForm = {
@@ -66,8 +66,7 @@ const ModifySchedule: React.FC<{
         console.log('[faiz:] === journalName', journalName, newPage)
         // const newPage = await logseq.Editor.createPage()
       }
-      console.log('[faiz:] === onClickSave faiz', oldCalendarId, newCalendarId)
-      return
+      console.log('[faiz:] === onClickSave faiz', oldCalendarId, newCalendarId, initialValues)
 
       if (type === 'create') {
         // create
@@ -92,18 +91,19 @@ const ModifySchedule: React.FC<{
           isAllDay,
           isReadOnly: false,
         })])
-      } else if (calendarId?.value !== initialValues?.calendarId && initialValues?.id) {
+      } else if (newCalendarId !== oldCalendarId && initialValues?.id) {
         // move
-        const block = await logseq.Editor.getBlock(initialValues.id)
-        if (!block) return logseq.App.showMsg('Block not found', 'error')
-        const page = await logseq.Editor.getPage(calendarId?.value)
-        if (!page) return logseq.App.showMsg('Calendar page not found')
-        await logseq.Editor.removeBlock(block.uuid)
-        const newBlock = await logseq.Editor.insertBlock(calendarId?.value, title, {
-          isPageBlock: true,
-          sibling: true,
-          properties: block.properties,
-        })
+        // const block = await logseq.Editor.getBlock(initialValues.id)
+        // if (!block) return logseq.App.showMsg('Block not found', 'error')
+        // const page = await logseq.Editor.getPage(newCalendarId)
+        // if (!page) return logseq.App.showMsg('Calendar page not found')
+        // await logseq.Editor.removeBlock(block.uuid)
+        // const newBlock = await logseq.Editor.insertBlock(newCalendarId, title, {
+        //   isPageBlock: true,
+        //   sibling: true,
+        //   properties: block.properties,
+        // })
+        const newBlock = await moveBlockToNewPage(initialValues.id, newCalendarId, title)
         if (!newBlock || !initialValues.calendarId) return
         const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
         console.log('[faiz:] === _newBlock', _newBlock)

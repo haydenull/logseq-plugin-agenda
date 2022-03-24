@@ -216,7 +216,13 @@ export async function genSchedule(params: {
   title = await fillBlockReference(title)
   title = title?.split('\n')[0]
   const isDone = blockData.marker === 'DONE'
-  const isSupportEdit = isReadOnly === undefined ? blockData.page?.properties?.agenda === true : !isReadOnly
+
+  function supportEdit() {
+    if (blockData.page?.properties?.agenda === true) return true
+    if (blockData?.page?.journalDay && blockData?.properties?.start && blockData?.properties?.end) return true
+    return false
+  }
+  const isSupportEdit = isReadOnly === undefined ? supportEdit() : !isReadOnly
 
   const { defaultDuration: _defaultDuration } = DEFAULT_SETTINGS
   let _end = end

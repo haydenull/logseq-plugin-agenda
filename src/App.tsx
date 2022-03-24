@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
-import { format, isSameDay, parse } from 'date-fns'
+import { format, isSameDay, parse, parseISO } from 'date-fns'
 import { listenEsc, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
@@ -10,9 +10,9 @@ import { SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
 import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs, { Dayjs } from 'dayjs'
-import { getSchedules } from './util/schedule'
+import { genSchedule, getSchedules } from './util/schedule'
 import { ICustomCalendar, ISettingsForm } from './util/type'
-import { updateBlock } from './util/logseq'
+import { moveBlockToNewPage, updateBlock } from './util/logseq'
 import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
 import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
@@ -272,7 +272,34 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             scheduleChanges[key] = dayjs(changes[key]).format()
           })
           calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
-          await updateBlock(schedule.id, false, properties)
+          // 若两次 start 不是同一天,则执行 move 操作
+          if (schedule.calendarId === 'journal' && changes.start && changes.start !== schedule.start) {
+            const { preferredDateFormat } = await logseq.App.getUserConfigs()
+            const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
+            await logseq.Editor.createPage(journalName)
+            const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName)
+            console.log('[faiz:] === newBlock', newBlock)
+            if (!newBlock) return logseq.App.showMsg('Failed to move block to new page')
+            await updateBlock(newBlock.uuid, false, properties)
+            calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, { raw: {
+              ...newBlock,
+              // id: ,
+              // page: ,
+            } })
+            // calendarRef.current?.deleteSchedule(schedule.id, 'journal')
+            // calendarRef.current?.createSchedules([await genSchedule({
+            //   blockData: newBlock,
+            //   category: schedule.category,
+            //   start: dayjs(start).format(),
+            //   end: dayjs(end).format(),
+            //   // @ts-ignore
+            //   calendarConfig,
+            //   isAllDay: schedule.isAllDay,
+            //   isReadOnly: false,
+            // })])
+          } else {
+            await updateBlock(schedule.id, false, properties)
+          }
         }
       })
       calendarRef.current.on('beforeDeleteSchedule', function(event) {
