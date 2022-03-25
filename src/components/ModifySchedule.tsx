@@ -49,6 +49,16 @@ const ModifySchedule: React.FC<{
       const endTime = dayjs(end).format('HH:mm')
       const calendarConfig = agendaCalendars.find(c => c.id === calendarId?.value)
       console.log('[faiz:] === onClickSave', values)
+      // 变更后的schedule是否是journal中的schedule
+      const isJournalSchedule = calendarId?.value === 'journal'
+      let newTitle = `TODO ${title}`
+      if (isJournalSchedule) {
+        newTitle = isAllDay ? `TODO ${title}` : `TODO ${startTime}-${endTime} ${title}`
+      }
+      const newBlockPropeties = isJournalSchedule ? {} : {
+        start: isAllDay ? startDate : `${startDate} ${startTime}`,
+        end: isAllDay ? endDate : `${endDate} ${endTime}`,
+      }
       const { preferredDateFormat } = await logseq.App.getUserConfigs()
 
       let oldCalendarId = initialValues?.calendarId
@@ -70,17 +80,14 @@ const ModifySchedule: React.FC<{
 
       if (type === 'create') {
         // create
-        const block = await logseq.Editor.insertBlock(newCalendarId, `TODO ${title}`, {
+        const block = await logseq.Editor.insertBlock(newCalendarId, newTitle, {
           isPageBlock: true,
           sibling: true,
-          properties: {
-            start: isAllDay ? startDate : `${startDate} ${startTime}`,
-            end: isAllDay ? endDate : `${endDate} ${endTime}`,
-          },
+          properties: newBlockPropeties,
         })
-        if (!block) return
+        if (!block) return logseq.App.showMsg('Create block failed', 'error')
         const _block = await logseq.Editor.getBlock(block.uuid)
-        console.log('[faiz:] === block', block, _block)
+        console.log('[faiz:] === create block', block, _block)
         calendar?.createSchedules([await genSchedule({
           blockData: _block,
           category: isAllDay ? 'allday' : 'time',
@@ -103,12 +110,12 @@ const ModifySchedule: React.FC<{
         //   sibling: true,
         //   properties: block.properties,
         // })
-        const newBlock = await moveBlockToNewPage(initialValues.id, newCalendarId, title)
+        const newBlock = await moveBlockToNewPage(initialValues.id, newCalendarId, title, newBlockPropeties)
         if (!newBlock || !initialValues.calendarId) return
         const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
         console.log('[faiz:] === _newBlock', _newBlock)
         // updateSchedule can't update id, so we need to create new schedule after delete old one
-        calendar?.deleteSchedule(initialValues.id as unknown as string, initialValues.calendarId)
+        calendar?.deleteSchedule(String(initialValues.id), initialValues.calendarId)
         calendar?.createSchedules([await genSchedule({
           blockData: _newBlock,
           category: isAllDay ? 'allday' : 'time',
@@ -124,12 +131,9 @@ const ModifySchedule: React.FC<{
         // logseq.Editor.moveBlock(block?.uuid, page.uuid)
       } else if (initialValues?.id) {
         // update
-        await updateBlock(initialValues.id, title, {
-          start: isAllDay ? startDate : `${startDate} ${startTime}`,
-          end: isAllDay ? endDate : `${endDate} ${endTime}`,
-        })
+        await updateBlock(initialValues.id, title, newBlockPropeties)
         const _newBlock = await logseq.Editor.getBlock(initialValues.id)
-        calendar?.updateSchedule(initialValues.id as unknown as string, calendarId?.value,  await genSchedule({
+        calendar?.updateSchedule(String(initialValues.id), calendarId?.value,  await genSchedule({
           blockData: _newBlock,
           category: isAllDay ? 'allday' : 'time',
           start: dayjs(start).format(),

@@ -50,6 +50,15 @@ export const getSchedules = async () => {
         console.warn('[faiz:] === parse calendar date error: ', err, block, query)
         return []
       }
+      if (block?.page?.['journal-day']) {
+        const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
+        if (_startTime || _endTime) {
+          const date = block?.page?.['journal-day']
+          _start = _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
+          _end = _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
+          hasTime = true
+        }
+      }
       if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
@@ -219,7 +228,7 @@ export async function genSchedule(params: {
 
   function supportEdit() {
     if (blockData.page?.properties?.agenda === true) return true
-    if (blockData?.page?.journalDay && blockData?.properties?.start && blockData?.properties?.end) return true
+    if (blockData?.page?.journalDay && !blockData?.scheduled && !blockData?.deadline) return true
     return false
   }
   const isSupportEdit = isReadOnly === undefined ? supportEdit() : !isReadOnly

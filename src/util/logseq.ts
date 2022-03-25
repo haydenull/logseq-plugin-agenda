@@ -15,10 +15,10 @@ export const updateBlock = async (blockId: number | string, content: string | fa
 export const moveBlockToNewPage = async (blockId: number, pageName: string, content?: string, properties?: Record<string, any>) => {
   console.log('[faiz:] === moveBlockToNewPage', blockId, pageName, content, properties)
   const block = await logseq.Editor.getBlock(blockId)
-  console.log('[faiz:] === block', block)
+  console.log('[faiz:] === block moveBlockToNewPage', block)
   if (!block) return logseq.App.showMsg('moveBlockToNewPage: Block not found', 'error')
-  const page = await logseq.Editor.getPage(pageName)
-  if (!page) return logseq.App.showMsg('Page not found', 'error')
+  const page = await logseq.Editor.createPage(pageName)
+  if (!page) return logseq.App.showMsg('Create page failed', 'error')
   await logseq.Editor.removeBlock(block.uuid)
   const newBlock = await logseq.Editor.insertBlock(pageName, content || block?.content, {
     isPageBlock: true,

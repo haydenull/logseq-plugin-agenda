@@ -276,11 +276,10 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           if (schedule.calendarId === 'journal' && changes.start && changes.start !== schedule.start) {
             const { preferredDateFormat } = await logseq.App.getUserConfigs()
             const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
-            await logseq.Editor.createPage(journalName)
-            const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName)
+            // TODO: content加上新的时间信息
+            const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName, schedule?.raw?.content)
             console.log('[faiz:] === newBlock', newBlock)
             if (!newBlock) return logseq.App.showMsg('Failed to move block to new page')
-            await updateBlock(newBlock.uuid, false, properties)
             calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, { raw: {
               ...newBlock,
               // id: ,
