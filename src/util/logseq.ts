@@ -12,7 +12,7 @@ export const updateBlock = async (blockId: number | string, content: string | fa
   return Promise.allSettled(upsertBlockPropertyPromises)
 }
 
-export const moveBlockToNewPage = async (blockId: number, pageName: string, content?: string, properties?: Record<string, any>) => {
+export const moveBlockToNewPage = async (blockId: number, pageName: string, content?: string | false, properties?: Record<string, any>) => {
   console.log('[faiz:] === moveBlockToNewPage', blockId, pageName, content, properties)
   const block = await logseq.Editor.getBlock(blockId)
   console.log('[faiz:] === block moveBlockToNewPage', block)
@@ -25,5 +25,6 @@ export const moveBlockToNewPage = async (blockId: number, pageName: string, cont
     sibling: true,
     properties: properties || block?.properties,
   })
-  return newBlock
+  if (newBlock) return await logseq.Editor.getBlock(newBlock.uuid)
+  return logseq.App.showMsg('Failed to move block to new page')
 }

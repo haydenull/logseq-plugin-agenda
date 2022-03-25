@@ -10,7 +10,7 @@ import { SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
 import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs, { Dayjs } from 'dayjs'
-import { genSchedule, getSchedules } from './util/schedule'
+import { genSchedule, getSchedules, modifyTimeInfo } from './util/schedule'
 import { ICustomCalendar, ISettingsForm } from './util/type'
 import { moveBlockToNewPage, updateBlock } from './util/logseq'
 import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
@@ -245,7 +245,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       })
       calendarRef.current.on('beforeUpdateSchedule', async function(event) {
         console.log('[faiz:] === beforeUpdateSchedule', event)
-        const { schedule, changes, triggerEventName } = event
+        const { schedule, changes, triggerEventName, start: finalStart, end: finalEnd } = event
         if (triggerEventName === 'click') {
           setModifyScheduleModal({
             visible: true,
@@ -261,6 +261,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             },
           })
         } else if (changes) {
+          if (schedule.calendarId === 'journal' && !dayjs(finalStart).isSame(dayjs(finalEnd), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
           let properties = {}
           let scheduleChanges = {}
           Object.keys(changes).forEach(key => {
@@ -272,32 +273,26 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             scheduleChanges[key] = dayjs(changes[key]).format()
           })
           calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
-          // 若两次 start 不是同一天,则执行 move 操作
-          if (schedule.calendarId === 'journal' && changes.start && changes.start !== schedule.start) {
-            const { preferredDateFormat } = await logseq.App.getUserConfigs()
-            const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
-            // TODO: content加上新的时间信息
-            const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName, schedule?.raw?.content)
-            console.log('[faiz:] === newBlock', newBlock)
-            if (!newBlock) return logseq.App.showMsg('Failed to move block to new page')
-            calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, { raw: {
-              ...newBlock,
-              // id: ,
-              // page: ,
-            } })
-            // calendarRef.current?.deleteSchedule(schedule.id, 'journal')
-            // calendarRef.current?.createSchedules([await genSchedule({
-            //   blockData: newBlock,
-            //   category: schedule.category,
-            //   start: dayjs(start).format(),
-            //   end: dayjs(end).format(),
-            //   // @ts-ignore
-            //   calendarConfig,
-            //   isAllDay: schedule.isAllDay,
-            //   isReadOnly: false,
-            // })])
+          if (schedule.calendarId === 'journal') {
+            const marker = schedule?.raw?.marker
+            const _content = schedule?.isAllDay ? false : `${marker} ` + modifyTimeInfo(schedule?.raw?.content?.replace(new RegExp(`^${marker} `), ''), dayjs(schedule?.start).format('HH:mm'), dayjs(schedule?.end).format('HH:mm'))
+            // 若两次 start 不是同一天,则执行 move 操作
+            if (changes.start && !dayjs(changes.start).isSame(dayjs(String(schedule.page?.journalDay), 'YYYYMMDD'), 'day')) {
+              const { preferredDateFormat } = await logseq.App.getUserConfigs()
+              const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
+              const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName, _content)
+              console.log('[faiz:] === newBlock', newBlock)
+              if (newBlock) {
+                calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, { raw: {
+                  ...newBlock,
+                  // page: ,
+                } })
+              }
+            } else {
+              await updateBlock(schedule.raw?.id, _content)
+            }
           } else {
-            await updateBlock(schedule.id, false, properties)
+            await updateBlock(Number(schedule.id), false, properties)
           }
         }
       })

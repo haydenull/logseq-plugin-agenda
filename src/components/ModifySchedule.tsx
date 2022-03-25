@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import Calendar from 'tui-calendar'
 import type { ICustomCalendar, ISettingsForm } from '../util/type'
-import { genSchedule } from '../util/schedule'
+import { genSchedule, modifyTimeInfo, removeTimeInfo } from '../util/schedule'
 import { moveBlockToNewPage, updateBlock } from '../util/logseq'
 import { format } from 'date-fns'
 
@@ -15,7 +15,7 @@ export type IScheduleForm = {
   end: Dayjs
   isAllDay?: boolean
 }
-export type IScheduleValue = Partial<IScheduleForm> & { id?: number; raw?: any }
+export type IScheduleValue = Partial<IScheduleForm> & { id?: string; raw?: any }
 
 const ModifySchedule: React.FC<{
   visible: boolean
@@ -39,6 +39,11 @@ const ModifySchedule: React.FC<{
         end: changedValues.start.add(1, 'hour'),
       })
     }
+    if (changedValues.calendarId?.value === 'journal') {
+      form.setFieldsValue({
+        end: form.getFieldValue('start').add(1, 'hour'),
+      })
+    }
   }
   const onClickSave = () => {
     form.validateFields().then(async values => {
@@ -51,9 +56,21 @@ const ModifySchedule: React.FC<{
       console.log('[faiz:] === onClickSave', values)
       // 变更后的schedule是否是journal中的schedule
       const isJournalSchedule = calendarId?.value === 'journal'
+      if (isJournalSchedule && !dayjs(start).isSame(dayjs(end), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
+      if (dayjs(start).isAfter(dayjs(end))) return logseq.App.showMsg('Start time cannot be later than end time', 'error')
       let newTitle = `TODO ${title}`
       if (isJournalSchedule) {
-        newTitle = isAllDay ? `TODO ${title}` : `TODO ${startTime}-${endTime} ${title}`
+        if (type === 'create') newTitle = isAllDay ? `TODO ${title}` : `TODO ${startTime}-${endTime} ${title}`
+        if (type === 'update') {
+          const marker = initialValues?.raw?.marker
+          const pureTitle = title.replace(new RegExp(`^${marker} `), '')
+          newTitle = isAllDay ? `${marker} ` + removeTimeInfo(pureTitle) : `${marker} ` + modifyTimeInfo(pureTitle, startTime, endTime)
+        }
+      }
+      if (!isJournalSchedule && type === 'update') {
+        const marker = initialValues?.raw?.marker
+        const pureTitle = title.replace(new RegExp(`^${marker} `), '')
+        newTitle = `${marker} ` + removeTimeInfo(pureTitle)
       }
       const newBlockPropeties = isJournalSchedule ? {} : {
         start: isAllDay ? startDate : `${startDate} ${startTime}`,
@@ -100,17 +117,7 @@ const ModifySchedule: React.FC<{
         })])
       } else if (newCalendarId !== oldCalendarId && initialValues?.id) {
         // move
-        // const block = await logseq.Editor.getBlock(initialValues.id)
-        // if (!block) return logseq.App.showMsg('Block not found', 'error')
-        // const page = await logseq.Editor.getPage(newCalendarId)
-        // if (!page) return logseq.App.showMsg('Calendar page not found')
-        // await logseq.Editor.removeBlock(block.uuid)
-        // const newBlock = await logseq.Editor.insertBlock(newCalendarId, title, {
-        //   isPageBlock: true,
-        //   sibling: true,
-        //   properties: block.properties,
-        // })
-        const newBlock = await moveBlockToNewPage(initialValues.id, newCalendarId, title, newBlockPropeties)
+        const newBlock = await moveBlockToNewPage(Number(initialValues.id), newCalendarId, newTitle, newBlockPropeties)
         if (!newBlock || !initialValues.calendarId) return
         const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
         console.log('[faiz:] === _newBlock', _newBlock)
@@ -131,9 +138,14 @@ const ModifySchedule: React.FC<{
         // logseq.Editor.moveBlock(block?.uuid, page.uuid)
       } else if (initialValues?.id) {
         // update
-        await updateBlock(initialValues.id, title, newBlockPropeties)
-        const _newBlock = await logseq.Editor.getBlock(initialValues.id)
-        calendar?.updateSchedule(String(initialValues.id), calendarId?.value,  await genSchedule({
+        if (calendarId.value === 'journal') {
+          await updateBlock(Number(initialValues.id), newTitle)
+        } else {
+          await updateBlock(Number(initialValues.id), title, newBlockPropeties)
+        }
+        const _newBlock = await logseq.Editor.getBlock(Number(initialValues.id))
+        console.log('[faiz:] === _newBlock', _newBlock)
+        calendar?.updateSchedule(initialValues.id, calendarId?.value,  await genSchedule({
           blockData: _newBlock,
           category: isAllDay ? 'allday' : 'time',
           start: dayjs(start).format(),
@@ -155,8 +167,6 @@ const ModifySchedule: React.FC<{
     const { calendarList } = logseq.settings as unknown as ISettingsForm
     const calendarPagePromises = calendarList.map(calendar => logseq.Editor.getPage(calendar.id))
     Promise.all(calendarPagePromises).then((pages: (PageEntity | null)[]) => {
-      console.log('[faiz:] === page', pages)
-
       const agendaPages = pages
                             .map((page, index) => {
                               if (!page) return page

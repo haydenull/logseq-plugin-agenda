@@ -3,7 +3,7 @@ import { flattenDeep, get } from 'lodash'
 import { addHours, addMinutes, endOfDay, format, formatISO, isAfter, parse, parseISO, startOfDay } from 'date-fns'
 import { getInitalSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
-import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS } from './constants'
+import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, TIME_REG } from './constants'
 
 export const getSchedules = async () => {
   // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
@@ -180,10 +180,24 @@ export const isOverdue = (block: any, date: string) => {
  * eg: 'foo' => { start: undefined, end: undefined }
  */
  export const getTimeInfo = (content: string) => {
-  const reg = /^(\d{2}:\d{2})(-\d{2}:\d{2})*/
-  const res = content.match(reg)
+  const res = content.match(TIME_REG)
   if (res) return { start: res[1], end: res[2]?.slice(1) }
   return { start: undefined, end: undefined }
+}
+/**
+ * 修改时间信息
+ */
+export const modifyTimeInfo = (content: string, start: string, end: string) => {
+  const timeInfo = `${start}${end ? '-' + end : ''}`
+  const res = content.match(TIME_REG)
+  if (res) return content.replace(TIME_REG, timeInfo)
+  return timeInfo + ' ' + content
+}
+/**
+ * 移除时间信息
+ */
+export const removeTimeInfo = (content: string) => {
+  return content.replace(TIME_REG, '')
 }
 
 /**
@@ -243,7 +257,7 @@ export async function genSchedule(params: {
   }
 
   return {
-    id: blockData.id,
+    id: String(blockData.id),
     calendarId: calendarConfig.id,
     title: isDone ? `✅${title}` : title,
     body: await fillBlockReference(blockData.content),
