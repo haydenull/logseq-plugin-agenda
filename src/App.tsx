@@ -232,7 +232,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         }, { once: true })
       })
       calendarRef.current.on('beforeCreateSchedule', function(event) {
-        console.log('[faiz:] === beforeCreateSchedule', event, typeof event.start, dayjs(event.start))
         setModifyScheduleModal({
           visible: true,
           type: 'create',
@@ -247,6 +246,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         console.log('[faiz:] === beforeUpdateSchedule', event)
         const { schedule, changes, triggerEventName, start: finalStart, end: finalEnd } = event
         if (triggerEventName === 'click') {
+          // click edit button of detail popup
           setModifyScheduleModal({
             visible: true,
             type: 'update',
@@ -261,6 +261,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             },
           })
         } else if (changes) {
+          // drag on calendar view
           if (schedule.calendarId === 'journal' && !dayjs(finalStart).isSame(dayjs(finalEnd), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
           let properties = {}
           let scheduleChanges = {}
@@ -274,30 +275,38 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           })
           calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
           if (schedule.calendarId === 'journal') {
+            // update journal schedule
             const marker = schedule?.raw?.marker
             const _content = schedule?.isAllDay ? false : `${marker} ` + modifyTimeInfo(schedule?.raw?.content?.replace(new RegExp(`^${marker} `), ''), dayjs(schedule?.start).format('HH:mm'), dayjs(schedule?.end).format('HH:mm'))
-            // 若两次 start 不是同一天,则执行 move 操作
-            if (changes.start && !dayjs(changes.start).isSame(dayjs(String(schedule.page?.journalDay), 'YYYYMMDD'), 'day')) {
+            if (changes.start && !dayjs(changes.start).isSame(dayjs(String(schedule?.raw?.page?.journalDay), 'YYYYMMDD'), 'day')) {
+              // if the start day is different from the original start day, then execute move operation
+              console.log('[faiz:] === move journal schedule')
               const { preferredDateFormat } = await logseq.App.getUserConfigs()
               const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
               const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName, _content)
-              console.log('[faiz:] === newBlock', newBlock)
+              console.log('[faiz:] === newBlock', newBlock, schedule, schedule?.id)
               if (newBlock) {
-                calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, { raw: {
-                  ...newBlock,
-                  // page: ,
-                } })
+                calendarRef.current?.deleteSchedule(String(schedule.id), schedule.calendarId)
+                calendarRef.current?.createSchedules([await genSchedule({
+                  ...schedule,
+                  blockData: newBlock,
+                  calendarConfig: calendarList?.find(calendar => calendar.id === 'journal'),
+                })])
+                // calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, { raw: {
+                //   ...newBlock,
+                //   page: await logseq.Editor.getPage(newBlock.page?.id),
+                // } })
               }
             } else {
               await updateBlock(schedule.raw?.id, _content)
             }
           } else {
+            // update other schedule (agenda calendar)
             await updateBlock(Number(schedule.id), false, properties)
           }
         }
       })
       calendarRef.current.on('beforeDeleteSchedule', function(event) {
-        console.log('[faiz:] === beforeDeleteSchedule', event)
         const { schedule } = event
         Modal.confirm({
           title: 'Are you sure delete this schedule?',

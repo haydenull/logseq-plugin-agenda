@@ -56,8 +56,10 @@ const ModifySchedule: React.FC<{
       console.log('[faiz:] === onClickSave', values)
       // 变更后的schedule是否是journal中的schedule
       const isJournalSchedule = calendarId?.value === 'journal'
-      if (isJournalSchedule && !dayjs(start).isSame(dayjs(end), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
       if (dayjs(start).isAfter(dayjs(end))) return logseq.App.showMsg('Start time cannot be later than end time', 'error')
+      if (isJournalSchedule && !dayjs(start).isSame(dayjs(end), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
+
+      // new block content
       let newTitle = `TODO ${title}`
       if (isJournalSchedule) {
         if (type === 'create') newTitle = isAllDay ? `TODO ${title}` : `TODO ${startTime}-${endTime} ${title}`
@@ -72,18 +74,22 @@ const ModifySchedule: React.FC<{
         const pureTitle = title.replace(new RegExp(`^${marker} `), '')
         newTitle = `${marker} ` + removeTimeInfo(pureTitle)
       }
+
+      // new properties
       const newBlockPropeties = isJournalSchedule ? {} : {
         start: isAllDay ? startDate : `${startDate} ${startTime}`,
         end: isAllDay ? endDate : `${endDate} ${endTime}`,
       }
-      const { preferredDateFormat } = await logseq.App.getUserConfigs()
 
+      const { preferredDateFormat } = await logseq.App.getUserConfigs()
+      // oldCalendarId: journal shcedule is journal page, other is calendar id
       let oldCalendarId = initialValues?.calendarId
       if (initialValues?.calendarId === 'journal') {
         const oldStart = initialValues?.start
         if(oldStart) oldCalendarId = format(oldStart?.valueOf(), preferredDateFormat)
       }
 
+      // newCalendarId: journal shcedule is journal page, other is calendar id
       let newCalendarId = calendarId?.value
       if (calendarId?.value === 'journal') {
         console.log('[faiz:] === values', values)
@@ -93,10 +99,9 @@ const ModifySchedule: React.FC<{
         console.log('[faiz:] === journalName', journalName, newPage)
         // const newPage = await logseq.Editor.createPage()
       }
-      console.log('[faiz:] === onClickSave faiz', oldCalendarId, newCalendarId, initialValues)
 
       if (type === 'create') {
-        // create
+        // create schedule
         const block = await logseq.Editor.insertBlock(newCalendarId, newTitle, {
           isPageBlock: true,
           sibling: true,
@@ -104,7 +109,6 @@ const ModifySchedule: React.FC<{
         })
         if (!block) return logseq.App.showMsg('Create block failed', 'error')
         const _block = await logseq.Editor.getBlock(block.uuid)
-        console.log('[faiz:] === create block', block, _block)
         calendar?.createSchedules([await genSchedule({
           blockData: _block,
           category: isAllDay ? 'allday' : 'time',
@@ -116,11 +120,10 @@ const ModifySchedule: React.FC<{
           isReadOnly: false,
         })])
       } else if (newCalendarId !== oldCalendarId && initialValues?.id) {
-        // move
+        // move schedule: move block to new page
         const newBlock = await moveBlockToNewPage(Number(initialValues.id), newCalendarId, newTitle, newBlockPropeties)
         if (!newBlock || !initialValues.calendarId) return
         const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
-        console.log('[faiz:] === _newBlock', _newBlock)
         // updateSchedule can't update id, so we need to create new schedule after delete old one
         calendar?.deleteSchedule(String(initialValues.id), initialValues.calendarId)
         calendar?.createSchedules([await genSchedule({
@@ -137,16 +140,16 @@ const ModifySchedule: React.FC<{
         // MoveBlock does not appear to support moving between pages
         // logseq.Editor.moveBlock(block?.uuid, page.uuid)
       } else if (initialValues?.id) {
-        // update
+        // update schedule
         if (calendarId.value === 'journal') {
           await updateBlock(Number(initialValues.id), newTitle)
         } else {
           await updateBlock(Number(initialValues.id), title, newBlockPropeties)
         }
-        const _newBlock = await logseq.Editor.getBlock(Number(initialValues.id))
-        console.log('[faiz:] === _newBlock', _newBlock)
-        calendar?.updateSchedule(initialValues.id, calendarId?.value,  await genSchedule({
-          blockData: _newBlock,
+        const blockAfterUpdated = await logseq.Editor.getBlock(Number(initialValues.id))
+        console.log('[faiz:] === blockAfterUpdated', blockAfterUpdated)
+        calendar?.updateSchedule(initialValues.id, calendarId?.value, await genSchedule({
+          blockData: blockAfterUpdated,
           category: isAllDay ? 'allday' : 'time',
           start: dayjs(start).format(),
           end: dayjs(end).format(),
