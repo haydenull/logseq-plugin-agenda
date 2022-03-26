@@ -1,3 +1,15 @@
+# [1.13.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.12.0...v1.13.0) (2022-03-26)
+
+
+### Bug Fixes
+
+* default duraiotn set error & daily log should not edit ([7178b6e](https://github.com/haydenull/logseq-plugin-agenda/commit/7178b6e305017fc792d51060452621c008c9097d))
+
+
+### Features
+
+* ✨ Supports edit journal task in calendar view ([a9a5d2d](https://github.com/haydenull/logseq-plugin-agenda/commit/a9a5d2d54401efb0b239f87bb92bcd19d71007ca))
+
 # [1.12.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.11.0...v1.12.0) (2022-03-23)
 
 
