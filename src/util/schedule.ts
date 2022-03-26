@@ -1,6 +1,7 @@
 import { ISchedule } from 'tui-calendar'
 import { flattenDeep, get } from 'lodash'
-import { addHours, addMinutes, endOfDay, format, formatISO, isAfter, parse, parseISO, startOfDay } from 'date-fns'
+import { endOfDay, formatISO, isAfter, parse, parseISO, startOfDay } from 'date-fns'
+import dayjs from 'dayjs'
 import { getInitalSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
 import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, TIME_REG } from './constants'
@@ -152,6 +153,7 @@ message: ${res.reason.message}`
         calendarConfig: logKey,
         defaultDuration,
         isAllDay: !hasTime,
+        isReadOnly: true,
       })
     })
     const _logSchedules = await Promise.all(_logSchedulePromises)
@@ -252,8 +254,7 @@ export async function genSchedule(params: {
   if (category === 'time' && !end && start && defaultDuration) {
     const value = defaultDuration.value || _defaultDuration.value
     const unit = defaultDuration.unit || _defaultDuration.unit
-    const addDuration = unit === 'm' ? addMinutes : addHours
-    _end = formatISO(addDuration(parseISO(start), value))
+    _end = dayjs(start).add(value, unit).toISOString()
   }
 
   return {
