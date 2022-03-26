@@ -55,3 +55,37 @@ Date Formatter:
 
 Calendar:
 ![](../../screenshots//otherQuery3.png)
+
+## Exclude specified page from default journal calendar
+
+Defaut journal calendar will search all pages, but you can exclude some pages by setting query script.
+
+If you want to exclude a page named `your project`, you can add the following code to your query script:
+```clojure
+  [?page :block/name ?pname]
+  [?block :block/page ?page]
+  (not [(contains? #{"your project"} ?pname)])
+```
+
+The original query script of query1 is as follows:
+```clojure
+[:find (pull ?block [*])
+  :where
+  [?block :block/marker ?marker]
+  [(missing? $ ?block :block/deadline)]
+  (not [(missing? $ ?block :block/scheduled)])
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
+```
+
+The script after the modification is as follows:
+```clojure{6-8}
+[:find (pull ?block [*])
+  :where
+  [?block :block/marker ?marker]
+  [(missing? $ ?block :block/deadline)]
+  (not [(missing? $ ?block :block/scheduled)])
+  [?page :block/name ?pname]
+  [?block :block/page ?page]
+  (not [(contains? #{"your project"} ?pname)])
+  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
+```

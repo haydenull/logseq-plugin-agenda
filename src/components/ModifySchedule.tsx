@@ -98,7 +98,7 @@ const ModifySchedule: React.FC<{
       if (calendarId?.value === 'journal') {
         console.log('[faiz:] === values', values)
         const journalName = format(start.valueOf(), preferredDateFormat)
-        const newPage = await logseq.Editor.createPage(journalName, { journal: true })
+        const newPage = await logseq.Editor.createPage(journalName, {}, { journal: true })
         if (newPage) newCalendarId = newPage.originalName
         console.log('[faiz:] === journalName', journalName, newPage)
         // const newPage = await logseq.Editor.createPage()

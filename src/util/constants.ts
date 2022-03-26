@@ -82,6 +82,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
 [:find (pull
   ?block
   [:block/uuid
+    :db/id
     :block/parent
     :block/left
     :block/collapsed?

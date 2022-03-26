@@ -6,7 +6,7 @@ import { sidebar } from './configs'
 
 export default defineUserConfig<DefaultThemeOptions>({
   head:[
-    ['link', { rel: 'icon', href: '/images/favicon.ico' }],
+    ['link', { rel: 'icon', href: './images/favicon.ico' }],
   ],
   base: '/logseq-plugin-agenda/',
   locales: {
