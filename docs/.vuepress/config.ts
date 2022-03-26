@@ -1,11 +1,12 @@
 import { defineUserConfig } from '@vuepress/cli'
 import type { DefaultThemeOptions } from '@vuepress/theme-default'
+import { copyCode } from 'vuepress-plugin-copy-code2'
 
 import { sidebar } from './configs'
 
 export default defineUserConfig<DefaultThemeOptions>({
   head:[
-    ['link', { rel: 'icon', href: '/images/favicon.ico' }],
+    ['link', { rel: 'icon', href: './images/favicon.ico' }],
   ],
   base: '/logseq-plugin-agenda/',
   locales: {
@@ -56,6 +57,7 @@ export default defineUserConfig<DefaultThemeOptions>({
         // hotKeys: ['ctrl', 'k']
       },
     ],
+    copyCode({}),
   ],
   // configureWebpack: {
   //   resolve: {

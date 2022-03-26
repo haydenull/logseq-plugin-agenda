@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
-import { format, isSameDay, parse } from 'date-fns'
+import { format, isSameDay, parse, parseISO } from 'date-fns'
 import { listenEsc, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
@@ -10,9 +10,9 @@ import { SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
 import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs, { Dayjs } from 'dayjs'
-import { getSchedules } from './util/schedule'
+import { genSchedule, getSchedules, modifyTimeInfo } from './util/schedule'
 import { ICustomCalendar, ISettingsForm } from './util/type'
-import { updateBlock } from './util/logseq'
+import { moveBlockToNewPage, updateBlock } from './util/logseq'
 import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
 import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
@@ -232,7 +232,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         }, { once: true })
       })
       calendarRef.current.on('beforeCreateSchedule', function(event) {
-        console.log('[faiz:] === beforeCreateSchedule', event, typeof event.start, dayjs(event.start))
         setModifyScheduleModal({
           visible: true,
           type: 'create',
@@ -245,8 +244,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       })
       calendarRef.current.on('beforeUpdateSchedule', async function(event) {
         console.log('[faiz:] === beforeUpdateSchedule', event)
-        const { schedule, changes, triggerEventName } = event
+        const { schedule, changes, triggerEventName, start: finalStart, end: finalEnd } = event
         if (triggerEventName === 'click') {
+          // click edit button of detail popup
           setModifyScheduleModal({
             visible: true,
             type: 'update',
@@ -261,6 +261,8 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             },
           })
         } else if (changes) {
+          // drag on calendar view
+          if (schedule.calendarId === 'journal' && !dayjs(finalStart).isSame(dayjs(finalEnd), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
           let properties = {}
           let scheduleChanges = {}
           Object.keys(changes).forEach(key => {
@@ -272,11 +274,39 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             scheduleChanges[key] = dayjs(changes[key]).format()
           })
           calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
-          await updateBlock(schedule.id, false, properties)
+          if (schedule.calendarId === 'journal') {
+            // update journal schedule
+            const marker = schedule?.raw?.marker
+            const _content = schedule?.isAllDay ? false : `${marker} ` + modifyTimeInfo(schedule?.raw?.content?.replace(new RegExp(`^${marker} `), ''), dayjs(schedule?.start).format('HH:mm'), dayjs(schedule?.end).format('HH:mm'))
+            if (changes.start && !dayjs(changes.start).isSame(dayjs(String(schedule?.raw?.page?.journalDay), 'YYYYMMDD'), 'day')) {
+              // if the start day is different from the original start day, then execute move operation
+              console.log('[faiz:] === move journal schedule')
+              const { preferredDateFormat } = await logseq.App.getUserConfigs()
+              const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
+              const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName, _content)
+              console.log('[faiz:] === newBlock', newBlock, schedule, schedule?.id)
+              if (newBlock) {
+                calendarRef.current?.deleteSchedule(String(schedule.id), schedule.calendarId)
+                calendarRef.current?.createSchedules([await genSchedule({
+                  ...schedule,
+                  blockData: newBlock,
+                  calendarConfig: calendarList?.find(calendar => calendar.id === 'journal'),
+                })])
+                // calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, { raw: {
+                //   ...newBlock,
+                //   page: await logseq.Editor.getPage(newBlock.page?.id),
+                // } })
+              }
+            } else {
+              await updateBlock(schedule.raw?.id, _content)
+            }
+          } else {
+            // update other schedule (agenda calendar)
+            await updateBlock(Number(schedule.id), false, properties)
+          }
         }
       })
       calendarRef.current.on('beforeDeleteSchedule', function(event) {
-        console.log('[faiz:] === beforeDeleteSchedule', event)
         const { schedule } = event
         Modal.confirm({
           title: 'Are you sure delete this schedule?',

@@ -6,6 +6,9 @@ export const DEFAULT_JOURNAL_FORMAT = 'yyyy-MM-dd EEE'
 
 export const DEFAULT_LOG_KEY = 'Daily Log'
 
+// export const TIME_REG = /(?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]/
+export const TIME_REG = /^((?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])(-(?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])*/
+
 export const CALENDAR_VIEWS = [
   { value: 'day', label: 'Daily' },
   { value: 'week', label: 'Weekly' },
@@ -79,6 +82,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
 [:find (pull
   ?block
   [:block/uuid
+    :db/id
     :block/parent
     :block/left
     :block/collapsed?

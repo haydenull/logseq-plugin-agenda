@@ -1,9 +1,10 @@
 import { ISchedule } from 'tui-calendar'
 import { flattenDeep, get } from 'lodash'
-import { addHours, addMinutes, endOfDay, format, formatISO, isAfter, parse, parseISO, startOfDay } from 'date-fns'
+import { endOfDay, formatISO, isAfter, parse, parseISO, startOfDay } from 'date-fns'
+import dayjs from 'dayjs'
 import { getInitalSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
-import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS } from './constants'
+import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, TIME_REG } from './constants'
 
 export const getSchedules = async () => {
   // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
@@ -49,6 +50,15 @@ export const getSchedules = async () => {
       } catch (err) {
         console.warn('[faiz:] === parse calendar date error: ', err, block, query)
         return []
+      }
+      if (block?.page?.['journal-day']) {
+        const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
+        if (_startTime || _endTime) {
+          const date = block?.page?.['journal-day']
+          _start = _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
+          _end = _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
+          hasTime = true
+        }
       }
       if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
@@ -143,6 +153,7 @@ message: ${res.reason.message}`
         calendarConfig: logKey,
         defaultDuration,
         isAllDay: !hasTime,
+        isReadOnly: true,
       })
     })
     const _logSchedules = await Promise.all(_logSchedulePromises)
@@ -171,10 +182,24 @@ export const isOverdue = (block: any, date: string) => {
  * eg: 'foo' => { start: undefined, end: undefined }
  */
  export const getTimeInfo = (content: string) => {
-  const reg = /^(\d{2}:\d{2})(-\d{2}:\d{2})*/
-  const res = content.match(reg)
+  const res = content.match(TIME_REG)
   if (res) return { start: res[1], end: res[2]?.slice(1) }
   return { start: undefined, end: undefined }
+}
+/**
+ * 修改时间信息
+ */
+export const modifyTimeInfo = (content: string, start: string, end: string) => {
+  const timeInfo = `${start}${end ? '-' + end : ''}`
+  const res = content.match(TIME_REG)
+  if (res) return content.replace(TIME_REG, timeInfo)
+  return timeInfo + ' ' + content
+}
+/**
+ * 移除时间信息
+ */
+export const removeTimeInfo = (content: string) => {
+  return content.replace(TIME_REG, '')
 }
 
 /**
@@ -205,30 +230,40 @@ export async function genSchedule(params: {
   defaultDuration?: ISettingsForm['defaultDuration']
 }) {
   const { blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
+  if (!blockData?.id) {
+    const block = await logseq.Editor.getBlock(blockData.uuid?.$uuid$)
+    if (block) blockData.id = block.id
+  }
+
   const page = await logseq.Editor.getPage(blockData?.page?.id)
   blockData.page = page
 
   let title = blockData.content
                   .split('\n')[0]
                   ?.replace(new RegExp(`^${blockData.marker} `), '')
-                  ?.replace(/^(\d{2}:\d{2})(-\d{2}:\d{2})*/, '')
+                  ?.replace(TIME_REG, '')
                   ?.trim?.()
   title = await fillBlockReference(title)
   title = title?.split('\n')[0]
   const isDone = blockData.marker === 'DONE'
-  const isSupportEdit = isReadOnly === undefined ? blockData.page?.properties?.agenda === true : !isReadOnly
+
+  function supportEdit() {
+    if (blockData.page?.properties?.agenda === true) return true
+    if (blockData?.page?.journalDay && !blockData?.scheduled && !blockData?.deadline) return true
+    return false
+  }
+  const isSupportEdit = isReadOnly === undefined ? supportEdit() : !isReadOnly
 
   const { defaultDuration: _defaultDuration } = DEFAULT_SETTINGS
   let _end = end
   if (category === 'time' && !end && start && defaultDuration) {
     const value = defaultDuration.value || _defaultDuration.value
     const unit = defaultDuration.unit || _defaultDuration.unit
-    const addDuration = unit === 'm' ? addMinutes : addHours
-    _end = formatISO(addDuration(parseISO(start), value))
+    _end = dayjs(start).add(value, unit).toISOString()
   }
 
   return {
-    id: blockData.id,
+    id: String(blockData.id),
     calendarId: calendarConfig.id,
     title: isDone ? `✅${title}` : title,
     body: await fillBlockReference(blockData.content),
