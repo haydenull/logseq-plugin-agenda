@@ -1,5 +1,6 @@
 import { defineUserConfig } from '@vuepress/cli'
 import type { DefaultThemeOptions } from '@vuepress/theme-default'
+import { copyCode } from 'vuepress-plugin-copy-code2'
 
 import { sidebar } from './configs'
 
@@ -56,6 +57,7 @@ export default defineUserConfig<DefaultThemeOptions>({
         // hotKeys: ['ctrl', 'k']
       },
     ],
+    copyCode({}),
   ],
   // configureWebpack: {
   //   resolve: {

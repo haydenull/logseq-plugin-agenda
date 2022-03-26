@@ -230,6 +230,11 @@ export async function genSchedule(params: {
   defaultDuration?: ISettingsForm['defaultDuration']
 }) {
   const { blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
+  if (!blockData?.id) {
+    const block = await logseq.Editor.getBlock(blockData.uuid?.$uuid$)
+    if (block) blockData.id = block.id
+  }
+
   const page = await logseq.Editor.getPage(blockData?.page?.id)
   blockData.page = page
 

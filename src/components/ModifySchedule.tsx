@@ -40,9 +40,13 @@ const ModifySchedule: React.FC<{
       })
     }
     if (changedValues.calendarId?.value === 'journal') {
-      form.setFieldsValue({
-        end: form.getFieldValue('start').add(1, 'hour'),
-      })
+      const start = allValues.start
+      const end = allValues.end
+      if (!start.isSame(end, 'day')) {
+        form.setFieldsValue({
+          end: start.add(1, 'hour'),
+        })
+      }
     }
   }
   const onClickSave = () => {
