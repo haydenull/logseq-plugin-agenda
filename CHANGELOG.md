@@ -1,3 +1,10 @@
+## [1.13.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.13.3...v1.13.4) (2022-03-27)
+
+
+### Bug Fixes
+
+* remove delay ([d1825ae](https://github.com/haydenull/logseq-plugin-agenda/commit/d1825aedaf50ce75a707707617834baf0e9fbb95))
+
 ## [1.13.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.13.2...v1.13.3) (2022-03-27)
 
 
