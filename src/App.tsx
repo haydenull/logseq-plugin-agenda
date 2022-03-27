@@ -324,8 +324,10 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     }, 0)
   }, [])
   useEffect(() => {
-    console.log('[faiz:] === isFullScreen updated', isFullScreen)
-    calendarRef?.current?.render()
+    console.log('[faiz:] === isFullScreen updated', isFullScreen, calendarRef.current)
+    setTimeout(() => {
+      calendarRef?.current?.render()
+    }, 500)
   }, [isFullScreen])
   useEffect(() => {
     const callback = () => logseq.hideMainUI()
