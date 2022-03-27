@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.13.0...v1.13.1) (2022-03-27)
+
+
+### Bug Fixes
+
+* The calendar height is not correspondingly increased in full-screen mode ([b2f8c1a](https://github.com/haydenull/logseq-plugin-agenda/commit/b2f8c1afff526592a37dfb52a9a99e41693010e0))
+
 # [1.13.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.12.0...v1.13.0) (2022-03-26)
 
 
