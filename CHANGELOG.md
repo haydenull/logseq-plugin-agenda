@@ -1,3 +1,10 @@
+## [1.13.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.13.2...v1.13.3) (2022-03-27)
+
+
+### Bug Fixes
+
+* calendar height error ([89362e9](https://github.com/haydenull/logseq-plugin-agenda/commit/89362e9427c4750595c92c48be9e12dbcc556838))
+
 ## [1.13.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.13.1...v1.13.2) (2022-03-27)
 
 
