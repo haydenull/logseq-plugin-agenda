@@ -147,6 +147,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   }
   const onClickFullScreen = () => {
     setIsFullScreen(_isFullScreen => !_isFullScreen)
+    calendarRef.current?.render()
   }
   const onSettingChange = (values: ISettingsForm) => {
     logseq.updateSettings({calendarList: 1, subscriptionList: 1})
@@ -363,7 +364,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
           <div>
             { showExportWeekly && <Button className="mr-4" onClick={onClickExportWeekly}>Export Weekly</Button> }
-            <Button className="mr-4" onClick={setSchedules} type="primary" icon={<ReloadOutlined />}>Reload</Button>
             <Button className="mr-4" onClick={() => setSettingModal(true)} shape="circle" icon={<SettingOutlined />}></Button>
             <Button onClick={onClickFullScreen} shape="circle" icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button>
           </div>
@@ -371,7 +371,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         {/* ========= title bar end ========= */}
 
         {/* ========= content start ========= */}
-        <div className="flex">
+        <div className="flex flex-1">
           <div className={`transition-all overflow-hidden bg-gray-100 mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
             <Sidebar
               onShowCalendarChange={onShowCalendarChange}
@@ -379,7 +379,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
               subscriptionList={enabledSubscriptionList}
             />
           </div>
-          <div id="calendar" className="flex-1" style={{ height: '624px' }}></div>
+          <div className="flex-1">
+            <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px' }}></div>
+          </div>
         </div>
         {/* ========= content end ========= */}
 
