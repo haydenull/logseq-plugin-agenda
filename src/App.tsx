@@ -3,7 +3,7 @@ import Calendar, { ISchedule } from 'tui-calendar'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { format, isSameDay, parse, parseISO } from 'date-fns'
-import { listenEsc, managePluginTheme } from './util/util'
+import { getOS, listenEsc, managePluginTheme } from './util/util'
 import Settings from './components/Settings'
 import Weekly from './components/Weekly'
 import { SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
@@ -26,6 +26,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   const { calendarList, subscriptionList, logKey } = getInitalSettings()
   const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar.enabled))
   const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription.enabled) : []
+  const isNeedTitleLeftSpaceWhenFullScreen = getOS() === 'mac'
 
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isFold, setIsFold] = useState(true)
@@ -147,7 +148,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   }
   const onClickFullScreen = () => {
     setIsFullScreen(_isFullScreen => !_isFullScreen)
-    calendarRef.current?.render()
+    // calendarRef.current?.render()
   }
   const onSettingChange = (values: ISettingsForm) => {
     logseq.updateSettings({calendarList: 1, subscriptionList: 1})
@@ -323,6 +324,10 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     }, 0)
   }, [])
   useEffect(() => {
+    console.log('[faiz:] === isFullScreen updated', isFullScreen)
+    calendarRef?.current?.render()
+  }, [isFullScreen])
+  useEffect(() => {
     const callback = () => logseq.hideMainUI()
     listenEsc(callback)
     return () => {
@@ -333,9 +338,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   return (
     <div className="w-screen h-screen flex items-center justify-center">
       <div className="mask w-screen h-screen fixed top-0 left-0 bg-black bg-opacity-50" onClick={() => logseq.hideMainUI()}></div>
-      {/* ========= title bar start ========= */}
       <div className={`${isFullScreen ? 'w-full h-full' : 'w-5/6'} flex flex-col justify-center overflow-hidden bg-white relative rounded text-black p-3`} style={{ maxWidth: isFullScreen ? 'none' : '1200px' }}>
-        <div className="mb-2 flex items-center justify-between">
+        {/* ========= title bar start ========= */}
+        <div className={`mb-2 flex items-center justify-between ${isFullScreen && isNeedTitleLeftSpaceWhenFullScreen ? 'ml-20' : ''}`}>
           <div className="flex items-center">
             <Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
             <Select

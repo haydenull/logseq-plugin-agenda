@@ -65,3 +65,15 @@ export const listenEsc = (callback: () => void) => {
     }
   })
 }
+
+// 判断是 windows mac linux
+export const getOS = () => {
+  const userAgent = navigator.userAgent
+  const isWindows = userAgent.indexOf('Windows') > -1
+  const isMac = userAgent.indexOf('Macintosh') > -1
+  const isLinux = userAgent.indexOf('Linux') > -1
+  if (isWindows) return 'windows'
+  if (isMac) return 'mac'
+  if (isLinux) return 'linux'
+  return 'unknown'
+}
