@@ -18,6 +18,7 @@ import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
 import { getSubCalendarSchedules } from './util/subscription'
 import Sidebar from './components/Sidebar'
+import Gantt from './packages/Gantt'
 
 const App: React.FC<{ env: string }> = ({ env }) => {
 
@@ -27,10 +28,12 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar.enabled))
   const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription.enabled) : []
   const isNeedTitleLeftSpaceWhenFullScreen = getOS() === 'mac'
+  const views = CALENDAR_VIEWS?.concat({ value: 'gantt', label: 'Gantt' })
 
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isFold, setIsFold] = useState(true)
-  const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
+  // const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
+  const [currentView, setCurrentView] = useState('gantt')
   const [showDate, setShowDate] = useState<string>()
   const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
   const [weeklyModal, setWeeklyModal] = useState<{
@@ -346,7 +349,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
               value={currentView}
               defaultValue={calendarOptions.defaultView}
               onChange={onViewChange}
-              options={CALENDAR_VIEWS}
+              options={views}
               style={{ width: '100px' }}
             />
 
@@ -384,7 +387,11 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             />
           </div>
           <div className="flex-1">
-            <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px' }}></div>
+            {
+              currentView === 'gantt'
+              ? <Gantt />
+              : <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px' }}></div>
+            }
           </div>
         </div>
         {/* ========= content end ========= */}

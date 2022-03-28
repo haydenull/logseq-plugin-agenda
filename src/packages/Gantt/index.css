@@ -1,0 +1,20 @@
+.container {
+  min-height: 624px;
+  display: flex;
+}
+
+.side-bar {
+  width: 160px;
+}
+
+.group {
+
+}
+.group__content {
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
+}
+.group__event {
+  height: 40px;
+}
