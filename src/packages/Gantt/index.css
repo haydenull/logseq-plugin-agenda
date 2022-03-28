@@ -1,10 +1,20 @@
-.container {
-  min-height: 624px;
-  display: flex;
+.weekend {
+  opacity: 0.5;
 }
 
+.gantt__container {
+  /* min-height: 624px; */
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  min-height: 300px;
+}
+
+/* 侧边栏 */
 .side-bar {
   width: 160px;
+  padding-top: 50px;
 }
 
 .group {
@@ -17,4 +27,56 @@
 }
 .group__event {
   height: 40px;
+}
+
+
+.calendar {
+  background-color: #f8f8f8;
+  flex: 1;
+  margin-left: 10px;
+  overflow: auto;
+}
+/* 日历头部 */
+.calendar__header {
+  width: fit-content;
+  height: 50px;
+  white-space: nowrap;
+  padding-top: 25px;
+  border-bottom: 1px solid #efefef;
+  background-color: #fff;
+}
+.calendar__header::-webkit-scrollbar {
+  display: none;
+}
+.date {
+  width: 108px;
+  height: 25px;
+  display: inline-block;
+  position: relative;
+  text-align: center;
+}
+.date .date__month {
+  position: absolute;
+  bottom: 25px;
+  opacity: 0.5;
+}
+
+/* 日历内容区 */
+.calendar__content {
+  width: 100%;
+  height: 100%;
+  width: fit-content;
+  white-space: nowrap;
+}
+.calendar__content__back {
+  width: 108px;
+  height: 100%;
+  /* background-color: #f8f8f8; */
+  display: inline-block;
+}
+.calendar__content__back.weekend {
+  background-color: #ddd;
+}
+.calendar__group {
+  border-bottom: 1px solid #f8f8f8;
 }

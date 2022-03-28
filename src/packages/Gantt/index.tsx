@@ -7,12 +7,15 @@ const Gantt: React.FC<{
   [prop: string]: any
 }> = ({ ...props }) => {
   return (
-    <div className="container" {...props}>
-      <div className="side-bar">
+    <div className="w-full h-full overflow-auto">
+      <div style={{ height: '300px' }}></div>
+      {/* <div className="side-bar overflow-auto">
         <Group />
         <Group />
-      </div>
-      <Calendar />
+        <Group />
+        <Group />
+      </div> */}
+      {/* <Calendar /> */}
     </div>
   )
 }

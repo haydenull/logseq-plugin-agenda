@@ -202,14 +202,14 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     // Delay execution to avoid the TUI not being able to acquire the height correctly
     // The bug manifests as the weekly view cannot auto scroll to the current time
     setTimeout(() => {
-      calendarRef.current = new Calendar('#calendar', {
-        ...calendarOptions,
-        // template: {
-        //   // monthDayname: function(dayname) {
-        //   //   return '<span class="calendar-week-dayname-name">' + dayname.label + '</span>';
-        //   // }
-        // }
-      })
+      // calendarRef.current = new Calendar('#calendar', {
+      //   ...calendarOptions,
+      //   // template: {
+      //   //   // monthDayname: function(dayname) {
+      //   //   //   return '<span class="calendar-week-dayname-name">' + dayname.label + '</span>';
+      //   //   // }
+      //   // }
+      // })
       changeShowDate()
       setSchedules()
       calendarRef.current.on('clickDayname', function(event) {
