@@ -34,3 +34,10 @@ export const extractMonths = (startDate: Dayjs, endDate: Dayjs): Dayjs[] => {
 export const isWeekend = (day: Dayjs): boolean => {
   return day.day() === 0 || day.day() === 6
 }
+
+export const getXCoordinate = (start: Dayjs, day: Dayjs): number => {
+  return day.diff(start, 'day') * 108
+}
+// export const getYCooordinate = (groupIndex, eventIndex): number => {
+
+// }

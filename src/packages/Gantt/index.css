@@ -62,3 +62,7 @@
 .calendar__group {
   border-bottom: 1px solid #f8f8f8;
 }
+.calendar__event {
+  width: 108px;
+  height: 40px;
+}
