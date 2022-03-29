@@ -12,22 +12,22 @@ const Calendar: React.FC<{}> = () => {
   const [dateMarks, setDateMarks] = useState(extractDays(start, end))
 
   return (
-    <div className="calendar">
-      <div className="calendar__header">
+    <div className="calendar flex-1 overflow-auto">
+      <div className="calendar__header w-fit whitespace-nowrap bg-white">
         {
           dateMarks.map((mark, index) => {
             const date = mark.format('DD')
             const month = mark.format('MM')
             const _isWeekend = isWeekend(mark)
-            return (<div className="date">
-              { date === '01' ? <span className="date__month">{month === '01' ? mark.format('YYYY-MM') : `Month ${month}`}</span> : null }
+            return (<div className="date relative text-center">
+              { date === '01' ? <span className="date__month absolute opacity-50">{month === '01' ? mark.format('YYYY-MM') : `Month ${month}`}</span> : null }
               <span className={`${_isWeekend ? 'weekend' : ''}`}>{mark.format('DD')}</span>
             </div>)
           })
         }
       </div>
 
-      <div className="calendar__content">
+      <div className="calendar__content h-full w-fit whitespace-nowrap">
         {
           dateMarks.map((mark, index) => {
             const _isWeekend = isWeekend(mark)

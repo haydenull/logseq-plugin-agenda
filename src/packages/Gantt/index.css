@@ -2,15 +2,6 @@
   opacity: 0.5;
 }
 
-.gantt__container {
-  /* min-height: 624px; */
-  display: flex;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  min-height: 300px;
-}
-
 /* 侧边栏 */
 .side-bar {
   width: 160px;
@@ -32,18 +23,16 @@
 
 .calendar {
   background-color: #f8f8f8;
-  flex: 1;
   margin-left: 10px;
-  overflow: auto;
+  /* fix flex1的子元素内容过多时，被撑开导致 flex-1 失效 */
+  /* https://juejin.cn/post/6974356682574921765 */
+  width: 0;
 }
 /* 日历头部 */
 .calendar__header {
-  width: fit-content;
   height: 50px;
-  white-space: nowrap;
   padding-top: 25px;
   border-bottom: 1px solid #efefef;
-  background-color: #fff;
 }
 .calendar__header::-webkit-scrollbar {
   display: none;
@@ -52,21 +41,14 @@
   width: 108px;
   height: 25px;
   display: inline-block;
-  position: relative;
-  text-align: center;
 }
 .date .date__month {
-  position: absolute;
   bottom: 25px;
-  opacity: 0.5;
 }
 
 /* 日历内容区 */
 .calendar__content {
-  width: 100%;
-  height: 100%;
-  width: fit-content;
-  white-space: nowrap;
+
 }
 .calendar__content__back {
   width: 108px;
