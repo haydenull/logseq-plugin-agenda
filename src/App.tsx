@@ -386,7 +386,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
               subscriptionList={enabledSubscriptionList}
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 w-0">
             {
               currentView === 'gantt'
               ? <Gantt />

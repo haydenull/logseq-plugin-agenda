@@ -1,15 +1,14 @@
-.weekend {
-  opacity: 0.5;
-}
-
 /* 侧边栏 */
 .side-bar {
-  width: 160px;
+  /* flex 子元素宽度和大于容器时, 使用 flex-basic 设置宽度, width 是无效的 */
+  /* https://www.jianshu.com/p/e6ad2c2cb7c3 */
+  flex: 0 0 160px;
+  /* width: 160px; */
   padding-top: 50px;
 }
 
 .group {
-
+  margin-bottom: 40px;  /* CALENDAR_GROUP_GAP */
 }
 .group__content {
   display: flex;
@@ -17,14 +16,15 @@
   padding-left: 1rem;
 }
 .group__event {
-  height: 40px;
+  height: 40px;  /* CALENDAR_GROUP_EVENT_HEIGHT */
+  line-height: 40px;
 }
 
 
 .calendar {
-  background-color: #f8f8f8;
+  /* background-color: #f8f8f8; */
   margin-left: 10px;
-  padding-top: 50px;
+  /* padding-top: 50px; */
   /* fix flex1的子元素内容过多时，被撑开导致 flex-1 失效 */
   /* https://juejin.cn/post/6974356682574921765 */
   width: 0;
@@ -39,9 +39,15 @@
   display: none;
 }
 .date {
-  width: 108px;
+  width: 108px; /* CALENDAR_EVENT_WIDTH */
   height: 25px;
   display: inline-block;
+}
+.date.today {
+  color: #ff0000;
+}
+.date.weekend {
+  color: #aaa;
 }
 .date .date__month {
   bottom: 25px;
@@ -52,21 +58,50 @@
 
 }
 .calendar__content__back {
-  width: 108px;
+  width: 108px;  /* CALENDAR_EVENT_WIDTH */
   height: 100%;
-  /* background-color: #f8f8f8; */
-  display: inline-block;
+  background-color: #f8f8f8;
+  /* display: inline-block; */
 }
 .calendar__content__back.weekend {
-  background-color: #ddd;
+  background-color: #f4f3f3;
 }
 .calendar__content__back.today {
   background-color: #f6ebfa;
 }
 .calendar__group {
-  border-bottom: 1px solid #f8f8f8;
+  /* border-bottom: 1px solid #e9dceb;
+  border-top: 1px solid #e9dceb; */
+  margin-bottom: 40px;   /* CALENDAR_GROUP_GAP */
+  box-sizing: content-box;
 }
 .calendar__event {
-  width: 108px;
+  /* width: 100px;  CALENDAR_EVENT_WIDTH 左右两边加一点间距 */
+  /* height: 36px;  CALENDAR_EVENT_HEIGHT */
+  line-height: 36px;  /* CALENDAR_EVENT_HEIGHT */
+  margin: 2px 4px;
+  padding: 0 4px;
+}
+.calendar__milestone__line {
+  border-left: 2px solid #047857;
+}
+.calendar__milestone__text {
   height: 40px;
+  line-height: 40px;
+  padding-left: 16px;
+}
+.calendar__milestone__text::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background-color: #047857;
+  transform: rotateZ(45deg);
+}
+.single_ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

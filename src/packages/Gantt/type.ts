@@ -4,6 +4,7 @@ export type IEvent = {
   start: string
   end: string
   raw?: any
+  level?: number
 }
 
 export type IGroup = {
@@ -12,9 +13,12 @@ export type IGroup = {
   raw?: any
   events: IEvent[]
   milestones?: IEvent[]
+  levelCount?: number
 }
 
 export type ICooradinate = {
   x: number
   y: number
 }
+
+export type IMode = 'simple' | 'advanced'
