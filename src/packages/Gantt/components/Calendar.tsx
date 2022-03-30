@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import dayjs from 'dayjs'
-import { extractDays, getXCoordinate, isWeekend } from '../util'
+import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates } from '../util'
 import { IGroup } from '../type'
 
 const Calendar: React.FC<{
@@ -14,15 +14,26 @@ const Calendar: React.FC<{
   const [scale, setScale] = useState('day')
   const [dateMarks, setDateMarks] = useState(extractDays(start, end))
 
-  const dataWithCoordinates = data.map(item => {
+  const dataWithGroupCoordinate = getDataWithGroupCoordinates(data)
+  const dataWithHeight = data.map(group => {
+    const { events, milestones = [] } = group
+    const height = (events.length + milestones.length) * 40 +22
     return {
-      ...item,
-      events: item.events.map(event => {
+      ...group,
+      height,
+    }
+  })
+  const groupHeightCount = dataWithHeight.reduce((acc, cur) => acc + cur.height, 0)
+  const dataWithCoordinates = dataWithGroupCoordinate.map((group, groupIndex) => {
+    return {
+      ...group,
+      eventCount: group.events.concat(group.milestones || []).length,
+      events: group.events.map((event, eventIndex) => {
         return {
           ...event,
           coordinates: {
             x: getXCoordinate(start, dayjs(event.start)),
-            y: 0,
+            y: group.coordinate.y + eventIndex * 40,
           },
         }
       }),
@@ -30,20 +41,13 @@ const Calendar: React.FC<{
   })
 
   useEffect(() => {
-    document.querySelector(`#date${dayjs().format('YYYYMMDD')}`)?.scrollIntoView()
+    document.querySelector(`#date${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center' })
   }, [])
 
   return (
-    <div className="calendar flex-1 overflow-auto">
-      {/* <div className="h-full absolute -z-10">
-        {
-          dateMarks.map((mark, index) => {
-            const _isWeekend = isWeekend(mark)
-            return (<div className={`calendar__content__back ${_isWeekend ? 'weekend' : ''}`}></div>)
-          })
-        }
-      </div> */}
-      <div className="calendar__header w-fit whitespace-nowrap bg-white">
+    <div className="calendar flex-1 overflow-auto h-fit relative">
+
+      <div className="calendar__header w-fit whitespace-nowrap bg-white absolute top-0">
         {
           dateMarks.map((mark, index) => {
             const date = mark.format('DD')
@@ -57,7 +61,16 @@ const Calendar: React.FC<{
         }
       </div>
 
-      <div className="calendar__content w-fit whitespace-nowrap relative">
+      <div className="calendar__content w-fit whitespace-nowrap relative" style={{ height: groupHeightCount + 'px' }}>
+        <div className="h-full absolute">
+          {
+            dateMarks.map((mark, index) => {
+              const _isWeekend = isWeekend(mark)
+              const isToday = mark.isSame(current, 'day')
+              return (<div className={`calendar__content__back ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`}></div>)
+            })
+          }
+        </div>
         {
           dataWithCoordinates.map(group => {
             return (
@@ -66,7 +79,7 @@ const Calendar: React.FC<{
                   group.events.map(event => {
                     const { coordinates } = event
                     return (
-                      <div className="calendar__event absolute bg-white rounded" style={{ left: coordinates.x, top: coordinates.y }}>{event.title}</div>
+                      <div className="calendar__event absolute bg-white rounded cursor-pointer" style={{ left: coordinates.x, top: coordinates.y }}>{event.title}</div>
                     )
                   })
                 }

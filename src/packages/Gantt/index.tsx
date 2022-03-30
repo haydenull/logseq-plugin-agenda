@@ -44,10 +44,46 @@ const Gantt: React.FC<{
         },
       ],
     },
+    {
+      id: '2-1',
+      title: 'Group 2',
+      events: [
+        {
+          id: '2-1',
+          title: 'Event 2-1',
+          start: '2022-03-30',
+          end: '2020-03-31',
+          raw: {},
+        },
+        {
+          id: '2-2',
+          title: 'Event 2-2',
+          start: '2022-04-02',
+          end: '2020-04-02',
+          raw: {},
+        },
+        {
+          id: '2-3',
+          title: 'Event 2-3',
+          start: '2022-04-06',
+          end: '2020-04-08',
+          raw: {},
+        },
+      ],
+      milestones: [
+        {
+          id: '2-11',
+          title: 'Milestone 2-1',
+          start: '2020-04-06',
+          end: '2020-04-06',
+          raw: {},
+        },
+      ],
+    },
   ])
 
   return (
-    <div className="w-full h-full overflow-auto flex">
+    <div className="w-full h-full overflow-auto flex" style={{ maxHeight: '300px' }}>
       <div className="side-bar">
         {
           data.map((group, index) => (

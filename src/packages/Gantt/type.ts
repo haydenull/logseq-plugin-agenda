@@ -13,3 +13,8 @@ export type IGroup = {
   events: IEvent[]
   milestones?: IEvent[]
 }
+
+export type ICooradinate = {
+  x: number
+  y: number
+}

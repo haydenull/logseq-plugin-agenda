@@ -24,6 +24,7 @@
 .calendar {
   background-color: #f8f8f8;
   margin-left: 10px;
+  padding-top: 50px;
   /* fix flex1的子元素内容过多时，被撑开导致 flex-1 失效 */
   /* https://juejin.cn/post/6974356682574921765 */
   width: 0;
@@ -58,6 +59,9 @@
 }
 .calendar__content__back.weekend {
   background-color: #ddd;
+}
+.calendar__content__back.today {
+  background-color: #f6ebfa;
 }
 .calendar__group {
   border-bottom: 1px solid #f8f8f8;
