@@ -22,3 +22,5 @@ export type ICooradinate = {
 }
 
 export type IMode = 'simple' | 'advanced'
+
+export type IView = 'day' | 'week' | 'month'

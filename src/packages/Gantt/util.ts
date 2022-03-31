@@ -56,8 +56,8 @@ export const getDataWithGroupCoordinates = (data: IGroup[], mode: IMode = 'simpl
   })
   return dataWithCoordinates
 }
-export const getXCoordinate = (start: Dayjs, day: Dayjs): number => {
-  return day.diff(start, 'day') * 108
+export const getXCoordinate = (start: Dayjs, day: Dayjs, itemWidth: number): number => {
+  return day.diff(start, 'day') * itemWidth
 }
 
 export const scrollToDate = (date: Dayjs) => {
@@ -141,4 +141,28 @@ function addEventsToLevel(events: IEvent[] = [], levelArr: IEvent[][] = [], rang
   levelArr.push(levelItem)
   if (notCurrentLevelEvents?.length === 0) return levelArr
   return addEventsToLevel(notCurrentLevelEvents, levelArr, rangeStart, rangeEnd)
+}
+
+/**
+ * 获取日期范围
+ */
+export const getDateRange = (data: IGroup[]) => {
+  const arr = data.map(group => {
+    const { events, milestones = [] } = group
+    return [...events, ...milestones]
+  }).flat()
+
+  let rangeStart = dayjs()
+  let rangeEnd = dayjs()
+  arr.forEach(event => {
+    const { start, end } = event
+    if (dayjs(start).isBefore(rangeStart)) {
+      rangeStart = dayjs(start)
+    }
+    if (dayjs(end).isAfter(rangeEnd)) {
+      rangeEnd = dayjs(end)
+    }
+  })
+
+  return { start: rangeStart, end: rangeEnd }
 }

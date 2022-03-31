@@ -1,20 +1,22 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import dayjs from 'dayjs'
-import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, transformDataToSimpleMode } from '../util'
-import { IGroup, IMode } from '../type'
+import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, transformDataToSimpleMode, getDateRange } from '../util'
+import { IGroup, IMode, IView } from '../type'
 import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, SIDEBAR_GROUP_TITLE_HEIGHT } from '../constants'
 
 const Calendar: React.FC<{
   data: IGroup[]
   mode: IMode
-}> = ({ data, mode }, ref) => {
+  view?: IView
+  weekStartDay?: number
+}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0 }, ref) => {
   const current = dayjs()
-  // TODO: 开始日期设置为2个月前, 结束日期设置为4个月后
-  const start = current.startOf('month').subtract(1, 'month')
-  const end = current.endOf('month').add(1, 'month')
+  const { start: rangeStart, end: rangeEnd } = getDateRange(data)
+  const start = rangeStart.subtract(1, 'day')
+  const end = rangeEnd.add(5, 'day')
+  const calendarEventWidth = CALENDAR_EVENT_WIDTH[view]
 
-  const [scale, setScale] = useState('day')
-  const [dateMarks, setDateMarks] = useState(extractDays(start, end))
+  const dateMarks = extractDays(start, end)
 
   const dataWithGroupCoordinate = getDataWithGroupCoordinates(data, mode)
 
@@ -32,11 +34,11 @@ const Calendar: React.FC<{
         return {
           ...event,
           coordinates: {
-            x: getXCoordinate(start, dayjs(event.start)),
+            x: getXCoordinate(start, dayjs(event.start), calendarEventWidth),
             y: group.coordinate.y + yIndex * CALENDAR_EVENT_HEIGHT,
           },
           size: {
-            width: CALENDAR_EVENT_WIDTH * (dayjs(event.end).diff(dayjs(event.start), 'day') + 1) - 8,
+            width: calendarEventWidth * (dayjs(event.end).diff(dayjs(event.start), 'day') + 1) - 8,
             height: CALENDAR_EVENT_HEIGHT - 4,
           },
         }
@@ -46,7 +48,7 @@ const Calendar: React.FC<{
         return {
           ...milestone,
           coordinates: {
-            x: getXCoordinate(start, dayjs(milestone.start)),
+            x: getXCoordinate(start, dayjs(milestone.start), calendarEventWidth),
             y: group.coordinate.y + eventHeightCount + yIndex * CALENDAR_EVENT_HEIGHT,
           },
         }
@@ -69,16 +71,31 @@ const Calendar: React.FC<{
   return (
     <div className="calendar flex-1 h-fit w-fit">
       {/* ========= calendar header start ========= */}
+      <div className="w-fit whitespace-nowrap bg-white sticky top-0 z-20 text-gray-400">
+        {
+          dateMarks.map((mark) => {
+            const date = mark.format('DD')
+            const isShowMonth = date === '01' || mark.isSame(start, 'day') || mark.isSame(end, 'day')
+            return (<div className="inline">
+              <span className="inline-block text-center sticky bg-white overflow-visible box-content" style={{ width: `${calendarEventWidth}px`, left: 0, lineHeight: '25px', paddingRight: '100px', marginRight: '-100px' }}>
+                {isShowMonth ? mark.format('MMMM YYYY') : ''}
+              </span>
+            </div>)
+          })
+        }
+      </div>
       <div className="calendar__header w-fit whitespace-nowrap bg-white sticky top-0 z-20">
         {
-          dateMarks.map((mark, index) => {
+          dateMarks.map((mark) => {
             const date = mark.format('DD')
-            const month = mark.format('MM')
             const _isWeekend = isWeekend(mark)
             const isToday = mark.isSame(current, 'day')
-            return (<div className={`date relative inline-flex justify-center ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + mark.format('YYYYMMDD')}>
-              { date === '01' && <span className="date__month opacity-50 absolute">{mark.format('MMMM YYYY')}</span> }
-              <span>{date}</span>
+            let isShowDate = true
+            if (view === 'month') {
+              isShowDate = mark.day() === weekStartDay || isToday
+            }
+            return (<div className={`calendar__date inline-flex ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + mark.format('YYYYMMDD')}>
+              <span className={`inline-block text-center ${!isShowDate ? 'opacity-0' : ''}`} style={{ width: '108px' }}>{date}</span>
             </div>)
           })
         }
@@ -115,7 +132,7 @@ const Calendar: React.FC<{
                     const { coordinates, size } = event
                     return (
                       <div
-                        className="calendar__event absolute bg-white rounded cursor-pointer single_ellipsis"
+                        className="calendar__event absolute bg-white rounded cursor-pointer single_ellipsis shadow"
                         style={{
                           left: coordinates.x,
                           top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,
@@ -135,10 +152,10 @@ const Calendar: React.FC<{
                     const { coordinates } = milestone
                     return (
                       <>
-                        <div className="calendar__milestone__line absolute" style={{ left: coordinates.x + CALENDAR_EVENT_WIDTH / 2, top: group.coordinate.y, height: group.height + 16 }}>
+                        <div className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
                           {/* <span className="absolute ml-3">{milestone.title}</span> */}
                         </div>
-                        <div className="calendar__milestone__text absolute flex items-center cursor-pointer" style={{ left: coordinates.x + 2 + CALENDAR_EVENT_WIDTH / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}>
+                        <div className="calendar__milestone__text absolute flex items-center cursor-pointer" style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}>
                           <span className="single_ellipsis">{milestone.title}</span>
                         </div>
                       </>

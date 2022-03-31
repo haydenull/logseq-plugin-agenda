@@ -284,3 +284,13 @@ export async function genSchedule(params: {
 export const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DEADLINE_DATE_FORMAT) => {
   return formatISO(parse('' + date, format, new Date()))
 }
+
+export const genScheduleWithCalendarMap = (schedules: ISchedule[]) => {
+  let res = new Map<string, ISchedule[]>()
+  schedules.forEach(schedule => {
+    const key = schedule.calendarId || ''
+    if (!res.has(key)) res.set(key, [])
+    res.get(key)?.push(schedule)
+  })
+  return res
+}

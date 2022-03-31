@@ -10,7 +10,7 @@ import { SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
 import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs, { Dayjs } from 'dayjs'
-import { genSchedule, getSchedules, modifyTimeInfo } from './util/schedule'
+import { genSchedule, genScheduleWithCalendarMap, getSchedules, modifyTimeInfo } from './util/schedule'
 import { ICustomCalendar, ISettingsForm } from './util/type'
 import { moveBlockToNewPage, updateBlock } from './util/logseq'
 import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
@@ -19,6 +19,7 @@ import './App.css'
 import { getSubCalendarSchedules } from './util/subscription'
 import Sidebar from './components/Sidebar'
 import Gantt from './packages/Gantt'
+import { IGroup } from './packages/Gantt/type'
 
 const App: React.FC<{ env: string }> = ({ env }) => {
 
@@ -32,8 +33,8 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isFold, setIsFold] = useState(true)
-  // const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
-  const [currentView, setCurrentView] = useState('gantt')
+  const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
+  // const [currentView, setCurrentView] = useState('gantt')
   const [showDate, setShowDate] = useState<string>()
   const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
   const [weeklyModal, setWeeklyModal] = useState<{
@@ -50,7 +51,21 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     visible: false,
     type: 'create',
   })
+  const [showCalendarList, setShowCalendarList] = useState(enabledCalendarList.map(calendar => calendar.id))
+  const [showSchedules, setShowSchedules] = useState<ISchedule[]>([])
   const calendarRef = useRef<Calendar>()
+
+  const scheduleCalendarMap = genScheduleWithCalendarMap(showSchedules)
+  // const ganttData: IGroup = showCalendarList.map(calendarId => {
+  //   const schedules = scheduleCalendarMap.get(calendarId)
+  //   if (!schedules) return null
+  //   return {
+  //     id: calendarId,
+  //     title: calendarId,
+  //     events: schedules.filter(schedule => schedule.category !== 'milestone'),
+  //     milestones: schedules.filter(schedule => schedule.category === 'milestone'),
+  //   }
+  // })
 
   const changeShowDate = () => {
     if (calendarRef.current) {
@@ -70,6 +85,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       calendar.clear()
 
       const schedules = await getSchedules()
+      setShowSchedules(schedules)
       calendar.createSchedules(schedules)
       const { subscriptionList } = await getInitalSettings()
       const subscriptionSchedules = await getSubCalendarSchedules(subscriptionList)
@@ -186,6 +202,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     }
   }
   const onShowCalendarChange = (showCalendarList: string[]) => {
+    setShowCalendarList(showCalendarList)
     const enabledCalendarIds = enabledCalendarList.concat(enabledSubscriptionList)?.map(calendar => calendar.id)
 
     enabledCalendarIds.forEach(calendarId => {
@@ -202,14 +219,14 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     // Delay execution to avoid the TUI not being able to acquire the height correctly
     // The bug manifests as the weekly view cannot auto scroll to the current time
     setTimeout(() => {
-      // calendarRef.current = new Calendar('#calendar', {
-      //   ...calendarOptions,
-      //   // template: {
-      //   //   // monthDayname: function(dayname) {
-      //   //   //   return '<span class="calendar-week-dayname-name">' + dayname.label + '</span>';
-      //   //   // }
-      //   // }
-      // })
+      calendarRef.current = new Calendar('#calendar', {
+        ...calendarOptions,
+        // template: {
+        //   // monthDayname: function(dayname) {
+        //   //   return '<span class="calendar-week-dayname-name">' + dayname.label + '</span>';
+        //   // }
+        // }
+      })
       changeShowDate()
       setSchedules()
       calendarRef.current.on('clickDayname', function(event) {
@@ -353,20 +370,26 @@ const App: React.FC<{ env: string }> = ({ env }) => {
               style={{ width: '100px' }}
             />
 
-            <Button className="ml-4" shape="round" onClick={onClickToday}>Today</Button>
+            {
+              (['day', 'week', '2week', 'month'].includes(currentView))
+              ? (<div className="flex items-center ml-4">
+                <Button shape="round" onClick={onClickToday}>Today</Button>
 
-            <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
-            <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
+                <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
+                <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
 
-            <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
-              <span
-                className={`ml-4 text-xl h-full items-center inline-block ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
-                style={{ height: '34px', lineHeight: '34px' }}
-                onClick={onClickShowDate}
-              >
-                { showDate }
-              </span>
-            </Tooltip>
+                <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
+                  <span
+                    className={`ml-4 text-xl h-full items-center inline-block ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
+                    style={{ height: '34px', lineHeight: '34px' }}
+                    onClick={onClickShowDate}
+                  >
+                    { showDate }
+                  </span>
+                </Tooltip>
+              </div>)
+             : null
+            }
           </div>
 
           <div>
@@ -389,7 +412,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           <div className="flex-1 w-0">
             {
               currentView === 'gantt'
-              ? <Gantt />
+              ? <Gantt data={} />
               : <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px' }}></div>
             }
           </div>

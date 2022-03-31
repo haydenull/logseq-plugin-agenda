@@ -4,11 +4,20 @@
   /* https://www.jianshu.com/p/e6ad2c2cb7c3 */
   flex: 0 0 160px;
   /* width: 160px; */
-  padding-top: 50px;
+  margin-top: 50px;
 }
 
 .group {
-  margin-bottom: 40px;  /* CALENDAR_GROUP_GAP */
+  margin-bottom: 36px;  /* CALENDAR_GROUP_GAP */
+  border-right: 1px solid #efefef;
+  /* 内阴影边框 */
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  /* @apply shadow; */
+}
+.group__title {
+  height: 30px;
+  line-height: 40px;
+  text-align: bottom;
 }
 .group__content {
   display: flex;
@@ -22,35 +31,33 @@
 
 
 .calendar {
-  /* background-color: #f8f8f8; */
-  margin-left: 10px;
-  /* padding-top: 50px; */
   /* fix flex1的子元素内容过多时，被撑开导致 flex-1 失效 */
   /* https://juejin.cn/post/6974356682574921765 */
   width: 0;
 }
 /* 日历头部 */
 .calendar__header {
-  height: 50px;
-  padding-top: 25px;
+  height: 25px;
   border-bottom: 1px solid #efefef;
 }
 .calendar__header::-webkit-scrollbar {
   display: none;
 }
-.date {
+.calendar__date {
   width: 108px; /* CALENDAR_EVENT_WIDTH */
   height: 25px;
-  display: inline-block;
 }
-.date.today {
+.view-week .calendar__date {
+  width: 44px; /* CALENDAR_EVENT_WIDTH */
+}
+.view-month .calendar__date {
+  width: 20px; /* CALENDAR_EVENT_WIDTH */
+}
+.calendar__date.today {
   color: #ff0000;
 }
-.date.weekend {
+.calendar__date.weekend {
   color: #aaa;
-}
-.date .date__month {
-  bottom: 25px;
 }
 
 /* 日历内容区 */
@@ -61,7 +68,13 @@
   width: 108px;  /* CALENDAR_EVENT_WIDTH */
   height: 100%;
   background-color: #f8f8f8;
-  /* display: inline-block; */
+  border-right: 1px solid #efefef;
+}
+.view-week .calendar__content__back {
+  width: 44px;  /* CALENDAR_EVENT_WIDTH */
+}
+.view-month .calendar__content__back {
+  width: 20px;  /* CALENDAR_EVENT_WIDTH */
 }
 .calendar__content__back.weekend {
   background-color: #f4f3f3;
@@ -72,12 +85,10 @@
 .calendar__group {
   /* border-bottom: 1px solid #e9dceb;
   border-top: 1px solid #e9dceb; */
-  margin-bottom: 40px;   /* CALENDAR_GROUP_GAP */
+  margin-bottom: 36px;   /* CALENDAR_GROUP_GAP */
   box-sizing: content-box;
 }
 .calendar__event {
-  /* width: 100px;  CALENDAR_EVENT_WIDTH 左右两边加一点间距 */
-  /* height: 36px;  CALENDAR_EVENT_HEIGHT */
   line-height: 36px;  /* CALENDAR_EVENT_HEIGHT */
   margin: 2px 4px;
   padding: 0 4px;
