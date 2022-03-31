@@ -19,7 +19,7 @@ import './App.css'
 import { getSubCalendarSchedules } from './util/subscription'
 import Sidebar from './components/Sidebar'
 import Gantt from './packages/Gantt'
-import { IGroup } from './packages/Gantt/type'
+import { IGroup, IEvent } from './packages/Gantt/type'
 
 const App: React.FC<{ env: string }> = ({ env }) => {
 
@@ -56,16 +56,28 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   const calendarRef = useRef<Calendar>()
 
   const scheduleCalendarMap = genScheduleWithCalendarMap(showSchedules)
-  // const ganttData: IGroup = showCalendarList.map(calendarId => {
-  //   const schedules = scheduleCalendarMap.get(calendarId)
-  //   if (!schedules) return null
-  //   return {
-  //     id: calendarId,
-  //     title: calendarId,
-  //     events: schedules.filter(schedule => schedule.category !== 'milestone'),
-  //     milestones: schedules.filter(schedule => schedule.category === 'milestone'),
-  //   }
-  // })
+  const ganttData: IGroup[] = showCalendarList.map(calendarId => {
+    const schedules = scheduleCalendarMap.get(calendarId)
+    if (!schedules) return null
+    const convertScheduleToGanttEvent = (schedule: ISchedule): IEvent => {
+      const { raw, start, end, id = '', title = '' } = schedule
+      return {
+        id,
+        title,
+        // @ts-ignore
+        start: dayjs(start).format('YYYY-MM-DD'),
+        // @ts-ignore
+        end: dayjs(end).format('YYYY-MM-DD'),
+        raw: raw,
+      }
+    }
+    return {
+      id: calendarId,
+      title: calendarId,
+      events: schedules.filter(schedule => schedule.category !== 'milestone').map(convertScheduleToGanttEvent),
+      milestones: schedules.filter(schedule => schedule.category === 'milestone').map(convertScheduleToGanttEvent),
+    }
+  }).filter(function<T>(item: T | null): item is T {return Boolean(item)})
 
   const changeShowDate = () => {
     if (calendarRef.current) {
@@ -412,7 +424,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           <div className="flex-1 w-0">
             {
               currentView === 'gantt'
-              ? <Gantt data={} />
+              ? <Gantt data={ganttData} weekStartDay={logseq.settings?.weekStartDay || 0} />
               : <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px' }}></div>
             }
           </div>
