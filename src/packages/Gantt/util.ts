@@ -1,6 +1,6 @@
 import dayjs, { Dayjs } from 'dayjs'
 import { clone } from 'lodash'
-import { ICooradinate, IEvent, IGroup } from './type'
+import { ICooradinate, IEvent, IGroup, IMode } from './type'
 import { CALENDAR_EVENT_HEIGHT, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT } from './constants'
 
 export const extractDays = (startDate: Dayjs, endDate: Dayjs): Dayjs[] => {
@@ -37,11 +37,15 @@ export const isWeekend = (day: Dayjs): boolean => {
   return day.day() === 0 || day.day() === 6
 }
 
-export const getDataWithGroupCoordinates = (data: IGroup[]) => {
+export const getDataWithGroupCoordinates = (data: IGroup[], mode: IMode = 'simple') => {
   let dataWithCoordinates: (IGroup & {coordinate: ICooradinate})[] = []
   data.forEach((group, index) => {
     const preGroup = dataWithCoordinates[index - 1]
-    const y = index === 0 ? 0 : preGroup.coordinate?.y + preGroup.events?.concat(preGroup.milestones || []).length * CALENDAR_EVENT_HEIGHT + CALENDAR_GROUP_GAP + SIDEBAR_GROUP_TITLE_HEIGHT // 30: margin of calendar group, 22: height of sidebar group title
+    const { levelCount = 0, events = [], milestones = [] } = preGroup || {}
+    const eventsCount = mode === 'simple' ? levelCount : events.length
+    const milestoneCount = mode === 'simple' ? (milestones.length > 0 ? 1 : 0) : milestones.length
+    const y = index === 0 ? 0 : preGroup.coordinate.y + (eventsCount + milestoneCount) * CALENDAR_EVENT_HEIGHT + CALENDAR_GROUP_GAP + SIDEBAR_GROUP_TITLE_HEIGHT
+
     dataWithCoordinates.push({
       ...group,
       coordinate: {

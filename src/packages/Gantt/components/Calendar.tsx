@@ -16,20 +16,13 @@ const Calendar: React.FC<{
   const [scale, setScale] = useState('day')
   const [dateMarks, setDateMarks] = useState(extractDays(start, end))
 
-  const dataWithGroupCoordinate = getDataWithGroupCoordinates(data)
-  // const dataWithHeight = data.map(group => {
-  //   const { events, milestones = [] } = group
-  //   const height = (events.length + milestones.length) * CALENDAR_EVENT_HEIGHT +22
-  //   return {
-  //     ...group,
-  //     height,
-  //   }
-  // })
+  const dataWithGroupCoordinate = getDataWithGroupCoordinates(data, mode)
 
   const dataWithCoordinates = dataWithGroupCoordinate.map((group, groupIndex) => {
     const { events, milestones = [] } = group
     const eventHeightCount = mode === 'simple' ? (group.levelCount || 0) * CALENDAR_EVENT_HEIGHT : events.length * CALENDAR_EVENT_HEIGHT
-    const groupHeight = eventHeightCount + milestones.length * CALENDAR_EVENT_HEIGHT + SIDEBAR_GROUP_TITLE_HEIGHT
+    const milestoneHeightCount = mode === 'simple' ? (milestones.length > 0 ? 1 : 0) * CALENDAR_EVENT_HEIGHT : milestones.length * CALENDAR_EVENT_HEIGHT
+    const groupHeight = eventHeightCount + milestoneHeightCount + SIDEBAR_GROUP_TITLE_HEIGHT
     return {
       ...group,
       height: groupHeight,
@@ -83,9 +76,9 @@ const Calendar: React.FC<{
             const month = mark.format('MM')
             const _isWeekend = isWeekend(mark)
             const isToday = mark.isSame(current, 'day')
-            return (<div className={`date relative text-center ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + mark.format('YYYYMMDD')}>
-              { month === '01' && <span className="date__month absolute opacity-50">{mark.format('YYYY-MM')}</span> }
-              <span>{month + '-' + date}</span>
+            return (<div className={`date relative inline-flex justify-center ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + mark.format('YYYYMMDD')}>
+              { date === '01' && <span className="date__month opacity-50 absolute">{mark.format('MMMM YYYY')}</span> }
+              <span>{date}</span>
             </div>)
           })
         }

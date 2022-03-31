@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import React, { useRef, useState } from 'react'
 import Calendar from './components/Calendar'
 import Group from './components/Group'
-import { MODES } from './constants'
+import { MODES, VIEWS } from './constants'
 import './index.css'
 import { IGroup, IMode } from './type'
 import { scrollToDate, transformDataToSimpleMode } from './util'
@@ -12,6 +12,7 @@ const Gantt: React.FC<{
   [prop: string]: any
 }> = ({ ...props }) => {
   const calendarRef = useRef<{ scrollToToday: () => void }>()
+  const [view, setView] = useState('day')
   const [mode, setMode] = useState<IMode>('simple')
   const [data, setData] = useState<IGroup[]>([
     {
@@ -46,6 +47,13 @@ const Gantt: React.FC<{
           title: 'Milestone 1',
           start: '2022-04-06',
           end: '2022-04-06',
+          raw: {},
+        },
+        {
+          id: '12',
+          title: 'Milestone 2',
+          start: '2022-04-09',
+          end: '2022-04-09',
           raw: {},
         },
       ],
@@ -84,6 +92,13 @@ const Gantt: React.FC<{
           end: '2022-04-06',
           raw: {},
         },
+        {
+          id: '2-12',
+          title: 'Milestone 2-12',
+          start: '2022-04-08',
+          end: '2022-04-08',
+          raw: {},
+        },
       ],
     },
   ])
@@ -95,6 +110,7 @@ const Gantt: React.FC<{
     <div className="w-full h-full relative">
       <div className="operation absolute right-0 top-0 z-30">
         <Button size="small" shape="round" onClick={() => scrollToDate(dayjs())}>Today</Button>
+        <Select size="small" options={VIEWS} defaultValue="day" onChange={e => setView(e)} style={{ minWidth: '80px' }} className="ml-2" />
         <Select size="small" options={MODES} defaultValue="simple" onChange={(e: IMode) => setMode(e)} style={{ minWidth: '110px' }} className="ml-2" />
       </div>
       <div className="flex overflow-auto relative" style={{ maxHeight: '400px' }}>

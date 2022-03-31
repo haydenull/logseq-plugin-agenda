@@ -11,3 +11,5 @@ export const SIDEBAR_GROUP_TITLE_HEIGHT = 22
 export const CALENDAR_EVENT_WIDTH = 108
 
 export const MODES = [{ value: 'simple', label: 'Simple' }, { value: 'advanced', label: 'Advanced' }]
+
+export const VIEWS = [{ value: 'day', label: 'Day' }, { value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }]
