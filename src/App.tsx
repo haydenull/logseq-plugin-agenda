@@ -32,7 +32,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar.enabled))
   const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription.enabled) : []
   const isNeedTitleLeftSpaceWhenFullScreen = getOS() === 'mac'
-  const views = CALENDAR_VIEWS?.concat({ value: 'gantt', label: 'Gantt' })
 
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isFold, setIsFold] = useState(true)
@@ -55,26 +54,51 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     type: 'create',
   })
   const [showCalendarList, setShowCalendarList] = useState(enabledCalendarList.map(calendar => calendar.id))
-  const [showSchedules, setShowSchedules] = useState<ISchedule[]>([])
+  const [calendarSchedules, setCalendarSchedules] = useState<ISchedule[]>([])
   const calendarRef = useRef<Calendar>()
 
-  const scheduleCalendarMap = genScheduleWithCalendarMap(showSchedules)
+  // 是否展示 tui calendar
+  const showCalendar = ['day', 'week', '2week', 'month'].includes(currentView)
+
+  const ganttSchedules = calendarSchedules.filter(schedule => !schedule.id?.startsWith('overdue-'))
+  const scheduleCalendarMap = genScheduleWithCalendarMap(ganttSchedules)
   const ganttData: IGroup[] = showCalendarList.map(calendarId => {
     const schedules = scheduleCalendarMap.get(calendarId)
     if (!schedules) return null
     const convertScheduleToGanttEvent = (schedule: ISchedule): IEvent => {
-      const { raw, start, end, id = '', title = '' } = schedule
+      const { raw = {}, start, end, id = '', title = '' } = schedule
       // @ts-ignore
-      const _end = end ? dayjs(end).format('YYYY-MM-DD') : dayjs(start).format('YYYY-MM-DD')
-      if (id === '1810') console.log('[faiz:] === convertScheduleToGanttEvent', schedule, _end)
+      const dayjsStart = dayjs(start)
+      // @ts-ignore
+      const dayjsEnd = dayjs(end)
       return {
         id,
         title,
-        // @ts-ignore
-        start: dayjs(start).format('YYYY-MM-DD'),
-        // @ts-ignore
-        end: end ? dayjs(end).format('YYYY-MM-DD') : dayjs(start).format('YYYY-MM-DD'),
-        raw: raw,
+        start: dayjsStart.format('YYYY-MM-DD'),
+        end: end ? dayjsEnd.format('YYYY-MM-DD') : dayjsStart.format('YYYY-MM-DD'),
+        raw: {
+          blockData: raw,
+          calendarSchedule: schedule,
+        },
+        detailPopup: (<div className="text-xs">
+          <div className="font-bold text-base my-2">{title}</div>
+          <div className="my-2">{`${dayjsStart.format('YYYY.MM.DD hh:mm a')} - ${dayjsEnd.format('hh:mm a')}`}</div>
+          <p className="whitespace-pre-line">{raw.content}</p>
+
+          <a onClick={async () => {
+            const rawData: any = raw
+            const { id: pageId, originalName } = rawData?.page || {}
+            let pageName = originalName
+            // // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
+            // if (!pageName) {
+            //   const page = await logseq.Editor.getPage(pageId)
+            //   pageName = page?.originalName
+            // }
+            const { uuid: blockUuid } = await logseq.Editor.getBlock(rawData.id) || { uuid: '' }
+            logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
+            logseq.hideMainUI()
+          }}>Navigate to block</a>
+        </div>)
       }
     }
     return {
@@ -84,7 +108,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       milestones: schedules.filter(schedule => schedule.category === 'milestone').map(convertScheduleToGanttEvent),
     }
   }).filter(function<T>(item: T | null): item is T {return Boolean(item)})
-  console.log('[faiz:] === ganttData', ganttData, JSON.stringify(ganttData))
 
   const changeShowDate = () => {
     if (calendarRef.current) {
@@ -104,7 +127,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       calendar.clear()
 
       const schedules = await getSchedules()
-      setShowSchedules(schedules)
+      setCalendarSchedules(schedules)
       calendar.createSchedules(schedules)
       const { subscriptionList } = await getInitalSettings()
       const subscriptionSchedules = await getSubCalendarSchedules(subscriptionList)
@@ -386,9 +409,15 @@ const App: React.FC<{ env: string }> = ({ env }) => {
               value={currentView}
               defaultValue={calendarOptions.defaultView}
               onChange={onViewChange}
-              options={views}
               style={{ width: '100px' }}
-            />
+            >
+              <Select.OptGroup label="Calendar">
+                {CALENDAR_VIEWS.map(calendarView => (<Select.Option value={calendarView.value}>{calendarView.label}</Select.Option>))}
+              </Select.OptGroup>
+              <Select.OptGroup label="Other">
+                <Select.Option value="gantt">Gantt</Select.Option>
+              </Select.OptGroup>
+            </Select>
 
             {
               (['day', 'week', '2week', 'month'].includes(currentView))
@@ -421,7 +450,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         {/* ========= title bar end ========= */}
 
         {/* ========= content start ========= */}
-        <div className="flex flex-1">
+        <div className="flex flex-1 h-0">
           <div className={`transition-all overflow-hidden bg-gray-100 mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
             <Sidebar
               onShowCalendarChange={onShowCalendarChange}
@@ -431,9 +460,10 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           </div>
           <div className="flex-1 w-0">
             {
-              currentView === 'gantt'
-              ? <Gantt data={ganttDataMock} weekStartDay={logseq.settings?.weekStartDay || 0} style={{ height: isFullScreen ? '100%' : '624px' }} />
-              : <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px' }}></div>
+              <>
+                {currentView === 'gantt' && <Gantt data={ganttData} weekStartDay={logseq.settings?.weekStartDay || 0} style={{ height: isFullScreen ? '100%' : '624px' }} />}
+                <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px', display: showCalendar ? 'block' : 'none' }}></div>
+              </>
             }
           </div>
         </div>

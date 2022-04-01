@@ -1,3 +1,11 @@
+/* 左上角空白占位 */
+.calendar__placeholder {
+  width: 160px;
+  height: 50px;
+  /* z-index 必须介于 sidebar 与 calendar header 之间, 才能遮挡滚动的 sidebar,但不遮挡 calendar header 日期 */
+  z-index: 11;
+}
+
 /* 侧边栏 */
 .side-bar {
   /* flex 子元素宽度和大于容器时, 使用 flex-basic 设置宽度, width 是无效的 */
@@ -19,6 +27,8 @@
   height: 30px;
   line-height: 40px;
   text-align: bottom;
+  top: 50px;
+  font-size: 16px;
 }
 .group__content {
   display: flex;

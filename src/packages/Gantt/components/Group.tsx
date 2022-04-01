@@ -13,7 +13,7 @@ const Group: React.FC<{
 }> = ({ groupName, events, milestones = [], mode, levelCount = 0 }) => {
   return (
     <div className="group rounded-sm">
-      <div className="group__title font-medium">{groupName}</div>
+      <div className="group__title font-medium sticky bg-white">{groupName}</div>
       <div className="group__content">
         {
           mode === 'simple'
@@ -28,9 +28,7 @@ const Group: React.FC<{
         }
         {
           mode === 'simple'
-          ? milestones?.length && <div className="group__event cursor-pointer flex justify-between items-center">
-            {/* Milestones */}
-          </div>
+          ? (milestones?.length > 0 ? <div className="group__event cursor-pointer flex justify-between items-center">{/* Milestones */}</div> : null)
           : milestones?.map((milestone, index) => (
             <div className="group__event cursor-pointer single_ellipsis" onClick={() => scrollToDate(dayjs(milestone.start))}>
               {milestone?.title}

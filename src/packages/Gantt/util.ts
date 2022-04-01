@@ -64,11 +64,32 @@ export const scrollToDate = (date: Dayjs) => {
   document.querySelector(`#date${date.format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
 }
 
+export const transformDataToAdvancedMode = (data: IGroup[]) => {
+  return data.map(group => sortGroup(group))
+}
 export const transformDataToSimpleMode = (data: IGroup[]) => {
   return data.map(group => transformGroupToSimpleMode(group))
 }
 export const transformGroupToSimpleMode = (group: IGroup) => {
-  const { events } = group
+  const { events, rangeStart, rangeEnd } = sortGroup(group)
+
+  let levelEvents: IEvent[][] = addEventsToLevel(events, [], dayjs(rangeStart), dayjs(rangeEnd))
+
+  return {
+    ...group,
+    levelCount: levelEvents.length,
+    events: levelEvents.map((level, index) => {
+      return level.map(event => {
+        return {
+          ...event,
+          level: index,
+        }
+      })
+    }).flat(),
+  }
+}
+export const sortGroup = (group: IGroup) => {
+  const { events, milestones } = group
   // events 按开始时间排序
   events.sort((a, b) => dayjs(a.start).diff(dayjs(b.start)))
 
@@ -96,20 +117,12 @@ export const transformGroupToSimpleMode = (group: IGroup) => {
   const rangeEnd = mapValues[mapValues.length - 1]?.[0]?.end
   // map 转为 array
   const classByStartArray = mapValues.flat()
-
-  let levelEvents: IEvent[][] = addEventsToLevel(classByStartArray, [], dayjs(rangeStart), dayjs(rangeEnd))
-
   return {
     ...group,
-    levelCount: levelEvents.length,
-    events: levelEvents.map((level, index) => {
-      return level.map(event => {
-        return {
-          ...event,
-          level: index,
-        }
-      })
-    }).flat(),
+    events: classByStartArray,
+    milestones: milestones?.sort((a, b) => dayjs(a.start).diff(dayjs(b.start))),
+    rangeStart,
+    rangeEnd,
   }
 }
 

@@ -5,6 +5,7 @@ export type IEvent = {
   end: string
   raw?: any
   level?: number
+  detailPopup?: JSX.Element
 }
 
 export type IGroup = {

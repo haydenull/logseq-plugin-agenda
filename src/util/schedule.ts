@@ -96,11 +96,14 @@ export const getSchedules = async () => {
         ? [
           schedule,
           await genSchedule({
+            id: `overdue-${schedule.id}`,
+            start: dayjs().startOf('day').toISOString(),
+            end: dayjs().endOf('day').toISOString(),
             blockData: block,
             category: _category,
             calendarConfig,
             defaultDuration,
-            isAllDay: !isMilestone && !hasTime && !_isOverdue,
+            isAllDay: false,
           }),
         ]
         : schedule
@@ -220,6 +223,7 @@ export const fillBlockReference = async (blockContent: string) => {
 }
 
 export async function genSchedule(params: {
+  id?: string
   blockData: any
   category: ICategory
   start?: string
@@ -229,7 +233,7 @@ export async function genSchedule(params: {
   isReadOnly?: boolean
   defaultDuration?: ISettingsForm['defaultDuration']
 }) {
-  const { blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
+  const { id, blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
   if (!blockData?.id) {
     const block = await logseq.Editor.getBlock(blockData.uuid?.$uuid$)
     if (block) blockData.id = block.id
@@ -263,7 +267,7 @@ export async function genSchedule(params: {
   }
 
   return {
-    id: String(blockData.id),
+    id: id || String(blockData.id),
     calendarId: calendarConfig.id,
     title: isDone ? `✅${title}` : title,
     body: await fillBlockReference(blockData.content),

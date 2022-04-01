@@ -2,7 +2,8 @@ import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'rea
 import dayjs from 'dayjs'
 import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, transformDataToSimpleMode, getDateRange } from '../util'
 import { IGroup, IMode, IView } from '../type'
-import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, SIDEBAR_GROUP_TITLE_HEIGHT } from '../constants'
+import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT } from '../constants'
+import { Popover } from 'antd'
 
 const Calendar: React.FC<{
   data: IGroup[]
@@ -55,7 +56,7 @@ const Calendar: React.FC<{
       }),
     }
   })
-  const groupHeightCount = dataWithCoordinates.reduce((acc, cur) => acc + cur.height, 0)
+  const groupHeightCount = dataWithCoordinates.reduce((acc, cur) => acc + cur.height + CALENDAR_GROUP_GAP, 0)
   console.log('[faiz:] === dataWithCoordinates', dataWithCoordinates)
 
   useEffect(() => {
@@ -69,7 +70,7 @@ const Calendar: React.FC<{
   })), []
 
   return (
-    <div className="calendar flex-1 h-fit w-fit">
+    <div className="calendar h-fit w-fit">
       {/* ========= calendar header start ========= */}
       <div className="w-fit whitespace-nowrap bg-white sticky top-0 z-20 text-gray-400">
         {
@@ -84,7 +85,7 @@ const Calendar: React.FC<{
           })
         }
       </div>
-      <div className="calendar__header w-fit whitespace-nowrap bg-white sticky top-0 z-20">
+      <div className="calendar__header w-fit whitespace-nowrap bg-white sticky z-20" style={{ top: '25px' }}>
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
@@ -103,7 +104,7 @@ const Calendar: React.FC<{
       {/* ========= calendar header end ========= */}
 
       {/* ========== calendar content start ========= */}
-      <div className="calendar__content whitespace-nowrap relative" style={{ height: groupHeightCount + 'px' }}>
+      <div className="calendar__content relative" style={{ height: groupHeightCount + 'px' }}>
         {/* <div className="h-full absolute flex">
           {
             dateMarks.map((mark, index) => {
@@ -129,7 +130,7 @@ const Calendar: React.FC<{
                 {/* ===== calendar event start ==== */}
                 {
                   group.events.map(event => {
-                    const { coordinates, size } = event
+                    const { coordinates, size, detailPopup } = event
                     return (
                       <div
                         key={event.id}
@@ -139,9 +140,15 @@ const Calendar: React.FC<{
                           top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,
                           width: size.width + 'px',
                           height: size.height + 'px',
+                          zIndex: 1,
                         }}
                       >
-                        {event.title}
+                        <Popover
+                          content={detailPopup}
+                          trigger="click"
+                        >
+                          {event.title}
+                        </Popover>
                       </div>
                     )
                   })
@@ -150,14 +157,21 @@ const Calendar: React.FC<{
                 {/* ===== calendar milestone start ==== */}
                 {
                   group.milestones?.map(milestone => {
-                    const { coordinates } = milestone
+                    const { coordinates, detailPopup } = milestone
                     return (
                       <>
                         <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
                           {/* <span className="absolute ml-3">{milestone.title}</span> */}
                         </div>
                         <div key={'milestone-text' + milestone.id} className="calendar__milestone__text absolute flex items-center cursor-pointer" style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}>
-                          <span className="single_ellipsis">{milestone.title}</span>
+                          <span className="single_ellipsis" style={{ maxWidth: calendarEventWidth - 20 }}>
+                            <Popover
+                              content={detailPopup}
+                              trigger="click"
+                            >
+                              {milestone.title}
+                            </Popover>
+                          </span>
                         </div>
                       </>
                     )

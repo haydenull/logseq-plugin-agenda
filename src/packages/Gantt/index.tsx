@@ -6,7 +6,7 @@ import Group from './components/Group'
 import { MODES, VIEWS } from './constants'
 import './index.css'
 import { IGroup, IMode, IView } from './type'
-import { scrollToDate, transformDataToSimpleMode } from './util'
+import { scrollToDate, transformDataToAdvancedMode, transformDataToSimpleMode } from './util'
 
 const Gantt: React.FC<{
   weekStartDay: number
@@ -105,17 +105,17 @@ const Gantt: React.FC<{
   //   },
   // ])
 
-  console.log('[faiz:] === _data', JSON.stringify(data), data)
-  const _data = mode === 'simple' ? transformDataToSimpleMode(data) : data
+  const _data = mode === 'simple' ? transformDataToSimpleMode(data) : transformDataToAdvancedMode(data)
 
   return (
     <div className={`w-full h-full relative view-${view}`} {...props}>
+      <div className="calendar__placeholder absolute bg-white"></div>
       <div className="operation absolute right-0 top-0 z-30 bg-white">
         <Button size="small" shape="round" onClick={() => scrollToDate(dayjs())}>Today</Button>
         <Select size="small" options={VIEWS} defaultValue={view} onChange={(e: IView) => setView(e)} style={{ minWidth: '80px' }} className="ml-2" />
         <Select size="small" options={MODES} defaultValue="simple" onChange={(e: IMode) => setMode(e)} style={{ minWidth: '110px' }} className="ml-2" />
       </div>
-      <div className="flex overflow-auto relative">
+      <div className="flex h-full overflow-auto relative">
         <div className="side-bar bg-white sticky left-0 z-10 h-fit">
           {
             _data.map((group, index) => (
