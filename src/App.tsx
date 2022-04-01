@@ -21,6 +21,9 @@ import Sidebar from './components/Sidebar'
 import Gantt from './packages/Gantt'
 import { IGroup, IEvent } from './packages/Gantt/type'
 
+// @ts-ignore
+import ganttDataMock from './mock/ganttData.json'
+
 const App: React.FC<{ env: string }> = ({ env }) => {
 
   const calendarOptions = getDefaultCalendarOptions()
@@ -61,13 +64,16 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     if (!schedules) return null
     const convertScheduleToGanttEvent = (schedule: ISchedule): IEvent => {
       const { raw, start, end, id = '', title = '' } = schedule
+      // @ts-ignore
+      const _end = end ? dayjs(end).format('YYYY-MM-DD') : dayjs(start).format('YYYY-MM-DD')
+      if (id === '1810') console.log('[faiz:] === convertScheduleToGanttEvent', schedule, _end)
       return {
         id,
         title,
         // @ts-ignore
         start: dayjs(start).format('YYYY-MM-DD'),
         // @ts-ignore
-        end: dayjs(end).format('YYYY-MM-DD'),
+        end: end ? dayjs(end).format('YYYY-MM-DD') : dayjs(start).format('YYYY-MM-DD'),
         raw: raw,
       }
     }
@@ -78,6 +84,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       milestones: schedules.filter(schedule => schedule.category === 'milestone').map(convertScheduleToGanttEvent),
     }
   }).filter(function<T>(item: T | null): item is T {return Boolean(item)})
+  console.log('[faiz:] === ganttData', ganttData, JSON.stringify(ganttData))
 
   const changeShowDate = () => {
     if (calendarRef.current) {
@@ -145,6 +152,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const onViewChange = (value: string) => {
     setCurrentView(value)
+    if (value === 'gantt') return
     if (value === '2week') {
       calendarRef.current?.changeView('month')
       calendarRef.current?.setOptions({
@@ -424,7 +432,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           <div className="flex-1 w-0">
             {
               currentView === 'gantt'
-              ? <Gantt data={ganttData} weekStartDay={logseq.settings?.weekStartDay || 0} />
+              ? <Gantt data={ganttDataMock} weekStartDay={logseq.settings?.weekStartDay || 0} style={{ height: isFullScreen ? '100%' : '624px' }} />
               : <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px' }}></div>
             }
           </div>

@@ -76,7 +76,7 @@ const Calendar: React.FC<{
           dateMarks.map((mark) => {
             const date = mark.format('DD')
             const isShowMonth = date === '01' || mark.isSame(start, 'day') || mark.isSame(end, 'day')
-            return (<div className="inline">
+            return (<div className="inline" key={'month' + mark.valueOf()}>
               <span className="inline-block text-center sticky bg-white overflow-visible box-content" style={{ width: `${calendarEventWidth}px`, left: 0, lineHeight: '25px', paddingRight: '100px', marginRight: '-100px' }}>
                 {isShowMonth ? mark.format('MMMM YYYY') : ''}
               </span>
@@ -94,7 +94,7 @@ const Calendar: React.FC<{
             if (view === 'month') {
               isShowDate = mark.day() === weekStartDay || isToday
             }
-            return (<div className={`calendar__date inline-flex ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + mark.format('YYYYMMDD')}>
+            return (<div className={`calendar__date inline-flex ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + mark.format('YYYYMMDD')} key={'date' + mark.valueOf()}>
               <span className={`inline-block text-center ${!isShowDate ? 'opacity-0' : ''}`} style={{ width: '108px' }}>{date}</span>
             </div>)
           })
@@ -116,7 +116,7 @@ const Calendar: React.FC<{
         {
           dataWithCoordinates.map(group => {
             return (
-              <div className="calendar__group w-fit">
+              <div className="calendar__group w-fit" key={group.id}>
                 <div className="flex">
                   {
                     dateMarks.map((mark, index) => {
@@ -132,6 +132,7 @@ const Calendar: React.FC<{
                     const { coordinates, size } = event
                     return (
                       <div
+                        key={event.id}
                         className="calendar__event absolute bg-white rounded cursor-pointer single_ellipsis shadow"
                         style={{
                           left: coordinates.x,
@@ -152,10 +153,10 @@ const Calendar: React.FC<{
                     const { coordinates } = milestone
                     return (
                       <>
-                        <div className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
+                        <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
                           {/* <span className="absolute ml-3">{milestone.title}</span> */}
                         </div>
-                        <div className="calendar__milestone__text absolute flex items-center cursor-pointer" style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}>
+                        <div key={'milestone-text' + milestone.id} className="calendar__milestone__text absolute flex items-center cursor-pointer" style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}>
                           <span className="single_ellipsis">{milestone.title}</span>
                         </div>
                       </>

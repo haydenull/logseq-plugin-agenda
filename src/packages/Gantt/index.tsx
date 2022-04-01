@@ -105,11 +105,11 @@ const Gantt: React.FC<{
   //   },
   // ])
 
+  console.log('[faiz:] === _data', JSON.stringify(data), data)
   const _data = mode === 'simple' ? transformDataToSimpleMode(data) : data
-  console.log('[faiz:] === _data', _data)
 
   return (
-    <div className={`w-full h-full relative view-${view}`}>
+    <div className={`w-full h-full relative view-${view}`} {...props}>
       <div className="operation absolute right-0 top-0 z-30 bg-white">
         <Button size="small" shape="round" onClick={() => scrollToDate(dayjs())}>Today</Button>
         <Select size="small" options={VIEWS} defaultValue={view} onChange={(e: IView) => setView(e)} style={{ minWidth: '80px' }} className="ml-2" />

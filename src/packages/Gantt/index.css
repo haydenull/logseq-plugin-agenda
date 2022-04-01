@@ -5,6 +5,7 @@
   flex: 0 0 160px;
   /* width: 160px; */
   margin-top: 50px;
+  max-width: 160px;
 }
 
 .group {

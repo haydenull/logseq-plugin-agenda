@@ -21,7 +21,7 @@ const Group: React.FC<{
             <div className="group__event cursor-pointer"></div>
           ))
           : events.map((event) => (
-            <div className="group__event cursor-pointer" onClick={() => scrollToDate(dayjs(event.start))}>
+            <div className="group__event cursor-pointer single_ellipsis" onClick={() => scrollToDate(dayjs(event.start))}>
               {event?.title}
             </div>
           ))
@@ -32,7 +32,7 @@ const Group: React.FC<{
             {/* Milestones */}
           </div>
           : milestones?.map((milestone, index) => (
-            <div className="group__event cursor-pointer" onClick={() => scrollToDate(dayjs(milestone.start))}>
+            <div className="group__event cursor-pointer single_ellipsis" onClick={() => scrollToDate(dayjs(milestone.start))}>
               {milestone?.title}
             </div>
           ))
