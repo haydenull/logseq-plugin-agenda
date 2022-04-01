@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.13.4...v1.14.0) (2022-04-01)
+
+
+### Features
+
+* ✨ Supports Gantt View ([885776b](https://github.com/haydenull/logseq-plugin-agenda/commit/885776b4a18db1dbc8762fbd19bf897d7b34b641))
+
 ## [1.13.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.13.3...v1.13.4) (2022-03-27)
 
 
