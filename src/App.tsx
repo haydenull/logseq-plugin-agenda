@@ -10,7 +10,7 @@ import { SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
 import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs, { Dayjs } from 'dayjs'
-import { genSchedule, getSchedules, modifyTimeInfo } from './util/schedule'
+import { genSchedule, genScheduleWithCalendarMap, getSchedules, modifyTimeInfo } from './util/schedule'
 import { ICustomCalendar, ISettingsForm } from './util/type'
 import { moveBlockToNewPage, updateBlock } from './util/logseq'
 import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
@@ -18,6 +18,11 @@ import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
 import { getSubCalendarSchedules } from './util/subscription'
 import Sidebar from './components/Sidebar'
+import Gantt from './packages/Gantt'
+import { IGroup, IEvent } from './packages/Gantt/type'
+
+// @ts-ignore
+import ganttDataMock from './mock/ganttData.json'
 
 const App: React.FC<{ env: string }> = ({ env }) => {
 
@@ -31,6 +36,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
   const [isFullScreen, setIsFullScreen] = useState(false)
   const [isFold, setIsFold] = useState(true)
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
+  // const [currentView, setCurrentView] = useState('gantt')
   const [showDate, setShowDate] = useState<string>()
   const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
   const [weeklyModal, setWeeklyModal] = useState<{
@@ -47,7 +53,61 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     visible: false,
     type: 'create',
   })
+  const [showCalendarList, setShowCalendarList] = useState(enabledCalendarList.map(calendar => calendar.id))
+  const [calendarSchedules, setCalendarSchedules] = useState<ISchedule[]>([])
   const calendarRef = useRef<Calendar>()
+
+  // 是否展示 tui calendar
+  const showCalendar = ['day', 'week', '2week', 'month'].includes(currentView)
+
+  const ganttSchedules = calendarSchedules.filter(schedule => !schedule.id?.startsWith('overdue-'))
+  const scheduleCalendarMap = genScheduleWithCalendarMap(ganttSchedules)
+  const ganttData: IGroup[] = showCalendarList.map(calendarId => {
+    const schedules = scheduleCalendarMap.get(calendarId)
+    if (!schedules) return null
+    const convertScheduleToGanttEvent = (schedule: ISchedule): IEvent => {
+      const { raw = {}, start, end, id = '', title = '' } = schedule
+      // @ts-ignore
+      const dayjsStart = dayjs(start)
+      // @ts-ignore
+      const dayjsEnd = dayjs(end)
+      return {
+        id,
+        title,
+        start: dayjsStart.format('YYYY-MM-DD'),
+        end: end ? dayjsEnd.format('YYYY-MM-DD') : dayjsStart.format('YYYY-MM-DD'),
+        raw: {
+          blockData: raw,
+          calendarSchedule: schedule,
+        },
+        detailPopup: (<div className="text-xs">
+          <div className="font-bold text-base my-2">{title}</div>
+          <div className="my-2">{`${dayjsStart.format('YYYY.MM.DD hh:mm a')} - ${dayjsEnd.format('hh:mm a')}`}</div>
+          <p className="whitespace-pre-line">{raw.content}</p>
+
+          <a onClick={async () => {
+            const rawData: any = raw
+            const { id: pageId, originalName } = rawData?.page || {}
+            let pageName = originalName
+            // // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
+            // if (!pageName) {
+            //   const page = await logseq.Editor.getPage(pageId)
+            //   pageName = page?.originalName
+            // }
+            const { uuid: blockUuid } = await logseq.Editor.getBlock(rawData.id) || { uuid: '' }
+            logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
+            logseq.hideMainUI()
+          }}>Navigate to block</a>
+        </div>)
+      }
+    }
+    return {
+      id: calendarId,
+      title: calendarId,
+      events: schedules.filter(schedule => schedule.category !== 'milestone').map(convertScheduleToGanttEvent),
+      milestones: schedules.filter(schedule => schedule.category === 'milestone').map(convertScheduleToGanttEvent),
+    }
+  }).filter(function<T>(item: T | null): item is T {return Boolean(item)})
 
   const changeShowDate = () => {
     if (calendarRef.current) {
@@ -67,6 +127,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
       calendar.clear()
 
       const schedules = await getSchedules()
+      setCalendarSchedules(schedules)
       calendar.createSchedules(schedules)
       const { subscriptionList } = await getInitalSettings()
       const subscriptionSchedules = await getSubCalendarSchedules(subscriptionList)
@@ -114,6 +175,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
 
   const onViewChange = (value: string) => {
     setCurrentView(value)
+    if (value === 'gantt') return
     if (value === '2week') {
       calendarRef.current?.changeView('month')
       calendarRef.current?.setOptions({
@@ -183,6 +245,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     }
   }
   const onShowCalendarChange = (showCalendarList: string[]) => {
+    setShowCalendarList(showCalendarList)
     const enabledCalendarIds = enabledCalendarList.concat(enabledSubscriptionList)?.map(calendar => calendar.id)
 
     enabledCalendarIds.forEach(calendarId => {
@@ -346,24 +409,36 @@ const App: React.FC<{ env: string }> = ({ env }) => {
               value={currentView}
               defaultValue={calendarOptions.defaultView}
               onChange={onViewChange}
-              options={CALENDAR_VIEWS}
               style={{ width: '100px' }}
-            />
+            >
+              <Select.OptGroup label="Calendar">
+                {CALENDAR_VIEWS.map(calendarView => (<Select.Option value={calendarView.value}>{calendarView.label}</Select.Option>))}
+              </Select.OptGroup>
+              <Select.OptGroup label="Other">
+                <Select.Option value="gantt">Gantt</Select.Option>
+              </Select.OptGroup>
+            </Select>
 
-            <Button className="ml-4" shape="round" onClick={onClickToday}>Today</Button>
+            {
+              (['day', 'week', '2week', 'month'].includes(currentView))
+              ? (<div className="flex items-center ml-4">
+                <Button shape="round" onClick={onClickToday}>Today</Button>
 
-            <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
-            <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
+                <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
+                <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
 
-            <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
-              <span
-                className={`ml-4 text-xl h-full items-center inline-block ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
-                style={{ height: '34px', lineHeight: '34px' }}
-                onClick={onClickShowDate}
-              >
-                { showDate }
-              </span>
-            </Tooltip>
+                <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
+                  <span
+                    className={`ml-4 text-xl h-full items-center inline-block ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
+                    style={{ height: '34px', lineHeight: '34px' }}
+                    onClick={onClickShowDate}
+                  >
+                    { showDate }
+                  </span>
+                </Tooltip>
+              </div>)
+             : null
+            }
           </div>
 
           <div>
@@ -375,7 +450,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         {/* ========= title bar end ========= */}
 
         {/* ========= content start ========= */}
-        <div className="flex flex-1">
+        <div className="flex flex-1 h-0">
           <div className={`transition-all overflow-hidden bg-gray-100 mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
             <Sidebar
               onShowCalendarChange={onShowCalendarChange}
@@ -383,8 +458,13 @@ const App: React.FC<{ env: string }> = ({ env }) => {
               subscriptionList={enabledSubscriptionList}
             />
           </div>
-          <div className="flex-1">
-            <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px' }}></div>
+          <div className="flex-1 w-0">
+            {
+              <>
+                {currentView === 'gantt' && <Gantt data={ganttData} weekStartDay={logseq.settings?.weekStartDay || 0} style={{ height: isFullScreen ? '100%' : '624px' }} />}
+                <div id="calendar" style={{ height: isFullScreen ? '100%' : '624px', display: showCalendar ? 'block' : 'none' }}></div>
+              </>
+            }
           </div>
         </div>
         {/* ========= content end ========= */}

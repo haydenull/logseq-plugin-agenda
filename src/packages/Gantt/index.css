@@ -1,0 +1,129 @@
+/* 左上角空白占位 */
+.calendar__placeholder {
+  width: 160px;
+  height: 50px;
+  /* z-index 必须介于 sidebar 与 calendar header 之间, 才能遮挡滚动的 sidebar,但不遮挡 calendar header 日期 */
+  z-index: 11;
+}
+
+/* 侧边栏 */
+.side-bar {
+  /* flex 子元素宽度和大于容器时, 使用 flex-basic 设置宽度, width 是无效的 */
+  /* https://www.jianshu.com/p/e6ad2c2cb7c3 */
+  flex: 0 0 160px;
+  /* width: 160px; */
+  margin-top: 50px;
+  max-width: 160px;
+}
+
+.group {
+  margin-bottom: 36px;  /* CALENDAR_GROUP_GAP */
+  border-right: 1px solid #efefef;
+  /* 内阴影边框 */
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  /* @apply shadow; */
+}
+.group__title {
+  height: 30px;
+  line-height: 40px;
+  text-align: bottom;
+  top: 50px;
+  font-size: 16px;
+}
+.group__content {
+  display: flex;
+  flex-direction: column;
+  padding-left: 1rem;
+}
+.group__event {
+  height: 40px;  /* CALENDAR_GROUP_EVENT_HEIGHT */
+  line-height: 40px;
+}
+
+
+.calendar {
+  /* fix flex1的子元素内容过多时，被撑开导致 flex-1 失效 */
+  /* https://juejin.cn/post/6974356682574921765 */
+  width: 0;
+}
+/* 日历头部 */
+.calendar__header {
+  height: 25px;
+  border-bottom: 1px solid #efefef;
+}
+.calendar__header::-webkit-scrollbar {
+  display: none;
+}
+.calendar__date {
+  width: 108px; /* CALENDAR_EVENT_WIDTH */
+  height: 25px;
+}
+.view-week .calendar__date {
+  width: 44px; /* CALENDAR_EVENT_WIDTH */
+}
+.view-month .calendar__date {
+  width: 20px; /* CALENDAR_EVENT_WIDTH */
+}
+.calendar__date.today {
+  color: #ff0000;
+}
+.calendar__date.weekend {
+  color: #aaa;
+}
+
+/* 日历内容区 */
+.calendar__content {
+
+}
+.calendar__content__back {
+  width: 108px;  /* CALENDAR_EVENT_WIDTH */
+  height: 100%;
+  background-color: #f8f8f8;
+  border-right: 1px solid #efefef;
+}
+.view-week .calendar__content__back {
+  width: 44px;  /* CALENDAR_EVENT_WIDTH */
+}
+.view-month .calendar__content__back {
+  width: 20px;  /* CALENDAR_EVENT_WIDTH */
+}
+.calendar__content__back.weekend {
+  background-color: #f4f3f3;
+}
+.calendar__content__back.today {
+  background-color: #f6ebfa;
+}
+.calendar__group {
+  /* border-bottom: 1px solid #e9dceb;
+  border-top: 1px solid #e9dceb; */
+  margin-bottom: 36px;   /* CALENDAR_GROUP_GAP */
+  box-sizing: content-box;
+}
+.calendar__event {
+  line-height: 36px;  /* CALENDAR_EVENT_HEIGHT */
+  margin: 2px 4px;
+  padding: 0 4px;
+}
+.calendar__milestone__line {
+  border-left: 2px solid #047857;
+}
+.calendar__milestone__text {
+  height: 40px;
+  line-height: 40px;
+  padding-left: 16px;
+}
+.calendar__milestone__text::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background-color: #047857;
+  transform: rotateZ(45deg);
+}
+.single_ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

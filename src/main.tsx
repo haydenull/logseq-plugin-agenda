@@ -3,13 +3,17 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import dayjs from 'dayjs'
 import weekday from 'dayjs/plugin/weekday'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import localeData from 'dayjs/plugin/localeData'
+import difference from 'lodash/difference'
 import App from './App'
 import './index.css'
 import { initializeSettings } from './util/baseInfo'
 
 dayjs.extend(weekday)
+dayjs.extend(isSameOrBefore)
 dayjs.extend(localeData)
+dayjs.extend(difference)
 
 const isDevelopment = import.meta.env.DEV
 
