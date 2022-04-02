@@ -19,9 +19,11 @@
 - 支持订阅日历（基础事件）
 - 支持深色模式
 - 支持新建 编辑日程
+- 支持甘特图视图（simple 与 advanced 模式）
 
 ![MonthView](../../screenshots/monthView.png)
 ![WeeklyView](../../screenshots/weeklyView.png)
+![GanttView](../../screenshots/gantt-advanced.png)
 ![settings](../../screenshots/settings.png)
 ![query](../../screenshots/query.png)
 ![agenda](../../screenshots/modifyAgenda.png)

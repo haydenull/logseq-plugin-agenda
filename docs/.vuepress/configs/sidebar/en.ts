@@ -31,6 +31,12 @@ export const en: SidebarConfig = {
       ],
     },
     {
+      text: 'View',
+      children: [
+        '/views/gantt.md',
+      ],
+    },
+    {
       text: 'Other',
       children: [
         '/other/query.md',

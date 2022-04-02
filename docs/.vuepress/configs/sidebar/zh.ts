@@ -31,6 +31,12 @@ export const zh: SidebarConfig = {
       ],
     },
     {
+      text: '视图',
+      children: [
+        '/zh/views/gantt.md',
+      ],
+    },
+    {
       text: '其他',
       children: [
         '/zh/other/query.md',

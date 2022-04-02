@@ -19,9 +19,11 @@ The original journalDateFormatter configuration required the user to read the da
 - Supports subscription calendar(basic event)
 - Supports dark mode
 - Supports create and edit schedule
+- Supports Gantt View (Both simple and advanced mode)
 
 ![MonthView](../screenshots/monthView.png)
 ![WeeklyView](../screenshots/weeklyView.png)
+![GanttView](../screenshots/gantt-advanced.png)
 ![settings](../screenshots/settings.png)
 ![query](../screenshots/query.png)
 ![agenda](../screenshots/modifyAgenda.png)
