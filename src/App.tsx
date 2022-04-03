@@ -126,8 +126,14 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     if (calendar) {
       calendar.clear()
 
+      const debugStart = Date.now()
+      console.log('=== App debug start ===', debugStart)
       const schedules = await getSchedules()
+      console.log('=== App debug end ===', Date.now() - debugStart)
+      const debugCalendarStart = Date.now()
+      console.log('=== App debug calendar start ===', debugStart)
       setCalendarSchedules(schedules)
+      console.log('=== App debug calendar end ===', Date.now() - debugCalendarStart)
       calendar.createSchedules(schedules)
       const { subscriptionList } = await getInitalSettings()
       const subscriptionSchedules = await getSubCalendarSchedules(subscriptionList)

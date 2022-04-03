@@ -131,6 +131,7 @@ message: ${res.reason.message}`
   // Daily Logs
   if (logKey?.enabled) {
     const logs = await logseq.DB.q(`[[${logKey.id}]]`)
+    console.log('[faiz:] === search logs', logs)
     const _logs = logs
                   ?.filter(block => {
                     if (block.headingLevel && block.format === 'markdown') {
@@ -233,12 +234,18 @@ export async function genSchedule(params: {
   isReadOnly?: boolean
   defaultDuration?: ISettingsForm['defaultDuration']
 }) {
+
   const { id, blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
+  const debugStartTime = Date.now()
+  console.log('[faiz:debug] === debug start', debugStartTime)
   if (!blockData?.id) {
+    // 单个耗时在5-7秒，整体耗时8秒
     const block = await logseq.Editor.getBlock(blockData.uuid?.$uuid$)
     if (block) blockData.id = block.id
   }
+  console.log('[faiz:debug] === debug end', Date.now() - debugStartTime)
 
+  // 耗时1s左右
   const page = await logseq.Editor.getPage(blockData?.page?.id)
   blockData.page = page
 
@@ -247,7 +254,8 @@ export async function genSchedule(params: {
                   ?.replace(new RegExp(`^${blockData.marker} `), '')
                   ?.replace(TIME_REG, '')
                   ?.trim?.()
-  title = await fillBlockReference(title)
+  // 单个耗时在5-7秒，整体耗时11秒
+  // title = await fillBlockReference(title)
   title = title?.split('\n')[0]
   const isDone = blockData.marker === 'DONE'
 
@@ -270,7 +278,9 @@ export async function genSchedule(params: {
     id: id || String(blockData.id),
     calendarId: calendarConfig.id,
     title: isDone ? `✅${title}` : title,
-    body: await fillBlockReference(blockData.content),
+    // 耗时11s左右
+    // body: await fillBlockReference(blockData.content),
+    body: blockData.content,
     category,
     dueDateClass: '',
     start,
