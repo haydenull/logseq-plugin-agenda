@@ -1,12 +1,17 @@
 import { ISchedule } from 'tui-calendar'
-import { flattenDeep, get } from 'lodash'
+import { flattenDeep, get, has } from 'lodash'
 import { endOfDay, formatISO, isAfter, parse, parseISO, startOfDay } from 'date-fns'
 import dayjs from 'dayjs'
 import { getInitalSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
 import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, TIME_REG } from './constants'
+import { getBlockData, getPageData } from './logseq'
+import { PageEntity } from '@logseq/libs/dist/LSPlugin'
 
 export const getSchedules = async () => {
+  const agendaCalendars = await getAgendaCalendars()
+  const agendaCalendarIds = agendaCalendars.map(calendar => calendar.id)
+  
   // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
   let calendarSchedules:ISchedule[] = []
 
@@ -90,21 +95,19 @@ export const getSchedules = async () => {
         calendarConfig,
         defaultDuration,
         isAllDay: !isMilestone && !hasTime && !_isOverdue,
+        isReadOnly: !supportEdit(block, calendarConfig.id, agendaCalendarIds),
       })
       // show overdue tasks in today
       return _isOverdue
         ? [
           schedule,
-          await genSchedule({
+          {
+            ...schedule,
             id: `overdue-${schedule.id}`,
             start: dayjs().startOf('day').toISOString(),
             end: dayjs().endOf('day').toISOString(),
-            blockData: block,
-            category: _category,
-            calendarConfig,
-            defaultDuration,
             isAllDay: false,
-          }),
+          },
         ]
         : schedule
     })
@@ -215,7 +218,7 @@ export const fillBlockReference = async (blockContent: string) => {
   if (BLOCK_REFERENCE_REG.test(blockContent)) {
     const uuid = BLOCK_REFERENCE_REG.exec(blockContent)?.[0]?.replace('((', '')?.replace('))', '')
     if (uuid) {
-      const referenceData = await logseq.Editor.getBlock(uuid)
+      const referenceData = await getBlockData({ uuid }, true)
       return blockContent.replace(BLOCK_REFERENCE_REG, referenceData?.content || '')
     }
   }
@@ -237,31 +240,42 @@ export async function genSchedule(params: {
 
   const { id, blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
   const debugStartTime = Date.now()
-  console.log('[faiz:debug] === debug start', debugStartTime)
   if (!blockData?.id) {
     // 单个耗时在5-7秒，整体耗时8秒
-    const block = await logseq.Editor.getBlock(blockData.uuid?.$uuid$)
+    const block = await getBlockData({ uuid: blockData.uuid?.$uuid$ }, true)
     if (block) blockData.id = block.id
   }
-  console.log('[faiz:debug] === debug end', Date.now() - debugStartTime)
 
-  // 耗时1s左右
-  const page = await logseq.Editor.getPage(blockData?.page?.id)
+  let page = blockData?.page
+  if (has(page, 'id') && has(page, 'name') && has(page, 'original-name')) {
+    page = {
+      id: page.id,
+      journalDay: page['journal-day'],
+      journal: page['journal?'],
+      name: page['name'],
+      originalName: page['original-name'],
+    }
+  }
+  // else {
+  //   // 耗时1s左右
+  //   page = await getPageData({ id: blockData?.page?.id })
+  // }
   blockData.page = page
 
-  let title = blockData.content
+  // 单个耗时在5-7秒，整体耗时11秒
+  blockData.fullContent = await fillBlockReference(blockData.content)
+  blockData.fullContent = blockData.content
+
+  const title = blockData.fullContent
                   .split('\n')[0]
                   ?.replace(new RegExp(`^${blockData.marker} `), '')
                   ?.replace(TIME_REG, '')
                   ?.trim?.()
-  // 单个耗时在5-7秒，整体耗时11秒
-  // title = await fillBlockReference(title)
-  title = title?.split('\n')[0]
   const isDone = blockData.marker === 'DONE'
 
   function supportEdit() {
     if (blockData.page?.properties?.agenda === true) return true
-    if (blockData?.page?.journalDay && !blockData?.scheduled && !blockData?.deadline) return true
+    if (blockData?.page?.['journal-day'] && !blockData?.scheduled && !blockData?.deadline) return true
     return false
   }
   const isSupportEdit = isReadOnly === undefined ? supportEdit() : !isReadOnly
@@ -278,9 +292,7 @@ export async function genSchedule(params: {
     id: id || String(blockData.id),
     calendarId: calendarConfig.id,
     title: isDone ? `✅${title}` : title,
-    // 耗时11s左右
-    // body: await fillBlockReference(blockData.content),
-    body: blockData.content,
+    body: blockData.fullContent,
     category,
     dueDateClass: '',
     start,
@@ -307,4 +319,22 @@ export const genScheduleWithCalendarMap = (schedules: ISchedule[]) => {
     res.get(key)?.push(schedule)
   })
   return res
+}
+
+export const getAgendaCalendars = async () => {
+  const { calendarList } = logseq.settings as unknown as ISettingsForm
+  const calendarPagePromises = calendarList.map(calendar => getPageData({ originalName: calendar.id }))
+  const res = await Promise.all(calendarPagePromises)
+  return res.map((page, index) => {
+            if (!page) return null
+            if ((page as any)?.properties?.agenda !== true) return null
+            return calendarList[index]
+          })
+          .filter(function<T>(item: T | null): item is T { return Boolean(item) })
+}
+
+export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
+  if (agendaCalendarIds.includes(calendarId)) return true
+  if (blockData?.page?.['journal-day'] && !blockData?.scheduled && !blockData?.deadline) return true
+  return false
 }

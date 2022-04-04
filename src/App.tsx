@@ -12,7 +12,7 @@ import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs, { Dayjs } from 'dayjs'
 import { genSchedule, genScheduleWithCalendarMap, getSchedules, modifyTimeInfo } from './util/schedule'
 import { ICustomCalendar, ISettingsForm } from './util/type'
-import { moveBlockToNewPage, updateBlock } from './util/logseq'
+import { getPageData, moveBlockToNewPage, updateBlock } from './util/logseq'
 import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
 import 'tui-calendar/dist/tui-calendar.css'
 import './App.css'
@@ -89,11 +89,11 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             const rawData: any = raw
             const { id: pageId, originalName } = rawData?.page || {}
             let pageName = originalName
-            // // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
-            // if (!pageName) {
-            //   const page = await logseq.Editor.getPage(pageId)
-            //   pageName = page?.originalName
-            // }
+            // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
+            if (!pageName) {
+              const page = await getPageData({ id: pageId })
+              pageName = page?.originalName
+            }
             const { uuid: blockUuid } = await logseq.Editor.getBlock(rawData.id) || { uuid: '' }
             logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
             logseq.hideMainUI()
@@ -126,14 +126,8 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     if (calendar) {
       calendar.clear()
 
-      const debugStart = Date.now()
-      console.log('=== App debug start ===', debugStart)
       const schedules = await getSchedules()
-      console.log('=== App debug end ===', Date.now() - debugStart)
-      const debugCalendarStart = Date.now()
-      console.log('=== App debug calendar start ===', debugStart)
       setCalendarSchedules(schedules)
-      console.log('=== App debug calendar end ===', Date.now() - debugCalendarStart)
       calendar.createSchedules(schedules)
       const { subscriptionList } = await getInitalSettings()
       const subscriptionSchedules = await getSubCalendarSchedules(subscriptionList)
@@ -349,7 +343,12 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             // update journal schedule
             const marker = schedule?.raw?.marker
             const _content = schedule?.isAllDay ? false : `${marker} ` + modifyTimeInfo(schedule?.raw?.content?.replace(new RegExp(`^${marker} `), ''), dayjs(schedule?.start).format('HH:mm'), dayjs(schedule?.end).format('HH:mm'))
-            if (changes.start && !dayjs(changes.start).isSame(dayjs(String(schedule?.raw?.page?.journalDay), 'YYYYMMDD'), 'day')) {
+            let journalDay = schedule?.raw?.page?.journalDay
+            if (!journalDay) {
+              const page = await getPageData(schedule?.raw?.page?.id)
+              journalDay = page?.journalDay
+            }
+            if (changes.start && !dayjs(changes.start).isSame(dayjs(String(journalDay), 'YYYYMMDD'), 'day')) {
               // if the start day is different from the original start day, then execute move operation
               console.log('[faiz:] === move journal schedule')
               const { preferredDateFormat } = await logseq.App.getUserConfigs()
