@@ -4,8 +4,8 @@ import dayjs, { Dayjs } from 'dayjs'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import Calendar from 'tui-calendar'
 import type { ICustomCalendar, ISettingsForm } from '../util/type'
-import { genSchedule, modifyTimeInfo, removeTimeInfo } from '../util/schedule'
-import { moveBlockToNewPage, updateBlock } from '../util/logseq'
+import { genSchedule, getAgendaCalendars, modifyTimeInfo, removeTimeInfo } from '../util/schedule'
+import { getPageData, moveBlockToNewPage, updateBlock } from '../util/logseq'
 import { format } from 'date-fns'
 
 export type IScheduleForm = {
@@ -172,15 +172,7 @@ const ModifySchedule: React.FC<{
 
   useEffect(() => {
     const { calendarList } = logseq.settings as unknown as ISettingsForm
-    const calendarPagePromises = calendarList.map(calendar => logseq.Editor.getPage(calendar.id))
-    Promise.all(calendarPagePromises).then((pages: (PageEntity | null)[]) => {
-      const agendaPages = pages
-                            .map((page, index) => {
-                              if (!page) return page
-                              if ((page as any)?.properties?.agenda !== true) return null
-                              return calendarList[index]
-                            })
-                            .filter(function<T>(item: T | null): item is T { return Boolean(item) })
+    getAgendaCalendars().then(agendaPages => {
       // if (agendaPages?.length <= 0) return logseq.App.showMsg('No agenda page found\nYou can create an agenda calendar first', 'warning')
       setAgendaCalendars([calendarList[0]].concat(agendaPages))
     })

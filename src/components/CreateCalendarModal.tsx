@@ -1,4 +1,5 @@
 import { Form, Input, Modal, Radio } from 'antd'
+import { getPageData } from '../util/logseq';
 
 const CreateCalendarModal: React.FC<{
   visible: boolean
@@ -8,7 +9,7 @@ const CreateCalendarModal: React.FC<{
   const [form] = Form.useForm()
 
   const createAgendaPage = async (name) => {
-    const page = await logseq.Editor.getPage(name)
+    const page = await getPageData({ originalName: name })
     console.log('[faiz:] === createAgendaPage getPage', page)
     if (page) {
       logseq.App.showMsg('The page with the same name already exists\nPlease add properties to the page manually\nagenda:: true', 'error')
