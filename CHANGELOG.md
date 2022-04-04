@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.14.0...v1.15.0) (2022-04-04)
+
+
+### Features
+
+* optimize load speed ([70e18e0](https://github.com/haydenull/logseq-plugin-agenda/commit/70e18e0432fff89502ba7b4076fb341b6edf118f))
+
 # [1.14.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.13.4...v1.14.0) (2022-04-01)
 
 
