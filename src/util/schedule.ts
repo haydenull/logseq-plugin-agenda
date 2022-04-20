@@ -77,7 +77,7 @@ export const getSchedules = async () => {
         const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleEnd.toUpperCase()}:`))?.trim()
         const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
         if (time) {
-          _end = formatISO(parse(_end, 'yyyyMMdd HH:mm', new Date()))
+          _end = formatISO(parse(`${end} ${time}`, 'yyyyMMdd HH:mm', new Date()))
           hasTime = true
         }
       }
