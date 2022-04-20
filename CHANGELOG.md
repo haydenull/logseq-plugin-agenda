@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.15.0...v1.15.1) (2022-04-20)
+
+
+### Bug Fixes
+
+* 🐛 Parse error when scheduled or deadline is the end time ([a0742de](https://github.com/haydenull/logseq-plugin-agenda/commit/a0742deb48a5a7b25c5c3bd548f4d7b63c36bbb9))
+
 # [1.15.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.14.0...v1.15.0) (2022-04-04)
 
 
