@@ -353,7 +353,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
               console.log('[faiz:] === move journal schedule')
               const { preferredDateFormat } = await logseq.App.getUserConfigs()
               const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
-              const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName, _content)
+              const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName)
               console.log('[faiz:] === newBlock', newBlock, schedule, schedule?.id)
               if (newBlock) {
                 calendarRef.current?.deleteSchedule(String(schedule.id), schedule.calendarId)
@@ -362,10 +362,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
                   blockData: newBlock,
                   calendarConfig: calendarList?.find(calendar => calendar.id === 'journal'),
                 })])
-                // calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, { raw: {
-                //   ...newBlock,
-                //   page: await logseq.Editor.getPage(newBlock.page?.id),
-                // } })
               }
             } else {
               await updateBlock(schedule.raw?.id, _content)

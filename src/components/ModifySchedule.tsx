@@ -125,7 +125,14 @@ const ModifySchedule: React.FC<{
         })])
       } else if (newCalendarId !== oldCalendarId && initialValues?.id) {
         // move schedule: move block to new page
-        const newBlock = await moveBlockToNewPage(Number(initialValues.id), newCalendarId, newTitle, newBlockPropeties)
+        const newBlock = await moveBlockToNewPage(Number(initialValues.id), newCalendarId)
+        // journal 移动到 agenda 日历后，需要设置时间
+        await updateBlock(newBlock.uuid, newTitle, newBlockPropeties)
+        // agenda 日历移动到 journal 需要去除 start end 属性
+        if (Object.keys(newBlockPropeties).length === 0) {
+          await logseq.Editor.removeBlockProperty(newBlock.uuid, 'start')
+          await logseq.Editor.removeBlockProperty(newBlock.uuid, 'end')
+        }
         if (!newBlock || !initialValues.calendarId) return
         const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
         // updateSchedule can't update id, so we need to create new schedule after delete old one
