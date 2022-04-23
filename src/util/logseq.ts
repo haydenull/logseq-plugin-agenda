@@ -12,19 +12,13 @@ export const updateBlock = async (blockId: number | string, content: string | fa
   return Promise.allSettled(upsertBlockPropertyPromises)
 }
 
-export const moveBlockToNewPage = async (blockId: number, pageName: string, content?: string | false, properties?: Record<string, any>) => {
+export const moveBlockToNewPage = async (blockId: number, pageName: string) => {
   const block = await getBlockData({ id: blockId })
   if (!block) return logseq.App.showMsg('moveBlockToNewPage: Block not found', 'error')
   const page = await logseq.Editor.createPage(pageName)
   if (!page) return logseq.App.showMsg('Create page failed', 'error')
-  await logseq.Editor.removeBlock(block.uuid)
-  const newBlock = await logseq.Editor.insertBlock(pageName, content || block?.content, {
-    isPageBlock: true,
-    sibling: true,
-    properties: properties || block?.properties,
-  })
-  if (newBlock) return await getBlockData({ uuid: newBlock.uuid })
-  return logseq.App.showMsg('Failed to move block to new page')
+  await logseq.Editor.moveBlock(block.uuid, page.uuid)
+  return await getBlockData({ uuid: block.uuid })
 }
 
 // https://logseq.github.io/plugins/interfaces/IEditorProxy.html#getBlock
