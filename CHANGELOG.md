@@ -1,3 +1,10 @@
+## [1.15.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.15.1...v1.15.2) (2022-04-23)
+
+
+### Bug Fixes
+
+* lose child block after move block ([96180ed](https://github.com/haydenull/logseq-plugin-agenda/commit/96180ed92bce6c5789d06a255a8e61152a07380b))
+
 ## [1.15.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.15.0...v1.15.1) (2022-04-20)
 
 
