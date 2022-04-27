@@ -1,8 +1,12 @@
+@import './var/light.less';
+@import './var/dark.less';
+
 @tailwind components;
 @tailwind utilities;
 
+
 html, body {
-  background-color: transparent;
+  background-color: var(--ls-primary-background-color);
   margin: 0;
 }
 #root {

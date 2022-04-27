@@ -1,0 +1,29 @@
+.container {
+  width: 90px;
+  background-color: var(--ls-secondary-background-color);
+  @apply h-screen flex flex-col items-center;
+
+  .logo {
+    width: 54px;
+    height: 54px;
+    background-color: var(--ls-tertiary-background-color);
+    @apply rounded-full flex items-center justify-center mt-7 mb-7 shadow-md;
+    // > img {
+      // width: 60px;
+      // height: 60px;
+    // }
+  }
+
+  .close {
+    color: var(--ls-tertiary-background-color);
+    width: 30px;
+    height: 30px;
+    transition: all 0.2s ease-in-out;
+    @apply absolute bottom-6 text-base opacity-90 flex items-center justify-center cursor-pointer rounded-md;
+    &:hover {
+      opacity: 1;
+      // TODO: 优化颜色
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+}

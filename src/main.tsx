@@ -6,10 +6,9 @@ import weekday from 'dayjs/plugin/weekday'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
-import App from './App'
-import './index.css'
 import { initializeSettings } from './util/baseInfo'
-import NewApp from './NewApp'
+import App from './App'
+import '@/style/index.less'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -58,7 +57,7 @@ function renderApp(env: string) {
   ReactDOM.render(
     <React.StrictMode>
       {/* <App env={env} /> */}
-      <NewApp />
+      <App />
     </React.StrictMode>,
     document.getElementById('root')
   )

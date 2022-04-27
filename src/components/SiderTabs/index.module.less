@@ -1,0 +1,44 @@
+.container {
+  @apply w-full relative;
+  .buttonWrapper {
+    height: 70px;
+    @apply w-full flex justify-center items-center;
+    .button {
+      width: 46px;
+      height: 46px;
+      background-color: var(--ls-quaternary-background-color);
+      color: var(--ls-tertiary-background-color);
+      @apply rounded-xl shadow flex justify-center items-center text-xl cursor-pointer;
+      &.active {
+        background-color: var(--ls-tertiary-background-color);
+        color: var(--ls-quaternary-background-color);
+      }
+    }
+  }
+  .indicatorBack {
+    content: '';
+    top: 0;
+    right: 0;
+    width: 70px;
+    height: 70px;
+    background-color: var(--ls-primary-background-color);
+    transform: translateX(60px);
+    transition: transform 0.3s ease-in-out;
+    @apply absolute rounded-full;
+  }
+  .indicatorDot {
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 70px;
+    transition: transform 0.2s ease-in;
+    @apply absolute flex items-center;
+    &::before {
+      content: '';
+      background-color: var(--ls-tertiary-background-color);
+      width: 6px;
+      height: 6px;
+      @apply rounded-full shadow-xl;
+    }
+  }
+}
