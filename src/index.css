@@ -3,6 +3,7 @@
 
 html, body {
   background-color: transparent;
+  margin: 0;
 }
 #root {
   @apply w-screen h-screen;

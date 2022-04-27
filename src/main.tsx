@@ -9,6 +9,7 @@ import difference from 'lodash/difference'
 import App from './App'
 import './index.css'
 import { initializeSettings } from './util/baseInfo'
+import NewApp from './NewApp'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -56,7 +57,8 @@ if (isDevelopment) {
 function renderApp(env: string) {
   ReactDOM.render(
     <React.StrictMode>
-      <App env={env} />
+      {/* <App env={env} /> */}
+      <NewApp />
     </React.StrictMode>,
     document.getElementById('root')
   )
