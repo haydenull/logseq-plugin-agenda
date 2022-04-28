@@ -1,9 +1,154 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import Calendar, { ISchedule } from 'tui-calendar'
+import { format, isSameDay, parse, parseISO } from 'date-fns'
+import { getDefaultCalendarOptions, getInitalSettings } from '@/util/baseInfo'
+import { CALENDAR_VIEWS, SHOW_DATE_FORMAT } from '@/util/constants'
+import { genSchedule, getSchedules, modifyTimeInfo } from '@/util/schedule'
+import { getSubCalendarSchedules } from '@/util/subscription'
+import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
+import dayjs from 'dayjs'
+import { getPageData, moveBlockToNewPage, updateBlock } from '@/util/logseq'
+import { Button, Modal, Select, Tooltip } from 'antd'
+import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
+import Weekly from '@/components/Weekly'
+
+import s from './index.module.less'
+import classNames from 'classnames'
 
 const index: React.FC<{}> = () => {
 
+  const [showDate, setShowDate] = useState<string>()
+  const [calendarSchedules, setCalendarSchedules] = useState<ISchedule[]>([])
+  const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
+  const [modifyScheduleModal, setModifyScheduleModal] = useState<{
+    visible: boolean
+    type?: 'create' | 'update'
+    values?: IScheduleValue
+  }>({
+    visible: false,
+    type: 'create',
+  })
+  const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
+  const [weeklyModal, setWeeklyModal] = useState<{
+    visible: boolean
+    start?: string
+    end?: string
+  }>({ visible: false })
+
+  const calendarOptions = getDefaultCalendarOptions()
+  const { calendarList, subscriptionList, logKey } = getInitalSettings()
+
+  const calendarRef = useRef<Calendar>()
+
+  const changeShowDate = () => {
+    if (calendarRef.current) {
+      const dateRangeStart = calendarRef.current.getDateRangeStart().getTime()
+      const dateRangeEnd = calendarRef.current.getDateRangeEnd().getTime()
+      if (isSameDay(dateRangeStart, dateRangeEnd)) {
+        setShowDate(format(dateRangeStart, SHOW_DATE_FORMAT))
+      } else {
+        setShowDate(format(dateRangeStart, SHOW_DATE_FORMAT) + ' ~ ' + format(dateRangeEnd, SHOW_DATE_FORMAT))
+      }
+    }
+  }
+  const setSchedules = async () => {
+    const calendar = calendarRef.current
+    if (calendar) {
+      calendar.clear()
+
+      const schedules = await getSchedules()
+      setCalendarSchedules(schedules)
+      calendar.createSchedules(schedules)
+      const { subscriptionList } = await getInitalSettings()
+      const subscriptionSchedules = await getSubCalendarSchedules(subscriptionList)
+      calendar.createSchedules(subscriptionSchedules)
+      // calendar.createSchedules([{
+      //   id: '1',
+      //   calendarId: 'journal',
+      //   title: 'Daily Log test',
+      //   category: 'time',
+      //   dueDateClass: '',
+      //   start: '2022-03-14',
+      //   end: '2022-03-15T00:00:00',
+      //   isAllDay: true,
+      //   body: 'Daily Log test detail\n123',
+      //   bgColor: '#7ed3fd',
+      //   color: '#222',
+      //   borderColor: '#98dbfd',
+      // }, {
+      //   id: '1',
+      //   calendarId: 'journal',
+      //   title: 'Daily Log foo',
+      //   category: 'time',
+      //   dueDateClass: '',
+      //   start: formatISO(new Date()),
+      //   // isAllDay: true,
+      //   body: 'Daily Log test detail\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123',
+      //   bgColor: '#7ed3fd',
+      //   color: '#333',
+      //   borderColor: '#98dbfd',
+      //   // customStyle: 'opacity: 0.6;',
+      // }])
+
+      // calendar.render()
+
+    }
+  }
+
+  const onViewChange = (value: string) => {
+    setCurrentView(value)
+    if (value === 'gantt') return
+    if (value === '2week') {
+      calendarRef.current?.changeView('month')
+      calendarRef.current?.setOptions({
+        month: {
+          visibleWeeksCount: 2,
+        },
+      })
+    } else if(value === 'month') {
+      calendarRef.current?.changeView('month')
+      calendarRef.current?.setOptions({
+        month: {
+          visibleWeeksCount: undefined,
+        },
+      })
+    } else {
+      calendarRef.current?.changeView(value)
+    }
+    changeShowDate()
+    setShowExportWeekly(logseq.settings?.logKey?.enabled && value === 'week')
+  }
+  const onClickToday = () => {
+    calendarRef.current?.today()
+    changeShowDate()
+  }
+  const onClickPrev = () => {
+    calendarRef.current?.prev()
+    changeShowDate()
+  }
+  const onClickNext = () => {
+    calendarRef.current?.next()
+    changeShowDate()
+  }
+  const onClickShowDate = async () => {
+    if (currentView === 'day' && showDate) {
+      const { preferredDateFormat } = await logseq.App.getUserConfigs()
+      const date = format(parse(showDate, SHOW_DATE_FORMAT, new Date()), preferredDateFormat)
+      logseq.App.pushState('page', { name: date })
+      logseq.hideMainUI()
+    }
+  }
+  const onClickExportWeekly = async () => {
+    const [start, end] = showDate?.split(' ~ ') || []
+    setWeeklyModal({
+      visible: true,
+      start,
+      end,
+    })
+  }
+
   useEffect(() => {
-    managePluginTheme()
+    // managePluginTheme()
     // Delay execution to avoid the TUI not being able to acquire the height correctly
     // The bug manifests as the weekly view cannot auto scroll to the current time
     setTimeout(() => {
@@ -134,8 +279,110 @@ const index: React.FC<{}> = () => {
   }, [])
 
   return (
-    <div>
-      <div id="calendar" style={{ height: '100%' }}></div>
+    <div className={classNames(s.container, 'flex')}>
+      <div className={classNames(s.content, 'flex flex-1 flex-col overflow-hidden p-8')} style={{ maxWidth: '1200px' }}>
+
+        <h1>Calendar View</h1>
+        <div className={classNames(s.calendarWrapper, 'flex flex-col flex-1 p-6 rounded-2xl')}>
+          {/* ========= title bar start ========= */}
+          <div className={`mb-2 flex items-center justify-between`}>
+            <div className="flex items-center">
+              <Select
+                value={currentView}
+                defaultValue={calendarOptions.defaultView}
+                onChange={onViewChange}
+                style={{ width: '100px' }}
+              >
+                <Select.OptGroup label="Calendar">
+                  {CALENDAR_VIEWS.map(calendarView => (<Select.Option value={calendarView.value} key={calendarView.value}>{calendarView.label}</Select.Option>))}
+                </Select.OptGroup>
+                <Select.OptGroup label="Other">
+                  <Select.Option value="gantt">Gantt</Select.Option>
+                </Select.OptGroup>
+              </Select>
+
+              {
+                (['day', 'week', '2week', 'month'].includes(currentView))
+                ? (<div className="flex items-center ml-4">
+                  <Button shape="round" onClick={onClickToday}>Today</Button>
+
+                  <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
+                  <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
+
+                  <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
+                    <span
+                      className={`ml-4 text-xl h-full items-center inline-block ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
+                      style={{ height: '34px', lineHeight: '34px' }}
+                      onClick={onClickShowDate}
+                    >
+                      { showDate }
+                    </span>
+                  </Tooltip>
+                </div>)
+              : null
+              }
+            </div>
+
+            <div>
+              { showExportWeekly && <Button className="mr-4" onClick={onClickExportWeekly}>Export Weekly</Button> }
+              {/* <Button className="mr-4" onClick={() => setSettingModal(true)} shape="circle" icon={<SettingOutlined />}></Button> */}
+              {/* <Button onClick={onClickFullScreen} shape="circle" icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button> */}
+            </div>
+          </div>
+          {/* ========= title bar end ========= */}
+
+          {/* ========= content start ========= */}
+          <div className="flex flex-1 h-0">
+            {/* <div className={`transition-all overflow-hidden bg-gray-100 mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
+              <Sidebar
+                onShowCalendarChange={onShowCalendarChange}
+                calendarList={enabledCalendarList}
+                subscriptionList={enabledSubscriptionList}
+              />
+            </div> */}
+            <div className="flex-1 w-0">
+              {
+                <>
+                  {/* {currentView === 'gantt' && <Gantt data={ganttData} weekStartDay={logseq.settings?.weekStartDay || 0} style={{ height: isFullScreen ? '100%' : '624px' }} />} */}
+                  <div id="calendar" style={{ height: '100%' }}></div>
+                </>
+              }
+            </div>
+          </div>
+          {/* ========= content end ========= */}
+
+          <Weekly
+            visible={weeklyModal.visible}
+            start={weeklyModal.start}
+            end={weeklyModal.end}
+            onCancel={() => setWeeklyModal({ visible: false })}
+          />
+          {/* <Settings
+            visible={settingModal}
+            onCancel={() => setSettingModal(false)}
+            onOk={onSettingChange}
+          /> */}
+          {
+            modifyScheduleModal.visible
+            ? <ModifySchedule
+              visible={modifyScheduleModal.visible}
+              type={modifyScheduleModal.type}
+              initialValues={modifyScheduleModal.values}
+              calendar={calendarRef.current}
+              onCancel={() => {
+                setModifyScheduleModal({ visible: false })
+                calendarRef.current?.render()
+              }}
+              onSave={() => {
+                setModifyScheduleModal({ visible: false })
+              }}
+            />
+            : null
+          }
+        </div>
+      </div>
+
+      <div className={classNames(s.sideBar)}></div>
     </div>
   )
 }

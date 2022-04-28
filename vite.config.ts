@@ -13,8 +13,10 @@ export default defineConfig({
       style: "css",
     }),
   ],
-  alias: {
-    '@': resolve(__dirname, '/src'),
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
   },
   base: './',
   build: {

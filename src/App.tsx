@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import Sider from '@/components/Sider'
 import Dashboard from '@/pages/Dashboard'
 import { MENUS } from '@/constants/elements'
@@ -16,8 +16,8 @@ const App: React.FC<{}> = () => {
   }, [])
 
   return (
-    <main className="w-screen h-screen flex">
-      <BrowserRouter>
+    <main className="w-screen h-screen">
+      <MemoryRouter>
         <Sider />
         <Routes>
           <Route path="/" element={<Dashboard />} />
@@ -27,7 +27,7 @@ const App: React.FC<{}> = () => {
             ))
           }
         </Routes>
-      </BrowserRouter>
+      </MemoryRouter>
     </main>
   )
 }

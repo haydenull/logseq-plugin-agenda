@@ -8,7 +8,7 @@ import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
 import { initializeSettings } from './util/baseInfo'
 import App from './App'
-import '@/style/index.less'
+import './style/index.less'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)

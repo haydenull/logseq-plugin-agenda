@@ -3448,6 +3448,11 @@ jest-matcher-utils@^27.0.0:
     jest-get-type "^27.5.1"
     pretty-format "^27.5.1"
 
+jotai@^1.6.4:
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/jotai/-/jotai-1.6.4.tgz#4d9904362c53c4293d32e21fb358d3de34b82912"
+  integrity sha512-XC0ExLhdE6FEBdIjKTe6kMlHaAUV/QiwN7vZond76gNr/WdcdonJOEW79+5t8u38sR41bJXi26B1dRi7cCRz9A==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
