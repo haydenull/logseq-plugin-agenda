@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaPowerOff } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
@@ -14,6 +14,10 @@ const index: React.FC<{}> = () => {
     const { path } = MENUS.find(item => item.value === value) || { path: '/' }
     navigate(path)
   }
+
+  useEffect(() => {
+    navigate('/calendar')
+  }, [])
 
   return (
     <div className={s.container}>

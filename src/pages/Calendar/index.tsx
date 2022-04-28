@@ -6,6 +6,7 @@ import { CALENDAR_VIEWS, SHOW_DATE_FORMAT } from '@/util/constants'
 import { genSchedule, getSchedules, modifyTimeInfo } from '@/util/schedule'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
+import Sidebar from '@/components/Sidebar'
 import dayjs from 'dayjs'
 import { getPageData, moveBlockToNewPage, updateBlock } from '@/util/logseq'
 import { Button, Modal, Select, Tooltip } from 'antd'
@@ -14,12 +15,18 @@ import Weekly from '@/components/Weekly'
 
 import s from './index.module.less'
 import classNames from 'classnames'
+import { ICustomCalendar } from '@/util/type'
 
 const index: React.FC<{}> = () => {
+  const { calendarList, subscriptionList, logKey } = getInitalSettings()
 
   const [showDate, setShowDate] = useState<string>()
+  const [isFold, setIsFold] = useState(true)
   const [calendarSchedules, setCalendarSchedules] = useState<ISchedule[]>([])
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
+  const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar.enabled))
+  const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription.enabled) : []
+  const [showCalendarList, setShowCalendarList] = useState(enabledCalendarList.map(calendar => calendar.id))
   const [modifyScheduleModal, setModifyScheduleModal] = useState<{
     visible: boolean
     type?: 'create' | 'update'
@@ -36,7 +43,6 @@ const index: React.FC<{}> = () => {
   }>({ visible: false })
 
   const calendarOptions = getDefaultCalendarOptions()
-  const { calendarList, subscriptionList, logKey } = getInitalSettings()
 
   const calendarRef = useRef<Calendar>()
 
@@ -118,6 +124,19 @@ const index: React.FC<{}> = () => {
     changeShowDate()
     setShowExportWeekly(logseq.settings?.logKey?.enabled && value === 'week')
   }
+  const onShowCalendarChange = (showCalendarList: string[]) => {
+    setShowCalendarList(showCalendarList)
+    const enabledCalendarIds = enabledCalendarList.concat(enabledSubscriptionList)?.map(calendar => calendar.id)
+
+    enabledCalendarIds.forEach(calendarId => {
+      if (showCalendarList.includes(calendarId)) {
+        calendarRef.current?.toggleSchedules(calendarId, false)
+      } else {
+        calendarRef.current?.toggleSchedules(calendarId, true)
+      }
+    })
+  }
+  const toggleFold = () => setIsFold(_isFold => !_isFold)
   const onClickToday = () => {
     calendarRef.current?.today()
     changeShowDate()
@@ -154,11 +173,6 @@ const index: React.FC<{}> = () => {
     setTimeout(() => {
       calendarRef.current = new Calendar('#calendar', {
         ...calendarOptions,
-        // template: {
-        //   // monthDayname: function(dayname) {
-        //   //   return '<span class="calendar-week-dayname-name">' + dayname.label + '</span>';
-        //   // }
-        // }
       })
       changeShowDate()
       setSchedules()
@@ -279,110 +293,108 @@ const index: React.FC<{}> = () => {
   }, [])
 
   return (
-    <div className={classNames(s.container, 'flex')}>
-      <div className={classNames(s.content, 'flex flex-1 flex-col overflow-hidden p-8')} style={{ maxWidth: '1200px' }}>
+    <div className={classNames('page-container', 'flex')}>
+      <div className={classNames(s.content, 'flex flex-1 flex-col overflow-hidden p-8')} style={{ maxWidth: '1400px' }}>
 
         <h1>Calendar View</h1>
-        <div className={classNames(s.calendarWrapper, 'flex flex-col flex-1 p-6 rounded-2xl')}>
-          {/* ========= title bar start ========= */}
-          <div className={`mb-2 flex items-center justify-between`}>
-            <div className="flex items-center">
-              <Select
-                value={currentView}
-                defaultValue={calendarOptions.defaultView}
-                onChange={onViewChange}
-                style={{ width: '100px' }}
-              >
-                <Select.OptGroup label="Calendar">
-                  {CALENDAR_VIEWS.map(calendarView => (<Select.Option value={calendarView.value} key={calendarView.value}>{calendarView.label}</Select.Option>))}
-                </Select.OptGroup>
-                <Select.OptGroup label="Other">
-                  <Select.Option value="gantt">Gantt</Select.Option>
-                </Select.OptGroup>
-              </Select>
+        <div className={classNames(s.calendarWrapper, 'flex flex-col flex-1 rounded-2xl box-border')}>
+          <div className="flex flex-col w-full h-full p-6">
+              {/* ========= title bar start ========= */}
+              <div className={`mb-2 flex items-center justify-between`}>
+                <div className="flex items-center">
+                <Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
+                  <Select
+                    value={currentView}
+                    defaultValue={calendarOptions.defaultView}
+                    onChange={onViewChange}
+                    style={{ width: '100px' }}
+                  >
+                    <Select.OptGroup label="Calendar">
+                      {CALENDAR_VIEWS.map(calendarView => (<Select.Option value={calendarView.value} key={calendarView.value}>{calendarView.label}</Select.Option>))}
+                    </Select.OptGroup>
+                    <Select.OptGroup label="Other">
+                      <Select.Option value="gantt">Gantt</Select.Option>
+                    </Select.OptGroup>
+                  </Select>
 
-              {
-                (['day', 'week', '2week', 'month'].includes(currentView))
-                ? (<div className="flex items-center ml-4">
-                  <Button shape="round" onClick={onClickToday}>Today</Button>
+                  {
+                    (['day', 'week', '2week', 'month'].includes(currentView))
+                    ? (<div className="flex items-center ml-4">
+                      <Button shape="round" onClick={onClickToday}>Today</Button>
 
-                  <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
-                  <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
+                      <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
+                      <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
 
-                  <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
-                    <span
-                      className={`ml-4 text-xl h-full items-center inline-block ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
-                      style={{ height: '34px', lineHeight: '34px' }}
-                      onClick={onClickShowDate}
-                    >
-                      { showDate }
-                    </span>
-                  </Tooltip>
-                </div>)
-              : null
-              }
-            </div>
+                      <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
+                        <span
+                          className={`ml-4 text-xl h-full items-center inline-block ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
+                          style={{ height: '34px', lineHeight: '34px' }}
+                          onClick={onClickShowDate}
+                        >
+                          { showDate }
+                        </span>
+                      </Tooltip>
+                    </div>)
+                  : null
+                  }
+                </div>
 
-            <div>
-              { showExportWeekly && <Button className="mr-4" onClick={onClickExportWeekly}>Export Weekly</Button> }
-              {/* <Button className="mr-4" onClick={() => setSettingModal(true)} shape="circle" icon={<SettingOutlined />}></Button> */}
-              {/* <Button onClick={onClickFullScreen} shape="circle" icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button> */}
-            </div>
-          </div>
-          {/* ========= title bar end ========= */}
+                <div>
+                  { showExportWeekly && <Button className="mr-4" onClick={onClickExportWeekly}>Export Weekly</Button> }
+                  {/* <Button className="mr-4" onClick={() => setSettingModal(true)} shape="circle" icon={<SettingOutlined />}></Button> */}
+                  {/* <Button onClick={onClickFullScreen} shape="circle" icon={isFullScreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}></Button> */}
+                </div>
+              </div>
+              {/* ========= title bar end ========= */}
 
-          {/* ========= content start ========= */}
-          <div className="flex flex-1 h-0">
-            {/* <div className={`transition-all overflow-hidden bg-gray-100 mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
-              <Sidebar
-                onShowCalendarChange={onShowCalendarChange}
-                calendarList={enabledCalendarList}
-                subscriptionList={enabledSubscriptionList}
+              {/* ========= content start ========= */}
+              <div className="flex flex-1">
+                <div className={`transition-all overflow-hidden bg-gray-100 mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
+                  <Sidebar
+                    onShowCalendarChange={onShowCalendarChange}
+                    calendarList={enabledCalendarList}
+                    subscriptionList={enabledSubscriptionList}
+                    />
+                </div>
+                <div className="flex-1 w-0">
+                  <div id="calendar" className="h-full"></div>
+                </div>
+              </div>
+              {/* ========= content end ========= */}
+
+              <Weekly
+                visible={weeklyModal.visible}
+                start={weeklyModal.start}
+                end={weeklyModal.end}
+                onCancel={() => setWeeklyModal({ visible: false })}
               />
-            </div> */}
-            <div className="flex-1 w-0">
+              {/* <Settings
+                visible={settingModal}
+                onCancel={() => setSettingModal(false)}
+                onOk={onSettingChange}
+              /> */}
               {
-                <>
-                  {/* {currentView === 'gantt' && <Gantt data={ganttData} weekStartDay={logseq.settings?.weekStartDay || 0} style={{ height: isFullScreen ? '100%' : '624px' }} />} */}
-                  <div id="calendar" style={{ height: '100%' }}></div>
-                </>
+                modifyScheduleModal.visible
+                ? <ModifySchedule
+                  visible={modifyScheduleModal.visible}
+                  type={modifyScheduleModal.type}
+                  initialValues={modifyScheduleModal.values}
+                  calendar={calendarRef.current}
+                  onCancel={() => {
+                    setModifyScheduleModal({ visible: false })
+                    calendarRef.current?.render()
+                  }}
+                  onSave={() => {
+                    setModifyScheduleModal({ visible: false })
+                  }}
+                />
+                : null
               }
             </div>
           </div>
-          {/* ========= content end ========= */}
-
-          <Weekly
-            visible={weeklyModal.visible}
-            start={weeklyModal.start}
-            end={weeklyModal.end}
-            onCancel={() => setWeeklyModal({ visible: false })}
-          />
-          {/* <Settings
-            visible={settingModal}
-            onCancel={() => setSettingModal(false)}
-            onOk={onSettingChange}
-          /> */}
-          {
-            modifyScheduleModal.visible
-            ? <ModifySchedule
-              visible={modifyScheduleModal.visible}
-              type={modifyScheduleModal.type}
-              initialValues={modifyScheduleModal.values}
-              calendar={calendarRef.current}
-              onCancel={() => {
-                setModifyScheduleModal({ visible: false })
-                calendarRef.current?.render()
-              }}
-              onSave={() => {
-                setModifyScheduleModal({ visible: false })
-              }}
-            />
-            : null
-          }
-        </div>
       </div>
 
-      <div className={classNames(s.sideBar)}></div>
+      {/* <div className={classNames(s.sideBar)}></div> */}
     </div>
   )
 }

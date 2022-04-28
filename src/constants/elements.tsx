@@ -16,11 +16,11 @@ import Settings from '@/pages/Settings'
 
 export const MENUS = [
   { label: 'Dashboard', value: 'dashboard', icon: <MdOutlineDashboard />, path: '/dashboard', element: <Dashboard /> },
-  { label: 'Tasks', value: 'tasks', icon: <BiTask />, path: '/tasks', element: <Tasks /> },
+  // { label: 'Tasks', value: 'tasks', icon: <BiTask />, path: '/tasks', element: <Tasks /> },
   { label: 'Calendar', value: 'calendar', icon: <IoCalendarOutline />, path: '/calendar', element: <Calendar /> },
   { label: 'Gantt', value: 'gantt', icon: <RiBarChartHorizontalFill />, path: '/gantt', element: <Gantt /> },
   { label: 'Timeline', value: 'timeline', icon: <MdLineStyle />, path: '/timeline', element: <Timeline /> },
-  { label: 'Board', value: 'board', icon: <BsClipboardData />, path: '/board', element: <Board /> },
-  { label: 'Stats', value: 'stats', icon: <FaChartArea />, path: '/stats', element: <Stats /> },
+  // { label: 'Board', value: 'board', icon: <BsClipboardData />, path: '/board', element: <Board /> },
+  // { label: 'Stats', value: 'stats', icon: <FaChartArea />, path: '/stats', element: <Stats /> },
   { label: 'Settings', value: 'settings', icon: <IoSettings />, path: '/settings', element: <Settings /> },
 ]

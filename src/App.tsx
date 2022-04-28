@@ -16,7 +16,7 @@ const App: React.FC<{}> = () => {
   }, [])
 
   return (
-    <main className="w-screen h-screen">
+    <main className="w-screen h-screen flex">
       <MemoryRouter>
         <Sider />
         <Routes>

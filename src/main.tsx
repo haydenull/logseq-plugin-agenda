@@ -8,6 +8,7 @@ import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
 import { initializeSettings } from './util/baseInfo'
 import App from './App'
+import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
 
 dayjs.extend(weekday)
