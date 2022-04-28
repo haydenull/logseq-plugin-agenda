@@ -12,21 +12,23 @@ import { getPageData, moveBlockToNewPage, updateBlock } from '@/util/logseq'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import Weekly from '@/components/Weekly'
-
-import s from './index.module.less'
 import classNames from 'classnames'
 import { ICustomCalendar } from '@/util/type'
+import { useAtom } from 'jotai'
+
+import s from './index.module.less'
+import { schedulesAtom } from '@/model/schedule'
 
 const index: React.FC<{}> = () => {
+  const [schedules] = useAtom(schedulesAtom)
+
   const { calendarList, subscriptionList, logKey } = getInitalSettings()
 
   const [showDate, setShowDate] = useState<string>()
   const [isFold, setIsFold] = useState(true)
-  const [calendarSchedules, setCalendarSchedules] = useState<ISchedule[]>([])
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
   const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar.enabled))
   const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription.enabled) : []
-  const [showCalendarList, setShowCalendarList] = useState(enabledCalendarList.map(calendar => calendar.id))
   const [modifyScheduleModal, setModifyScheduleModal] = useState<{
     visible: boolean
     type?: 'create' | 'update'
@@ -57,49 +59,6 @@ const index: React.FC<{}> = () => {
       }
     }
   }
-  const setSchedules = async () => {
-    const calendar = calendarRef.current
-    if (calendar) {
-      calendar.clear()
-
-      const schedules = await getSchedules()
-      setCalendarSchedules(schedules)
-      calendar.createSchedules(schedules)
-      const { subscriptionList } = await getInitalSettings()
-      const subscriptionSchedules = await getSubCalendarSchedules(subscriptionList)
-      calendar.createSchedules(subscriptionSchedules)
-      // calendar.createSchedules([{
-      //   id: '1',
-      //   calendarId: 'journal',
-      //   title: 'Daily Log test',
-      //   category: 'time',
-      //   dueDateClass: '',
-      //   start: '2022-03-14',
-      //   end: '2022-03-15T00:00:00',
-      //   isAllDay: true,
-      //   body: 'Daily Log test detail\n123',
-      //   bgColor: '#7ed3fd',
-      //   color: '#222',
-      //   borderColor: '#98dbfd',
-      // }, {
-      //   id: '1',
-      //   calendarId: 'journal',
-      //   title: 'Daily Log foo',
-      //   category: 'time',
-      //   dueDateClass: '',
-      //   start: formatISO(new Date()),
-      //   // isAllDay: true,
-      //   body: 'Daily Log test detail\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123\n123',
-      //   bgColor: '#7ed3fd',
-      //   color: '#333',
-      //   borderColor: '#98dbfd',
-      //   // customStyle: 'opacity: 0.6;',
-      // }])
-
-      // calendar.render()
-
-    }
-  }
 
   const onViewChange = (value: string) => {
     setCurrentView(value)
@@ -125,7 +84,6 @@ const index: React.FC<{}> = () => {
     setShowExportWeekly(logseq.settings?.logKey?.enabled && value === 'week')
   }
   const onShowCalendarChange = (showCalendarList: string[]) => {
-    setShowCalendarList(showCalendarList)
     const enabledCalendarIds = enabledCalendarList.concat(enabledSubscriptionList)?.map(calendar => calendar.id)
 
     enabledCalendarIds.forEach(calendarId => {
@@ -167,6 +125,13 @@ const index: React.FC<{}> = () => {
   }
 
   useEffect(() => {
+    if (calendarRef.current) {
+      console.log('[faiz:] === schedules changed and refresh calendar', schedules)
+      calendarRef.current.clear()
+      calendarRef.current.createSchedules(schedules)
+    }
+  }, [schedules, calendarRef.current])
+  useEffect(() => {
     // managePluginTheme()
     // Delay execution to avoid the TUI not being able to acquire the height correctly
     // The bug manifests as the weekly view cannot auto scroll to the current time
@@ -175,7 +140,6 @@ const index: React.FC<{}> = () => {
         ...calendarOptions,
       })
       changeShowDate()
-      setSchedules()
       calendarRef.current.on('clickDayname', function(event) {
         const calendar = calendarRef.current
         if (calendar?.getViewName() === 'week') {
@@ -368,11 +332,6 @@ const index: React.FC<{}> = () => {
                 end={weeklyModal.end}
                 onCancel={() => setWeeklyModal({ visible: false })}
               />
-              {/* <Settings
-                visible={settingModal}
-                onCancel={() => setSettingModal(false)}
-                onOk={onSettingChange}
-              /> */}
               {
                 modifyScheduleModal.visible
                 ? <ModifySchedule
