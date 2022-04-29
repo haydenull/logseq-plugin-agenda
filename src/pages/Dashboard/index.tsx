@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 const index: React.FC<{}> = () => {
   return (
     <div>
-      xxxx
+      <h1>Dashboard</h1>
     </div>
   )
 }
