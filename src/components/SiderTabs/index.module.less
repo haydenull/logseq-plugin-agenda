@@ -8,7 +8,11 @@
       height: 46px;
       background-color: var(--ls-quaternary-background-color);
       color: var(--ls-tertiary-background-color);
+      transition: all 0.3s ease;
       @apply rounded-xl shadow flex justify-center items-center text-xl cursor-pointer;
+      &:hover {
+        @apply text-2xl;
+      }
       &.active {
         background-color: var(--ls-tertiary-background-color);
         color: var(--ls-quaternary-background-color);

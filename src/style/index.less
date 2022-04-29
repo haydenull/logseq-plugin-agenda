@@ -8,6 +8,7 @@
 html, body {
   background-color: var(--ls-primary-background-color);
   margin: 0;
+  @apply w-screen h-screen overflow-hidden;
 }
 #root {
   @apply w-screen h-screen;
@@ -16,6 +17,13 @@ html, body {
 .page-container {
   width: calc(100vw - 90px);
   @apply h-screen;
+}
+
+/** 单行溢出隐藏 */
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sidebar .ant-collapse > .ant-collapse-item > .ant-collapse-header {

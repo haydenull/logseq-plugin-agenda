@@ -6,6 +6,7 @@ import weekday from 'dayjs/plugin/weekday'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
+import isBetween from 'dayjs/plugin/isBetween'
 import { initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
@@ -15,6 +16,7 @@ dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
 dayjs.extend(localeData)
 dayjs.extend(difference)
+dayjs.extend(isBetween)
 
 const isDevelopment = import.meta.env.DEV
 

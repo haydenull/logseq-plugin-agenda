@@ -12,8 +12,9 @@ import { getSubCalendarSchedules } from '@/util/subscription'
 
 const App: React.FC<{}> = () => {
 
-  const [projectSchedules, setProjectSchedules] = useAtom(projectSchedulesAtom)
-  const [subscriptionSchedules, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
+  // TODO: 使用 only-write 减少重新渲染
+  const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
+  const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
 
   useEffect(() => {
     async function fetchSchedules() {

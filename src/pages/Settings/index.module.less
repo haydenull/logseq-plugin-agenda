@@ -1,11 +1,46 @@
 .title {
-  min-width: 800px;
-  max-width: 1400px;
-  @apply w-11/12;
+  // min-width: 800px;
+  // max-width: 1400px;
+  // @apply w-11/12;
+  @apply w-full;
 }
 .content {
   background-color: var(--ls-quaternary-background-color);
-  min-width: 800px;
-  max-width: 1400px;
-  @apply w-11/12 p-8;
+  // min-width: 800px;
+  // max-width: 1400px;
+  @apply w-full h-full p-8;
+
+  .formBlock {
+    background-color: var(--ls-quaternary-background-color);
+    @apply w-full h-full overflow-auto absolute top-0 left-0 flex flex-col;
+
+    &.show {
+      @apply z-10;
+    }
+
+    // &::after {
+    //   content: "";
+    //   border: 1px dashed var(--ls-secondary-background-color);
+    //   @apply w-full absolute;
+    // }
+  }
+}
+
+.tabs {
+  width: 180px;
+  margin-right: 20px;
+
+  .tab{
+    color: var(--ls-text-color);
+    transition: all 0.1s;
+    @apply cursor-pointer w-full h-11 text-base flex items-center rounded px-3;
+    &:hover {
+      // background-color: var(--ls-secondary-background-color);
+    }
+    &.active {
+      background-color: var(--ls-tertiary-background-color);
+      color: var(--ls-quaternary-background-color);
+      @apply shadow;
+    }
+  }
 }
