@@ -11,31 +11,35 @@
 }
 
 .project {
-  @apply mb-10;
+  @apply mb-6 flex justify-between;
 
   .projectContent {
     background-color: var(--ls-quaternary-background-color);
-    @apply flex-1 h-24 shadow-sm rounded-xl;
+    @apply rounded-xl shadow-sm;
   }
-
   .milestone {
-    background-color: var(--ls-quaternary-background-color);
-    @apply w-24 h-24 rounded-xl shadow-sm ml-2;
+    // width: 4.5rem;
+    border-left: 1px solid var(--ls-description-text-color);
+  }
+  .timeline {
+    transition: height 0.1s;
+    @apply w-full h-0;
+    &.showTimeline {
+      @apply mt-2 p-3 h-auto;
+    }
   }
 
   .option {
     background-color: var(--ls-quaternary-background-color);
-    @apply w-10 h-10 rounded-full flex justify-center items-center shadow-sm text-lg ml-2 cursor-pointer;
-  }
-
-  .timeline {
-    // width: calc(100% - 3.25rem);
-    margin-right: 3rem;
-    background-color: var(--ls-quaternary-background-color);
-    transition: height 0.3s ease-in-out;
-    @apply rounded-xl shadow-sm mt-2 h-0;
-    &.showTimeline {
-      @apply h-32;
+    transform: translateY(1.75rem);
+    &:hover > div {
+      display: none;
+    }
+    & > span {
+      display: none;
+    }
+    &:hover > span {
+      display: block;
     }
   }
 }

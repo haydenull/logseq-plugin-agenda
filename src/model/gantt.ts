@@ -51,6 +51,11 @@ export const ganttDataAtom = atom<IGroup[] | null>((get) => {
     return {
       id: calendarId,
       title: calendarId,
+      style: {
+        bgColor: schedules?.[0]?.bgColor || '#fff',
+        borderColor: schedules?.[0]?.borderColor || '#fff',
+        color: schedules?.[0]?.color || '#000',
+      },
       events: schedules.filter(schedule => schedule.category !== 'milestone').map(convertScheduleToGanttEvent),
       milestones: schedules.filter(schedule => schedule.category === 'milestone').map(convertScheduleToGanttEvent),
     }

@@ -8,9 +8,9 @@ import TaskLines from './components/TaskLines'
 import s from './index.module.less'
 
 const MOCK_PROJECTS: IGroup[] = [
- { id: '111', title: 'project1', events: [], milestones: [] },
- { id: '222', title: 'project1', events: [], milestones: [] },
- { id: '333', title: 'project1', events: [], milestones: [] },
+ { id: '111', title: 'project1', events: [], milestones: [ {start: '2022-05-03', end: '2022-05-03', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
+ { id: '222', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
+ { id: '333', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
 ]
 
 const index: React.FC<{}> = () => {
@@ -23,7 +23,7 @@ const index: React.FC<{}> = () => {
           <Polygonal />
         </div>
 
-        <div className={s.projects}>
+        <div className="mt-8">
           {
             projectData.map(project => (
               <Project key={project.id} data={project} />

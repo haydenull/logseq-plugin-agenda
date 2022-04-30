@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import dayjs from 'dayjs'
 import weekday from 'dayjs/plugin/weekday'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
 import isBetween from 'dayjs/plugin/isBetween'
@@ -14,6 +15,7 @@ import './style/index.less'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
+dayjs.extend(isSameOrAfter)
 dayjs.extend(localeData)
 dayjs.extend(difference)
 dayjs.extend(isBetween)
