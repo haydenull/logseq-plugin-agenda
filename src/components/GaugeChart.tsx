@@ -9,8 +9,6 @@ const GaugeChart: React.FC<{
   useEffect(() => {
     const charDom = document.getElementById('gauge')
     if (charDom) {
-      const myChart = echarts.init(charDom)
-      chartRef.current = myChart
       const option = {
         series: [
           {
@@ -97,8 +95,12 @@ const GaugeChart: React.FC<{
             ]
           }
         ]
-      };
-      myChart.setOption(option)
+      }
+      window.requestAnimationFrame(() => {
+        const myChart = echarts.init(charDom)
+        chartRef.current = myChart
+        myChart.setOption(option)
+      })
     }
     return () => {
       if (chartRef.current) {

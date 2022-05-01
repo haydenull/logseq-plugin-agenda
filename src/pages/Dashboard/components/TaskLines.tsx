@@ -6,9 +6,11 @@ import s from '../index.module.less'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import Task from './Task'
+import { useAtom } from 'jotai'
+import { todaySchedulesAtom } from '@/model/schedule'
 
 const MOCK_TASKS: ISchedule[] = [
-  { id: '111', title: 'foo', start: '2022-04-29T16:00', end: '2022-04-29T17:00', isAllDay: true, calendarId: 'overdule-journal', bgColor: '#aaa' },
+  { id: '111', title: 'foo', start: '2022-04-29T16:00', end: '2022-04-29T17:00', isAllDay: true, calendarId: 'overdue-journal', bgColor: '#aaa' },
   { id: '222', title: 'sdf', start: '2022-04-29T17:00', end: '2022-04-29T18:00', isAllDay: true, calendarId: 'journal', bgColor: '#aaa' },
   { id: 'eee', title: 'asdfa', start: '2022-04-29T17:20', end: '2022-04-29T19:00', isAllDay: false, calendarId: 'journal', bgColor: '#aaa' },
   { id: '444', title: 'foasdfaso', start: '2022-04-29T19:00', end: '2022-04-29T20:00', isAllDay: false, calendarId: 'journal', bgColor: '#aaa' },
@@ -17,12 +19,12 @@ const MOCK_TASKS: ISchedule[] = [
 ]
 
 function categorizeTasks (tasks: ISchedule[]) {
-  let overduleTasks: ISchedule[] = []
+  let overdueTasks: ISchedule[] = []
   let allDayTasks: ISchedule[] = []
   let timeTasks: ISchedule[] = []
   tasks.forEach(task => {
-    if (task.calendarId?.startsWith('overdule-')) {
-      overduleTasks.push(task)
+    if (task.category === 'task') {
+      overdueTasks.push(task)
     } else if (task.isAllDay) {
       allDayTasks.push(task)
     } else {
@@ -30,21 +32,22 @@ function categorizeTasks (tasks: ISchedule[]) {
     }
   })
 
-  return { overduleTasks, allDayTasks, timeTasks }
+  return { overdueTasks, allDayTasks, timeTasks }
 }
 
 const TaskLines: React.FC<{}> = () => {
-  const { overduleTasks, allDayTasks, timeTasks } = categorizeTasks(MOCK_TASKS)
+  const [todaySchedules] = useAtom(todaySchedulesAtom)
+  const { overdueTasks, allDayTasks, timeTasks } = categorizeTasks(import.meta.env.DEV ? MOCK_TASKS : todaySchedules)
 
   return (
     <div className={s.taskLine}>
       {
-        overduleTasks.length > 0 && (
+        overdueTasks.length > 0 && (
           <div className={s.module}>
-            <span>Overdule</span>
+            <span>Overdue</span>
             {
-              overduleTasks.map(task => (
-                <Task key={task.id} task={task} type="overdule" />
+              overdueTasks.map(task => (
+                <Task key={task.id} task={task} type="overdue" />
               ))
             }
           </div>

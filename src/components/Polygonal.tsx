@@ -11,7 +11,6 @@ const Polygonal: React.FC<{
   useEffect(() => {
     const chartDom = document.getElementById('polygonal')
     if (chartDom) {
-      console.log('[faiz:] === chartDom', chartDom)
       const option = {
         xAxis: {
           type: 'category',

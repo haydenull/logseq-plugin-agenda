@@ -1,7 +1,12 @@
 import GaugeChart from '@/components/GaugeChart'
 import Polygonal from '@/components/Polygonal'
+import { ganttDataAtom } from '@/model/gantt'
+import { latest14DaysTasksAtom, todayTasksAtom } from '@/model/schedule'
 import { IGroup } from '@/packages/Gantt/type'
+import { catrgorizeTask, scheduleStartDayMap } from '@/util/schedule'
 import classNames from 'classnames'
+import dayjs, { Dayjs } from 'dayjs'
+import { useAtom } from 'jotai'
 import React, { useState } from 'react'
 import Project from './components/Project'
 import TaskLines from './components/TaskLines'
@@ -30,25 +35,57 @@ const MOCK_POLYGONAL_DATA: { date: string; value: number }[] = [
   { date: '2020-05-09', value: parseInt(Math.random() * 30 + '') },
 ]
 
+function genLatest14PolygonalData() {
+  const [latest14Tasks] = useAtom(latest14DaysTasksAtom)
+  const tasksMap = scheduleStartDayMap(catrgorizeTask(latest14Tasks)?.done)
+  const start = dayjs().subtract(13, 'day').startOf('day')
+  const dateArr: Dayjs[] = [start]
+  for (let i = 1; i < 14; i++) {
+    dateArr.push(start.add(i, 'day'))
+  }
+  return dateArr.map((date) => {
+    const tasks = tasksMap.get(date.toISOString())
+    return {
+      date: date.toISOString(),
+      value: tasks?.length || 0,
+    }
+  })
+
+}
+
+const isDev = import.meta.env.DEV
 const index: React.FC<{}> = () => {
-  const projectData = MOCK_PROJECTS
+  const polygonalData = isDev ? MOCK_POLYGONAL_DATA : genLatest14PolygonalData()
+  console.log('[faiz:] === polygonalData', polygonalData)
+
+  const [projects] = useAtom(ganttDataAtom)
+  const projectData = isDev ? MOCK_PROJECTS : projects || []
+
+  const [todayTasks] = useAtom(todayTasksAtom)
+  console.log('[faiz:] === todayTasks', todayTasks)
+  const todayTaskMap = isDev ? { todo: [], doing: [], done: [] } : catrgorizeTask(todayTasks)
+  const upcomingTasksCount = todayTaskMap?.todo?.length + todayTaskMap?.doing?.length
+  const completedTasksCount = todayTaskMap?.done?.length
+  const tasksAmount = upcomingTasksCount + completedTasksCount
+  const progress = tasksAmount === 0 ? 0 : parseInt((completedTasksCount / tasksAmount) * 100 + '')
+
   return (
     <div className="page-container flex">
       <div className={classNames(s.content, 'flex flex-col flex-1 p-8 overflow-auto')}>
         <h1 className="sticky top-0">Dashboard</h1>
         <div className={classNames(s.stats, 'flex')}>
           <div className="flex-1">
-            <Polygonal data={MOCK_POLYGONAL_DATA} />
+            <Polygonal data={polygonalData} />
           </div>
           <div style={{ width: '160px' }} className={classNames('h-full rounded-xl shadow-sm', s.statsRight)}>
-            <GaugeChart progress={parseInt(Math.random() * 100 + '')} />
+            <GaugeChart progress={progress} />
             <div className="flex justify-between px-6">
               <div className={classNames('flex flex-col rounded-lg text-center py-1 shadow-sm', s.amount)}>
-                <span className="text-3xl">16</span>
+                <span className="text-3xl">{upcomingTasksCount}</span>
                 <span className="text-gray-500">Todo</span>
               </div>
               <div className={classNames('flex flex-col rounded-lg text-center py-1 shadow-sm', s.amount)}>
-                <span className="text-3xl">1</span>
+                <span className="text-3xl">{completedTasksCount}</span>
                 <span className="text-gray-500">Done</span>
               </div>
             </div>
