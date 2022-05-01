@@ -1,41 +1,96 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import * as echarts from 'echarts/core'
+import type { ECharts } from 'echarts/lib/echarts'
+import dayjs from 'dayjs'
 
-const Polygonal: React.FC<{}> = () => {
+const Polygonal: React.FC<{
+  data: { date: string; value: number }[]
+}> = ({ data }) => {
+  const chartRef = useRef<ECharts>()
+
+  useEffect(() => {
+    const chartDom = document.getElementById('polygonal')
+    if (chartDom) {
+      console.log('[faiz:] === chartDom', chartDom)
+      const myChart = echarts.init(chartDom)
+      chartRef.current = myChart
+      var option
+
+      option = {
+        xAxis: {
+          type: 'category',
+          data: data.map(item => {
+            const day = dayjs(item.date).format('DD')
+            if (day === '01') return dayjs(item.date).format('MM.DD')
+            return day
+          }),
+          axisTick: {
+            show: false,
+          },
+          axisLine: {
+            show: false,
+          },
+        },
+        yAxis: {
+          // show: false,
+          type: 'value',
+          splitLine:{show: false}, //去除网格线
+          // axisTick: {
+          //   show: false,
+          // },
+          // axisLine: {
+          //   show: false,
+          // },
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#6a7985'
+            }
+          }
+        },
+        series: [
+          {
+            data: data.map(item => item.value),
+            type: 'line',
+            smooth: true,
+            emphasis: {
+              focus: 'series'
+            },
+            showSymbol: false,
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                {
+                  offset: 0,
+                  color: 'rgba(58,77,233,0.8)'
+                },
+                {
+                  offset: 1,
+                  color: 'rgba(255,255,255,0)'
+                }
+              ])
+            }
+          }
+        ]
+      }
+
+      option && myChart.setOption(option)
+    }
+    return () => {
+      chartRef.current && chartRef.current.dispose()
+    }
+  }, [data])
+
   return (
-    <div>
-      <svg height="410">
-        <defs>
-          <radialGradient id="r1" cx="0" cy="0" r="1">
-            <stop offset="0%" stop-color="#FFB64833"></stop>
-            <stop offset="100%" stop-color="#FFB64800"></stop>
-          </radialGradient>
-          <radialGradient id="r2" cx="1" cy="0" r="1">
-            <stop offset="0%" stop-color="#FF5A4833"></stop>
-            <stop offset="100%" stop-color="#FF5A4800"></stop>
-          </radialGradient>
-          <linearGradient id="b1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#FFB64833" stop-opacity="0.5"></stop>
-            <stop offset="100%" stop-color="#FFB64800"></stop>
-          </linearGradient>
-          <linearGradient id="b2" x1="1" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FF5A4833"></stop>
-            <stop offset="100%" stop-color="#FF5A4800" stop-opacity="0.5"></stop>
-          </linearGradient>
-        </defs>
-        <linearGradient id="b3" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#FFB648"></stop>
-          <stop offset="100%" stop-color="#FF5A48"></stop>
-        </linearGradient>
-
-        <path d="M 3,185.5 V 57 Q 49.25,27.5 99.5,27.5 T 197.5,46 T 295.5,2 V 185.5 Z" fill="url(#r1)" stroke-width="1" />
-        <path d="M 3,185.5 V 57 Q 49.25,27.5 99.5,27.5 T 197.5,46 T 295.5,2 V 185.5 Z" fill="url(#r2)" stroke-width="1" />
-        <path d="M 3,57 Q 49.25,27.5 99.5,27.5 T 197.5,46 T 295.5,2" fill="none" stroke="url(#b3)" stroke-width="2" />
-        <circle r="4" cx="3" cy="57" fill="#FFB648" />
-        <circle r="4" cx="99.5" cy="27.5" fill="#FFB648" />
-        <circle r="4" cx="197.5" cy="46" fill="#FFB648" />
-      <circle r="4" cx="295.5" cy="2" fill="#FFB648" />
-      </svg>
-    </div>
+    <div id="polygonal" style={{ height: '240px', width: '100%' }}></div>
   )
 }
 

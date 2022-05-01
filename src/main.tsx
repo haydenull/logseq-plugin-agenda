@@ -8,6 +8,11 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
 import isBetween from 'dayjs/plugin/isBetween'
+import * as echarts from 'echarts/core'
+import { GridComponent, ToolboxComponent, TooltipComponent} from 'echarts/components'
+import { LineChart, GaugeChart } from 'echarts/charts'
+import { UniversalTransition } from 'echarts/features'
+import { CanvasRenderer } from 'echarts/renderers'
 import { initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
@@ -19,6 +24,8 @@ dayjs.extend(isSameOrAfter)
 dayjs.extend(localeData)
 dayjs.extend(difference)
 dayjs.extend(isBetween)
+
+echarts.use([GridComponent, LineChart, GaugeChart, CanvasRenderer, UniversalTransition, ToolboxComponent, TooltipComponent])
 
 const isDevelopment = import.meta.env.DEV
 
