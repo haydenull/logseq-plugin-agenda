@@ -27,7 +27,7 @@ const Project: React.FC<{
 
   return (
     <div className={classNames(s.project)}>
-      <div className={classNames('flex flex-col flex-1 w-0', s.projectContent)}>
+      <div className={classNames('flex flex-col flex-1 w-0', s.projectContent, { [s.expand]: expand })}>
         <div className="flex justify-between items-center h-24 p-3">
           <div className="h-full flex items-center">
             <div
@@ -61,7 +61,7 @@ const Project: React.FC<{
 
         <div className={classNames(s.timeline, { [s.showTimeline]: expand })}>
           { expand && (
-            <Gantt data={[data]} weekStartDay={0} />
+            <Gantt data={[data]} weekStartDay={0} showOptions={false} showSidebar={false} defaultView="week" />
           ) }
         </div>
       </div>

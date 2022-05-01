@@ -34,7 +34,19 @@
     transition: height 0.1s;
     @apply w-full h-0;
     &.showTimeline {
+      position: relative;
       @apply mt-2 p-3 h-auto;
+      // border-top
+      &::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 1.5rem);
+        height: 1px;
+        background-color: #eee;
+      }
     }
   }
 

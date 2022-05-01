@@ -12,11 +12,7 @@ const Polygonal: React.FC<{
     const chartDom = document.getElementById('polygonal')
     if (chartDom) {
       console.log('[faiz:] === chartDom', chartDom)
-      const myChart = echarts.init(chartDom)
-      chartRef.current = myChart
-      var option
-
-      option = {
+      const option = {
         xAxis: {
           type: 'category',
           data: data.map(item => {
@@ -82,7 +78,13 @@ const Polygonal: React.FC<{
         ]
       }
 
-      option && myChart.setOption(option)
+      // fix echarts canvas width bug
+      // https://github.com/apache/echarts/issues/3894
+      window.requestAnimationFrame(() => {
+        const myChart = echarts.init(chartDom)
+        chartRef.current = myChart
+        myChart.setOption(option)
+      })
     }
     return () => {
       chartRef.current && chartRef.current.dispose()

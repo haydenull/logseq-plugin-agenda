@@ -15,7 +15,7 @@ export type IGroup = {
   events: IEvent[]
   milestones?: IEvent[]
   levelCount?: number
-  style: {
+  style?: {
     color: string
     bgColor: string
     borderColor: string

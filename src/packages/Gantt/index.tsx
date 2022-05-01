@@ -11,11 +11,15 @@ import { scrollToDate, transformDataToAdvancedMode, transformDataToSimpleMode } 
 const Gantt: React.FC<{
   weekStartDay: number
   data: IGroup[]
+  showSidebar?: boolean
+  showOptions?: boolean
+  defaultView?: IView
+  defaultMode?: IMode
   [prop: string]: any
-}> = ({ weekStartDay, data, ...props }) => {
+}> = ({ weekStartDay, data, showSidebar = true, showOptions = true, defaultView = 'day', defaultMode = 'simple', ...props }) => {
   const calendarRef = useRef<{ scrollToToday: () => void }>()
-  const [view, setView] = useState<IView>('day')
-  const [mode, setMode] = useState<IMode>('simple')
+  const [view, setView] = useState<IView>(defaultView)
+  const [mode, setMode] = useState<IMode>(defaultMode)
   // const [data, setData] = useState<IGroup[]>([
   //   {
   //     id: '1',
@@ -109,27 +113,39 @@ const Gantt: React.FC<{
 
   return (
     <div className={`w-full h-full relative view-${view}`} {...props}>
-      <div className="calendar__placeholder absolute bg-white"></div>
-      <div className="operation absolute right-0 top-0 z-30 bg-white">
-        <Button size="small" shape="round" onClick={() => scrollToDate(dayjs())}>Today</Button>
-        <Select size="small" options={VIEWS} defaultValue={view} onChange={(e: IView) => setView(e)} style={{ minWidth: '80px' }} className="ml-2" />
-        <Select size="small" options={MODES} defaultValue="simple" onChange={(e: IMode) => setMode(e)} style={{ minWidth: '110px' }} className="ml-2" />
-      </div>
+      {
+        showSidebar && (
+          <div className="calendar__placeholder absolute bg-white"></div>
+        )
+      }
+      {
+        showOptions && (
+          <div className="operation absolute right-0 top-0 z-30 bg-white">
+            <Button size="small" shape="round" onClick={() => scrollToDate(dayjs())}>Today</Button>
+            <Select size="small" options={VIEWS} defaultValue={view} onChange={(e: IView) => setView(e)} style={{ minWidth: '80px' }} className="ml-2" />
+            <Select size="small" options={MODES} defaultValue="simple" onChange={(e: IMode) => setMode(e)} style={{ minWidth: '110px' }} className="ml-2" />
+          </div>
+        )
+      }
       <div className="flex h-full overflow-auto relative">
-        <div className="side-bar bg-white sticky left-0 z-10 h-fit">
-          {
-            _data.map((group, index) => (
-              <Group
-                key={group.id}
-                mode={mode}
-                groupName={group.title}
-                events={group?.events}
-                milestones={group?.milestones}
-                levelCount={group.levelCount}
-              />
-            ))
-          }
-        </div>
+        {
+          showSidebar && (
+            <div className="side-bar bg-white sticky left-0 z-10 h-fit">
+              {
+                _data.map((group, index) => (
+                  <Group
+                    key={group.id}
+                    mode={mode}
+                    groupName={group.title}
+                    events={group?.events}
+                    milestones={group?.milestones}
+                    levelCount={group.levelCount}
+                  />
+                ))
+              }
+            </div>
+          )
+        }
         <Calendar data={_data} ref={calendarRef} mode={mode} view={view} />
       </div>
     </div>

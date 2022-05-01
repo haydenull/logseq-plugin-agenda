@@ -14,7 +14,7 @@ const Calendar: React.FC<{
   const current = dayjs()
   const { start: rangeStart, end: rangeEnd } = getDateRange(data)
   const start = rangeStart.subtract(1, 'day')
-  const end = rangeEnd.add(5, 'day')
+  const end = rangeEnd.add(9, 'day')
   const calendarEventWidth = CALENDAR_EVENT_WIDTH[view]
 
   const dateMarks = extractDays(start, end)
