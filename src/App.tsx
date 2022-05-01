@@ -3,7 +3,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import Sider from '@/components/Sider'
 import Dashboard from '@/pages/Dashboard'
 import { MENUS } from '@/constants/elements'
-import { listenEsc } from '@/util/util'
+import { listenEsc, managePluginTheme } from '@/util/util'
 import { useAtom } from 'jotai'
 import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
 import { getSchedules } from '@/util/schedule'
@@ -23,6 +23,7 @@ const App: React.FC<{}> = () => {
       setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
     }
     fetchSchedules()
+    managePluginTheme()
   }, [])
 
   useEffect(() => {

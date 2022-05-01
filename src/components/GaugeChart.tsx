@@ -2,12 +2,26 @@ import type { ECharts } from 'echarts/lib/echarts'
 import React, { useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts/core'
 
+// purpose
 // const BACK_COLOR = '#f2f6ff'
 // const LINE_COLOR = '#5146a0'
 // const SHADOW_COLOR = 'rgba(58,77,233,0.8)'
-const BACK_COLOR = '#e9f2f0'
-const LINE_COLOR = '#058f68'
-const SHADOW_COLOR = 'rgba(5, 143, 104, 0.8)'
+// const COLOR_PRIMARY = '#333'
+// const COLOR_SECONDARY = '#777'
+
+// green
+// const BACK_COLOR = '#e9f2f0'
+// const LINE_COLOR = '#058f68'
+// const SHADOW_COLOR = 'rgba(5, 143, 104, 0.8)'
+// const COLOR_PRIMARY = '#333'
+// const COLOR_SECONDARY = '#777'
+
+// dark
+const BACK_COLOR = '#212528'
+const LINE_COLOR = '#d19811'
+const SHADOW_COLOR = 'rgba(33, 37, 40, 0.8)'
+const COLOR_PRIMARY = '#fafafe'
+const COLOR_SECONDARY = '#aaadb3'
 
 const GaugeChart: React.FC<{
   progress: number
@@ -86,11 +100,11 @@ const GaugeChart: React.FC<{
                 value: {
                   fontSize: 34,
                   // fontWeight: 'bold',
-                  color: '#333'
+                  color: COLOR_PRIMARY,
                 },
                 unit: {
                   fontSize: 15,
-                  color: '#777',
+                  color: COLOR_SECONDARY,
                   padding: [0, 0, -8, 2]
                 }
               }

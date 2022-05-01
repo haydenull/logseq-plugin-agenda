@@ -56,13 +56,11 @@ function genLatest14PolygonalData() {
 const isDev = import.meta.env.DEV
 const index: React.FC<{}> = () => {
   const polygonalData = isDev ? MOCK_POLYGONAL_DATA : genLatest14PolygonalData()
-  console.log('[faiz:] === polygonalData', polygonalData)
 
   const [projects] = useAtom(ganttDataAtom)
   const projectData = isDev ? MOCK_PROJECTS : projects || []
 
   const [todayTasks] = useAtom(todayTasksAtom)
-  console.log('[faiz:] === todayTasks', todayTasks)
   const todayTaskMap = isDev ? { todo: [], doing: [], done: [] } : catrgorizeTask(todayTasks)
   const upcomingTasksCount = todayTaskMap?.todo?.length + todayTaskMap?.doing?.length
   const completedTasksCount = todayTaskMap?.done?.length
@@ -72,7 +70,7 @@ const index: React.FC<{}> = () => {
   return (
     <div className="page-container flex">
       <div className={classNames(s.content, 'flex flex-col flex-1 p-8 overflow-auto')}>
-        <h1 className="sticky top-0">Dashboard</h1>
+        <h1 className="sticky top-0 title-text">Dashboard</h1>
         <div className={classNames(s.stats, 'flex')}>
           <div className="flex-1">
             <Polygonal data={polygonalData} />
@@ -81,12 +79,12 @@ const index: React.FC<{}> = () => {
             <GaugeChart progress={progress} />
             <div className="flex justify-between px-6">
               <div className={classNames('flex flex-col rounded-lg text-center py-1 shadow-sm', s.amount)}>
-                <span className="text-3xl">{upcomingTasksCount}</span>
-                <span className="text-gray-500">Todo</span>
+                <span className="text-3xl title-text">{upcomingTasksCount}</span>
+                <span className="text">Todo</span>
               </div>
               <div className={classNames('flex flex-col rounded-lg text-center py-1 shadow-sm', s.amount)}>
-                <span className="text-3xl">{completedTasksCount}</span>
-                <span className="text-gray-500">Done</span>
+                <span className="text-3xl title-text">{completedTasksCount}</span>
+                <span className="text">Done</span>
               </div>
             </div>
           </div>

@@ -5,8 +5,15 @@ import dayjs from 'dayjs'
 
 // const LINE_COLOR = '#047857'
 // const BACK_COLOR = 'rgba(58,77,233,0.8)'
-const LINE_COLOR = '#058f68'
-const BACK_COLOR = 'rgba(5, 143, 104, 0.8)'
+// const BACK_COLOR_END = 'rgba(255,255,255,0)'
+
+// const LINE_COLOR = '#058f68'
+// const BACK_COLOR = 'rgba(5, 143, 104, 0.8)'
+// const BACK_COLOR_END = 'rgba(255,255,255,0)'
+
+const LINE_COLOR = '#d19811'
+const BACK_COLOR = 'rgba(148, 108, 12, 0.8)'
+const BACK_COLOR_END = 'rgba(33, 37, 40, 0.8)'
 
 const Polygonal: React.FC<{
   data: { date: string; value: number }[]
@@ -77,7 +84,7 @@ const Polygonal: React.FC<{
                 },
                 {
                   offset: 1,
-                  color: 'rgba(255,255,255,0)'
+                  color: BACK_COLOR_END,
                 }
               ])
             }

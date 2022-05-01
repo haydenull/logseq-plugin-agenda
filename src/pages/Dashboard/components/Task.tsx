@@ -33,13 +33,13 @@ const Task: React.FC<{
       { showTimeDot && <div className={classNames(s.time)}><span>{startDay?.format('HH:mm')}</span></div> }
       <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: task.bgColor, color: task.color }} title={task.calendarId}>{task?.calendarId?.[0]?.toUpperCase()}</div>
       <div className="flex flex-col flex-1 ellipsis mx-4">
-        <span className="ellipsis">{task.title}</span>
+        <span className="ellipsis text">{task.title}</span>
         <div className={classNames(s.subscription, 'text-xs flex justify-between')}>
-          <span>{getTime(task)}</span>
-          <span className="ml-2 ellipsis" title={task.calendarId}>{task.calendarId}</span>
+          <span className="description-text">{getTime(task)}</span>
+          <span className="ml-2 ellipsis #6b531a" title={task.calendarId}>{task.calendarId}</span>
         </div>
       </div>
-      <div className="w-5 h-5 cursor-pointer" onClick={async () => {
+      <div className="w-5 h-5 cursor-pointer text" onClick={async () => {
         const rawData: any = task.raw
         const { id: pageId, originalName } = rawData?.page || {}
         let pageName = originalName

@@ -35,8 +35,8 @@ const Project: React.FC<{
               style={{backgroundColor: data?.style?.bgColor, color: data?.style?.color}}
             >{data.title?.[0]?.toUpperCase()}</div>
             <div className="ml-3">
-              <div className="text-lg">{data.title}</div>
-              <div className="text-gray-500 mt-1">
+              <div className="text-lg title-text">{data.title}</div>
+              <div className="mt-1 description-text">
                 todo: 10 doing: 5 done: 5
               </div>
             </div>
@@ -47,11 +47,11 @@ const Project: React.FC<{
               milestone && (
                 <div className={classNames('flex flex-col items-center justify-center d h-full pl-3 pr-1', s.milestone)}>
                   <div className="text-center">
-                    <span className="text-3xl text-gray-700">{dayjs(milestone.start).format('DD')}</span>
-                    <span className="text-xs text-gray-600 ml-1">{dayjs(milestone.start).format('MMM')}</span>
+                    <span className="text-3xl title-text">{dayjs(milestone.start).format('DD')}</span>
+                    <span className="text-xs description-text ml-1">{dayjs(milestone.start).format('MMM')}</span>
                   </div>
-                  <span className="text-xs text-gray-500">days left: {dayjs(milestone.start).diff(dayjs(), 'day')}d</span>
-                  <span className="text-xs text-gray-500" title={milestone.title}>{milestone.title}</span>
+                  <span className="text-xs description-text">days left: {dayjs(milestone.start).diff(dayjs(), 'day')}d</span>
+                  <span className="text-xs description-text" title={milestone.title}>{milestone.title}</span>
                 </div>
               )
             }
@@ -66,7 +66,7 @@ const Project: React.FC<{
         </div>
       </div>
       <div
-        className={classNames(s.option, 'w-11 h-11 rounded-full flex justify-center items-center shadow-sm text-lg ml-3 cursor-pointer')}
+        className={classNames(s.option, 'text w-11 h-11 rounded-full flex justify-center items-center shadow-sm text-lg ml-3 cursor-pointer')}
         onClick={() => setExpand(!expand)}
       >
         <span className="text-xs">100%</span>
