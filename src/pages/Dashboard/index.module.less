@@ -7,10 +7,9 @@
   .stats {
     height: 240px;
     .statsRight {
-      background-color: #d5e1fd;
+      background-color: var(--ls-quinary-background-color);
       .amount {
         width: 60px;
-        // background-color: var(--ls-quaternary-background-color);
         background-color: var(--ls-primary-background-color);
         transform: scale(0.7);
       }
@@ -28,7 +27,7 @@
   }
   .milestone {
     // width: 4.5rem;
-    border-left: 1px solid var(--ls-description-text-color);
+    border-left: 1px solid var(--ls-tint-text-color);
   }
   .timeline {
     transition: height 0.1s;
@@ -68,7 +67,7 @@
 .rightSide {
   width: 450px;
   height: 100vh;
-  border-left: 1px solid var(--ls-secondary-background-color);
+  border-left: 1px solid var(--ls-quinary-background-color);
   @apply p-8 overflow-auto;
 }
 
@@ -103,8 +102,10 @@
         .time {
           font-weight: 700;
           color: var(--ls-tertiary-background-color);
+          text-shadow: 0px 1px 1px var(--ls-tertiary-background-color);
           &::after {
             background-color: var(--ls-tertiary-background-color);
+            box-shadow: 0px 1px 2px var(--ls-tertiary-background-color);
           }
         }
       }

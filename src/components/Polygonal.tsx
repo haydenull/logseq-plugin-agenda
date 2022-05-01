@@ -3,6 +3,11 @@ import * as echarts from 'echarts/core'
 import type { ECharts } from 'echarts/lib/echarts'
 import dayjs from 'dayjs'
 
+// const LINE_COLOR = '#047857'
+// const BACK_COLOR = 'rgba(58,77,233,0.8)'
+const LINE_COLOR = '#058f68'
+const BACK_COLOR = 'rgba(5, 143, 104, 0.8)'
+
 const Polygonal: React.FC<{
   data: { date: string; value: number }[]
 }> = ({ data }) => {
@@ -61,11 +66,14 @@ const Polygonal: React.FC<{
               focus: 'series'
             },
             showSymbol: false,
+            itemStyle: {
+              color: LINE_COLOR,
+            },
             areaStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                 {
                   offset: 0,
-                  color: 'rgba(58,77,233,0.8)'
+                  color: BACK_COLOR
                 },
                 {
                   offset: 1,
