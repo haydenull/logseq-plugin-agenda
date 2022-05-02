@@ -1,3 +1,5 @@
+import { ISettingsForm } from "./type"
+
 export const updateBlock = async (blockId: number | string, content: string | false, properties?: Record<string, any>) => {
   const block = await logseq.Editor.getBlock(blockId)
   if (!block) {
@@ -50,4 +52,10 @@ export const getPageData = async (srcPage: { id?: number; uuid?: string; origina
   pageDataCacheMap.set(_uuid, page)
   pageDataCacheMap.set(_originName, page)
   return page
+}
+
+export const getCurrentTheme = async () => {
+  const logseqTheme = await logseq.App.getStateFromStore<'dark' | 'light'>('ui/theme')
+  const lightTheme = (logseq.settings?.lightTheme as ISettingsForm['lightTheme']) || 'green'
+  return logseqTheme === 'dark' ? 'dark' : lightTheme
 }

@@ -15,6 +15,7 @@ export type ISettingsFormQuery = Partial<{
 }>
 export type ISettingsForm = {
   theme?: 'light' | 'dark' | 'auto'
+  lightTheme?: 'green' | 'purple'
   defaultView: string
   weekStartDay: 0 | 1
   // journalDateFormatter: string

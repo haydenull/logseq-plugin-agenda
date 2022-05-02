@@ -33,10 +33,13 @@ export const log = (msg, color='blue') => console.log(`%c${msg}`, `color:${color
 
 export const setPluginTheme = (theme: 'dark' | 'light') => {
   const html = document.querySelector('html')
+  const lightTheme = logseq.settings?.lightTheme || DEFAULT_SETTINGS.lightTheme
   if (theme === 'dark') {
     html?.classList.add('dark')
+    html?.classList.remove(lightTheme)
   } else {
     html?.classList.remove('dark')
+    html?.classList.add(lightTheme)
   }
 }
 export const managePluginTheme = async () => {

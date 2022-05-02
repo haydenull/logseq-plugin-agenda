@@ -2,18 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts/core'
 import type { ECharts } from 'echarts/lib/echarts'
 import dayjs from 'dayjs'
-
-// const LINE_COLOR = '#047857'
-// const BACK_COLOR = 'rgba(58,77,233,0.8)'
-// const BACK_COLOR_END = 'rgba(255,255,255,0)'
-
-// const LINE_COLOR = '#058f68'
-// const BACK_COLOR = 'rgba(5, 143, 104, 0.8)'
-// const BACK_COLOR_END = 'rgba(255,255,255,0)'
-
-const LINE_COLOR = '#d19811'
-const BACK_COLOR = 'rgba(148, 108, 12, 0.8)'
-const BACK_COLOR_END = 'rgba(33, 37, 40, 0.8)'
+import { POLYGONAL_COLOR_CONFIG } from '@/constants/theme'
+import { getCurrentTheme } from '@/util/logseq'
 
 const Polygonal: React.FC<{
   data: { date: string; value: number }[]
@@ -22,7 +12,9 @@ const Polygonal: React.FC<{
 
   useEffect(() => {
     const chartDom = document.getElementById('polygonal')
-    if (chartDom) {
+    async function initChart() {
+      const theme = await getCurrentTheme()
+      const colorConfig = POLYGONAL_COLOR_CONFIG[theme]
       const option = {
         xAxis: {
           type: 'category',
@@ -74,31 +66,35 @@ const Polygonal: React.FC<{
             },
             showSymbol: false,
             itemStyle: {
-              color: LINE_COLOR,
+              color: colorConfig.lineColor,
             },
             areaStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                 {
                   offset: 0,
-                  color: BACK_COLOR
+                  color: colorConfig.backColor
                 },
                 {
                   offset: 1,
-                  color: BACK_COLOR_END,
+                  color: colorConfig.backColorEnd,
                 }
               ])
             }
           }
         ]
       }
-
       // fix echarts canvas width bug
       // https://github.com/apache/echarts/issues/3894
       window.requestAnimationFrame(() => {
-        const myChart = echarts.init(chartDom)
-        chartRef.current = myChart
-        myChart.setOption(option)
+        if (chartDom) {
+          const myChart = echarts.init(chartDom)
+          chartRef.current = myChart
+          myChart.setOption(option)
+        }
       })
+    }
+    if (chartDom) {
+      initChart()
     }
     return () => {
       chartRef.current && chartRef.current.dispose()

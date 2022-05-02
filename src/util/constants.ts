@@ -24,6 +24,7 @@ export const THEME = [
 
 export const DEFAULT_SETTINGS: ISettingsForm = {
   theme: 'auto',
+  lightTheme: 'green',
   defaultView: 'month',
   weekStartDay: 0,
   // journalDateFormatter: 'YYYY-MM-DD ddd',
