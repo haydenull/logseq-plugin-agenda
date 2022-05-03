@@ -6,11 +6,13 @@ import { motion, AnimatePresence  } from 'framer-motion'
 import { IoIosArrowUp, IoIosArrowDown} from 'react-icons/io'
 
 import s from '../index.module.less'
+import useTheme from '@/hooks/useTheme'
 
 const Timeline: React.FC<{
   project: IGroup
 }> = ({ project }) => {
   const [expand, setExpand] = useState(true)
+  const theme = useTheme()
 
   return (
     <div className={classNames(s.timelineWrapper, {[s.expand]: expand}, 'rounded-2xl mb-9 h-auto p-6 shadow')}>
@@ -30,6 +32,7 @@ const Timeline: React.FC<{
             <Gantt
               data={[project]}
               weekStartDay={logseq.settings?.weekStartDay || 0}
+              theme={theme}
             />
           </motion.div>
         )}

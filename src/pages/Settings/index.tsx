@@ -82,7 +82,7 @@ const Settings: React.FC<{
 
   return (
     <div className="page-container p-8 flex flex-col items-center">
-      <h1 className={s.title}>Settings</h1>
+      <h1 className={classNames(s.title, 'title-text')}>Settings</h1>
       <div className={classNames(s.content, 'rounded-2xl flex')}>
         <Tabs value={tab} tabs={TABS} onChange={onTabChange} />
         <Form

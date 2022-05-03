@@ -260,7 +260,7 @@ const index: React.FC<{}> = () => {
     <div className={classNames('page-container', 'flex')}>
       <div className={classNames(s.content, 'flex flex-1 flex-col overflow-hidden p-8')} style={{ maxWidth: '1400px' }}>
 
-        <h1>Calendar View</h1>
+        <h1 className="title-text">Calendar</h1>
         <div className={classNames(s.calendarWrapper, 'flex flex-col flex-1 rounded-2xl box-border')}>
           <div className="flex flex-col w-full h-full p-6">
               {/* ========= title bar start ========= */}
@@ -291,7 +291,7 @@ const index: React.FC<{}> = () => {
 
                       <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
                         <span
-                          className={`ml-4 text-xl h-full items-center inline-block ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
+                          className={`ml-4 text-xl h-full items-center inline-block title-text ${currentView === 'day' ? 'cursor-pointer' : 'cursor-auto'}`}
                           style={{ height: '34px', lineHeight: '34px' }}
                           onClick={onClickShowDate}
                         >

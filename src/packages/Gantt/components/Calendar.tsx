@@ -72,20 +72,20 @@ const Calendar: React.FC<{
   return (
     <div className="calendar h-fit w-fit">
       {/* ========= calendar header start ========= */}
-      <div className="w-fit whitespace-nowrap bg-white sticky top-0 z-20 text-gray-400">
+      <div className="w-fit whitespace-nowrap bg-quaternary sticky top-0 z-20 text">
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
             const isShowMonth = date === '01' || mark.isSame(start, 'day') || mark.isSame(end, 'day')
             return (<div className="inline" key={'month' + mark.valueOf()}>
-              <span className="inline-block text-center sticky bg-white overflow-visible box-content" style={{ width: `${calendarEventWidth}px`, left: 0, lineHeight: '25px', paddingRight: '100px', marginRight: '-100px' }}>
+              <span className="inline-block text-center sticky bg-quaternary overflow-visible box-content" style={{ width: `${calendarEventWidth}px`, left: 0, lineHeight: '25px', paddingRight: '100px', marginRight: '-100px' }}>
                 {isShowMonth ? mark.format('MMMM YYYY') : ''}
               </span>
             </div>)
           })
         }
       </div>
-      <div className="calendar__header w-fit whitespace-nowrap bg-white sticky z-20" style={{ top: '25px' }}>
+      <div className="calendar__header w-fit whitespace-nowrap bg-quaternary sticky z-20" style={{ top: '25px' }}>
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
@@ -134,7 +134,7 @@ const Calendar: React.FC<{
                     return (
                       <div
                         key={event.id}
-                        className="calendar__event absolute bg-white rounded cursor-pointer single_ellipsis shadow"
+                        className="calendar__event absolute bg-quaternary rounded cursor-pointer single_ellipsis shadow"
                         style={{
                           left: coordinates.x,
                           top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,

@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import Gantt from '@/packages/Gantt'
 
 import s from '../index.module.less'
+import useTheme from '@/hooks/useTheme'
 
 function getNearestMilestone(data: IGroup) {
   const { milestones = [] } = data
@@ -23,6 +24,7 @@ const Project: React.FC<{
   data: IGroup
 }> = ({ data }) => {
   const [expand, setExpand] = useState(false)
+  const theme = useTheme()
 
   const milestone = getNearestMilestone(data)
 
@@ -69,7 +71,7 @@ const Project: React.FC<{
               exit={{ opacity: 0, height: 0, marginTop: 0, padding: 0 }}
               transition={{ ease: 'easeInOut', duration: 0.2 }}
             >
-              <Gantt data={[data]} weekStartDay={0} showOptions={false} showSidebar={false} defaultView="week" />
+              <Gantt data={[data]} weekStartDay={0} showOptions={false} showSidebar={false} defaultView="week" theme={theme} />
             </motion.div>
           )}
         </AnimatePresence>

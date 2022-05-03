@@ -13,7 +13,7 @@ const Group: React.FC<{
 }> = ({ groupName, events, milestones = [], mode, levelCount = 0 }) => {
   return (
     <div className="group rounded-sm">
-      <div className="group__title font-medium sticky bg-white">{groupName}</div>
+      <div className="group__title font-medium sticky bg-quaternary title-text">{groupName}</div>
       <div className="group__content">
         {
           mode === 'simple'

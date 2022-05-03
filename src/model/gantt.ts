@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 import { scheduleCalendarMapAtom } from './schedule'
 
 const MOCK_PROJECTS: IGroup[] = [
-  { id: '111', title: 'project1', events: [], milestones: [ {start: '2022-05-03', end: '2022-05-03', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
+  { id: '111', title: 'project1', events: [ { title: 'xxxxxxx', start: '2022-05-03', end: '2022-05-04', id: 'yyyy' } ], milestones: [ {start: '2022-05-03', end: '2022-05-03', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
   { id: '222', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
   { id: '333', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
  ]
