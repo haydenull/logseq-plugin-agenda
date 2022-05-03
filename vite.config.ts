@@ -7,11 +7,11 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [
     react(),
-    usePluginImport({
-      libraryName: "antd",
-      libraryDirectory: "es",
-      style: "css",
-    }),
+    // usePluginImport({
+    //   libraryName: "antd",
+    //   libraryDirectory: "es",
+    //   style: "css",
+    // }),
   ],
   resolve: {
     alias: {
@@ -22,5 +22,12 @@ export default defineConfig({
   build: {
     target: "esnext",
     // minify: "esbuild",
+  },
+  css: {
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+      }
+    },
   },
 })

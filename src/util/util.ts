@@ -37,9 +37,11 @@ export const setPluginTheme = (theme: 'dark' | 'light') => {
   if (theme === 'dark') {
     html?.classList.add('dark')
     html?.classList.remove(lightTheme)
+    insertCss('./antd.dark.min.css')
   } else {
     html?.classList.remove('dark')
     html?.classList.add(lightTheme)
+    insertCss('./antd.min.css')
   }
 }
 export const managePluginTheme = async () => {
@@ -80,4 +82,22 @@ export const getOS = () => {
   if (isMac) return 'mac'
   if (isLinux) return 'linux'
   return 'unknown'
+}
+
+let antdCssFile: HTMLLinkElement | null = null
+// 插入 css 文件
+export const insertCss = (css: string) => {
+  const style = document.createElement('link')
+  style.rel = 'stylesheet'
+  style.href = css
+
+  const head = document.head || document.getElementsByTagName('head')[0]
+  const firstChild = head.childNodes[0]
+  if (firstChild) {
+    head.insertBefore(style, firstChild)
+  } else {
+    head.appendChild(style)
+  }
+  if (antdCssFile) head.removeChild(antdCssFile)
+  antdCssFile = style
 }
