@@ -44,8 +44,6 @@ const index: React.FC<{}> = () => {
     end?: string
   }>({ visible: false })
 
-  const calendarOptions = getDefaultCalendarOptions()
-
   const calendarRef = useRef<Calendar>()
 
   const changeShowDate = () => {
@@ -135,7 +133,9 @@ const index: React.FC<{}> = () => {
     // managePluginTheme()
     // Delay execution to avoid the TUI not being able to acquire the height correctly
     // The bug manifests as the weekly view cannot auto scroll to the current time
-    setTimeout(() => {
+    window.requestAnimationFrame(async () => {
+      const calendarOptions = await getDefaultCalendarOptions()
+      console.log('[faiz:] === calendarOptions', calendarOptions)
       calendarRef.current = new Calendar('#calendar', {
         ...calendarOptions,
       })
@@ -253,7 +253,9 @@ const index: React.FC<{}> = () => {
           },
         })
       })
-    }, 0)
+    })
+    // setTimeout(() => {
+    // }, 0)
   }, [])
 
   return (
@@ -266,10 +268,10 @@ const index: React.FC<{}> = () => {
               {/* ========= title bar start ========= */}
               <div className={`mb-2 flex items-center justify-between`}>
                 <div className="flex items-center">
-                <Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
+                <Button className="mr-2 bg-quaternary title-text" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
                   <Select
                     value={currentView}
-                    defaultValue={calendarOptions.defaultView}
+                    defaultValue={logseq.settings?.defaultView || 'month'}
                     onChange={onViewChange}
                     style={{ width: '100px' }}
                   >
@@ -284,10 +286,10 @@ const index: React.FC<{}> = () => {
                   {
                     (['day', 'week', '2week', 'month'].includes(currentView))
                     ? (<div className="flex items-center ml-4">
-                      <Button shape="round" onClick={onClickToday}>Today</Button>
+                      <Button shape="round" className="bg-quaternary title-text" onClick={onClickToday}>Today</Button>
 
-                      <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
-                      <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
+                      <Button className="ml-4 bg-quaternary title-text" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
+                      <Button className="ml-1 bg-quaternary title-text" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
 
                       <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
                         <span
@@ -321,7 +323,7 @@ const index: React.FC<{}> = () => {
                     />
                 </div>
                 <div className="flex-1 w-0">
-                  <div id="calendar" className="h-full"></div>
+                  <div id="calendar" className="h-full title-text"></div>
                 </div>
               </div>
               {/* ========= content end ========= */}

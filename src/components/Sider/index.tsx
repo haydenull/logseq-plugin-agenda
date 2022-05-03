@@ -16,7 +16,7 @@ const index: React.FC<{}> = () => {
   }
 
   useEffect(() => {
-    // navigate('/calendar')
+    navigate('/calendar')
   }, [])
 
   return (

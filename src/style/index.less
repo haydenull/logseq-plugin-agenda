@@ -46,6 +46,12 @@ html, body {
 //   filter: invert(1) hue-rotate(180deg);
 // }
 
+.bg-primary {
+  background-color: var(--ls-primary-background-color);
+}
+.bg-quaternary {
+  background-color: var(--ls-quaternary-background-color);
+}
 .title-text {
   color: var(--ls-title-text-color);
 }
@@ -57,6 +63,20 @@ html, body {
 }
 .tint-text {
   color: var(--ls-tint-text-color);
+}
+
+.tui-full-calendar-popup-container {
+  background-color: var(--ls-quaternary-background-color);
+  border-color: var(--ls-description-text-color);
+}
+.tui-full-calendar-arrow-left .tui-full-calendar-popup-arrow-fill {
+  border-right-color: var(--ls-quaternary-background-color);
+}
+.tui-full-calendar-popup-detail .tui-full-calendar-section-button {
+  border-top-color: var(--ls-description-text-color);
+}
+.tui-full-calendar-popup-vertical-line {
+  background-color: var(--ls-description-text-color);
 }
 
 .calendar-popup-detail-content {

@@ -1,3 +1,4 @@
+import { getCurrentTheme } from '@/util/logseq';
 import { ISchedule } from 'tui-calendar'
 import { CALENDAR_THEME, DEFAULT_SETTINGS } from './constants'
 import { ISettingsForm } from './type'
@@ -28,7 +29,8 @@ export const initializeSettings = () => {
   }
 }
 
-export const getDefaultCalendarOptions = () => {
+export const getDefaultCalendarOptions = async () => {
+  const logseqTheme = import.meta.env.DEV ? 'dark' : await logseq.App.getStateFromStore<'dark' | 'light'>('ui/theme')
   let defaultView = logseq.settings?.defaultView || 'month'
   if (logseq.settings?.defaultView === '2week') defaultView = 'month'
   return {
@@ -38,7 +40,7 @@ export const getDefaultCalendarOptions = () => {
     useDetailPopup: true,
     isReadOnly: false,
     disableClick: true,
-    theme: CALENDAR_THEME,
+    theme: CALENDAR_THEME[logseqTheme],
     usageStatistics: false,
     week: {
       startDayOfWeek: logseq.settings?.weekStartDay || 0,

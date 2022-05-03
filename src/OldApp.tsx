@@ -263,7 +263,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     // The bug manifests as the weekly view cannot auto scroll to the current time
     setTimeout(() => {
       calendarRef.current = new Calendar('#calendar', {
-        ...calendarOptions,
+        // ...calendarOptions,
         // template: {
         //   // monthDayname: function(dayname) {
         //   //   return '<span class="calendar-week-dayname-name">' + dayname.label + '</span>';
@@ -408,7 +408,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             <Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
             <Select
               value={currentView}
-              defaultValue={calendarOptions.defaultView}
+              defaultValue={'month'}
               onChange={onViewChange}
               style={{ width: '100px' }}
             >
