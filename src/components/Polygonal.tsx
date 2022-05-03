@@ -4,17 +4,20 @@ import type { ECharts } from 'echarts/lib/echarts'
 import dayjs from 'dayjs'
 import { POLYGONAL_COLOR_CONFIG } from '@/constants/theme'
 import { getCurrentTheme } from '@/util/logseq'
+import useTheme from '@/hooks/useTheme'
 
 const Polygonal: React.FC<{
   data: { date: string; value: number }[]
 }> = ({ data }) => {
   const chartRef = useRef<ECharts>()
+  const theme = useTheme()
 
   useEffect(() => {
     const chartDom = document.getElementById('polygonal')
     async function initChart() {
-      const theme = await getCurrentTheme()
+      if (!chartDom || !theme) return
       const colorConfig = POLYGONAL_COLOR_CONFIG[theme]
+      console.log('=== polygonal chart init ===', theme, colorConfig)
       const option = {
         xAxis: {
           type: 'category',
@@ -86,20 +89,16 @@ const Polygonal: React.FC<{
       // fix echarts canvas width bug
       // https://github.com/apache/echarts/issues/3894
       window.requestAnimationFrame(() => {
-        if (chartDom) {
-          const myChart = echarts.init(chartDom)
-          chartRef.current = myChart
-          myChart.setOption(option)
-        }
+        const myChart = echarts.init(chartDom)
+        chartRef.current = myChart
+        myChart.setOption(option)
       })
     }
-    if (chartDom) {
-      initChart()
-    }
+    initChart()
     return () => {
       chartRef.current && chartRef.current.dispose()
     }
-  }, [data])
+  }, [data, theme])
 
   return (
     <div id="polygonal" style={{ height: '240px', width: '100%' }}></div>

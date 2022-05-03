@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { IGroup } from '@/packages/Gantt/type'
 import { IoIosArrowUp, IoIosArrowDown} from 'react-icons/io'
-
-import s from '../index.module.less'
+import { motion, AnimatePresence  } from 'framer-motion'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import Gantt from '@/packages/Gantt'
+
+import s from '../index.module.less'
 
 function getNearestMilestone(data: IGroup) {
   const { milestones = [] } = data
@@ -59,14 +60,22 @@ const Project: React.FC<{
 
         </div>
 
-        <div className={classNames(s.timeline, { [s.showTimeline]: expand })}>
-          { expand && (
-            <Gantt data={[data]} weekStartDay={0} showOptions={false} showSidebar={false} defaultView="week" />
-          ) }
-        </div>
+        <AnimatePresence>
+          {expand && (
+            <motion.div
+              className={classNames(s.timeline, { [s.showTimeline]: expand })}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto', marginTop: '0.5rem', padding: '0.75rem' }}
+              exit={{ opacity: 0, height: 0, marginTop: 0, padding: 0 }}
+              transition={{ ease: 'easeInOut', duration: 0.2 }}
+            >
+              <Gantt data={[data]} weekStartDay={0} showOptions={false} showSidebar={false} defaultView="week" />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       <div
-        className={classNames(s.option, 'text w-11 h-11 rounded-full flex justify-center items-center shadow-sm text-lg ml-3 cursor-pointer')}
+        className={classNames(s.option, 'text w-10 h-10 rounded-full flex justify-center items-center shadow-sm text-lg ml-3 cursor-pointer')}
         onClick={() => setExpand(!expand)}
       >
         <span className="text-xs">100%</span>

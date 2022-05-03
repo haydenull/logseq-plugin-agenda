@@ -6,7 +6,14 @@ import { ISchedule } from 'tui-calendar'
 import dayjs from 'dayjs'
 import { scheduleCalendarMapAtom } from './schedule'
 
+const MOCK_PROJECTS: IGroup[] = [
+  { id: '111', title: 'project1', events: [], milestones: [ {start: '2022-05-03', end: '2022-05-03', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
+  { id: '222', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
+  { id: '333', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
+ ]
+
 export const ganttDataAtom = atom<IGroup[] | null>((get) => {
+  if (import.meta.env.DEV) return MOCK_PROJECTS
   const { calendarList, subscriptionList, logKey } = getInitalSettings()
   const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar.enabled))
   const ganttData: IGroup[] = (enabledCalendarList.map(calendar => calendar.id)).map(calendarId => {

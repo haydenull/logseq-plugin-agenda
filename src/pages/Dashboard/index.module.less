@@ -30,11 +30,11 @@
     border-left: 1px solid var(--ls-tint-text-color);
   }
   .timeline {
-    transition: height 0.1s;
-    @apply w-full h-0;
+    // transition: height 0.1s;
+    // @apply w-full;
     &.showTimeline {
       position: relative;
-      @apply mt-2 p-3 h-auto;
+      // @apply mt-2 p-3;
       // border-top
       &::before {
         content: '';
@@ -86,6 +86,10 @@
       background-color: var(--ls-quaternary-background-color);
       margin-bottom: 14px;
       @apply h-16 rounded-xl relative;
+
+      &.taskDone {
+        opacity: 0.5;
+      }
 
       &.taskActive {
         @apply shadow-xl;

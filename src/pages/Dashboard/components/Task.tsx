@@ -28,8 +28,9 @@ const Task: React.FC<{
   const endDay = dayjs(task.end as string)
   const timeFormatter = startDay.isSame(endDay, 'day') ? 'HH:mm' : 'HH:mm (ddd)'
   const isActive = type !== 'overdue' && dayjs().isBetween(startDay, endDay)
+  const isDone = task?.raw?.marker === 'DONE'
   return (
-    <div className={classNames(s.task, { [s.taskActive]: isActive }, s?.[type], 'flex pl-5 pr-4 py-2 items-center justify-between')}>
+    <div className={classNames(s.task, { [s.taskActive]: isActive, [s.taskDone]: isDone }, s?.[type], 'flex pl-5 pr-4 py-2 items-center justify-between')}>
       { showTimeDot && <div className={classNames(s.time)}><span>{startDay?.format('HH:mm')}</span></div> }
       <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: task.bgColor, color: task.color }} title={task.calendarId}>{task?.calendarId?.[0]?.toUpperCase()}</div>
       <div className="flex flex-col flex-1 ellipsis mx-4">

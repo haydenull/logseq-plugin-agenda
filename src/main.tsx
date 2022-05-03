@@ -17,6 +17,7 @@ import { initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
+import { setPluginTheme } from './util/util'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -66,6 +67,9 @@ if (isDevelopment) {
 }
 
 function renderApp(env: string) {
+  logseq.App.onThemeModeChanged(({ mode }) => {
+    setPluginTheme(mode)
+  })
   ReactDOM.render(
     <React.StrictMode>
       {/* <App env={env} /> */}

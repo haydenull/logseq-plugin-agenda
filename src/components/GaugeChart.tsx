@@ -1,6 +1,8 @@
 import type { ECharts } from 'echarts/lib/echarts'
 import React, { useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts/core'
+import useTheme from '@/hooks/useTheme'
+import { GAUGE_COLOR_CONFIG } from '@/constants/theme'
 
 // purpose
 // const BACK_COLOR = '#f2f6ff'
@@ -27,9 +29,12 @@ const GaugeChart: React.FC<{
   progress: number
 }> = ({ progress = 0 }) => {
   const chartRef = useRef<ECharts>()
+  const theme = useTheme()
   useEffect(() => {
     const charDom = document.getElementById('gauge')
-    if (charDom) {
+    async function initChart() {
+      if (!charDom || !theme) return
+      const colorConfig = GAUGE_COLOR_CONFIG[theme]
       const option = {
         series: [
           {
@@ -46,8 +51,8 @@ const GaugeChart: React.FC<{
               containLabel: true,
             },
             itemStyle: {
-              color: LINE_COLOR,
-              shadowColor: SHADOW_COLOR,
+              color: colorConfig.lineColor,
+              shadowColor: colorConfig.shadowColor,
               shadowBlur: 10,
               shadowOffsetX: 2,
               shadowOffsetY: 2
@@ -65,7 +70,7 @@ const GaugeChart: React.FC<{
               lineStyle: {
                 width: 7,
                 color: [
-                  [1, BACK_COLOR]
+                  [1, colorConfig.backColor],
                 ],
               }
             },
@@ -100,11 +105,11 @@ const GaugeChart: React.FC<{
                 value: {
                   fontSize: 34,
                   // fontWeight: 'bold',
-                  color: COLOR_PRIMARY,
+                  color: colorConfig.colorPrimary,
                 },
                 unit: {
                   fontSize: 15,
-                  color: COLOR_SECONDARY,
+                  color: colorConfig.colorSecondary,
                   padding: [0, 0, -8, 2]
                 }
               }
@@ -123,12 +128,13 @@ const GaugeChart: React.FC<{
         myChart.setOption(option)
       })
     }
+    initChart()
     return () => {
       if (chartRef.current) {
         chartRef.current.dispose()
       }
     }
-  }, [progress])
+  }, [progress, theme])
   return (
     <div>
       <div id="gauge" style={{ width: '100%', height: '160px' }} />

@@ -13,11 +13,6 @@ import TaskLines from './components/TaskLines'
 
 import s from './index.module.less'
 
-const MOCK_PROJECTS: IGroup[] = [
- { id: '111', title: 'project1', events: [], milestones: [ {start: '2022-05-03', end: '2022-05-03', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
- { id: '222', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
- { id: '333', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
-]
 const MOCK_POLYGONAL_DATA: { date: string; value: number }[] = [
   { date: '2020-04-26', value: parseInt(Math.random() * 30 + '') },
   { date: '2020-04-27', value: parseInt(Math.random() * 30 + '') },
@@ -58,7 +53,7 @@ const index: React.FC<{}> = () => {
   const polygonalData = isDev ? MOCK_POLYGONAL_DATA : genLatest14PolygonalData()
 
   const [projects] = useAtom(ganttDataAtom)
-  const projectData = isDev ? MOCK_PROJECTS : projects || []
+  const projectData = projects || []
 
   const [todayTasks] = useAtom(todayTasksAtom)
   const todayTaskMap = isDev ? { todo: [], doing: [], done: [] } : catrgorizeTask(todayTasks)
