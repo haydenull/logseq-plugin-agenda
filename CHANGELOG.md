@@ -1,3 +1,34 @@
+# [2.0.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.15.1...v2.0.0) (2022-05-04)
+
+
+### Bug Fixes
+
+* calendar side bar dark mode ([da5f62b](https://github.com/haydenull/logseq-plugin-agenda/commit/da5f62bc4b6eca6ecc3ce0d6dcc5ff2315dbcd4d))
+* dashboard project amount data ([5b841cb](https://github.com/haydenull/logseq-plugin-agenda/commit/5b841cb5633fd1c5c3b9d850c63bd50ad074f28a))
+* lose child block after move block ([96180ed](https://github.com/haydenull/logseq-plugin-agenda/commit/96180ed92bce6c5789d06a255a8e61152a07380b))
+* mutliple gantt scroll error ([88b7542](https://github.com/haydenull/logseq-plugin-agenda/commit/88b75424630e23cf5f5803f59765ad1890a41347))
+
+
+### Features
+
+* ✨ add dashboard [skip ci] ([1d75bb3](https://github.com/haydenull/logseq-plugin-agenda/commit/1d75bb3ff0ad1aa4c9ca43eadc7535c1dc96eb35))
+* ✨ v2.0 release ([49f4469](https://github.com/haydenull/logseq-plugin-agenda/commit/49f4469896dda86394e57116e7b3a96174c5c5da))
+* add animation ([490dc30](https://github.com/haydenull/logseq-plugin-agenda/commit/490dc30dfca47f3400e26f417253956ed77ab263))
+* add gantt popup ([9498568](https://github.com/haydenull/logseq-plugin-agenda/commit/949856871846e2ddc3d7d8468a5f806263f26cec))
+* add green theme ([792970d](https://github.com/haydenull/logseq-plugin-agenda/commit/792970d6130cd1c8a49bcb4fc9a2a17a9d0ca40d))
+* antd dark theme ([68cd065](https://github.com/haydenull/logseq-plugin-agenda/commit/68cd06589aa313e78ed47cdb806f3ef7b53a23a6))
+* dashboard add project progress ([8659e7f](https://github.com/haydenull/logseq-plugin-agenda/commit/8659e7f425d4fbf192f7f1a04b183793da300b7e))
+* dashboard milestone navigation ([3b55d95](https://github.com/haydenull/logseq-plugin-agenda/commit/3b55d9520253bdbf0218681960bae4f0f7f0c190))
+* filter logKey in gantt ([338f810](https://github.com/haydenull/logseq-plugin-agenda/commit/338f810f46e69f1befc3b9b4626f8171964fabca))
+* supports calendar dark mode ([06e8518](https://github.com/haydenull/logseq-plugin-agenda/commit/06e851817a236f90f8283672ee73fd15f4ff6d84))
+* supports gantt dark theme ([a54eed6](https://github.com/haydenull/logseq-plugin-agenda/commit/a54eed6a266c903e45d3b00fdda841b44e2a193f))
+* supports purple theme ([9338acc](https://github.com/haydenull/logseq-plugin-agenda/commit/9338acce9f3a49c3c16210e49f7a9f78a209ece7))
+
+
+### BREAKING CHANGES
+
+* 🧨 v2.0
+
 ## [1.15.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.15.1...v1.15.2) (2022-04-23)
 
 
