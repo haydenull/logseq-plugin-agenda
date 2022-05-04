@@ -33,13 +33,20 @@ export const log = (msg, color='blue') => console.log(`%c${msg}`, `color:${color
 
 export const setPluginTheme = (theme: 'dark' | 'light') => {
   const html = document.querySelector('html')
+  const lightTheme = logseq.settings?.lightThemeType || DEFAULT_SETTINGS.lightThemeType
+  const prevLightTheme = lightTheme === 'green' ? 'purple' : 'green'
   if (theme === 'dark') {
     html?.classList.add('dark')
+    html?.classList.remove(lightTheme)
+    insertCss('./antd.dark.min.css')
   } else {
-    html?.classList.remove('dark')
+    html?.classList.remove('dark', prevLightTheme)
+    html?.classList.add(lightTheme)
+    insertCss('./antd.min.css')
   }
 }
 export const managePluginTheme = async () => {
+  if (import.meta.env.DEV) return setPluginTheme('light')
   const { theme } = logseq.settings as ISettingsForm & {disabled: boolean}
   if (theme === 'dark') return setPluginTheme('dark')
   if (theme === 'light') return setPluginTheme('light')
@@ -76,4 +83,22 @@ export const getOS = () => {
   if (isMac) return 'mac'
   if (isLinux) return 'linux'
   return 'unknown'
+}
+
+let antdCssFile: HTMLLinkElement | null = null
+// 插入 css 文件
+export const insertCss = (css: string) => {
+  const style = document.createElement('link')
+  style.rel = 'stylesheet'
+  style.href = css
+
+  const head = document.head || document.getElementsByTagName('head')[0]
+  const firstChild = head.childNodes[0]
+  if (firstChild) {
+    head.insertBefore(style, firstChild)
+  } else {
+    head.appendChild(style)
+  }
+  if (antdCssFile) head.removeChild(antdCssFile)
+  antdCssFile = style
 }

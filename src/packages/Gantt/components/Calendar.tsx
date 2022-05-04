@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import dayjs from 'dayjs'
-import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, transformDataToSimpleMode, getDateRange } from '../util'
+import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, transformDataToSimpleMode, getDateRange, scrollToDate } from '../util'
 import { IGroup, IMode, IView } from '../type'
 import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT } from '../constants'
 import { Popover } from 'antd'
@@ -10,11 +10,12 @@ const Calendar: React.FC<{
   mode: IMode
   view?: IView
   weekStartDay?: number
-}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0 }, ref) => {
+  uniqueId?: string
+}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '' }, ref) => {
   const current = dayjs()
   const { start: rangeStart, end: rangeEnd } = getDateRange(data)
   const start = rangeStart.subtract(1, 'day')
-  const end = rangeEnd.add(5, 'day')
+  const end = rangeEnd.add(9, 'day')
   const calendarEventWidth = CALENDAR_EVENT_WIDTH[view]
 
   const dateMarks = extractDays(start, end)
@@ -60,32 +61,32 @@ const Calendar: React.FC<{
   console.log('[faiz:] === dataWithCoordinates', dataWithCoordinates)
 
   useEffect(() => {
-    document.querySelector(`#date${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center' })
+    document.querySelector(`#date${uniqueId}${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center' })
   }, [])
 
   useImperativeHandle(ref, () => ({
     scrollToToday() {
-      document.querySelector(`#date${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
+      scrollToDate(dayjs(), uniqueId)
     },
   })), []
 
   return (
     <div className="calendar h-fit w-fit">
       {/* ========= calendar header start ========= */}
-      <div className="w-fit whitespace-nowrap bg-white sticky top-0 z-20 text-gray-400">
+      <div className="w-fit whitespace-nowrap bg-quaternary sticky top-0 z-20 text">
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
             const isShowMonth = date === '01' || mark.isSame(start, 'day') || mark.isSame(end, 'day')
             return (<div className="inline" key={'month' + mark.valueOf()}>
-              <span className="inline-block text-center sticky bg-white overflow-visible box-content" style={{ width: `${calendarEventWidth}px`, left: 0, lineHeight: '25px', paddingRight: '100px', marginRight: '-100px' }}>
+              <span className="inline-block text-center sticky bg-quaternary overflow-visible box-content" style={{ width: `${calendarEventWidth}px`, left: 0, lineHeight: '25px', paddingRight: '100px', marginRight: '-100px' }}>
                 {isShowMonth ? mark.format('MMMM YYYY') : ''}
               </span>
             </div>)
           })
         }
       </div>
-      <div className="calendar__header w-fit whitespace-nowrap bg-white sticky z-20" style={{ top: '25px' }}>
+      <div className="calendar__header w-fit whitespace-nowrap bg-quaternary sticky z-20" style={{ top: '25px' }}>
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
@@ -95,7 +96,7 @@ const Calendar: React.FC<{
             if (view === 'month') {
               isShowDate = mark.day() === weekStartDay || isToday
             }
-            return (<div className={`calendar__date inline-flex ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + mark.format('YYYYMMDD')} key={'date' + mark.valueOf()}>
+            return (<div className={`calendar__date inline-flex ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + uniqueId + mark.format('YYYYMMDD')} key={'date' + mark.valueOf()}>
               <span className={`inline-block text-center ${!isShowDate ? 'opacity-0' : ''}`} style={{ width: '108px' }}>{date}</span>
             </div>)
           })
@@ -134,7 +135,7 @@ const Calendar: React.FC<{
                     return (
                       <div
                         key={event.id}
-                        className="calendar__event absolute bg-white rounded cursor-pointer single_ellipsis shadow"
+                        className="calendar__event absolute bg-quaternary rounded cursor-pointer single_ellipsis shadow"
                         style={{
                           left: coordinates.x,
                           top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,
@@ -142,6 +143,7 @@ const Calendar: React.FC<{
                           height: size.height + 'px',
                           zIndex: 1,
                         }}
+                        title={event.title}
                       >
                         <Popover
                           content={detailPopup}
@@ -163,7 +165,12 @@ const Calendar: React.FC<{
                         <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
                           {/* <span className="absolute ml-3">{milestone.title}</span> */}
                         </div>
-                        <div key={'milestone-text' + milestone.id} className="calendar__milestone__text absolute flex items-center cursor-pointer" style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}>
+                        <div
+                          key={'milestone-text' + milestone.id}
+                          className="calendar__milestone__text absolute flex items-center cursor-pointer"
+                          style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}
+                          title={milestone.title}
+                        >
                           <span className="single_ellipsis" style={{ maxWidth: calendarEventWidth - 20 }}>
                             <Popover
                               content={detailPopup}

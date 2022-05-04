@@ -338,3 +338,25 @@ export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
   if (blockData?.page?.['journal-day'] && !blockData?.scheduled && !blockData?.deadline) return true
   return false
 }
+
+export const catrgorizeTask = (schedules: ISchedule[]) => {
+  const DOING_CATEGORY = ['DOING', 'NOW']
+  const TODO_CATEGORY = ['TODO', 'LATER']
+  const DONE_CATEGORY = ['DONE']
+  return {
+    doing: schedules.filter(schedule => DOING_CATEGORY.includes(schedule?.raw?.marker as string)),
+    todo: schedules.filter(schedule => TODO_CATEGORY.includes(schedule?.raw?.marker as string)),
+    done: schedules.filter(schedule => DONE_CATEGORY.includes(schedule?.raw?.marker as string)),
+  }
+}
+
+// 以开始时间为为key，转为map
+export const scheduleStartDayMap = (schedules: ISchedule[]) => {
+  const res = new Map<string, ISchedule[]>()
+  schedules.forEach(schedule => {
+    const key = dayjs(schedule.start as string).startOf('day').toISOString()
+    if (!res.has(key)) res.set(key, [])
+    res.get(key)?.push(schedule)
+  })
+  return res
+}

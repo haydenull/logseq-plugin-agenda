@@ -15,6 +15,16 @@ export type IGroup = {
   events: IEvent[]
   milestones?: IEvent[]
   levelCount?: number
+  amount?: {
+    todo: number
+    doing: number
+    done: number
+  },
+  style?: {
+    color: string
+    bgColor: string
+    borderColor: string
+  }
 }
 
 export type ICooradinate = {

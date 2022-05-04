@@ -10,6 +10,7 @@ Click [here](https://haydenull.github.io/logseq-plugin-agenda/) for the full doc
 
 ## Features
 - Supports multiple views: single day, week, double week, month
+- Supports dashboard
 - Supports changing start day of week
 - Supports flexible custom calendar(both simple query and advanced query)
 - Supports debugging query

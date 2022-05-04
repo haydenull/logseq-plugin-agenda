@@ -1,4 +1,5 @@
 import { Button, Select } from 'antd'
+import classNames from 'classnames'
 import dayjs from 'dayjs'
 import React, { useRef, useState } from 'react'
 import Calendar from './components/Calendar'
@@ -11,11 +12,18 @@ import { scrollToDate, transformDataToAdvancedMode, transformDataToSimpleMode } 
 const Gantt: React.FC<{
   weekStartDay: number
   data: IGroup[]
+  showSidebar?: boolean
+  showOptions?: boolean
+  showModeSelector?: boolean
+  defaultView?: IView
+  defaultMode?: IMode
+  theme?: 'light' | 'dark' | string
+  uniqueId?: string
   [prop: string]: any
-}> = ({ weekStartDay, data, ...props }) => {
+}> = ({ weekStartDay, data, showSidebar = true, showOptions = true, defaultView = 'day', defaultMode = 'simple', showModeSelector = false, theme = 'light', uniqueId = '', ...props }) => {
   const calendarRef = useRef<{ scrollToToday: () => void }>()
-  const [view, setView] = useState<IView>('day')
-  const [mode, setMode] = useState<IMode>('simple')
+  const [view, setView] = useState<IView>(defaultView)
+  const [mode, setMode] = useState<IMode>(defaultMode)
   // const [data, setData] = useState<IGroup[]>([
   //   {
   //     id: '1',
@@ -108,29 +116,44 @@ const Gantt: React.FC<{
   const _data = mode === 'simple' ? transformDataToSimpleMode(data) : transformDataToAdvancedMode(data)
 
   return (
-    <div className={`w-full h-full relative view-${view}`} {...props}>
-      <div className="calendar__placeholder absolute bg-white"></div>
-      <div className="operation absolute right-0 top-0 z-30 bg-white">
-        <Button size="small" shape="round" onClick={() => scrollToDate(dayjs())}>Today</Button>
-        <Select size="small" options={VIEWS} defaultValue={view} onChange={(e: IView) => setView(e)} style={{ minWidth: '80px' }} className="ml-2" />
-        <Select size="small" options={MODES} defaultValue="simple" onChange={(e: IMode) => setMode(e)} style={{ minWidth: '110px' }} className="ml-2" />
-      </div>
-      <div className="flex h-full overflow-auto relative">
-        <div className="side-bar bg-white sticky left-0 z-10 h-fit">
-          {
-            _data.map((group, index) => (
-              <Group
-                key={group.id}
-                mode={mode}
-                groupName={group.title}
-                events={group?.events}
-                milestones={group?.milestones}
-                levelCount={group.levelCount}
-              />
-            ))
-          }
-        </div>
-        <Calendar data={_data} ref={calendarRef} mode={mode} view={view} />
+    <div className={classNames(`w-full h-full relative gantt text view-${view}`, { dark: theme === 'dark' }, { light: theme !== 'dark' })} {...props}>
+      {
+        showSidebar && (
+          <div className="calendar__placeholder absolute bg-quaternary"></div>
+        )
+      }
+      {
+        showOptions && (
+          <div className="operation absolute right-0 top-0 z-30 bg-quaternary">
+            <Button size="small" shape="round" onClick={() => scrollToDate(dayjs(), uniqueId)}>Today</Button>
+            <Select size="small" options={VIEWS} defaultValue={view} onChange={(e: IView) => setView(e)} style={{ minWidth: '80px' }} className="ml-2 select-style" />
+            {showModeSelector && (
+              <Select size="small" options={MODES} defaultValue="simple" onChange={(e: IMode) => setMode(e)} style={{ minWidth: '110px' }} className="ml-2 select-style" />
+            )}
+          </div>
+        )
+      }
+      <div className="flex h-full overflow-auto relative scroll-style">
+        {
+          showSidebar && (
+            <div className="side-bar bg-quaternary sticky left-0 z-10 h-fit">
+              {
+                _data.map((group, index) => (
+                  <Group
+                    key={group.id}
+                    mode={mode}
+                    groupName={group.title}
+                    events={group?.events}
+                    milestones={group?.milestones}
+                    levelCount={group.levelCount}
+                    uniqueId={uniqueId}
+                  />
+                ))
+              }
+            </div>
+          )
+        }
+        <Calendar data={_data} ref={calendarRef} mode={mode} view={view} uniqueId={uniqueId} />
       </div>
     </div>
   )

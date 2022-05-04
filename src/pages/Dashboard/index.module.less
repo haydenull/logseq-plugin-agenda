@@ -1,0 +1,168 @@
+.content {
+  // hide scrollbar
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .stats {
+    height: 240px;
+    .statsRight {
+      background-color: var(--ls-quinary-background-color);
+      .amount {
+        width: 60px;
+        background-color: var(--ls-primary-background-color);
+        transform: scale(0.7);
+      }
+    }
+  }
+
+}
+
+.project {
+  @apply mb-6 flex justify-between;
+
+  .projectContent {
+    background-color: var(--ls-quaternary-background-color);
+    @apply rounded-xl shadow-sm;
+  }
+  .milestone {
+    width: 6.375rem;
+    border-left: 1px solid var(--ls-tint-text-color);
+  }
+  .timeline {
+    // transition: height 0.1s;
+    // @apply w-full;
+    &.showTimeline {
+      position: relative;
+      // @apply mt-2 p-3;
+      // border-top
+      &::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 1.5rem);
+        height: 1px;
+        background-color: var(--ls-tint-text-color);
+      }
+    }
+  }
+
+  .option {
+    background-color: var(--ls-quaternary-background-color);
+    transform: translateY(1.75rem);
+  }
+}
+
+.rightSide {
+  width: 450px;
+  height: 100vh;
+  border-left: 1px solid var(--ls-quinary-background-color);
+  @apply p-8 overflow-auto;
+}
+
+.taskLine {
+  @apply flex flex-col flex-1;
+  .module {
+    @apply flex flex-col flex-wrap;
+    > span {
+      color: var(--ls-text-color);
+      @apply text-sm m-0;
+    }
+
+    .task {
+      width: 80%;
+      margin-left: auto;
+      background-color: var(--ls-quaternary-background-color);
+      margin-bottom: 14px;
+      @apply h-16 rounded-xl relative;
+
+      &.taskDone {
+        opacity: 0.5;
+      }
+
+      &.taskActive {
+        @apply shadow-xl;
+        &::before {
+          content: '';
+          width: 0.3rem;
+          height: 0.5rem;
+          height: 58%;
+          left: 6px;
+          // background-color: var(--ls-secondary-background-color);
+          background-color: var(--ls-primary-background-color);
+          @apply absolute rounded shadow-inner;
+        }
+        .time {
+          font-weight: 700;
+          color: var(--ls-tertiary-background-color);
+          text-shadow: 0px 1px 1px var(--ls-tertiary-background-color);
+          &::after {
+            background-color: var(--ls-tertiary-background-color);
+            box-shadow: 0px 1px 2px var(--ls-tertiary-background-color);
+          }
+        }
+      }
+      &:last-child .time{
+        border-right: none;
+      }
+      &.overdue {
+        @apply shadow-xl bg-red-100;
+        .subscription {
+          @apply text-gray-600;
+        }
+      }
+
+      .subscription {
+        color: var(--ls-description-text-color);
+      }
+
+      .time {
+        color: var(--ls-description-text-color);
+        width: 50px;
+        left: -70px;
+        transform: translateY(50%);
+        border-right: 1px dashed var(--ls-description-text-color);
+        height: calc(100% + 14px);
+        @apply text-sm absolute;
+        // &.timeActive {
+        //   font-weight: 700;
+        //   color: var(--ls-tertiary-background-color);
+        //   &::after {
+        //     background-color: var(--ls-tertiary-background-color);
+        //   }
+        // }
+        span {
+          display: block;
+          transform: translateY(-50%);
+        }
+        &::before {
+          content: '';
+          display: block;
+          width: 18px;
+          height: 16px;
+          background-color: var(--ls-primary-background-color);
+          border-radius: 100%;
+          top: 0;
+          right: 0;
+          position: absolute;
+          transform: translateX(50%) translateY(-50%);
+        }
+        &::after {
+          content: '';
+          display: block;
+          width: 6px;
+          height: 6px;
+          background-color: var(--ls-description-text-color);
+          border-radius: 100%;
+          top: 0;
+          right: 0;
+          position: absolute;
+          transform: translateX(50%) translateY(-50%);
+        }
+      }
+
+    }
+  }
+}
