@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import dayjs from 'dayjs'
-import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, transformDataToSimpleMode, getDateRange } from '../util'
+import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, transformDataToSimpleMode, getDateRange, scrollToDate } from '../util'
 import { IGroup, IMode, IView } from '../type'
 import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT } from '../constants'
 import { Popover } from 'antd'
@@ -61,12 +61,12 @@ const Calendar: React.FC<{
   console.log('[faiz:] === dataWithCoordinates', dataWithCoordinates)
 
   useEffect(() => {
-    document.querySelector(`#date${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center' })
+    document.querySelector(`#date${uniqueId}${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center' })
   }, [])
 
   useImperativeHandle(ref, () => ({
     scrollToToday() {
-      document.querySelector(`#date${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
+      scrollToDate(dayjs(), uniqueId)
     },
   })), []
 

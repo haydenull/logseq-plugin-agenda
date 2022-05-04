@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
-import { IGroup } from '@/packages/Gantt/type'
+import { IEvent, IGroup } from '@/packages/Gantt/type'
 import { IoIosArrowUp, IoIosArrowDown} from 'react-icons/io'
 import { motion, AnimatePresence  } from 'framer-motion'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import Gantt from '@/packages/Gantt'
-
-import s from '../index.module.less'
 import useTheme from '@/hooks/useTheme'
 import GaugeChart from '@/components/GaugeChart'
+
+import s from '../index.module.less'
+import { getPageData } from '@/util/logseq'
 
 function getNearestMilestone(data: IGroup) {
   const { milestones = [] } = data
@@ -35,6 +36,22 @@ const Project: React.FC<{
   const totalCount = doingCount + todoCount + doneCount
   const progress = totalCount === 0 ? 0 : (doneCount / totalCount)
 
+  const onClickMilestone = async (milestone: IEvent) => {
+    console.log('[faiz:] === milestone', milestone)
+    const { raw = {}, start, end, id = '', title = '' } = milestone
+    const rawData: any = raw?.blockData
+    const { id: pageId, originalName } = rawData?.page || {}
+    let pageName = originalName
+    // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
+    if (!pageName) {
+      const page = await getPageData({ id: pageId })
+      pageName = page?.originalName
+    }
+    const { uuid: blockUuid } = await logseq.Editor.getBlock(rawData.id) || { uuid: '' }
+    logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
+    logseq.hideMainUI()
+  }
+
   return (
     <div className={classNames(s.project)}>
       <div className={classNames('flex flex-col flex-1 w-0', s.projectContent, { [s.expand]: expand })}>
@@ -58,7 +75,10 @@ const Project: React.FC<{
             </div>
             {
               milestone && (
-                <div className={classNames('flex flex-col items-center justify-center d h-full pl-3 pr-1 ml-3', s.milestone)}>
+                <div
+                  className={classNames('flex flex-col items-center justify-center d h-full pl-3 pr-1 ml-3 cursor-pointer', s.milestone)}
+                  onClick={() => onClickMilestone(milestone)}
+                >
                   <div className="text-center">
                     <span className="text-3xl title-text">{dayjs(milestone.start).format('DD')}</span>
                     <span className="text-xs description-text ml-1">{dayjs(milestone.start).format('MMM')}</span>

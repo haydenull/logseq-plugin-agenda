@@ -22,8 +22,9 @@ const index: React.FC<{}> = () => {
   return (
     <div className={s.container}>
       <div className={s.logo}>
-        {/* <img src={logo} /> */}
+        <img src={logo} />
       </div>
+      {/* <div className="mb-28"></div> */}
 
       <SiderTabs tabs={MENUS} onChange={onRouteChange} />
 
