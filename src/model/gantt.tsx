@@ -72,7 +72,10 @@ export const ganttDataAtom = atom<IGroup[] | null>((get) => {
       events: schedules.filter(schedule => schedule.category !== 'milestone').map(convertScheduleToGanttEvent),
       milestones: schedules.filter(schedule => schedule.category === 'milestone').map(convertScheduleToGanttEvent),
     }
-  }).filter(function<T>(item: T | null): item is T {return Boolean(item)})
+  })
+  .filter(function<T>(item: T | null): item is T {return Boolean(item)})
+  // 过滤 logKey
+  .filter(group => logseq.settings?.logKey?.enabled === false ? true : group.id !== logKey?.id)
 
   return ganttData
 })
