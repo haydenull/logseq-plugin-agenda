@@ -45,7 +45,7 @@ export const setPluginTheme = (theme: 'dark' | 'light') => {
   }
 }
 export const managePluginTheme = async () => {
-  if (import.meta.env.DEV) return setPluginTheme('dark')
+  if (import.meta.env.DEV) return setPluginTheme('light')
   const { theme } = logseq.settings as ISettingsForm & {disabled: boolean}
   if (theme === 'dark') return setPluginTheme('dark')
   if (theme === 'light') return setPluginTheme('light')

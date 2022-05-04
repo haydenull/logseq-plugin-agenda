@@ -268,28 +268,23 @@ const index: React.FC<{}> = () => {
               {/* ========= title bar start ========= */}
               <div className={`mb-2 flex items-center justify-between`}>
                 <div className="flex items-center">
-                <Button className="mr-2 bg-quaternary title-text" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
+                <Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />
                   <Select
                     value={currentView}
                     defaultValue={logseq.settings?.defaultView || 'month'}
                     onChange={onViewChange}
                     style={{ width: '100px' }}
                   >
-                    <Select.OptGroup label="Calendar">
-                      {CALENDAR_VIEWS.map(calendarView => (<Select.Option value={calendarView.value} key={calendarView.value}>{calendarView.label}</Select.Option>))}
-                    </Select.OptGroup>
-                    <Select.OptGroup label="Other">
-                      <Select.Option value="gantt">Gantt</Select.Option>
-                    </Select.OptGroup>
+                    {CALENDAR_VIEWS.map(calendarView => (<Select.Option value={calendarView.value} key={calendarView.value}>{calendarView.label}</Select.Option>))}
                   </Select>
 
                   {
                     (['day', 'week', '2week', 'month'].includes(currentView))
                     ? (<div className="flex items-center ml-4">
-                      <Button shape="round" className="bg-quaternary title-text" onClick={onClickToday}>Today</Button>
+                      <Button shape="round" onClick={onClickToday}>Today</Button>
 
-                      <Button className="ml-4 bg-quaternary title-text" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
-                      <Button className="ml-1 bg-quaternary title-text" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
+                      <Button className="ml-4" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
+                      <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
 
                       <Tooltip title={ currentView === 'day' ? 'Navigate to this journal note' : '' }>
                         <span
@@ -315,7 +310,7 @@ const index: React.FC<{}> = () => {
 
               {/* ========= content start ========= */}
               <div className="flex flex-1">
-                <div className={`transition-all overflow-hidden bg-gray-100 mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
+                <div className={`transition-all overflow-hidden bg-quaternary title-text mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
                   <Sidebar
                     onShowCalendarChange={onShowCalendarChange}
                     calendarList={enabledCalendarList}

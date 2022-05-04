@@ -124,7 +124,7 @@ const Gantt: React.FC<{
       {
         showOptions && (
           <div className="operation absolute right-0 top-0 z-30 bg-quaternary">
-            <Button size="small" shape="round" onClick={() => scrollToDate(dayjs())} className="bg-quaternary title-text">Today</Button>
+            <Button size="small" shape="round" onClick={() => scrollToDate(dayjs())}>Today</Button>
             <Select size="small" options={VIEWS} defaultValue={view} onChange={(e: IView) => setView(e)} style={{ minWidth: '80px' }} className="ml-2 select-style" />
             {showModeSelector && (
               <Select size="small" options={MODES} defaultValue="simple" onChange={(e: IMode) => setMode(e)} style={{ minWidth: '110px' }} className="ml-2 select-style" />

@@ -22,11 +22,11 @@ const Sidebar: React.FC<{
     onShowCalendarChange?.(newCheckedCalendarList)
   }
   const renderCollapsePanelHeader = (title: string) => {
-    return <span className="text-gray-400 text-xs">{title}</span>
+    return <span className="text text-xs">{title}</span>
   }
 
   return (
-    <div className="sidebar pt-2">
+    <div className="sidebar pt-2 bg-quaternary">
       <Collapse
         ghost
         expandIconPosition="right"

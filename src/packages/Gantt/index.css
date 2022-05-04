@@ -55,16 +55,6 @@
 .scroll-style::-webkit-scrollbar-thumb {
   background-color: var(--ls-tint-text-color);
 }
-.select-style {
-  background-color: var(--ls-quaternary-background-color) !important;
-  color: var(--ls-title-text-color) !important;
-}
-.select-style .ant-select-selector {
-  background-color: var(--ls-quaternary-background-color) !important;
-}
-.select-style .ant-select-arrow {
-  color: var(--ls-title-text-color) !important;
-}
 
 /* 左上角空白占位 */
 .calendar__placeholder {
