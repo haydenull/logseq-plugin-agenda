@@ -21,10 +21,14 @@ export const THEME = [
   { value: 'dark', label: 'Dark' },
   { value: 'auto', label: 'Auto' },
 ]
+export const LIGHT_THEME_TYPE = [
+  { value: 'green', label: 'Green' },
+  { value: 'purple', label: 'Purple' },
+]
 
 export const DEFAULT_SETTINGS: ISettingsForm = {
   theme: 'auto',
-  lightTheme: 'green',
+  lightThemeType: 'green',
   defaultView: 'month',
   weekStartDay: 0,
   // journalDateFormatter: 'YYYY-MM-DD ddd',

@@ -33,13 +33,14 @@ export const log = (msg, color='blue') => console.log(`%c${msg}`, `color:${color
 
 export const setPluginTheme = (theme: 'dark' | 'light') => {
   const html = document.querySelector('html')
-  const lightTheme = logseq.settings?.lightTheme || DEFAULT_SETTINGS.lightTheme
+  const lightTheme = logseq.settings?.lightThemeType || DEFAULT_SETTINGS.lightThemeType
+  const prevLightTheme = lightTheme === 'green' ? 'purple' : 'green'
   if (theme === 'dark') {
     html?.classList.add('dark')
     html?.classList.remove(lightTheme)
     insertCss('./antd.dark.min.css')
   } else {
-    html?.classList.remove('dark')
+    html?.classList.remove('dark', prevLightTheme)
     html?.classList.add(lightTheme)
     insertCss('./antd.min.css')
   }

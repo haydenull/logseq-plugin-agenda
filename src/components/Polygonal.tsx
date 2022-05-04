@@ -12,12 +12,13 @@ const Polygonal: React.FC<{
   const chartRef = useRef<ECharts>()
   const theme = useTheme()
 
+  console.log('[faiz:] === Polygonal theme', theme)
+
   useEffect(() => {
     const chartDom = document.getElementById('polygonal')
     async function initChart() {
       if (!chartDom || !theme) return
       const colorConfig = POLYGONAL_COLOR_CONFIG[theme]
-      console.log('=== polygonal chart init ===', theme, colorConfig)
       const option = {
         xAxis: {
           type: 'category',

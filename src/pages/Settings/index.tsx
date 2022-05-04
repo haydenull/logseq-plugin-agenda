@@ -4,7 +4,7 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { useForm } from 'antd/lib/form/Form'
 import classNames from 'classnames'
 import ColorPicker from '@/components/ColorPicker'
-import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, THEME } from '@/util/constants'
+import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME } from '@/util/constants'
 import Query from '@/components/Query'
 import CreateCalendarModal from '@/components/CreateCalendarModal'
 import type { ISettingsForm } from '@/util/type'
@@ -99,6 +99,9 @@ const Settings: React.FC<{
             <Form.Item label="Theme" name="theme">
               <Select options={THEME} />
             </Form.Item>
+            <Form.Item label="Light Theme Type" name="lightThemeType">
+              <Select options={LIGHT_THEME_TYPE} />
+            </Form.Item>
             <Form.Item label="Default Duration" name={["defaultDuration", 'value']}>
               <InputNumber
                 addonAfter={
@@ -123,7 +126,7 @@ const Settings: React.FC<{
                 <ColorPicker text="border" />
               </Form.Item>
               <Form.Item name={['logKey', 'enabled']} noStyle valuePropName="checked">
-                <Switch size="small" />
+                <Switch />
               </Form.Item>
               {/* <div style={{ width: '60px' }}></div> */}
             </div>

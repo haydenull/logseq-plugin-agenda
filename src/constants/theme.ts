@@ -7,7 +7,7 @@ export const POLYGONAL_COLOR_CONFIG = {
     backColorEnd: 'rgba(255,255,255,0)',
   },
   purple: {
-    lineColor: '#047857',
+    lineColor: '#3a4de9',
     backColor: 'rgba(58,77,233,0.8)',
     backColorEnd: 'rgba(255,255,255,0)',
   },

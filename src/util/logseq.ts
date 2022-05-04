@@ -56,6 +56,7 @@ export const getPageData = async (srcPage: { id?: number; uuid?: string; origina
 
 export const getCurrentTheme = async () => {
   const logseqTheme = import.meta.env.DEV ? 'light' : await logseq.App.getStateFromStore<'dark' | 'light'>('ui/theme')
-  const lightTheme = (logseq.settings?.lightTheme as ISettingsForm['lightTheme']) || 'green'
-  return logseqTheme === 'dark' ? 'dark' : lightTheme
+  const _theme = logseq.settings?.theme === 'auto' ? logseqTheme : logseq.settings?.theme
+  const lightTheme = (logseq.settings?.lightThemeType as ISettingsForm['lightThemeType']) || 'green'
+  return _theme === 'dark' ? 'dark' : lightTheme
 }
