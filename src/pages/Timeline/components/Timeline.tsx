@@ -34,6 +34,7 @@ const Timeline: React.FC<{
               weekStartDay={logseq.settings?.weekStartDay || 0}
               showSidebar={false}
               theme={theme}
+              uniqueId={project.id}
             />
           </motion.div>
         )}

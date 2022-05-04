@@ -71,7 +71,7 @@ const Project: React.FC<{
               exit={{ opacity: 0, height: 0, marginTop: 0, padding: 0 }}
               transition={{ ease: 'easeInOut', duration: 0.2 }}
             >
-              <Gantt data={[data]} weekStartDay={0} showOptions={false} showSidebar={false} defaultView="week" theme={theme} />
+              <Gantt data={[data]} weekStartDay={0} showOptions={false} showSidebar={false} defaultView="week" theme={theme} uniqueId={data?.id} />
             </motion.div>
           )}
         </AnimatePresence>

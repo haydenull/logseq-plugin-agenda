@@ -10,7 +10,8 @@ const Calendar: React.FC<{
   mode: IMode
   view?: IView
   weekStartDay?: number
-}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0 }, ref) => {
+  uniqueId?: string
+}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '' }, ref) => {
   const current = dayjs()
   const { start: rangeStart, end: rangeEnd } = getDateRange(data)
   const start = rangeStart.subtract(1, 'day')
@@ -95,7 +96,7 @@ const Calendar: React.FC<{
             if (view === 'month') {
               isShowDate = mark.day() === weekStartDay || isToday
             }
-            return (<div className={`calendar__date inline-flex ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + mark.format('YYYYMMDD')} key={'date' + mark.valueOf()}>
+            return (<div className={`calendar__date inline-flex ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} id={'date' + uniqueId + mark.format('YYYYMMDD')} key={'date' + mark.valueOf()}>
               <span className={`inline-block text-center ${!isShowDate ? 'opacity-0' : ''}`} style={{ width: '108px' }}>{date}</span>
             </div>)
           })
@@ -142,6 +143,7 @@ const Calendar: React.FC<{
                           height: size.height + 'px',
                           zIndex: 1,
                         }}
+                        title={event.title}
                       >
                         <Popover
                           content={detailPopup}
@@ -163,7 +165,12 @@ const Calendar: React.FC<{
                         <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
                           {/* <span className="absolute ml-3">{milestone.title}</span> */}
                         </div>
-                        <div key={'milestone-text' + milestone.id} className="calendar__milestone__text absolute flex items-center cursor-pointer" style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}>
+                        <div
+                          key={'milestone-text' + milestone.id}
+                          className="calendar__milestone__text absolute flex items-center cursor-pointer"
+                          style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}
+                          title={milestone.title}
+                        >
                           <span className="single_ellipsis" style={{ maxWidth: calendarEventWidth - 20 }}>
                             <Popover
                               content={detailPopup}

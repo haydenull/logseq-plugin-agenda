@@ -33,6 +33,8 @@ const Timeline: React.FC<{
               data={[project]}
               weekStartDay={logseq.settings?.weekStartDay || 0}
               theme={theme}
+              defaultMode="advanced"
+              uniqueId={project.id}
             />
           </motion.div>
         )}
