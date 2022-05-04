@@ -8,6 +8,7 @@ import Gantt from '@/packages/Gantt'
 
 import s from '../index.module.less'
 import useTheme from '@/hooks/useTheme'
+import GaugeChart from '@/components/GaugeChart'
 
 function getNearestMilestone(data: IGroup) {
   const { milestones = [] } = data
@@ -28,6 +29,12 @@ const Project: React.FC<{
 
   const milestone = getNearestMilestone(data)
 
+  const doingCount = data?.amount?.doing || 0
+  const todoCount = data?.amount?.todo || 0
+  const doneCount = data?.amount?.done || 0
+  const totalCount = doingCount + todoCount + doneCount
+  const progress = totalCount === 0 ? 0 : (doneCount / totalCount)
+
   return (
     <div className={classNames(s.project)}>
       <div className={classNames('flex flex-col flex-1 w-0', s.projectContent, { [s.expand]: expand })}>
@@ -45,16 +52,19 @@ const Project: React.FC<{
             </div>
           </div>
 
-          <div className="h-full">
+          <div className="h-full flex items-center">
+            <div style={{ width: '4.375rem' }}>
+              <GaugeChart progress={parseInt('' + progress * 100)} uniqueId={data.id} height={70} type="normal" />
+            </div>
             {
               milestone && (
-                <div className={classNames('flex flex-col items-center justify-center d h-full pl-3 pr-1', s.milestone)}>
+                <div className={classNames('flex flex-col items-center justify-center d h-full pl-3 pr-1 ml-3', s.milestone)}>
                   <div className="text-center">
                     <span className="text-3xl title-text">{dayjs(milestone.start).format('DD')}</span>
                     <span className="text-xs description-text ml-1">{dayjs(milestone.start).format('MMM')}</span>
                   </div>
                   <span className="text-xs description-text">days left: {dayjs(milestone.start).diff(dayjs(), 'day')}d</span>
-                  <span className="text-xs description-text" title={milestone.title}>{milestone.title}</span>
+                  <span className="text-xs description-text ellipsis w-full" title={milestone.title}>{milestone.title}</span>
                 </div>
               )
             }
@@ -80,7 +90,6 @@ const Project: React.FC<{
         className={classNames(s.option, 'text w-10 h-10 rounded-full flex justify-center items-center shadow-sm text-lg ml-3 cursor-pointer')}
         onClick={() => setExpand(!expand)}
       >
-        <span className="text-xs">100%</span>
         <div className="flex items-center">{ expand ? <IoIosArrowUp /> : <IoIosArrowDown /> }</div>
       </div>
     </div>

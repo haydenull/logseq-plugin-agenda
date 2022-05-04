@@ -45,7 +45,7 @@ const Timeline: React.FC<{
   const [expand, setExpand] = useState(true)
   const theme = useTheme()
 
-  
+
   // const projectWidthPopup = {
   //   ...project,
   //   events: project.events.map(event => 
@@ -60,9 +60,8 @@ const Timeline: React.FC<{
       <AnimatePresence>
         {expand && (
           <motion.div
-            className="overflow-hidden"
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: '60vh' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ ease: 'easeInOut', duration: 0.2 }}
           >

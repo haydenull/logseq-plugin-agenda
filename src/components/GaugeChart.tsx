@@ -4,37 +4,21 @@ import * as echarts from 'echarts/core'
 import useTheme from '@/hooks/useTheme'
 import { GAUGE_COLOR_CONFIG } from '@/constants/theme'
 
-// purpose
-// const BACK_COLOR = '#f2f6ff'
-// const LINE_COLOR = '#5146a0'
-// const SHADOW_COLOR = 'rgba(58,77,233,0.8)'
-// const COLOR_PRIMARY = '#333'
-// const COLOR_SECONDARY = '#777'
-
-// green
-// const BACK_COLOR = '#e9f2f0'
-// const LINE_COLOR = '#058f68'
-// const SHADOW_COLOR = 'rgba(5, 143, 104, 0.8)'
-// const COLOR_PRIMARY = '#333'
-// const COLOR_SECONDARY = '#777'
-
-// dark
-const BACK_COLOR = '#212528'
-const LINE_COLOR = '#d19811'
-const SHADOW_COLOR = 'rgba(33, 37, 40, 0.8)'
-const COLOR_PRIMARY = '#fafafe'
-const COLOR_SECONDARY = '#aaadb3'
-
 const GaugeChart: React.FC<{
   progress: number
-}> = ({ progress = 0 }) => {
+  uniqueId?: string
+  height?: number
+  type?: 'primary' | 'normal'
+}> = ({ progress = 0, uniqueId = '', height = 160, type = 'primary' }) => {
   const chartRef = useRef<ECharts>()
   const theme = useTheme()
   useEffect(() => {
-    const charDom = document.getElementById('gauge')
+    const charDom = document.getElementById('gauge' + uniqueId)
     async function initChart() {
       if (!charDom || !theme) return
       const colorConfig = GAUGE_COLOR_CONFIG[theme]
+      const height = type === 'normal' ? 20 : 60
+      const lineWidth = type === 'normal' ? 4 : 7
       const option = {
         series: [
           {
@@ -53,14 +37,14 @@ const GaugeChart: React.FC<{
             itemStyle: {
               color: colorConfig.lineColor,
               shadowColor: colorConfig.shadowColor,
-              shadowBlur: 10,
+              shadowBlur: type === 'normal' ? 4 : 10,
               shadowOffsetX: 2,
               shadowOffsetY: 2
             },
             progress: {
               show: true,
               roundCap: true,
-              width: 7,
+              width: lineWidth,
             },
             pointer: {
               show: false,
@@ -68,7 +52,7 @@ const GaugeChart: React.FC<{
             axisLine: {
               roundCap: true,
               lineStyle: {
-                width: 7,
+                width: lineWidth,
                 color: [
                   [1, colorConfig.backColor],
                 ],
@@ -91,9 +75,9 @@ const GaugeChart: React.FC<{
               // backgroundColor: '#fff',
               // borderColor: '#999',
               // borderWidth: 2,
-              width: 60,
-              height: 60,
-              lineHeight: 60,
+              width: height,
+              height: height,
+              lineHeight: height + 4,
               // height: 40,
               borderRadius: 100,
               offsetCenter: [0, 0],
@@ -103,14 +87,14 @@ const GaugeChart: React.FC<{
               },
               rich: {
                 value: {
-                  fontSize: 34,
+                  fontSize: type === 'normal' ? 15 : 34,
                   // fontWeight: 'bold',
                   color: colorConfig.colorPrimary,
                 },
                 unit: {
-                  fontSize: 15,
+                  fontSize: type === 'normal' ? 10 : 15,
                   color: colorConfig.colorSecondary,
-                  padding: [0, 0, -8, 2]
+                  padding: type === 'normal' ? [0, 0, -2, 1] : [0, 0, -8, 2]
                 }
               }
             },
@@ -137,7 +121,7 @@ const GaugeChart: React.FC<{
   }, [progress, theme])
   return (
     <div>
-      <div id="gauge" style={{ width: '100%', height: '160px' }} />
+      <div id={'gauge' + uniqueId} style={{ width: '100%', height: height + 'px' }} />
     </div>
   )
 }

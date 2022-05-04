@@ -14,13 +14,14 @@ import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedul
 import { settingsAtom } from '@/model/settings'
 import { getSchedules } from '@/util/schedule'
 import { getSubCalendarSchedules } from '@/util/subscription'
+import { motion } from 'framer-motion'
 
 import Tabs from './components/Tabs'
 import s from './index.module.less'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
-  { value: 'calendar', label: 'Calendar' },
+  { value: 'calendar', label: 'Calendar View' },
   { value: 'projects', label: 'Projects' },
   { value: 'subscription', label: 'Subscription' },
 ]
@@ -110,7 +111,7 @@ const Settings: React.FC<{
             <Form.Item label="Log Key" required>
             <div className="flex items-center justify-between">
               <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
-                <Input style={{ width: '110px' }} />
+                <Input style={{ width: '240px' }} />
               </Form.Item>
               <Form.Item name={['logKey', 'bgColor']} noStyle rules={[{ required: true }]}>
                 <ColorPicker text="background" />
@@ -124,7 +125,7 @@ const Settings: React.FC<{
               <Form.Item name={['logKey', 'enabled']} noStyle valuePropName="checked">
                 <Switch size="small" />
               </Form.Item>
-              <div style={{ width: '60px' }}></div>
+              {/* <div style={{ width: '60px' }}></div> */}
             </div>
           </Form.Item>
           </div>
@@ -154,10 +155,10 @@ const Settings: React.FC<{
             <Form.List name="calendarList">
               {(fields, { add, remove }) => (<>
                 {fields.map((field, index) => (
-                  <Form.Item required label={index === 0 ? 'Calendar' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
+                  <Form.Item required label={index === 0 ? 'Project' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}>
                     <div className="flex items-center justify-between">
                       <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
-                        <Input placeholder="Calendar ID" disabled={index === 0} style={{ width: '110px' }} />
+                        <Input placeholder="Calendar ID" disabled={index === 0} style={{ width: '240px' }} />
                       </Form.Item>
                       <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
                         <ColorPicker text="background" />
@@ -172,14 +173,14 @@ const Settings: React.FC<{
                         <Query calendarId='query' />
                       </Form.Item>
                       <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
-                        <Switch size="small" />
+                        <Switch />
                       </Form.Item>
                       {index !== 0 ? <MinusCircleOutlined onClick={() => remove(field.name)} /> : <div style={{ width: '14px' }}></div>}
                     </div>
                   </Form.Item>
                 ))}
-                <Form.Item wrapperCol={{ offset: 7 }}>
-                  <Button type="dashed" size="small" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
+                <Form.Item wrapperCol={{ offset: 4 }}>
+                  <Button type="dashed" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
                     Add Calendar
                   </Button>
                 </Form.Item>
@@ -193,7 +194,7 @@ const Settings: React.FC<{
                   <Form.Item label={index === 0 ? 'Subscription' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
                     <div className="flex items-center justify-between">
                       <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
-                        <Input placeholder="Calendar ID" style={{ width: '100px' }} />
+                        <Input placeholder="Calendar ID" style={{ width: '160px' }} />
                       </Form.Item>
                       <Form.Item name={[field.name, 'url']} noStyle rules={[{ required: true, type: 'url' }]}>
                         <Input placeholder="Url" style={{ width: '100px' }} />
@@ -208,14 +209,14 @@ const Settings: React.FC<{
                         <ColorPicker text="border" />
                       </Form.Item>
                       <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
-                        <Switch size="small" />
+                        <Switch />
                       </Form.Item>
                       <MinusCircleOutlined onClick={() => remove(field.name)} />
                     </div>
                   </Form.Item>
                 ))}
-                <Form.Item wrapperCol={{ offset: 7 }}>
-                  <Button type="dashed" size="small" onClick={() => add()} block icon={<PlusOutlined />}>
+                <Form.Item wrapperCol={{ offset: 4 }}>
+                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                     Add Subscription
                   </Button>
                 </Form.Item>

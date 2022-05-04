@@ -37,6 +37,7 @@ const Polygonal: React.FC<{
           // show: false,
           type: 'value',
           splitLine:{show: false}, //去除网格线
+          minInterval: 1,
           // axisTick: {
           //   show: false,
           // },
