@@ -6,6 +6,7 @@ import { ISchedule } from 'tui-calendar'
 import dayjs from 'dayjs'
 import { scheduleCalendarMapAtom } from './schedule'
 import { getPageData } from '@/util/logseq'
+import { catrgorizeTask } from '@/util/schedule'
 
 const MOCK_PROJECTS: IGroup[] = [
   { id: '111', title: 'project1', events: [ { title: 'xxxxxxx', start: '2022-05-03', end: '2022-05-04', id: 'yyyy' } ], milestones: [ {start: '2022-05-03', end: '2022-05-03', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
@@ -20,6 +21,7 @@ export const ganttDataAtom = atom<IGroup[] | null>((get) => {
   const ganttData: IGroup[] = (enabledCalendarList.map(calendar => calendar.id)).map(calendarId => {
     const schedules = get(scheduleCalendarMapAtom).get(calendarId)
     if (!schedules) return null
+    const { doing, todo, done } = catrgorizeTask(schedules)
     const convertScheduleToGanttEvent = (schedule: ISchedule): IEvent => {
       const { raw = {}, start, end, id = '', title = '' } = schedule
       const dayjsStart = dayjs(start as string)
@@ -57,6 +59,11 @@ export const ganttDataAtom = atom<IGroup[] | null>((get) => {
     return {
       id: calendarId,
       title: calendarId,
+      amount: {
+        doing: doing?.length,
+        todo: todo?.length,
+        done: done?.length,
+      },
       style: {
         bgColor: schedules?.[0]?.bgColor || '#fff',
         borderColor: schedules?.[0]?.borderColor || '#fff',

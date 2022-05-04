@@ -40,7 +40,7 @@ const Project: React.FC<{
             <div className="ml-3">
               <div className="text-lg title-text">{data.title}</div>
               <div className="mt-1 description-text">
-                todo: 10 doing: 5 done: 5
+                {`doing: ${data?.amount?.doing || 0} todo: ${data?.amount?.todo || 0} done: ${data?.amount?.done || 0}`}
               </div>
             </div>
           </div>
