@@ -264,7 +264,6 @@ export async function genSchedule(params: {
 
   // 单个耗时在5-7秒，整体耗时11秒
   blockData.fullContent = await fillBlockReference(blockData.content)
-  blockData.fullContent = blockData.content
 
   const title = blockData.fullContent
                   .split('\n')[0]
