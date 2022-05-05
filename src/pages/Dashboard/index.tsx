@@ -8,10 +8,12 @@ import classNames from 'classnames'
 import dayjs, { Dayjs } from 'dayjs'
 import { useAtom } from 'jotai'
 import React, { useState } from 'react'
+import { format, parse } from 'date-fns'
 import Project from './components/Project'
 import TaskLines from './components/TaskLines'
 
 import s from './index.module.less'
+import { SHOW_DATE_FORMAT } from '@/util/constants'
 
 const MOCK_POLYGONAL_DATA: { date: string; value: number }[] = [
   { date: '2020-04-26', value: parseInt(Math.random() * 30 + '') },
@@ -62,6 +64,13 @@ const index: React.FC<{}> = () => {
   const tasksAmount = upcomingTasksCount + completedTasksCount
   const progress = tasksAmount === 0 ? 0 : parseInt((completedTasksCount / tasksAmount) * 100 + '')
 
+  const onClickTodayProgress = async () => {
+    const { preferredDateFormat } = await logseq.App.getUserConfigs()
+    const date = format(parse(dayjs().format('YYYY-MM-DD'), SHOW_DATE_FORMAT, new Date()), preferredDateFormat)
+    logseq.App.pushState('page', { name: date })
+    logseq.hideMainUI()
+  }
+
   return (
     <div className="page-container flex">
       <div className={classNames(s.content, 'flex flex-col flex-1 p-8 overflow-auto')}>
@@ -70,7 +79,7 @@ const index: React.FC<{}> = () => {
           <div className="flex-1">
             <Polygonal data={polygonalData} />
           </div>
-          <div style={{ width: '160px' }} className={classNames('h-full rounded-xl shadow-sm', s.statsRight)}>
+          <div style={{ width: '160px' }} className={classNames('h-full rounded-xl shadow-sm cursor-pointer', s.statsRight)} onClick={onClickTodayProgress}>
             <GaugeChart progress={progress} />
             <div className="flex justify-between px-6">
               <div className={classNames('flex flex-col rounded-lg text-center py-1 shadow-sm', s.amount)}>

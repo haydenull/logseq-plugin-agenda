@@ -10,6 +10,7 @@
 
 ## 🎨 功能
 - 支持多种视图: 单日 周 双周 月
+- 支持工作台
 - 支持设置周开始日期
 - 支持非常灵活的自定义日历(同时支持 simple query 和 advanced query)
 - 支持调试 query
@@ -21,9 +22,13 @@
 - 支持新建 编辑日程
 - 支持甘特图视图（simple 与 advanced 模式）
 
+![dashboard-light](../../screenshots/dashboard-light.png)
+![dashboard-purple](../../screenshots/dashboard-purple.png)
+![dashboard-dark](../../screenshots/dashboard-dark.png)
 ![MonthView](../../screenshots/monthView.png)
 ![WeeklyView](../../screenshots/weeklyView.png)
 ![GanttView](../../screenshots/gantt-advanced.png)
-![settings](../../screenshots/settings.png)
+![Timeline](../../screenshots/timeline.png)
+<!-- ![settings](../../screenshots/settings.png)
 ![query](../../screenshots/query.png)
-![agenda](../../screenshots/modifyAgenda.png)
+![agenda](../../screenshots/modifyAgenda.png) -->

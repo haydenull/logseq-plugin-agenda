@@ -52,13 +52,14 @@ const Settings: React.FC<{
     setTab(value)
   }
   const onCreateCalendarModalOk = ({ name: calendarId, agenda = false }) => {
-    settingForm.setFieldsValue({
-      calendarList: [
-        ...settingForm.getFieldValue('calendarList'),
-        agenda ? genAgendaQuery(calendarId) : genDefaultQuery(calendarId),
-      ]
-    })
+    const calendarList = [
+      ...settingForm.getFieldValue('calendarList'),
+      agenda ? genAgendaQuery(calendarId) : genDefaultQuery(calendarId),
+    ]
+    settingForm.setFieldsValue({ calendarList })
     setCreateCalendarModalVisible(false)
+    // fix https://github.com/ant-design/ant-design/issues/23156
+    onValuesChange({ calendarList }, settingForm.getFieldsValue(true))
   }
   const onValuesChange = (changedValues: Partial<ISettingsForm>, allValues: ISettingsForm) => {
     console.log('[faiz:] === onValuesChange', changedValues, allValues)

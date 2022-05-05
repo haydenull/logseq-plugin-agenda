@@ -10,6 +10,7 @@ The original journalDateFormatter configuration required the user to read the da
 
 ## 🎨 Features
 - Supports multiple views: single day, week, double week, month
+- Supports dashboard
 - Supports changing start day of week
 - Supports flexible custom calendar(both simple query and advanced query)
 - Supports debugging query
@@ -21,9 +22,13 @@ The original journalDateFormatter configuration required the user to read the da
 - Supports create and edit schedule
 - Supports Gantt View (Both simple and advanced mode)
 
+![dashboard-light](../screenshots/dashboard-light.png)
+![dashboard-purple](../screenshots/dashboard-purple.png)
+![dashboard-dark](../screenshots/dashboard-dark.png)
 ![MonthView](../screenshots/monthView.png)
 ![WeeklyView](../screenshots/weeklyView.png)
 ![GanttView](../screenshots/gantt-advanced.png)
-![settings](../screenshots/settings.png)
+![Timeline](../screenshots/timeline.png)
+<!-- ![settings](../screenshots/settings.png)
 ![query](../screenshots/query.png)
-![agenda](../screenshots/modifyAgenda.png)
+![agenda](../screenshots/modifyAgenda.png) -->

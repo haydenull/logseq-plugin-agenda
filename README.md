@@ -22,12 +22,16 @@ Click [here](https://haydenull.github.io/logseq-plugin-agenda/) for the full doc
 - Supports create and edit agenda
 - Supports Gantt View (Both simple and advanced mode)
 
+![dashboard-light](./screenshots/dashboard-light.png)
+![dashboard-purple](./screenshots/dashboard-purple.png)
+![dashboard-dark](./screenshots/dashboard-dark.png)
 ![MonthView](./screenshots/monthView.png)
 ![WeeklyView](./screenshots/weeklyView.png)
 ![GanttView](./screenshots/gantt-advanced.png)
-![settings](./screenshots/settings.png)
+![Timeline](./screenshots/timeline.png)
+<!-- ![settings](./screenshots/settings.png)
 ![query](./screenshots/query.png)
-![agenda](./screenshots/modifyAgenda.png)
+![agenda](./screenshots/modifyAgenda.png) -->
 
 ## Demo
 We will call notes with `"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"` as tasks.
