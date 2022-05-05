@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.0.0...v2.0.1) (2022-05-05)
+
+
+### Bug Fixes
+
+* 🐛 fix create new project error ([627d0eb](https://github.com/haydenull/logseq-plugin-agenda/commit/627d0eb0b6e9aa871c867b7c5a5654ab365286b0))
+
 # [2.0.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v1.15.1...v2.0.0) (2022-05-04)
 
 
