@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.0.1...v2.0.2) (2022-05-05)
+
+
+### Bug Fixes
+
+* 🐛 fillBlockReference error ([25408e4](https://github.com/haydenull/logseq-plugin-agenda/commit/25408e4f468a9aee0d98ee5d8b5a2933ce56c357))
+
 ## [2.0.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.0.0...v2.0.1) (2022-05-05)
 
 
