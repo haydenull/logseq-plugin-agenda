@@ -4,9 +4,10 @@ import dayjs, { Dayjs } from 'dayjs'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import Calendar from 'tui-calendar'
 import type { ICustomCalendar, ISettingsForm } from '../util/type'
-import { genSchedule, getAgendaCalendars, modifyTimeInfo, removeTimeInfo } from '../util/schedule'
-import { getPageData, moveBlockToNewPage, updateBlock } from '../util/logseq'
+import { genSchedule, getAgendaCalendars, modifyTimeInfo, removeTimeInfo } from '@/util/schedule'
+import { createBlockToSpecificBlock, getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, updateBlock } from '@/util/logseq'
 import { format } from 'date-fns'
+import { SCHEDULE_PARENT_BLOCK } from '@/util/constants'
 
 export type IScheduleForm = {
   calendarId: string
@@ -106,11 +107,24 @@ const ModifySchedule: React.FC<{
 
       if (type === 'create') {
         // create schedule
-        const block = await logseq.Editor.insertBlock(newCalendarId, newTitle, {
-          isPageBlock: true,
-          sibling: true,
-          properties: newBlockPropeties,
-        })
+        // const block = await logseq.Editor.insertBlock(newCalendarId, newTitle, {
+        //   isPageBlock: true,
+        //   sibling: true,
+        //   properties: newBlockPropeties,
+        // })
+        const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
+        let block
+        if (isJournalSchedule) {
+          block = logKey?.enabled
+          ? await createBlockToSpecificBlock(newCalendarId, `[[${logKey?.id}]]`, newTitle, newBlockPropeties)
+          : await logseq.Editor.insertBlock(newCalendarId, newTitle, {
+            isPageBlock: true,
+            sibling: true,
+            properties: newBlockPropeties,
+          })
+        } else {
+          block = await createBlockToSpecificBlock(newCalendarId, SCHEDULE_PARENT_BLOCK, newTitle, newBlockPropeties)
+        }
         if (!block) return logseq.App.showMsg('Create block failed', 'error')
         const _block = await logseq.Editor.getBlock(block.uuid)
         calendar?.createSchedules([await genSchedule({
@@ -125,7 +139,14 @@ const ModifySchedule: React.FC<{
         })])
       } else if (newCalendarId !== oldCalendarId && initialValues?.id) {
         // move schedule: move block to new page
-        const newBlock = await moveBlockToNewPage(Number(initialValues.id), newCalendarId)
+        let newBlock
+        const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
+        if (isJournalSchedule) {
+          newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(Number(initialValues.id), newCalendarId, `[[${logKey?.id}]]`) : await moveBlockToNewPage(Number(initialValues.id), newCalendarId)
+        } else {
+          newBlock = await moveBlockToSpecificBlock(Number(initialValues.id), newCalendarId, SCHEDULE_PARENT_BLOCK)
+        }
+        // const newBlock = await moveBlockToNewPage(Number(initialValues.id), newCalendarId)
         // journal 移动到 agenda 日历后，需要设置时间
         await updateBlock(newBlock.uuid, newTitle, newBlockPropeties)
         // agenda 日历移动到 journal 需要去除 start end 属性

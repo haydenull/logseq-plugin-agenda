@@ -8,12 +8,12 @@ import { getSubCalendarSchedules } from '@/util/subscription'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import Sidebar from '@/components/Sidebar'
 import dayjs from 'dayjs'
-import { getPageData, moveBlockToNewPage, updateBlock } from '@/util/logseq'
+import { getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, updateBlock } from '@/util/logseq'
 import { Button, Modal, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, SettingOutlined, ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import Weekly from '@/components/Weekly'
 import classNames from 'classnames'
-import { ICustomCalendar } from '@/util/type'
+import { ICustomCalendar, ISettingsForm } from '@/util/type'
 import { useAtom } from 'jotai'
 
 import s from './index.module.less'
@@ -221,7 +221,8 @@ const index: React.FC<{}> = () => {
               console.log('[faiz:] === move journal schedule')
               const { preferredDateFormat } = await logseq.App.getUserConfigs()
               const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
-              const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName)
+              const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
+              const newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(schedule.raw?.id, journalName, `[[${logKey?.id}]]`) : await moveBlockToNewPage(schedule.raw?.id, journalName)
               console.log('[faiz:] === newBlock', newBlock, schedule, schedule?.id)
               if (newBlock) {
                 calendarRef.current?.deleteSchedule(String(schedule.id), schedule.calendarId)

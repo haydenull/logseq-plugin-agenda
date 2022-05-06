@@ -283,3 +283,5 @@ export const DURATION_UNITS = [
   { value: 'h', label: 'hour' },
   // { value: 'd', label: 'day' },
 ]
+
+export const SCHEDULE_PARENT_BLOCK = 'Agenda'
