@@ -11,13 +11,15 @@ const ModalApp: React.FC<{
   const onSave = () => { logseq.hideMainUI() }
   const onCancel = () => { logseq.hideMainUI() }
   return (
-    <ModifySchedule
-      visible
-      type={type}
-      initialValues={initialValues}
-      onSave={onSave}
-      onCancel={onCancel}
-    />
+    <div className="w-screen h-screen">
+      <ModifySchedule
+        visible
+        type={type}
+        initialValues={initialValues}
+        onSave={onSave}
+        onCancel={onCancel}
+      />
+    </div>
   )
 }
 

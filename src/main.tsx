@@ -21,7 +21,8 @@ import { setPluginTheme } from './util/util'
 import ModalApp from './ModalApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
 import { getBlockData } from './util/logseq'
-import { convertBlockToSchedule } from './util/schedule'
+import { convertBlockToSchedule, getSchedules } from './util/schedule'
+import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -66,12 +67,27 @@ if (isDevelopment) {
       renderApp('logseq')
       logseq.showMainUI()
     })
-    logseq.Editor.registerBlockContextMenuItem('agenda-modal', async (e) => {
+    logseq.Editor.registerBlockContextMenuItem('Agenda:Edit Task', async (e) => {
       const blockData = await logseq.Editor.getBlock(e.uuid)
+      console.log('[faiz:] === blockData', blockData)
       if (!blockData) return
-      const title = blockData?.content
-      // const schedule = convertBlockToSchedule({ block: blockData })
-      // renderModalApp({ type: 'update', initialValues: { title } })
+      const schedules = await getSchedules()
+      const schedule = schedules.find(s => Number(s.id) === blockData.id)
+      console.log('[faiz:] === schedule', schedule)
+      if (!schedule) return logseq.App.showMsg('Schedule not found', 'error')
+      renderModalApp({
+        type: 'update',
+        initialValues: {
+          id: schedule.id,
+          start: dayjs(schedule.start as string),
+          end: dayjs(schedule.end as string),
+          isAllDay: schedule.isAllDay,
+          calendarId: schedule.calendarId,
+          title: (schedule.raw as unknown as BlockEntity)?.content?.split?.('\n')[0],
+          raw: schedule.raw,
+        },
+      })
+      logseq.showMainUI()
     })
 
   })
