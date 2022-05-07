@@ -18,6 +18,10 @@ import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
 import { setPluginTheme } from './util/util'
+import ModalApp from './ModalApp'
+import { IScheduleValue } from '@/components/ModifySchedule'
+import { getBlockData } from './util/logseq'
+import { convertBlockToSchedule } from './util/schedule'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -62,6 +66,13 @@ if (isDevelopment) {
       renderApp('logseq')
       logseq.showMainUI()
     })
+    logseq.Editor.registerBlockContextMenuItem('agenda-modal', async (e) => {
+      const blockData = await logseq.Editor.getBlock(e.uuid)
+      if (!blockData) return
+      const title = blockData?.content
+      // const schedule = convertBlockToSchedule({ block: blockData })
+      // renderModalApp({ type: 'update', initialValues: { title } })
+    })
 
   })
 }
@@ -74,6 +85,15 @@ function renderApp(env: string) {
     <React.StrictMode>
       {/* <App env={env} /> */}
       <App />
+    </React.StrictMode>,
+    document.getElementById('root')
+  )
+}
+
+function renderModalApp({ type, initialValues }: { type: 'create' | 'update', initialValues?: IScheduleValue }) {
+  ReactDOM.render(
+    <React.StrictMode>
+      <ModalApp type={type} initialValues={initialValues} />
     </React.StrictMode>,
     document.getElementById('root')
   )
