@@ -4,12 +4,16 @@ import { CALENDAR_THEME, DEFAULT_SETTINGS } from './constants'
 import { ISettingsForm } from './type'
 
 export const getInitalSettings = (): ISettingsForm => {
-  let logKey = logseq.settings?.logKey
-  // 适配 logKey 参数变化
-  if (typeof logKey === 'string') {
-    logKey = {
-      ...DEFAULT_SETTINGS.logKey,
-      id: logKey,
+  let logKey = DEFAULT_SETTINGS.logKey
+  const settingLogKey = logseq.settings?.logKey
+  if (settingLogKey) {
+    logKey = settingLogKey
+    // 适配 logKey 参数变化
+    if (typeof settingLogKey === 'string' && DEFAULT_SETTINGS.logKey) {
+      logKey = {
+        ...DEFAULT_SETTINGS.logKey,
+        id: settingLogKey,
+      }
     }
   }
   return {

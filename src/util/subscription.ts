@@ -10,7 +10,7 @@ import { ISettingsForm } from './type'
  */
  export const getSubCalendarSchedules = async (subscriptionCalendarList: ISettingsForm['subscriptionList'], defaultDuration?: ISettingsForm['defaultDuration']) => {
   if (!Array.isArray(subscriptionCalendarList)) return []
-  const enabledCalendarList = subscriptionCalendarList?.filter(calendar => calendar.enabled)
+  const enabledCalendarList = subscriptionCalendarList?.filter(calendar => calendar?.enabled)
   if (!enabledCalendarList?.length) return []
 
   const resList = await Promise.allSettled(enabledCalendarList.map(calendar => axios(calendar.url)))

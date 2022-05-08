@@ -18,7 +18,7 @@ export const getSchedules = async () => {
   // get calendar configs
   const settings = getInitalSettings()
   const { calendarList: calendarConfigs = [], logKey, defaultDuration, subscriptionList } = settings
-  const customCalendarConfigs = calendarConfigs.filter(config => config.enabled)
+  const customCalendarConfigs = calendarConfigs.filter(config => config?.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
 

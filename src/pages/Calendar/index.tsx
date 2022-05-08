@@ -27,8 +27,8 @@ const index: React.FC<{}> = () => {
   const [showDate, setShowDate] = useState<string>()
   const [isFold, setIsFold] = useState(true)
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
-  const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar.enabled))
-  const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription.enabled) : []
+  const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar?.enabled))
+  const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription?.enabled) : []
   const [modifyScheduleModal, setModifyScheduleModal] = useState<{
     visible: boolean
     type?: 'create' | 'update'
