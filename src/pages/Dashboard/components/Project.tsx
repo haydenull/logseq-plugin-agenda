@@ -51,12 +51,22 @@ const Project: React.FC<{
     logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
     logseq.hideMainUI()
   }
+  const onClickProjectTitle = async () => {
+    const pageName = data.id
+    const pageData = await getPageData({ originalName: pageName })
+    if (pageData?.properties?.agenda) {
+      logseq.App.pushState('page', { name: pageData.originalName })
+      logseq.hideMainUI()
+    } else {
+      logseq.App.showMsg('This is not an agenda project.', 'warning')
+    }
+  }
 
   return (
     <div className={classNames(s.project)}>
       <div className={classNames('flex flex-col flex-1 w-0', s.projectContent, { [s.expand]: expand })}>
         <div className="flex justify-between items-center h-24 p-3">
-          <div className="h-full flex items-center">
+          <div className="h-full flex items-center cursor-pointer" onClick={onClickProjectTitle}>
             <div
               className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-lg font-medium"
               style={{backgroundColor: data?.style?.bgColor, color: data?.style?.color}}

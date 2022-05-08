@@ -102,3 +102,15 @@ export const insertCss = (css: string) => {
   if (antdCssFile) head.removeChild(antdCssFile)
   antdCssFile = style
 }
+
+export const toggleAppTransparent = (transparent: boolean) => {
+  const html = document.querySelector('html')
+  const body = document.querySelector('body')
+  if (transparent) {
+    html?.classList.add('modal-app')
+    body?.classList.add('modal-app')
+  } else {
+    html?.classList.remove('modal-app')
+    body?.classList.remove('modal-app')
+  }
+}

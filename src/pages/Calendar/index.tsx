@@ -187,7 +187,7 @@ const index: React.FC<{}> = () => {
               id: schedule.id,
               start: dayjs(schedule.start),
               end: dayjs(schedule.end),
-              isAllDay: schedule.isAllDay,
+              isAllDay: schedule?.raw?.category !== 'time',
               calendarId: schedule.calendarId,
               title: schedule.raw?.content?.split('\n')[0],
               raw: schedule.raw,

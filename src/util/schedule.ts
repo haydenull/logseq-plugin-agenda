@@ -148,11 +148,16 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaC
 
   let _category: ICategory = hasTime ? 'time' : 'allday'
   if (isMilestone) _category = 'milestone'
+  const rawCategory = _category
   const _isOverdue = isOverdue(block, _end || _start)
   if (!isMilestone && _isOverdue) _category = 'task'
 
   const schedule = await genSchedule({
-    blockData: block,
+    blockData: {
+      ...block,
+      // 避免 overdue 的 block 丢失真实 category 信息
+      category: rawCategory,
+    },
     category: _category,
     start: _start,
     end: _end,
@@ -291,6 +296,9 @@ export async function genSchedule(params: {
     const value = defaultDuration.value || _defaultDuration.value
     const unit = defaultDuration.unit || _defaultDuration.unit
     _end = dayjs(start).add(value, unit).toISOString()
+  }
+  if (blockData?.category !== 'time' && !end) {
+    _end = start
   }
 
   return {

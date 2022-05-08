@@ -18,6 +18,7 @@ import { motion } from 'framer-motion'
 
 import Tabs from './components/Tabs'
 import s from './index.module.less'
+import { MENUS } from '@/constants/elements'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
@@ -102,6 +103,9 @@ const Settings: React.FC<{
             </Form.Item>
             <Form.Item label="Light Theme Type" name="lightThemeType">
               <Select options={LIGHT_THEME_TYPE} />
+            </Form.Item>
+            <Form.Item label="Home Page" name="homePage">
+              <Select options={MENUS} />
             </Form.Item>
             <Form.Item label="Default Duration" name={["defaultDuration", 'value']}>
               <InputNumber

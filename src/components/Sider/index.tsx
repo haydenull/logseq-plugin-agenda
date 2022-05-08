@@ -6,18 +6,17 @@ import logo from '@/assets/logo.png'
 import SiderTabs from '@/components/SiderTabs'
 import { MENUS } from '@/constants/elements'
 import s from './index.module.less'
+import { DEFAULT_SETTINGS } from '@/util/constants'
+import { getInitalSettings } from '@/util/baseInfo'
 
 const index: React.FC<{}> = () => {
   const navigate = useNavigate()
+  const { homePage = DEFAULT_SETTINGS.homePage } = getInitalSettings()
 
   const onRouteChange = (value: string) => {
     const { path } = MENUS.find(item => item.value === value) || { path: '/' }
     navigate(path)
   }
-
-  useEffect(() => {
-    // navigate('/calendar')
-  }, [])
 
   return (
     <div className={s.container}>
@@ -26,7 +25,7 @@ const index: React.FC<{}> = () => {
       </div>
       {/* <div className="mb-28"></div> */}
 
-      <SiderTabs tabs={MENUS} onChange={onRouteChange} />
+      <SiderTabs tabs={MENUS} onChange={onRouteChange} initialValue={homePage} />
 
       <div className={s.close} onClick={() => logseq.hideMainUI()}><FaPowerOff /></div>
     </div>

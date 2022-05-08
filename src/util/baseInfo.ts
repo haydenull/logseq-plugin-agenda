@@ -159,6 +159,13 @@ export const genAgendaQuery = (pageName: string) => {
         dateFormatter: 'yyyy-MM-dd HH:mm',
         queryType: 'simple',
       },
+      {
+        script: `(and (page "${pageName}") [[milestone]] (property start))`,
+        scheduleStart: 'properties.start',
+        dateFormatter: 'yyyy-MM-dd',
+        queryType: 'simple',
+        isMilestone: true,
+      },
     ]
   }
 }
