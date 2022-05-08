@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.1.0...v2.1.1) (2022-05-08)
+
+
+### Bug Fixes
+
+* load default log key error ([cdaa468](https://github.com/haydenull/logseq-plugin-agenda/commit/cdaa4683ccf8558189a1e2a0d5a0e6e13bedb66a))
+
 # [2.1.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.0.2...v2.1.0) (2022-05-08)
 
 
