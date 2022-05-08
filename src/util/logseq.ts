@@ -22,6 +22,28 @@ export const moveBlockToNewPage = async (blockId: number, pageName: string) => {
   await logseq.Editor.moveBlock(block.uuid, page.uuid)
   return await getBlockData({ uuid: block.uuid })
 }
+export const moveBlockToSpecificBlock = async (srcBlockId: number, targetPageName: string, targetBlockContent: string) => {
+  const srcBlock = await getBlockData({ id: srcBlockId })
+  if (!srcBlock) return logseq.App.showMsg('moveBlockToSpecificBlock: Block not found', 'error')
+  let targetPage = await getPageData({ originalName: targetPageName })
+  if (!targetPage) targetPage = await logseq.Editor.createPage(targetPageName)
+  let targetBlock = await getSpecificBlockByContent(targetPageName, targetBlockContent)
+  if (!targetBlock) targetBlock = await logseq.Editor.insertBlock(targetPageName, targetBlockContent, { before: true, isPageBlock: true })
+  if (targetBlock) {
+    await logseq.Editor.moveBlock(srcBlock.uuid, targetBlock.uuid, { children: true })
+  }
+  return await getBlockData({ uuid: srcBlock.uuid })
+}
+export const createBlockToSpecificBlock = async (targetPageName: string, targetBlockContent: string, blockContent: string, blockProperties: Record<string, any> = {}) => {
+  let targetPage = await getPageData({ originalName: targetPageName })
+  if (!targetPage) targetPage = await logseq.Editor.createPage(targetPageName)
+  let targetBlock = await getSpecificBlockByContent(targetPageName, targetBlockContent)
+  if (!targetBlock) targetBlock = await logseq.Editor.insertBlock(targetPageName, targetBlockContent, { before: true, isPageBlock: true })
+  if (targetBlock) {
+    return await logseq.Editor.insertBlock(targetBlock.uuid, blockContent, { isPageBlock: false, properties: blockProperties, sibling: false, before: false })
+  }
+  return null
+}
 
 // https://logseq.github.io/plugins/interfaces/IEditorProxy.html#getBlock
 const blockDataCacheMap = new Map()
@@ -59,4 +81,11 @@ export const getCurrentTheme = async () => {
   const _theme = logseq.settings?.theme === 'auto' ? logseqTheme : logseq.settings?.theme
   const lightTheme = (logseq.settings?.lightThemeType as ISettingsForm['lightThemeType']) || 'green'
   return _theme === 'dark' ? 'dark' : lightTheme
+}
+
+export const getSpecificBlockByContent = async (pageName: string, blockContent: string) => {
+  const blocks = await logseq.Editor.getPageBlocksTree(pageName)
+  const block = blocks.find(block => block.content === blockContent) || null
+  console.log('[faiz:] === getSpecificBlockByContent xxx', blocks, block)
+  return block
 }

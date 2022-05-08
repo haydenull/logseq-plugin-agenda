@@ -4,9 +4,10 @@ import dayjs, { Dayjs } from 'dayjs'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import Calendar from 'tui-calendar'
 import type { ICustomCalendar, ISettingsForm } from '../util/type'
-import { genSchedule, getAgendaCalendars, modifyTimeInfo, removeTimeInfo } from '../util/schedule'
-import { getPageData, moveBlockToNewPage, updateBlock } from '../util/logseq'
+import { genSchedule, getAgendaCalendars, modifyTimeInfo, removeTimeInfo } from '@/util/schedule'
+import { createBlockToSpecificBlock, getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, updateBlock } from '@/util/logseq'
 import { format } from 'date-fns'
+import { SCHEDULE_PARENT_BLOCK } from '@/util/constants'
 
 export type IScheduleForm = {
   calendarId: string
@@ -14,6 +15,7 @@ export type IScheduleForm = {
   start: Dayjs
   end: Dayjs
   isAllDay?: boolean
+  keepRef?: boolean
 }
 export type IScheduleValue = Partial<IScheduleForm> & { id?: string; raw?: any }
 
@@ -22,9 +24,10 @@ const ModifySchedule: React.FC<{
   initialValues?: IScheduleValue
   type?: 'create' | 'update'
   calendar?: Calendar
+  showKeepRef?: boolean
   onSave?: () => void
   onCancel?: () => void
-}> = ({ visible, initialValues, onCancel, onSave, type='create', calendar }) => {
+}> = ({ visible, initialValues, onCancel, onSave, type='create', calendar, showKeepRef }) => {
   const [agendaCalendars, setAgendaCalendars] = useState<ISettingsForm['calendarList']>([])
   const [showTime, setShowTime] = useState(!initialValues?.isAllDay)
 
@@ -74,7 +77,7 @@ const ModifySchedule: React.FC<{
         }
       }
       if (!isJournalSchedule && type === 'update') {
-        const marker = initialValues?.raw?.marker
+        const marker = initialValues?.raw?.marker || 'TODO'
         const pureTitle = title.replace(new RegExp(`^${marker} `), '')
         newTitle = `${marker} ` + removeTimeInfo(pureTitle)
       }
@@ -106,11 +109,24 @@ const ModifySchedule: React.FC<{
 
       if (type === 'create') {
         // create schedule
-        const block = await logseq.Editor.insertBlock(newCalendarId, newTitle, {
-          isPageBlock: true,
-          sibling: true,
-          properties: newBlockPropeties,
-        })
+        // const block = await logseq.Editor.insertBlock(newCalendarId, newTitle, {
+        //   isPageBlock: true,
+        //   sibling: true,
+        //   properties: newBlockPropeties,
+        // })
+        const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
+        let block
+        if (isJournalSchedule) {
+          block = logKey?.enabled
+          ? await createBlockToSpecificBlock(newCalendarId, `[[${logKey?.id}]]`, newTitle, newBlockPropeties)
+          : await logseq.Editor.insertBlock(newCalendarId, newTitle, {
+            isPageBlock: true,
+            sibling: true,
+            properties: newBlockPropeties,
+          })
+        } else {
+          block = await createBlockToSpecificBlock(newCalendarId, SCHEDULE_PARENT_BLOCK, newTitle, newBlockPropeties)
+        }
         if (!block) return logseq.App.showMsg('Create block failed', 'error')
         const _block = await logseq.Editor.getBlock(block.uuid)
         calendar?.createSchedules([await genSchedule({
@@ -125,7 +141,17 @@ const ModifySchedule: React.FC<{
         })])
       } else if (newCalendarId !== oldCalendarId && initialValues?.id) {
         // move schedule: move block to new page
-        const newBlock = await moveBlockToNewPage(Number(initialValues.id), newCalendarId)
+        let newBlock
+        const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
+        if (showKeepRef && values?.keepRef) {
+          const block = await logseq.Editor.getBlock(Number(initialValues?.id))
+          if (block) await logseq.Editor.insertBlock(block.uuid, `((${block.uuid}))${isJournalSchedule ? '' : ` #${newCalendarId}`}`, { before: false, sibling: true })
+        }
+        if (isJournalSchedule) {
+          newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(Number(initialValues.id), newCalendarId, `[[${logKey?.id}]]`) : await moveBlockToNewPage(Number(initialValues.id), newCalendarId)
+        } else {
+          newBlock = await moveBlockToSpecificBlock(Number(initialValues.id), newCalendarId, SCHEDULE_PARENT_BLOCK)
+        }
         // journal 移动到 agenda 日历后，需要设置时间
         await updateBlock(newBlock.uuid, newTitle, newBlockPropeties)
         // agenda 日历移动到 journal 需要去除 start end 属性
@@ -133,23 +159,21 @@ const ModifySchedule: React.FC<{
           await logseq.Editor.removeBlockProperty(newBlock.uuid, 'start')
           await logseq.Editor.removeBlockProperty(newBlock.uuid, 'end')
         }
-        if (!newBlock || !initialValues.calendarId) return
-        const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
-        // updateSchedule can't update id, so we need to create new schedule after delete old one
-        calendar?.deleteSchedule(String(initialValues.id), initialValues.calendarId)
-        calendar?.createSchedules([await genSchedule({
-          blockData: _newBlock,
-          category: isAllDay ? 'allday' : 'time',
-          start: dayjs(start).format(),
-          end: dayjs(end).format(),
-          // @ts-ignore
-          calendarConfig,
-          isAllDay,
-          isReadOnly: false,
-        })])
-        // calendar?.updateSchedule(initialValues.id as unknown as string, initialValues.calendarId, )
-        // MoveBlock does not appear to support moving between pages
-        // logseq.Editor.moveBlock(block?.uuid, page.uuid)
+        if (newBlock && initialValues.calendarId) {
+          const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
+          // updateSchedule can't update id, so we need to create new schedule after delete old one
+          calendar?.deleteSchedule(String(initialValues.id), initialValues.calendarId)
+          calendar?.createSchedules([await genSchedule({
+            blockData: _newBlock,
+            category: isAllDay ? 'allday' : 'time',
+            start: dayjs(start).format(),
+            end: dayjs(end).format(),
+            // @ts-ignore
+            calendarConfig,
+            isAllDay,
+            isReadOnly: false,
+          })])
+        }
       } else if (initialValues?.id) {
         // update schedule
         if (calendarId.value === 'journal') {
@@ -222,6 +246,16 @@ const ModifySchedule: React.FC<{
             <Radio value={false}>No</Radio>
           </Radio.Group>
         </Form.Item>
+        {
+          showKeepRef && (
+            <Form.Item name="keepRef" label="Keep Ref" rules={[{ required: true }]}>
+              <Radio.Group>
+                <Radio value={true}>Yes</Radio>
+                <Radio value={false}>No</Radio>
+              </Radio.Group>
+            </Form.Item>
+          )
+        }
       </Form>
     </Modal>
   )

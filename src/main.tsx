@@ -17,7 +17,12 @@ import { initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
-import { setPluginTheme } from './util/util'
+import { setPluginTheme, toggleAppTransparent } from './util/util'
+import ModalApp from './ModalApp'
+import { IScheduleValue } from '@/components/ModifySchedule'
+import { getBlockData } from './util/logseq'
+import { convertBlockToSchedule, getSchedules } from './util/schedule'
+import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -62,11 +67,50 @@ if (isDevelopment) {
       renderApp('logseq')
       logseq.showMainUI()
     })
+    logseq.Editor.registerBlockContextMenuItem('Agenda: Edit Schedule', async (e) => {
+      const blockData = await logseq.Editor.getBlock(e.uuid)
+      console.log('[faiz:] === blockData', blockData)
+      if (!blockData) return
+      const schedules = await getSchedules()
+      const schedule = schedules.find(s => Number(s.id) === blockData.id)
+      console.log('[faiz:] === schedule', schedule)
+      if (schedule) {
+        renderModalApp({
+          type: 'update',
+          initialValues: {
+            id: schedule.id,
+            start: dayjs(schedule.start as string),
+            end: dayjs(schedule.end as string),
+            isAllDay: schedule?.raw?.category !== 'time',
+            calendarId: schedule.calendarId,
+            title: (schedule.raw as unknown as BlockEntity)?.content?.split?.('\n')[0],
+            keepRef: true,
+            raw: schedule.raw,
+          },
+        })
+      } else {
+        const pageData = await logseq.Editor.getPage(blockData.page?.id)
+        console.log('[faiz:] === pageData', pageData)
+        if (!pageData) return logseq.App.showMsg('Failed to get page data', 'error')
+        renderModalApp({
+          type: 'update',
+          initialValues: {
+            id: String(blockData.id),
+            title: blockData?.content,
+            calendarId: (pageData as any)?.properties?.agenda ? pageData.originalName : undefined,
+            isAllDay: true,
+            keepRef: false,
+          },
+        })
+      }
+      logseq.showMainUI()
+    })
 
   })
 }
 
 function renderApp(env: string) {
+  toggleAppTransparent(false)
   logseq.App.onThemeModeChanged(({ mode }) => {
     setPluginTheme(mode)
   })
@@ -74,6 +118,16 @@ function renderApp(env: string) {
     <React.StrictMode>
       {/* <App env={env} /> */}
       <App />
+    </React.StrictMode>,
+    document.getElementById('root')
+  )
+}
+
+function renderModalApp({ type, initialValues }: { type: 'create' | 'update', initialValues?: IScheduleValue }) {
+  toggleAppTransparent(true)
+  ReactDOM.render(
+    <React.StrictMode>
+      <ModalApp type={type} initialValues={initialValues} />
     </React.StrictMode>,
     document.getElementById('root')
   )

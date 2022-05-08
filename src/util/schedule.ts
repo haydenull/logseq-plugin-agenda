@@ -11,12 +11,13 @@ import { PageEntity } from '@logseq/libs/dist/LSPlugin'
 export const getSchedules = async () => {
   const agendaCalendars = await getAgendaCalendars()
   const agendaCalendarIds = agendaCalendars.map(calendar => calendar.id)
-  
+
   // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
-  const { calendarList: calendarConfigs = [], logKey, defaultDuration, subscriptionList } = getInitalSettings()
+  const settings = getInitalSettings()
+  const { calendarList: calendarConfigs = [], logKey, defaultDuration, subscriptionList } = settings
   const customCalendarConfigs = calendarConfigs.filter(config => config.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
@@ -41,76 +42,7 @@ export const getSchedules = async () => {
     }
     console.log('[faiz:] === search blocks by query: ', script, blocks)
 
-    const buildSchedulePromiseList = flattenDeep(blocks).map(async block => {
-      const _dateFormatter = ['scheduled', 'deadline'].includes(scheduleStart || scheduleEnd) ? DEFAULT_BLOCK_DEADLINE_DATE_FORMAT : dateFormatter || DEFAULT_JOURNAL_FORMAT
-      const start = get(block, scheduleStart, undefined)
-      const end = get(block, scheduleEnd, undefined)
-      let hasTime = /[Hhm]+/.test(_dateFormatter || '')
-
-      let _start
-      let _end
-      try {
-        _start = start && genCalendarDate(start, _dateFormatter)
-        _end = end && (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
-      } catch (err) {
-        console.warn('[faiz:] === parse calendar date error: ', err, block, query)
-        return []
-      }
-      if (block?.page?.['journal-day']) {
-        const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
-        if (_startTime || _endTime) {
-          const date = block?.page?.['journal-day']
-          _start = _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
-          _end = _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
-          hasTime = true
-        }
-      }
-      if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
-        const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
-        const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
-        if (time) {
-          _start = formatISO(parse(`${start} ${time}`, 'yyyyMMdd HH:mm', new Date()))
-          hasTime = true
-        }
-      }
-      if (end && ['scheduled', 'deadline'].includes(scheduleEnd)) {
-        const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleEnd.toUpperCase()}:`))?.trim()
-        const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
-        if (time) {
-          _end = formatISO(parse(`${end} ${time}`, 'yyyyMMdd HH:mm', new Date()))
-          hasTime = true
-        }
-      }
-
-      let _category: ICategory = hasTime ? 'time' : 'allday'
-      if (isMilestone) _category = 'milestone'
-      const _isOverdue = isOverdue(block, _end || _start)
-      if (!isMilestone && _isOverdue) _category = 'task'
-
-      const schedule = await genSchedule({
-        blockData: block,
-        category: _category,
-        start: _start,
-        end: _end,
-        calendarConfig,
-        defaultDuration,
-        isAllDay: !isMilestone && !hasTime && !_isOverdue,
-        isReadOnly: !supportEdit(block, calendarConfig.id, agendaCalendarIds),
-      })
-      // show overdue tasks in today
-      return _isOverdue
-        ? [
-          schedule,
-          {
-            ...schedule,
-            id: `overdue-${schedule.id}`,
-            start: dayjs().startOf('day').toISOString(),
-            end: dayjs().endOf('day').toISOString(),
-            isAllDay: false,
-          },
-        ]
-        : schedule
-    })
+    const buildSchedulePromiseList = flattenDeep(blocks).map((block) => convertBlockToSchedule({ block, queryWithCalendar, agendaCalendarIds, settings }))
     return Promise.all(buildSchedulePromiseList)
   })
 
@@ -168,6 +100,85 @@ message: ${res.reason.message}`
   }
 
   return calendarSchedules
+}
+
+export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaCalendarIds, settings }: { block: any; queryWithCalendar: IQueryWithCalendar, agendaCalendarIds: string[], settings: ISettingsForm }) => {
+  const { calendarConfig, query } = queryWithCalendar
+  const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone, queryType } = query
+  const { defaultDuration } = settings
+  const _dateFormatter = ['scheduled', 'deadline'].includes(scheduleStart || scheduleEnd) ? DEFAULT_BLOCK_DEADLINE_DATE_FORMAT : dateFormatter || DEFAULT_JOURNAL_FORMAT
+  const start = get(block, scheduleStart, undefined)
+  const end = get(block, scheduleEnd, undefined)
+  let hasTime = /[Hhm]+/.test(_dateFormatter || '')
+
+  let _start
+  let _end
+  try {
+    _start = start && genCalendarDate(start, _dateFormatter)
+    _end = end && (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
+  } catch (err) {
+    console.warn('[faiz:] === parse calendar date error: ', err, block, query)
+    return []
+  }
+  if (block?.page?.['journal-day']) {
+    const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
+    if (_startTime || _endTime) {
+      const date = block?.page?.['journal-day']
+      _start = _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
+      _end = _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
+      hasTime = true
+    }
+  }
+  if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
+    const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
+    const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
+    if (time) {
+      _start = formatISO(parse(`${start} ${time}`, 'yyyyMMdd HH:mm', new Date()))
+      hasTime = true
+    }
+  }
+  if (end && ['scheduled', 'deadline'].includes(scheduleEnd)) {
+    const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleEnd.toUpperCase()}:`))?.trim()
+    const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
+    if (time) {
+      _end = formatISO(parse(`${end} ${time}`, 'yyyyMMdd HH:mm', new Date()))
+      hasTime = true
+    }
+  }
+
+  let _category: ICategory = hasTime ? 'time' : 'allday'
+  if (isMilestone) _category = 'milestone'
+  const rawCategory = _category
+  const _isOverdue = isOverdue(block, _end || _start)
+  if (!isMilestone && _isOverdue) _category = 'task'
+
+  const schedule = await genSchedule({
+    blockData: {
+      ...block,
+      // 避免 overdue 的 block 丢失真实 category 信息
+      category: rawCategory,
+    },
+    category: _category,
+    start: _start,
+    end: _end,
+    calendarConfig,
+    defaultDuration,
+    isAllDay: !isMilestone && !hasTime && !_isOverdue,
+    isReadOnly: !supportEdit(block, calendarConfig.id, agendaCalendarIds),
+  })
+  // show overdue tasks in today
+  return _isOverdue
+    ? [
+      schedule,
+      {
+        ...schedule,
+        id: `overdue-${schedule.id}`,
+        start: dayjs().startOf('day').toISOString(),
+        end: dayjs().endOf('day').toISOString(),
+        isAllDay: false,
+      },
+    ]
+    : schedule
 }
 
 
@@ -285,6 +296,9 @@ export async function genSchedule(params: {
     const value = defaultDuration.value || _defaultDuration.value
     const unit = defaultDuration.unit || _defaultDuration.unit
     _end = dayjs(start).add(value, unit).toISOString()
+  }
+  if (blockData?.category !== 'time' && !end) {
+    _end = start
   }
 
   return {

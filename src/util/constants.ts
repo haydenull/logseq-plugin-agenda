@@ -29,6 +29,7 @@ export const LIGHT_THEME_TYPE = [
 export const DEFAULT_SETTINGS: ISettingsForm = {
   theme: 'auto',
   lightThemeType: 'green',
+  homePage: 'dashboard',
   defaultView: 'month',
   weekStartDay: 0,
   // journalDateFormatter: 'YYYY-MM-DD ddd',
@@ -283,3 +284,5 @@ export const DURATION_UNITS = [
   { value: 'h', label: 'hour' },
   // { value: 'd', label: 'day' },
 ]
+
+export const SCHEDULE_PARENT_BLOCK = 'Agenda'
