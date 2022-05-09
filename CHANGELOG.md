@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.1.1...v2.1.2) (2022-05-09)
+
+
+### Bug Fixes
+
+* 🐛 fix colorPicker position fault ([b5742c4](https://github.com/haydenull/logseq-plugin-agenda/commit/b5742c45d09befd5582966ce477bbfabf43b7c4c))
+
 ## [2.1.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.1.0...v2.1.1) (2022-05-08)
 
 
