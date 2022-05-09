@@ -32,6 +32,8 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   homePage: 'dashboard',
   defaultView: 'month',
   weekStartDay: 0,
+  weekHourStart: 0,
+  weekHourEnd: 24,
   // journalDateFormatter: 'YYYY-MM-DD ddd',
   defaultDuration: {
     value: 0.5,

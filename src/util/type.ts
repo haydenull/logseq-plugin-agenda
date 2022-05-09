@@ -19,6 +19,8 @@ export type ISettingsForm = {
   homePage?: string
   defaultView: string
   weekStartDay: 0 | 1
+  weekHourStart?: number
+  weekHourEnd?: number
   // journalDateFormatter: string
   defaultDuration: {
     unit: string

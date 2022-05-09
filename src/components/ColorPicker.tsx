@@ -18,7 +18,9 @@ const ColorPicker: React.FC<{
       {pickerVisible && (
         <>
           <div className="bg-transparent fixed top-0 left-0 w-screen h-screen" onClick={() => setPickerVisible(false)}></div>
-          <SketchPicker color={value} onChange={onChangeColor} className="absolute bottom-10 z-10" />
+          <div className="fixed z-10 mt-2">
+            <SketchPicker color={value} onChange={onChangeColor} />
+          </div>
         </>
       )}
     </div>

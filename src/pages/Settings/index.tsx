@@ -44,11 +44,6 @@ const Settings: React.FC<{
   const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
   const [, setSettings] = useAtom(settingsAtom)
 
-  const onClickSettingSave = () => {
-    settingForm.validateFields().then(values => {
-      // onOk(values)
-    })
-  }
   const onTabChange = (value: string) => {
     setTab(value)
   }
@@ -87,13 +82,24 @@ const Settings: React.FC<{
     <div className="page-container p-8 flex flex-col items-center">
       <h1 className={classNames(s.title, 'title-text')}>Settings</h1>
       <div className={classNames(s.content, 'rounded-2xl flex')}>
-        <Tabs value={tab} tabs={TABS} onChange={onTabChange} />
+        <div className="flex flex-col justify-between">
+          <Tabs value={tab} tabs={TABS} onChange={onTabChange} />
+          <Popconfirm
+            title={<span>Are you sure you want to restore default settings?<br />This is an irreversible operation.</span>}
+            onConfirm={() => {
+              settingForm.setFieldsValue(DEFAULT_SETTINGS)
+              onValuesChange(DEFAULT_SETTINGS, DEFAULT_SETTINGS)
+            }}
+          >
+            <Button className="text-left" type="link" style={{ color: 'var(--ls-tertiary-background-color)' }}>Restore Defaults</Button>
+          </Popconfirm>
+        </div>
         <Form
           initialValues={initialValues}
           labelCol={{ span: 4 }}
           preserve={true}
           form={settingForm}
-          style={{ maxWidth: '700px', width: '80%' }}
+          style={{ maxWidth: '800px', width: '80%' }}
           onValuesChange={onValuesChange}
           className="relative h-full"
         >
@@ -199,7 +205,7 @@ const Settings: React.FC<{
             <Form.List name="subscriptionList">
               {(fields, { add, remove }) => (<>
                 {fields.map((field, index) => (
-                  <Form.Item label={index === 0 ? 'Subscription' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 7} })}>
+                  <Form.Item label={index === 0 ? 'Subscription' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}>
                     <div className="flex items-center justify-between">
                       <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
                         <Input placeholder="Calendar ID" style={{ width: '160px' }} />
