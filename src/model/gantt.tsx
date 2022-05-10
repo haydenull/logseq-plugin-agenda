@@ -75,7 +75,7 @@ export const ganttDataAtom = atom<IGroup[] | null>((get) => {
   })
   .filter(function<T>(item: T | null): item is T {return Boolean(item)})
   // 过滤 logKey
-  .filter(group => logseq.settings?.logKey?.enabled === false ? true : group.id !== logKey?.id)
+  .filter(group => logKey?.enabled === false ? true : group.id !== logKey?.id)
 
   return ganttData
 })

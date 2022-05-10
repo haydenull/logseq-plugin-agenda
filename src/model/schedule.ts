@@ -2,6 +2,7 @@ import { atom } from 'jotai'
 import type { ISchedule } from 'tui-calendar'
 import { genScheduleWithCalendarMap } from '@/util/schedule'
 import dayjs from 'dayjs'
+import { getInitalSettings } from '@/util/baseInfo'
 
 export const projectSchedulesAtom = atom<ISchedule[]>([]) // include overdue schedules
 export const subscriptionSchedulesAtom = atom<ISchedule[]>([])
@@ -31,7 +32,11 @@ export const todaySchedulesAtom = atom((get) => {
 // 今日任务
 export const todayTasksAtom = atom((get) => {
   const _schedules = get(todaySchedulesAtom)
-  return _schedules.filter(schedule => schedule.raw?.marker)
+  const { logKey } = getInitalSettings()
+  return _schedules
+          .filter(schedule => schedule.raw?.marker)
+          ?.filter(schedule => logKey?.enabled === false ? true : schedule.calendarId !== logKey?.id)
+          ?.filter(schedule => schedule.raw?.category !== 'milestone')
 })
 
 // 最近 14 天任务
