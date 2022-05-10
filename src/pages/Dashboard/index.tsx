@@ -73,33 +73,35 @@ const index: React.FC<{}> = () => {
 
   return (
     <div className="page-container flex">
-      <div className={classNames(s.content, 'flex flex-col flex-1 p-8 overflow-auto')}>
-        <h1 className="sticky top-0 title-text">Dashboard</h1>
-        <div className={classNames(s.stats, 'flex')}>
-          <div className="flex-1">
-            <Polygonal data={polygonalData} />
-          </div>
-          <div style={{ width: '160px' }} className={classNames('h-full rounded-xl shadow-sm cursor-pointer', s.statsRight)} onClick={onClickTodayProgress}>
-            <GaugeChart progress={progress} />
-            <div className="flex justify-between px-6">
-              <div className={classNames('flex flex-col rounded-lg text-center py-1 shadow-sm', s.amount)}>
-                <span className="text-3xl title-text">{upcomingTasksCount}</span>
-                <span className="text">Todo</span>
-              </div>
-              <div className={classNames('flex flex-col rounded-lg text-center py-1 shadow-sm', s.amount)}>
-                <span className="text-3xl title-text">{completedTasksCount}</span>
-                <span className="text">Done</span>
+      <div className={classNames(s.content, 'flex flex-col flex-1 p-8')}>
+        <h1 className="title-text">Dashboard</h1>
+        <div className="flex-1 overflow-auto">
+          <div className={classNames(s.stats, 'flex')}>
+            <div className="flex-1">
+              <Polygonal data={polygonalData} />
+            </div>
+            <div style={{ width: '160px' }} className={classNames('h-full rounded-xl shadow-sm cursor-pointer', s.statsRight)} onClick={onClickTodayProgress}>
+              <GaugeChart progress={progress} />
+              <div className="flex justify-between px-6">
+                <div className={classNames('flex flex-col rounded-lg text-center py-1 shadow-sm', s.amount)}>
+                  <span className="text-3xl title-text">{upcomingTasksCount}</span>
+                  <span className="text">Todo</span>
+                </div>
+                <div className={classNames('flex flex-col rounded-lg text-center py-1 shadow-sm', s.amount)}>
+                  <span className="text-3xl title-text">{completedTasksCount}</span>
+                  <span className="text">Done</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="mt-8">
-          {
-            projectData.map(project => (
-              <Project key={project.id} data={project} />
-            ))
-          }
+          <div className="mt-8">
+            {
+              projectData.map(project => (
+                <Project key={project.id} data={project} />
+              ))
+            }
+          </div>
         </div>
       </div>
 

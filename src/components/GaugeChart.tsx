@@ -3,6 +3,9 @@ import React, { useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts/core'
 import useTheme from '@/hooks/useTheme'
 import { GAUGE_COLOR_CONFIG } from '@/constants/theme'
+import { getOS } from '@/util/util'
+
+const os = getOS()
 
 const GaugeChart: React.FC<{
   progress: number
@@ -37,9 +40,9 @@ const GaugeChart: React.FC<{
             itemStyle: {
               color: colorConfig.lineColor,
               shadowColor: colorConfig.shadowColor,
-              shadowBlur: type === 'normal' ? 4 : 10,
-              shadowOffsetX: 2,
-              shadowOffsetY: 2
+              shadowBlur: type === 'normal' ? 3 : 10,
+              shadowOffsetX: type === 'normal' ? 0 : 2,
+              shadowOffsetY: type === 'normal' ? 0 : 2,
             },
             progress: {
               show: true,
@@ -77,7 +80,7 @@ const GaugeChart: React.FC<{
               // borderWidth: 2,
               width: height,
               height: height,
-              lineHeight: height + 4,
+              lineHeight: height + (os === 'windows' ? 4 : 0),
               // height: 40,
               borderRadius: 100,
               offsetCenter: [0, 0],
