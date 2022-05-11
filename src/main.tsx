@@ -18,7 +18,7 @@ import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
 import { setPluginTheme, toggleAppTransparent } from './util/util'
-import ModalApp from './ModalApp'
+import ModalApp, { IModalAppProps } from './ModalApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
 import { getBlockData } from './util/logseq'
 import { convertBlockToSchedule, getSchedules } from './util/schedule'
@@ -76,16 +76,19 @@ if (isDevelopment) {
       console.log('[faiz:] === schedule', schedule)
       if (schedule) {
         renderModalApp({
-          type: 'update',
-          initialValues: {
-            id: schedule.id,
-            start: dayjs(schedule.start as string),
-            end: dayjs(schedule.end as string),
-            isAllDay: schedule?.raw?.category !== 'time',
-            calendarId: schedule.calendarId,
-            title: (schedule.raw as unknown as BlockEntity)?.content?.split?.('\n')[0],
-            keepRef: true,
-            raw: schedule.raw,
+          type: 'editSchedule',
+          data: {
+            type: 'update',
+            initialValues: {
+              id: schedule.id,
+              start: dayjs(schedule.start as string),
+              end: dayjs(schedule.end as string),
+              isAllDay: schedule?.raw?.category !== 'time',
+              calendarId: schedule.calendarId,
+              title: (schedule.raw as unknown as BlockEntity)?.content?.split?.('\n')[0],
+              keepRef: true,
+              raw: schedule.raw,
+            },
           },
         })
       } else {
@@ -93,17 +96,30 @@ if (isDevelopment) {
         console.log('[faiz:] === pageData', pageData)
         if (!pageData) return logseq.App.showMsg('Failed to get page data', 'error')
         renderModalApp({
-          type: 'update',
-          initialValues: {
-            id: String(blockData.id),
-            title: blockData?.content,
-            calendarId: (pageData as any)?.properties?.agenda ? pageData.originalName : undefined,
-            isAllDay: true,
-            keepRef: false,
+          type: 'editSchedule',
+          data: {
+            type: 'update',
+            initialValues: {
+              id: String(blockData.id),
+              title: blockData?.content,
+              calendarId: (pageData as any)?.properties?.agenda ? pageData.originalName : undefined,
+              isAllDay: true,
+              keepRef: false,
+            },
           },
         })
       }
       logseq.showMainUI()
+    })
+    logseq.Editor.registerSlashCommand("Agenda: Insert Today Tasks", (e) => {
+      console.log('[faiz:] === registerSlashCommand', e)
+      renderModalApp({
+        type: 'insertTodaySchedule',
+        data: {
+          uuid: e.uuid,
+        },
+      })
+      return Promise.resolve()
     })
 
   })
@@ -123,11 +139,14 @@ function renderApp(env: string) {
   )
 }
 
-function renderModalApp({ type, initialValues }: { type: 'create' | 'update', initialValues?: IScheduleValue }) {
+// function renderModalApp({ type, initialValues }: { type: 'create' | 'update', initialValues?: IScheduleValue }) {
+function renderModalApp(params: IModalAppProps) {
+  const {type, data} = params
   toggleAppTransparent(true)
   ReactDOM.render(
     <React.StrictMode>
-      <ModalApp type={type} initialValues={initialValues} />
+      {/* @ts-ignore */}
+      <ModalApp type={type} data={data} />
     </React.StrictMode>,
     document.getElementById('root')
   )

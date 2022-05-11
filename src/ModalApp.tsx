@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import { listenEsc, managePluginTheme } from './util/util'
+import TodayTaskModal from './components/TodayTaskModal'
 
-const ModalApp: React.FC<{
-  initialValues?: IScheduleValue
-  type?: 'create' | 'update'
-}> = ({
-  type,
-  initialValues
-}) => {
+type IEditSchedule = {
+  type: 'editSchedule'
+  data: {
+    initialValues?: IScheduleValue
+    type?: 'create' | 'update'
+  }
+}
+type IInsertTodaySchedule = {
+  type: 'insertTodaySchedule'
+  data: {
+    uuid: string
+  }
+}
+export type IModalAppProps = IEditSchedule | IInsertTodaySchedule
+const ModalApp: React.FC<IModalAppProps> = (props) => {
+  const type = props.type
   const onSave = () => { logseq.hideMainUI() }
   const onCancel = () => { logseq.hideMainUI() }
+
+  // {
+  //   type,
+  //   initialValues
+  // }
 
   useEffect(() => {
     const callback = () => logseq.hideMainUI()
@@ -23,14 +38,28 @@ const ModalApp: React.FC<{
 
   return (
     <div className="w-screen h-screen">
-      <ModifySchedule
-        visible
-        showKeepRef
-        type={type}
-        initialValues={initialValues}
-        onSave={onSave}
-        onCancel={onCancel}
-      />
+      {
+        type === 'editSchedule' && (
+          <ModifySchedule
+            visible
+            showKeepRef
+            type={props.data.type}
+            initialValues={props.data.initialValues}
+            onSave={onSave}
+            onCancel={onCancel}
+          />
+        )
+      }
+      {
+        type === 'insertTodaySchedule' && (
+          <TodayTaskModal
+            visible
+            uuid={props.data.uuid}
+            onSave={onSave}
+            onCancel={onCancel}
+          />
+        )
+      }
     </div>
   )
 }
