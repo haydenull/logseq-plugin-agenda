@@ -119,6 +119,7 @@ if (isDevelopment) {
           uuid: e.uuid,
         },
       })
+      logseq.showMainUI()
       return Promise.resolve()
     })
 
