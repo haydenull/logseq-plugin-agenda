@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.1.2...v2.2.0) (2022-05-13)
+
+
+### Features
+
+* supports slash command: insert today's task ([24a6aba](https://github.com/haydenull/logseq-plugin-agenda/commit/24a6abaf0f22ffa723793f580704838d03b64263))
+
 ## [2.1.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.1.1...v2.1.2) (2022-05-09)
 
 
