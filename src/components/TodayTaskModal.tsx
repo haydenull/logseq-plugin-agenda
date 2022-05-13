@@ -1,4 +1,6 @@
 import { todayTasksAtom } from '@/model/schedule'
+import { getBlockData } from '@/util/logseq'
+import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 import { Modal, Checkbox, Divider, Row, Col } from 'antd'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
@@ -25,8 +27,22 @@ const TodayTaskModal: React.FC<{
       setValue(options.map(option => option.value))
     }
   }
-  const onClickOk = () => {
-    // const txt = value.map((id) => {
+  const onClickOk = async () => {
+    let blockList: BlockEntity[] = []
+    for (let i = 0; i < value.length; i++) {
+      const block = await getBlockData({ id: Number(value[i]?.replace('overdue-', '')) })
+      blockList.push(block)
+    }
+    logseq.Editor.insertBatchBlock(
+      uuid,
+      blockList.map((block) => ({
+        content: `((${block?.uuid}))`,
+      })),
+      {
+        before: false,
+        sibling: true,
+      }
+    )
     onSave()
   }
 
@@ -39,7 +55,7 @@ const TodayTaskModal: React.FC<{
     }
   }, [value?.length, options?.length])
 
-  console.log('[faiz:] === options', options, tasks)
+  console.log('[faiz:] === options', options, tasks, uuid)
 
   return (
     <Modal

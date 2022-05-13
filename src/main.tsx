@@ -111,7 +111,7 @@ if (isDevelopment) {
       }
       logseq.showMainUI()
     })
-    logseq.Editor.registerSlashCommand("Agenda: Insert Today Tasks", (e) => {
+    logseq.Editor.registerSlashCommand("Agenda: Insert Today's Task", (e) => {
       console.log('[faiz:] === registerSlashCommand', e)
       renderModalApp({
         type: 'insertTodaySchedule',
