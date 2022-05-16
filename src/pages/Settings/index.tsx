@@ -82,7 +82,7 @@ const Settings: React.FC<{
     <div className="page-container p-8 flex flex-col items-center">
       <h1 className={classNames(s.title, 'title-text')}>Settings</h1>
       <div className={classNames(s.content, 'rounded-2xl flex')}>
-        <div className="flex flex-col justify-between">
+        <div className="flex flex-col justify-between pr-5">
           <Tabs value={tab} tabs={TABS} onChange={onTabChange} />
           <Popconfirm
             title={<span>Are you sure you want to restore default settings?<br />This is an irreversible operation.</span>}

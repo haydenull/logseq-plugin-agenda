@@ -1,4 +1,5 @@
 import { format, parse } from 'date-fns'
+import { Dayjs } from 'dayjs'
 // import en from 'dayjs/locale/en'
 import { DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
 import { ISettingsForm } from './type'
@@ -113,4 +114,14 @@ export const toggleAppTransparent = (transparent: boolean) => {
     html?.classList.remove('modal-app')
     body?.classList.remove('modal-app')
   }
+}
+
+export const extractDays = (startDate: Dayjs, endDate: Dayjs): Dayjs[] => {
+  const days: Dayjs[] = []
+  let day = startDate
+  while (day.isSameOrBefore(endDate)) {
+    days.push(day.clone())
+    day = day.add(1, 'day')
+  }
+  return days
 }

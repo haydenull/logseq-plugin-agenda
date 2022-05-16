@@ -30,6 +30,7 @@
     "lodash": "^4.17.21",
     "node-ical": "^0.14.1",
     "react": "^17.0.2",
+    "react-chrono": "^1.15.1",
     "react-color": "^2.19.3",
     "react-dom": "^17.0.2",
     "react-icons": "^4.3.1",

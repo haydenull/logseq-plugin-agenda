@@ -1,4 +1,9 @@
+import { BlockEntity } from "@logseq/libs/dist/LSPlugin"
+import { format, parse } from "date-fns"
+import { Dayjs } from "dayjs"
+import { SHOW_DATE_FORMAT } from "./constants"
 import { ISettingsForm } from "./type"
+import { extractDays } from "./util"
 
 export const updateBlock = async (blockId: number | string, content: string | false, properties?: Record<string, any>) => {
   const block = await logseq.Editor.getBlock(blockId)
@@ -88,4 +93,25 @@ export const getSpecificBlockByContent = async (pageName: string, blockContent: 
   const block = blocks.find(block => block.content === blockContent) || null
   console.log('[faiz:] === getSpecificBlockByContent xxx', blocks, block)
   return block
+}
+
+export const getJouralPageBlocksTree = async (start: Dayjs, end: Dayjs) => {
+  const days = extractDays(start, end)
+  const { preferredDateFormat } = await logseq.App.getUserConfigs()
+  const promises = days.map(day => {
+    const date = format(day.toDate(), preferredDateFormat)
+    return logseq.Editor.getPageBlocksTree(date)
+  })
+  // @ts-ignore item是存在value属性的
+  return (await Promise.allSettled(promises)).map(item => item?.value)
+}
+
+export const extractBlockContent = (block: BlockEntity, depth = 3) => {
+  if (!block) return block
+  let { content, children } = block
+  if (children) {
+    const childrenContent = children.map(child => extractBlockContent(child as BlockEntity, depth - 1)).join('\n')
+    return content += '\n' + childrenContent
+  }
+  return content
 }
