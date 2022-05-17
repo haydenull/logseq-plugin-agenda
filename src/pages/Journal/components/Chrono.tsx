@@ -1,5 +1,5 @@
 // import React, { useState } from 'react'
-import { extractBlockContent, getJouralPageBlocksTree } from '@/util/logseq'
+import { extractBlockContentToText, getJouralPageBlocksTree, extractBlockContentToHtml } from '@/util/logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 import { DatePicker } from 'antd'
 import { format } from 'date-fns'
@@ -75,7 +75,6 @@ const ChronoView: React.FC<{}> = () => {
           return {
             title: format(date.toDate(), preferredDateFormat),
             cardDetailedText: convertPageToCardData(page),
-            // rawContent: 
           }
         })?.reverse())
       })
@@ -97,7 +96,8 @@ const ChronoView: React.FC<{}> = () => {
         {
           data.map(item => (
             <div className="w-full">
-              <p className="whitespace-pre-line">{item?.cardDetailedText}</p>
+              {/* <p className="whitespace-pre-line">{item?.cardDetailedText}</p> */}
+              <div dangerouslySetInnerHTML={{ __html: typeof item?.cardDetailedText === 'string' ? item?.cardDetailedText : (item?.cardDetailedText?.join('') || '') }}></div>
             </div>
           ))
         }
@@ -106,10 +106,10 @@ const ChronoView: React.FC<{}> = () => {
   )
 }
 
-const convertPageToCardData = (blocks: BlockEntity[]): string | string[] => {
+const convertPageToCardData = (blocks: BlockEntity[] | null): string | string[] => {
   if (!blocks) return 'No data'
   return blocks.map(block => {
-    return extractBlockContent(block, 3)
+    return extractBlockContentToHtml(block, 3)
   })
 }
 

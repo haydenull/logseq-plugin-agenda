@@ -106,12 +106,24 @@ export const getJouralPageBlocksTree = async (start: Dayjs, end: Dayjs) => {
   return (await Promise.allSettled(promises)).map(item => item?.value)
 }
 
-export const extractBlockContent = (block: BlockEntity, depth = 3) => {
+export const extractBlockContentToText = (block: BlockEntity, depth = 3) => {
   if (!block) return block
   let { content, children } = block
   if (children) {
-    const childrenContent = children.map(child => extractBlockContent(child as BlockEntity, depth - 1)).join('\n')
+    const childrenContent = children.map(child => extractBlockContentToText(child as BlockEntity, depth - 1)).join('\n')
     return content += '\n' + childrenContent
   }
   return content
+}
+
+export const extractBlockContentToHtml = (block: BlockEntity, depth = 3) => {
+  if (!block) return block
+  let { content, children } = block
+  if (children) {
+    const childrenContent = children.map(child => extractBlockContentToHtml(child as BlockEntity, depth - 1)).join('')
+    console.log('[faiz:] === xxxchildrenContent', childrenContent)
+    return content += `<p>${childrenContent}</p>`
+  }
+  console.log('[faiz:] === xxxcontent', content)
+  return `<div>${content}</div>`
 }
