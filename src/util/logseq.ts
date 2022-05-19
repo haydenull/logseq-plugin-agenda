@@ -1,7 +1,9 @@
 import { BlockEntity } from "@logseq/libs/dist/LSPlugin"
 import { format, parse } from "date-fns"
 import { Dayjs } from "dayjs"
+import { async } from "node-ical"
 import { SHOW_DATE_FORMAT } from "./constants"
+import { fillBlockReference } from "./schedule"
 import { ISettingsForm } from "./type"
 import { extractDays } from "./util"
 
@@ -106,24 +108,26 @@ export const getJouralPageBlocksTree = async (start: Dayjs, end: Dayjs) => {
   return (await Promise.allSettled(promises)).map(item => item?.value)
 }
 
-export const extractBlockContentToText = (block: BlockEntity, depth = 3) => {
+export const extractBlockContentToText = (block: BlockEntity) => {
   if (!block) return block
   let { content, children } = block
   if (children) {
-    const childrenContent = children.map(child => extractBlockContentToText(child as BlockEntity, depth - 1)).join('\n')
+    const childrenContent = children.map(child => extractBlockContentToText(child as BlockEntity)).join('\n')
     return content += '\n' + childrenContent
   }
   return content
 }
 
-export const extractBlockContentToHtml = (block: BlockEntity, depth = 3) => {
+export const extractBlockContentToHtml = async (block: BlockEntity, depth = 1): Promise<string> => {
   if (!block) return block
   let { content, children } = block
-  if (children) {
-    const childrenContent = children.map(child => extractBlockContentToHtml(child as BlockEntity, depth - 1)).join('')
-    console.log('[faiz:] === xxxchildrenContent', childrenContent)
-    return content += `<p>${childrenContent}</p>`
+  content = await fillBlockReference(content)
+  console.log('[faiz:] === content', content)
+  const intent = `margin-left: ${(depth - 1) * 20}px;`
+  const contentHtml = `<p style="${intent} white-space: pre-line;">${content}</p>`
+  if (children && children?.length > 0) {
+    const childrenContent = (await Promise.all(children.map(async child => extractBlockContentToHtml(child as BlockEntity, depth + 1)))).join('')
+    return contentHtml + childrenContent
   }
-  console.log('[faiz:] === xxxcontent', content)
-  return `<div>${content}</div>`
+  return contentHtml
 }

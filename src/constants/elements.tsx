@@ -23,7 +23,7 @@ export const MENUS = [
   { label: 'Gantt', value: 'gantt', icon: <AiOutlineAlignLeft />, path: '/gantt', element: <Gantt /> },
   { label: 'Timeline', value: 'timeline', icon: <RiMenu4Line />, path: '/timeline', element: <Timeline /> },
   // { label: 'Board', value: 'board', icon: <BsClipboardData />, path: '/board', element: <Board /> },
-  { label: 'Journal', value: 'journal', icon: <IoJournalOutline />, path: '/journal', element: <Journal /> },
+  // { label: 'Journal', value: 'journal', icon: <IoJournalOutline />, path: '/journal', element: <Journal /> },
   // { label: 'Stats', value: 'stats', icon: <FaChartArea />, path: '/stats', element: <Stats /> },
   { label: 'Settings', value: 'settings', icon: <IoSettings />, path: '/settings', element: <Settings /> },
 ]

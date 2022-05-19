@@ -70,13 +70,13 @@ const ChronoView: React.FC<{}> = () => {
       .then(async res => {
         console.log('[faiz:] === getJouralPageBlocksTree', res)
         const { preferredDateFormat } = await logseq.App.getUserConfigs()
-        setData(res.map((page, index) => {
+        setData(await Promise.all(res.map(async (page, index) => {
           const date = start.add(index, 'day')
           return {
             title: format(date.toDate(), preferredDateFormat),
-            cardDetailedText: convertPageToCardData(page),
+            cardDetailedText: await convertPageToCardData(page),
           }
-        })?.reverse())
+        })?.reverse()))
       })
   }, [dateRange[0]?.valueOf(), dateRange[1]?.valueOf()])
 
@@ -106,10 +106,16 @@ const ChronoView: React.FC<{}> = () => {
   )
 }
 
-const convertPageToCardData = (blocks: BlockEntity[] | null): string | string[] => {
+const convertPageToCardData = async (blocks: BlockEntity[] | null): Promise<string | string[]> => {
   if (!blocks) return 'No data'
-  return blocks.map(block => {
-    return extractBlockContentToHtml(block, 3)
+  const promiseList = blocks.map(block => {
+    return extractBlockContentToHtml(block)
+  })
+  return Promise.allSettled(promiseList).then(res => {
+    return res.map(item => {
+      // @ts-ignore
+      return item.value
+    })
   })
 }
 
