@@ -24,7 +24,6 @@ const Timeline: React.FC<{
       weekStartDay={logseq.settings?.weekStartDay || 0}
       theme={theme}
       defaultMode={mode}
-      uniqueId={project.id}
     />
   ) : null
 }

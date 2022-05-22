@@ -20,7 +20,7 @@ import './style/index.less'
 import { setPluginTheme, toggleAppTransparent } from './util/util'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
-import { getBlockData } from './util/logseq'
+import { getBlockData, isEnabledAgendaPage } from './util/logseq'
 import { convertBlockToSchedule, getSchedules } from './util/schedule'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 
@@ -126,15 +126,18 @@ if (isDevelopment) {
   })
 }
 
-function renderApp(env: string) {
+async function renderApp(env: string) {
   toggleAppTransparent(false)
   logseq.App.onThemeModeChanged(({ mode }) => {
     setPluginTheme(mode)
   })
+  let defaultRoute = ''
+  const page = await logseq.Editor.getCurrentPage()
+  if (page && isEnabledAgendaPage(page.originalName)) defaultRoute = `project/${page.originalName}`
   ReactDOM.render(
     <React.StrictMode>
       {/* <App env={env} /> */}
-      <App />
+      <App defaultRoute={defaultRoute} />
     </React.StrictMode>,
     document.getElementById('root')
   )

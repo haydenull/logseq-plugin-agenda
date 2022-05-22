@@ -2,6 +2,7 @@ import { BlockEntity } from "@logseq/libs/dist/LSPlugin"
 import { format, parse } from "date-fns"
 import { Dayjs } from "dayjs"
 import { async } from "node-ical"
+import { getInitalSettings } from "./baseInfo"
 import { SHOW_DATE_FORMAT } from "./constants"
 import { fillBlockReference } from "./schedule"
 import { ISettingsForm } from "./type"
@@ -130,4 +131,9 @@ export const extractBlockContentToHtml = async (block: BlockEntity, depth = 1): 
     return contentHtml + childrenContent
   }
   return contentHtml
+}
+
+export const isEnabledAgendaPage = (pageName: string) => {
+  const { calendarList } = getInitalSettings()
+  return calendarList?.filter(calendar => calendar.enabled).some(calendar => calendar.id === pageName)
 }

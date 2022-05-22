@@ -10,6 +10,7 @@ import useTheme from '@/hooks/useTheme'
 import { getPageData } from '@/util/logseq'
 import dayjs from 'dayjs'
 import { ISchedule } from 'tui-calendar'
+import { genRandomString } from '@/util/util'
 
 const Timeline: React.FC<{
   project: IGroup
@@ -42,7 +43,7 @@ const Timeline: React.FC<{
               weekStartDay={logseq.settings?.weekStartDay || 0}
               theme={theme}
               defaultMode="advanced"
-              uniqueId={project.id}
+              uniqueId={genRandomString()}
             />
           </motion.div>
         )}

@@ -11,7 +11,9 @@ import { getSubCalendarSchedules } from '@/util/subscription'
 import { DEFAULT_SETTINGS } from '@/util/constants'
 import ProjectDetail from '@/pages/ProjectDetail'
 
-const App: React.FC<{}> = () => {
+const App: React.FC<{
+  defaultRoute?: string
+}> = ({ defaultRoute }) => {
 
   // TODO: 使用 only-write 减少重新渲染
   const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
@@ -41,7 +43,7 @@ const App: React.FC<{}> = () => {
   return (
     <main className="w-screen h-screen flex" prefix="custom">
       <MemoryRouter>
-        <Sider />
+        <Sider defaultRoute={defaultRoute} />
         <Routes>
           <Route path="/" element={homePageElement} />
           {
