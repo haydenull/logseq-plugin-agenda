@@ -9,6 +9,7 @@ import { getSchedules } from '@/util/schedule'
 import { getInitalSettings } from '@/util/baseInfo'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import { DEFAULT_SETTINGS } from '@/util/constants'
+import ProjectDetail from '@/pages/ProjectDetail'
 
 const App: React.FC<{}> = () => {
 
@@ -48,6 +49,7 @@ const App: React.FC<{}> = () => {
               <Route path={item.path} element={item.element} key={item.value} />
             ))
           }
+          <Route path="/project/:projectId" element={<ProjectDetail />} />
         </Routes>
       </MemoryRouter>
     </main>

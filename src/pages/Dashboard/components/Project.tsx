@@ -10,6 +10,7 @@ import GaugeChart from '@/components/GaugeChart'
 
 import s from '../index.module.less'
 import { getPageData } from '@/util/logseq'
+import { useNavigate } from 'react-router-dom'
 
 function getNearestMilestone(data: IGroup) {
   const { milestones = [] } = data
@@ -27,6 +28,7 @@ const Project: React.FC<{
 }> = ({ data }) => {
   const [expand, setExpand] = useState(false)
   const theme = useTheme()
+  const navigate = useNavigate()
 
   const milestone = getNearestMilestone(data)
 
@@ -54,12 +56,14 @@ const Project: React.FC<{
   const onClickProjectTitle = async () => {
     const pageName = data.id
     const pageData = await getPageData({ originalName: pageName })
-    if (pageData?.properties?.agenda) {
-      logseq.App.pushState('page', { name: pageData.originalName })
-      logseq.hideMainUI()
-    } else {
-      logseq.App.showMsg('This is not an agenda project.', 'warning')
-    }
+    // if (pageData?.properties?.agenda) {
+    //   logseq.App.pushState('page', { name: pageData.originalName })
+    //   logseq.hideMainUI()
+    //   navigate(`/project/${pageData.originalName}`)
+    // } else {
+    //   logseq.App.showMsg('This is not an agenda project.', 'warning')
+    // }
+    navigate(`/project/${pageName}`)
   }
 
   return (
