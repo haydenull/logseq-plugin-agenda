@@ -15,6 +15,7 @@ import { settingsAtom } from '@/model/settings'
 import { getSchedules } from '@/util/schedule'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import { motion } from 'framer-motion'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 import Tabs from './components/Tabs'
 import s from './index.module.less'
@@ -167,37 +168,62 @@ const Settings: React.FC<{
           </div>
           <div id="projects" className={classNames(s.formBlock, { [s.show]: tab === 'projects' })}>
             <Form.List name="calendarList">
-              {(fields, { add, remove }) => (<>
-                {fields.map((field, index) => (
-                  <Form.Item required label={index === 0 ? 'Project' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}>
-                    <div className="flex items-center justify-between">
-                      <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
-                        <Input placeholder="Calendar ID" disabled={index === 0} style={{ width: '240px' }} />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
-                        <ColorPicker text="background" />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
-                        <ColorPicker text="text" />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'borderColor']} noStyle rules={[{ required: true }]}>
-                        <ColorPicker text="border" />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'query']} noStyle rules={[{ required: true }]}>
-                        <Query calendarId='query' />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
-                        <Switch />
-                      </Form.Item>
-                      {index !== 0 ? <MinusCircleOutlined onClick={() => remove(field.name)} /> : <div style={{ width: '14px' }}></div>}
-                    </div>
-                  </Form.Item>
-                ))}
-                <Form.Item wrapperCol={{ offset: 4 }}>
-                  <Button type="dashed" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
-                    Add Calendar
-                  </Button>
-                </Form.Item>
+              {(fields, { add, remove, move }) => (<>
+                <DragDropContext onDragEnd={(e) => {
+                  console.log('[faiz:] === onDragEnd', e)
+                  if (e?.destination?.index === 0 || e?.source?.index === 0) return
+                  if (e?.destination) move(e.source.index, e.destination.index)
+                }}>
+                  <Droppable droppableId="droppable-1">
+                    {(provided, snapshot) => (
+                      <div ref={provided.innerRef}>
+                        {fields.map((field, index) => (
+                          <Draggable draggableId={`drag ${index}`} index={index} key={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <Form.Item
+                                  required
+                                  label={index === 0 ? 'Project' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
+                                      <Input placeholder="Calendar ID" disabled={index === 0} style={{ width: '240px' }} />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="background" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="text" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'borderColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="border" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'query']} noStyle rules={[{ required: true }]}>
+                                      <Query calendarId='query' />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
+                                      <Switch />
+                                    </Form.Item>
+                                    {index !== 0 ? <MinusCircleOutlined onClick={() => remove(field.name)} /> : <div style={{ width: '14px' }}></div>}
+                                  </div>
+                                </Form.Item>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        <Form.Item wrapperCol={{ offset: 4 }}>
+                          <Button type="dashed" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
+                            Add Project
+                          </Button>
+                        </Form.Item>
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
               </>)}
             </Form.List>
           </div>

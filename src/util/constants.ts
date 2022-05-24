@@ -48,7 +48,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   },
   calendarList: [
     {
-      id: 'journal',
+      id: 'Journal',
       bgColor: '#047857',
       textColor: '#fff',
       borderColor: '#047857',
