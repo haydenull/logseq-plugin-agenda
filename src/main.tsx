@@ -17,7 +17,7 @@ import { initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
-import { setPluginTheme, toggleAppTransparent } from './util/util'
+import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
 import { getBlockData, isEnabledAgendaPage } from './util/logseq'
@@ -42,6 +42,14 @@ if (isDevelopment) {
   logseq.ready(() => {
 
     initializeSettings()
+
+    managePluginTheme()
+
+    listenEsc(logseq.hideMainUI)
+
+    logseq.App.onThemeModeChanged(({ mode }) => {
+      setPluginTheme(mode)
+    })
 
     logseq.on('ui:visible:changed', (e) => {
       if (!e.visible) {
@@ -128,9 +136,6 @@ if (isDevelopment) {
 
 async function renderApp(env: string) {
   toggleAppTransparent(false)
-  logseq.App.onThemeModeChanged(({ mode }) => {
-    setPluginTheme(mode)
-  })
   let defaultRoute = ''
   const page = await logseq.Editor.getCurrentPage()
   if (page && isEnabledAgendaPage(page.originalName)) defaultRoute = `project/${page.originalName}`

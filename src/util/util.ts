@@ -86,12 +86,13 @@ export const getOS = () => {
   return 'unknown'
 }
 
-let antdCssFile: HTMLLinkElement | null = null
+// let antdCssFile: HTMLLinkElement | null = null
 // 插入 css 文件
 export const insertCss = (css: string) => {
   const style = document.createElement('link')
   style.rel = 'stylesheet'
   style.href = css
+  style.className = 'antd-css'
 
   const head = document.head || document.getElementsByTagName('head')[0]
   const firstChild = head.childNodes[0]
@@ -100,8 +101,11 @@ export const insertCss = (css: string) => {
   } else {
     head.appendChild(style)
   }
-  if (antdCssFile) head.removeChild(antdCssFile)
-  antdCssFile = style
+  const antdCssFileList = head.querySelectorAll('.antd-css')
+  Array.from(antdCssFileList)?.slice(1)?.forEach(element => {
+    head.removeChild(element)
+  })
+  // if (antdCssFile?.[1]) head.removeChild(antdCssFile[1])
 }
 
 export const toggleAppTransparent = (transparent: boolean) => {

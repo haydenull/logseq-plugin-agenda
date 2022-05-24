@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import Sider from '@/components/Sider'
 import { MENUS } from '@/constants/elements'
-import { listenEsc, managePluginTheme } from '@/util/util'
 import { useAtom } from 'jotai'
 import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
 import { getSchedules } from '@/util/schedule'
@@ -29,15 +28,6 @@ const App: React.FC<{
       setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
     }
     fetchSchedules()
-    managePluginTheme()
-  }, [])
-
-  useEffect(() => {
-    const callback = () => logseq.hideMainUI()
-    listenEsc(callback)
-    return () => {
-      document.removeEventListener('keyup', callback)
-    }
   }, [])
 
   return (
