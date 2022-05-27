@@ -150,14 +150,14 @@ export const genAgendaQuery = (pageName: string) => {
     enabled: true,
     query: [
       {
-        script: `(and (page "${pageName}") (property end) (property start))`,
+        script: `(and (page "${pageName}") (task todo doing done later now waitting) (property end) (property start))`,
         scheduleStart: 'properties.start',
         scheduleEnd: 'properties.end',
         dateFormatter: 'yyyy-MM-dd',
         queryType: 'simple',
       },
       {
-        script: `(and (page "${pageName}") (property end) (property start))`,
+        script: `(and (page "${pageName}") (task todo doing done later now waitting) (property end) (property start))`,
         scheduleStart: 'properties.start',
         scheduleEnd: 'properties.end',
         dateFormatter: 'yyyy-MM-dd HH:mm',

@@ -7,6 +7,7 @@ import { IoIosArrowUp, IoIosArrowDown} from 'react-icons/io'
 
 import s from '../index.module.less'
 import useTheme from '@/hooks/useTheme'
+import { genRandomString } from '@/util/util'
 
 const Timeline: React.FC<{
   project: IGroup
@@ -34,7 +35,7 @@ const Timeline: React.FC<{
               weekStartDay={logseq.settings?.weekStartDay || 0}
               showSidebar={false}
               theme={theme}
-              uniqueId={project.id}
+              uniqueId={genRandomString()}
             />
           </motion.div>
         )}

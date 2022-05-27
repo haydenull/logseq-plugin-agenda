@@ -9,6 +9,7 @@ import { getPageData } from '@/util/logseq'
 import dayjs from 'dayjs'
 import { ISchedule } from 'tui-calendar'
 import { useAtom } from 'jotai'
+import { genRandomString } from '@/util/util'
 
 const Timeline: React.FC<{
   projectId: string
@@ -24,6 +25,7 @@ const Timeline: React.FC<{
       weekStartDay={logseq.settings?.weekStartDay || 0}
       theme={theme}
       defaultMode={mode}
+      uniqueId={genRandomString()}
     />
   ) : null
 }

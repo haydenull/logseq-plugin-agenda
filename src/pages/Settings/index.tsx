@@ -20,6 +20,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import Tabs from './components/Tabs'
 import s from './index.module.less'
 import { MENUS } from '@/constants/elements'
+import { managePluginTheme } from '@/util/util'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
@@ -68,7 +69,9 @@ const Settings: React.FC<{
 
     // exec after 500ms to make sure the settings are updated
     setTimeout(async () => {
-      // managePluginTheme()
+      if (changedValues?.lightThemeType || changedValues.theme) {
+        managePluginTheme()
+      }
       if (changedValues?.calendarList) {
         setProjectSchedules(await getSchedules())
       }

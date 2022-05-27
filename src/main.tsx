@@ -45,7 +45,7 @@ if (isDevelopment) {
 
     managePluginTheme()
 
-    listenEsc(logseq.hideMainUI)
+    listenEsc(() => logseq.hideMainUI())
 
     logseq.App.onThemeModeChanged(({ mode }) => {
       setPluginTheme(mode)
