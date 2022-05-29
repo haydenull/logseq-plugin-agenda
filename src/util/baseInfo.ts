@@ -16,9 +16,29 @@ export const getInitalSettings = (): ISettingsForm => {
       }
     }
   }
+  // let calendarList = logseq.settings?.calendarList || DEFAULT_SETTINGS.calendarList
+  // const journalCalendar = calendarList.find(calendar => calendar.id.toLowerCase() === 'journal')
+  // const excludeCalendar = `[?page :block/name ?pname]
+  // [?block :block/page ?page]
+  // (not [(contains? #{${calendarList.slice(1)?.map(calendar => `"${calendar.id}"`).join(' ')}} ?pname)])`
+  // calendarList = [
+  //   {
+  //     ...journalCalendar,
+  //     query: journalCalendar.query.map(query => {
+  //       const scriptArr = query.script.split('\n')
+  //       console.log('[faiz:] === scriptArr', scriptArr, scriptArr.slice(-1))
+  //       return {
+  //         ...query,
+  //         script: scriptArr.slice(0, -1).concat(excludeCalendar).concat(scriptArr.slice(-1)).join('\n'),
+  //       }
+  //     })
+  //   },
+  //   ...calendarList.slice(1),
+  // ]
   return {
     ...DEFAULT_SETTINGS,
     ...logseq.settings,
+    // calendarList,
     logKey,
   }
 }
@@ -29,7 +49,7 @@ export const initializeSettings = () => {
   if (!settings?.initialized) {
     const _settings = getInitalSettings()
     logseq.updateSettings({ ..._settings, initialized: true })
-    console.log('[faiz:] === initialize settings success', logseq.settings)
+    console.log('[faiz:] === initialize settings success', logseq.settings, _settings)
   }
 }
 

@@ -2,18 +2,18 @@ import React, { useState } from 'react'
 import classNames from 'classnames'
 import { useAtom } from 'jotai'
 import Gantt from './components/Gantt'
-
 import s from './index.module.less'
 import { Tabs } from 'antd'
 import { useParams } from 'react-router-dom'
 import CalendarCom from '@/components/Calendar'
-import { schedulesAtom } from '@/model/schedule'
+import { scheduleCalendarMapAtom } from '@/model/schedule'
+import ListView from './components/ListView'
 
 const index: React.FC<{}> = () => {
   const { projectId } = useParams()
 
-  const [allCalendarSchedules] = useAtom(schedulesAtom)
-  const calendarSchedules = allCalendarSchedules.filter(item => item.calendarId === projectId)
+  const [calendarSchedulesMap] = useAtom(scheduleCalendarMapAtom)
+  const calendarSchedules = projectId && calendarSchedulesMap.get(projectId) || []
 
   return (
     <div className={classNames(s.page, 'page-container p-8 flex flex-col items-center')}>
@@ -22,6 +22,9 @@ const index: React.FC<{}> = () => {
         {
           projectId && (
             <Tabs className="w-full" tabPosition="left">
+              <Tabs.TabPane tab="List" key="list">
+                <ListView projectId={projectId} schedules={calendarSchedules} />
+              </Tabs.TabPane>
               <Tabs.TabPane tab="Calendar" key="calendar">
                 <CalendarCom schedules={calendarSchedules} isProjectCalendar />
               </Tabs.TabPane>

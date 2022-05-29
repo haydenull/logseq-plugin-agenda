@@ -137,3 +137,16 @@ export const isEnabledAgendaPage = (pageName: string) => {
   const { calendarList } = getInitalSettings()
   return calendarList?.filter(calendar => calendar.enabled).some(calendar => calendar.id === pageName)
 }
+
+export const catrgorizeTask = (blocks: BlockEntity[]) => {
+  const DOING_CATEGORY = ['DOING', 'NOW']
+  const TODO_CATEGORY = ['TODO', 'LATER']
+  const DONE_CATEGORY = ['DONE']
+  const CANCELED_CATEGORY = ['CANCELED']
+  return {
+    doing: blocks.filter(block => DOING_CATEGORY.includes(block.marker)),
+    todo: blocks.filter(block => TODO_CATEGORY.includes(block.marker)),
+    done: blocks.filter(block => DONE_CATEGORY.includes(block.marker)),
+    canceled: blocks.filter(block => CANCELED_CATEGORY.includes(block.marker)),
+  }
+}

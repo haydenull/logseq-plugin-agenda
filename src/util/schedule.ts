@@ -17,6 +17,7 @@ export const getSchedules = async () => {
 
   // get calendar configs
   const settings = getInitalSettings()
+  console.log('[faiz:] === settings', settings)
   const { calendarList: calendarConfigs = [], logKey, defaultDuration, subscriptionList } = settings
   const customCalendarConfigs = calendarConfigs.filter(config => config?.enabled)
 
@@ -304,7 +305,7 @@ export async function genSchedule(params: {
   return {
     id: id || String(blockData.id),
     calendarId: calendarConfig.id,
-    title: isDone ? `✅${title}` : title,
+    title: isDone ? `✅ ${title}` : title,
     body: blockData.fullContent,
     category,
     dueDateClass: '',
@@ -356,10 +357,12 @@ export const catrgorizeTask = (schedules: ISchedule[]) => {
   const DOING_CATEGORY = ['DOING', 'NOW']
   const TODO_CATEGORY = ['TODO', 'LATER']
   const DONE_CATEGORY = ['DONE']
+  const CANCELED_CATEGORY = ['CANCELED']
   return {
     doing: schedules.filter(schedule => DOING_CATEGORY.includes(schedule?.raw?.marker as string)),
     todo: schedules.filter(schedule => TODO_CATEGORY.includes(schedule?.raw?.marker as string)),
     done: schedules.filter(schedule => DONE_CATEGORY.includes(schedule?.raw?.marker as string)),
+    canceled: schedules.filter(schedule => CANCELED_CATEGORY.includes(schedule?.raw?.marker as string)),
   }
 }
 

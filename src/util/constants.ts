@@ -131,6 +131,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
 [:find (pull ?block [*])
   :where
   [?rp :block/name "milestone"]
+  [?block :block/scheduled]
   [?block :block/refs ?rp]]
           `,
           scheduleStart: 'scheduled',
