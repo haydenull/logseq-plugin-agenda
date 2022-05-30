@@ -24,8 +24,9 @@ import { managePluginTheme } from '@/util/util'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
-  { value: 'calendar', label: 'Calendar View' },
+  { value: 'calendarView', label: 'Calendar View' },
   { value: 'projects', label: 'Projects' },
+  { value: 'customCalendar', label: 'Custom Calendar' },
   { value: 'subscription', label: 'Subscription' },
 ]
 
@@ -147,7 +148,7 @@ const Settings: React.FC<{
             </div>
           </Form.Item>
           </div>
-          <div id="calendar" className={classNames(s.formBlock, { [s.show]: tab === 'calendar' })}>
+          <div id="calendar" className={classNames(s.formBlock, { [s.show]: tab === 'calendarView' })}>
             <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
               <Select options={CALENDAR_VIEWS} />
             </Form.Item>
@@ -170,6 +171,60 @@ const Settings: React.FC<{
             </Form.Item>
           </div>
           <div id="projects" className={classNames(s.formBlock, { [s.show]: tab === 'projects' })}>
+            <Form.List name="projectList">
+              {(fields, { add, remove, move }) => (<>
+                <DragDropContext onDragEnd={(e) => {
+                  console.log('[faiz:] === onDragEnd', e)
+                  if (e?.destination) move(e.source.index, e.destination.index)
+                }}>
+                  <Droppable droppableId="droppable-projects">
+                    {(provided, snapshot) => (
+                      <div ref={provided.innerRef}>
+                        {fields.map((field, index) => (
+                          <Draggable draggableId={`drag ${index}`} index={index} key={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <Form.Item>
+                                  <div className="flex items-center justify-between">
+                                    <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
+                                      <Input placeholder="Project ID (Page Name)" style={{ width: '300px' }} />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="background" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="text" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'borderColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="border" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
+                                      <Switch />
+                                    </Form.Item>
+                                    <MinusCircleOutlined onClick={() => remove(field.name)} />
+                                  </div>
+                                </Form.Item>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        <Form.Item>
+                          <Button type="dashed" onClick={() => add({ id: undefined, bgColor: '#b8e986', textColor: '#4a4a4a', borderColor: '#047857', enabled: true })} block icon={<PlusOutlined />}>
+                            Add Project
+                          </Button>
+                        </Form.Item>
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </>)}
+            </Form.List>
+          </div>
+          <div id="customCalendar" className={classNames(s.formBlock, { [s.show]: tab === 'customCalendar' })}>
             <Form.List name="calendarList">
               {(fields, { add, remove, move }) => (<>
                 <DragDropContext onDragEnd={(e) => {
@@ -190,7 +245,7 @@ const Settings: React.FC<{
                               >
                                 <Form.Item
                                   required
-                                  label={index === 0 ? 'Project' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}
+                                  label={index === 0 ? 'Calendar' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}
                                 >
                                   <div className="flex items-center justify-between">
                                     <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
@@ -220,7 +275,7 @@ const Settings: React.FC<{
                         ))}
                         <Form.Item wrapperCol={{ offset: 4 }}>
                           <Button type="dashed" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
-                            Add Project
+                            Add Custom Calendar
                           </Button>
                         </Form.Item>
                       </div>

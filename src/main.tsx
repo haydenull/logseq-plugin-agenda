@@ -20,7 +20,7 @@ import './style/index.less'
 import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
-import { getBlockData, isEnabledAgendaPage } from './util/logseq'
+import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage } from './util/logseq'
 import { convertBlockToSchedule, getSchedules } from './util/schedule'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 
@@ -130,6 +130,25 @@ if (isDevelopment) {
       logseq.showMainUI()
       return Promise.resolve()
     })
+
+    logseq.provideStyle(`
+      .external-link[href^="agenda-plugin://"]::before {
+        content: '📅';
+        margin: 0 4px;
+      }
+    `)
+
+    if (top) {
+      top.document.addEventListener('click', e => {
+        const path = e.composedPath()
+        const target = path[0] as HTMLAnchorElement
+        if (target.tagName === 'A' && target.className.includes("external-link") && target.href.startsWith('agenda-plugin://')) {
+          console.log('[faiz:] === click agenda date', target)
+          const uuid = getBlockUuidFromEventPath(path as unknown as HTMLElement[])
+          console.log('[faiz:] === uuid', uuid)
+        }
+      })
+    }
 
   })
 }

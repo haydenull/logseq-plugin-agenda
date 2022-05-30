@@ -138,3 +138,10 @@ export const genRandomString = (length: number = 6) => {
   }
   return result
 }
+
+export const parseUrlParams = (url: string): Record<string, string> => {
+  const l = new URL(url).searchParams
+  let res = {}
+  l.forEach((val, key) => res[key] = val)
+  return res
+}

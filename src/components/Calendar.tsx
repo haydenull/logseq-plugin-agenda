@@ -38,6 +38,14 @@ const CalendarCom: React.FC<{
     visible: false,
     type: 'create',
   })
+  const [modifyProjectScheduleModal, setModifyProjectScheduleModal] = useState<{
+    visible: boolean
+    type?: 'create' | 'update'
+    values?: IScheduleValue
+  }>({
+    visible: false,
+    type: 'create',
+  })
   const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
   const [weeklyModal, setWeeklyModal] = useState<{
     visible: boolean

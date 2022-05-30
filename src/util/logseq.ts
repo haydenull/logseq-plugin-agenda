@@ -30,8 +30,9 @@ export const moveBlockToNewPage = async (blockId: number, pageName: string) => {
   await logseq.Editor.moveBlock(block.uuid, page.uuid)
   return await getBlockData({ uuid: block.uuid })
 }
-export const moveBlockToSpecificBlock = async (srcBlockId: number, targetPageName: string, targetBlockContent: string) => {
-  const srcBlock = await getBlockData({ id: srcBlockId })
+export const moveBlockToSpecificBlock = async (srcBlockId: number | string, targetPageName: string, targetBlockContent: string) => {
+  const query = typeof srcBlockId === 'number' ? { id: srcBlockId } : { uuid: srcBlockId }
+  const srcBlock = await getBlockData(query)
   if (!srcBlock) return logseq.App.showMsg('moveBlockToSpecificBlock: Block not found', 'error')
   let targetPage = await getPageData({ originalName: targetPageName })
   if (!targetPage) targetPage = await logseq.Editor.createPage(targetPageName)
@@ -149,4 +150,19 @@ export const catrgorizeTask = (blocks: BlockEntity[]) => {
     done: blocks.filter(block => DONE_CATEGORY.includes(block.marker)),
     canceled: blocks.filter(block => CANCELED_CATEGORY.includes(block.marker)),
   }
+}
+
+export const getBlockUuidFromEventPath = (path: HTMLElement[]) => {
+  let uuid: null | string = null
+  for (let i = 0; i < path.length; i++) {
+    const element = path[i]
+    // const blockid = (element as any)?.blockid
+    const blockid = element.getAttribute('blockid')
+    if (element?.className?.includes('block-content') && blockid) {
+      uuid = blockid
+      break
+    }
+    i++
+  }
+  return uuid
 }

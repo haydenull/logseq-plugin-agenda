@@ -1,12 +1,13 @@
 import { ISchedule } from 'tui-calendar'
 import { flattenDeep, get, has } from 'lodash'
 import { endOfDay, formatISO, isAfter, parse, parseISO, startOfDay } from 'date-fns'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { getInitalSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
-import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, TIME_REG } from './constants'
+import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, MARKDOWN_PROJECT_TIME_REG, TIME_REG } from './constants'
 import { getBlockData, getPageData } from './logseq'
-import { PageEntity } from '@logseq/libs/dist/LSPlugin'
+import { PageEntity, BlockEntity } from '@logseq/libs/dist/LSPlugin'
+import { parseUrlParams } from './util'
 
 export const getSchedules = async () => {
   const agendaCalendars = await getAgendaCalendars()
@@ -18,7 +19,7 @@ export const getSchedules = async () => {
   // get calendar configs
   const settings = getInitalSettings()
   console.log('[faiz:] === settings', settings)
-  const { calendarList: calendarConfigs = [], logKey, defaultDuration, subscriptionList } = settings
+  const { calendarList: calendarConfigs = [], logKey, defaultDuration, projectList } = settings
   const customCalendarConfigs = calendarConfigs.filter(config => config?.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
@@ -63,6 +64,63 @@ message: ${res.reason.message}`
     }
   })
   calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleResFulfilled))
+
+  // Projects
+  const validProjectList = projectList?.filter(project => Boolean(project?.id))
+  if (validProjectList && validProjectList.length > 0) {
+    const promiseList = validProjectList.map(async project => {
+      const tasks = await logseq.DB.q(`(and (task todo doing now later done) [[${project.id}]])`)
+      const milestones = await logseq.DB.q(`(and (page "${project.id}") [[milestone]])`)
+      function blockToSchedule(list: BlockEntity[], isMilestone = false) {
+        return Promise.all(list.map(async (block: BlockEntity) => {
+          const timeInfo = getProjectTaskTime(block.content)
+          if (!timeInfo) return null
+          const {start, end, allDay} = timeInfo
+          let _category: ICategory = allDay === 'false' ? 'time' : 'allday'
+          if (isMilestone) _category = 'milestone'
+          const rawCategory = _category
+          const _isOverdue = isOverdue(block, end || start)
+          if (!isMilestone && _isOverdue) _category = 'task'
+
+          const schedule = await genSchedule({
+            id: block.uuid,
+            blockData: {
+              ...block,
+              // 避免 overdue 的 block 丢失真实 category 信息
+              category: rawCategory,
+            },
+            category: _category,
+            start,
+            end,
+            calendarConfig: project,
+            defaultDuration,
+            isAllDay: !isMilestone && allDay !== 'false' && !_isOverdue,
+            isReadOnly: false,
+          })
+          // show overdue tasks in today
+          return _isOverdue
+            ? [
+              schedule,
+              {
+                ...schedule,
+                id: `overdue-${schedule.id}`,
+                start: dayjs().startOf('day').toISOString(),
+                end: dayjs().endOf('day').toISOString(),
+                isAllDay: false,
+              },
+            ]
+            : schedule
+        }))
+      }
+      const taskSchedules = (tasks && tasks.length > 0) ? await blockToSchedule(tasks) : []
+      const milestoneSchedules = (milestones && milestones.length > 0) ? await blockToSchedule(milestones, true) : []
+      return taskSchedules.concat(milestoneSchedules)?.flat().filter(Boolean)
+    })
+    const projectSchedules = await Promise.all(promiseList)
+    console.log('[faiz:] === projectSchedules', projectSchedules)
+    // @ts-ignore
+    calendarSchedules = flattenDeep(calendarSchedules.concat(projectSchedules))
+  }
 
   // Daily Logs
   if (logKey?.enabled) {
@@ -158,6 +216,7 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaC
       ...block,
       // 避免 overdue 的 block 丢失真实 category 信息
       category: rawCategory,
+      type: 'project',
     },
     category: _category,
     start: _start,
@@ -281,6 +340,8 @@ export async function genSchedule(params: {
                   .split('\n')[0]
                   ?.replace(new RegExp(`^${blockData.marker} `), '')
                   ?.replace(TIME_REG, '')
+                  ?.replace(MARKDOWN_PROJECT_TIME_REG, '')
+                  ?.replace(' #milestone', '')
                   ?.trim?.()
   const isDone = blockData.marker === 'DONE'
 
@@ -375,4 +436,31 @@ export const scheduleStartDayMap = (schedules: ISchedule[]) => {
     res.get(key)?.push(schedule)
   })
   return res
+}
+
+export const getProjectTaskTime = (blockContent: string) => {
+  const res = blockContent.match(MARKDOWN_PROJECT_TIME_REG)
+  if (!res || !res?.[1]) return null
+  return parseUrlParams(res[1])
+}
+export const deleteProjectTaskTime = (blockContent: string) => {
+  return blockContent.replace(MARKDOWN_PROJECT_TIME_REG, '')
+}
+export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
+  const url = new URL('agenda-plugin://')
+  url.searchParams.append('start', start.toISOString())
+  url.searchParams.append('end', end.toISOString())
+  if (allDay === false) url.searchParams.append('allDay', 'false')
+
+  const startText = allDay ? start.format('YYYY-MM-DD') : start.format('YYYY-MM-DD HH:mm')
+  let endText = allDay ? end.format('YYYY-MM-DD') : end.format('YYYY-MM-DD HH:mm')
+
+  const isSameDay = start.isSame(end, 'day')
+  if (isSameDay && allDay) endText = ''
+  if (isSameDay && !allDay) endText = end.format('HH:mm')
+
+  const showText = startText + (endText ? ` - ${endText}` : '')
+  const time = `>[${showText}](${url.toString()})`
+
+  return time
 }
