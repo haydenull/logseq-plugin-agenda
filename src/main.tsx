@@ -21,7 +21,7 @@ import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } fr
 import ModalApp, { IModalAppProps } from './ModalApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
 import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
-import { convertBlockToSchedule, getProjectTaskTime, getSchedules } from './util/schedule'
+import { convertBlockToSchedule, deleteProjectTaskTime, getProjectTaskTime, getSchedules } from './util/schedule'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 
 dayjs.extend(weekday)
@@ -75,14 +75,13 @@ if (isDevelopment) {
       renderApp('logseq')
       logseq.showMainUI()
     })
-    logseq.Editor.registerBlockContextMenuItem('Agenda: Edit Schedule', async (e) => {
-      const blockData = await logseq.Editor.getBlock(e.uuid)
-      console.log('[faiz:] === blockData', blockData)
-      if (!blockData) return
+
+    const editSchedule = async (e) => {
       const schedules = await getSchedules()
-      const schedule = schedules.find(s => Number(s.id) === blockData.id)
+      const schedule = schedules.find(s => s.id === e.uuid)
       console.log('[faiz:] === schedule', schedule)
-      const { defaultDuration } = getInitalSettings()
+      const blockData = await logseq.Editor.getBlock(e.uuid)
+      const { defaultDuration, projectList } = getInitalSettings()
       if (schedule) {
         const start = dayjs(schedule.start as string)
         const end = schedule.end ? dayjs(schedule.end as string) : start.add(defaultDuration.value, defaultDuration.unit)
@@ -97,7 +96,7 @@ if (isDevelopment) {
               end,
               isAllDay: schedule?.raw?.category !== 'time',
               calendarId: schedule.calendarId,
-              title: (schedule.raw as unknown as BlockEntity)?.content?.split?.('\n')[0],
+              title: deleteProjectTaskTime(pureTaskBlockContent(blockData!)),
               keepRef: schedule.calendarId?.toLowerCase() === 'journal',
               raw: schedule.raw,
             },
@@ -106,7 +105,7 @@ if (isDevelopment) {
         })
       } else {
         // convert block to schedule
-        const pageData = await logseq.Editor.getPage(blockData.page?.id)
+        const pageData = await logseq.Editor.getPage(blockData!.page?.id)
         console.log('[faiz:] === pageData', pageData)
         if (!pageData) return logseq.App.showMsg('Failed to get page data', 'error')
         renderModalApp({
@@ -114,20 +113,23 @@ if (isDevelopment) {
           data: {
             type: 'update',
             initialValues: {
-              id: String(blockData.id),
-              title: blockData?.content,
-              calendarId: (pageData as any)?.properties?.agenda ? pageData.originalName : undefined,
+              id: e.uuid,
+              title: deleteProjectTaskTime(pureTaskBlockContent(blockData!)),
+              calendarId: ((pageData as any)?.properties?.agenda || projectList?.some(project => project.id === pageData.originalName)) ? pageData.originalName : undefined,
               isAllDay: true,
               start: dayjs(),
               end: dayjs(),
               keepRef: false,
+              raw: blockData,
             },
           },
           showKeepRef: true,
         })
       }
       logseq.showMainUI()
-    })
+    }
+    logseq.Editor.registerBlockContextMenuItem('Agenda: Modify Schedule', editSchedule)
+    logseq.Editor.registerSlashCommand('Agenda: Modify Schedule', editSchedule)
     logseq.Editor.registerSlashCommand("Agenda: Insert Today's Task", (e) => {
       console.log('[faiz:] === registerSlashCommand', e)
       renderModalApp({
@@ -163,12 +165,13 @@ if (isDevelopment) {
               type: 'update',
               initialValues: {
                 id: uuid,
-                title: pureTaskBlockContent(block!),
+                title: deleteProjectTaskTime(pureTaskBlockContent(block!)),
                 calendarId: page?.originalName,
                 keepRef: false,
                 start: time ? dayjs(time.start) : dayjs(),
                 end: time ? dayjs(time.end) : dayjs(),
                 isAllDay: time?.allDay !== 'false',
+                raw: block,
               },
             },
           })
@@ -184,7 +187,8 @@ async function renderApp(env: string) {
   toggleAppTransparent(false)
   let defaultRoute = ''
   const page = await logseq.Editor.getCurrentPage()
-  if (page && isEnabledAgendaPage(page.originalName)) defaultRoute = `project/${page.originalName}`
+  const { projectList = [] } = getInitalSettings()
+  if (isEnabledAgendaPage(page?.originalName) || projectList.some(project => project.id === page?.originalName)) defaultRoute = `project/${page?.originalName}`
   ReactDOM.render(
     <React.StrictMode>
       {/* <App env={env} /> */}

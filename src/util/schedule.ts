@@ -363,8 +363,10 @@ export async function genSchedule(params: {
     _end = start
   }
 
+  const uuid = typeof blockData?.uuid === 'string' ? blockData?.uuid : blockData?.uuid?.['$uuid$']
+  blockData.uuid = uuid
   return {
-    id: id || String(blockData.id),
+    id: id || uuid,
     calendarId: calendarConfig.id,
     title: isDone ? `✅ ${title}` : title,
     body: blockData.fullContent,

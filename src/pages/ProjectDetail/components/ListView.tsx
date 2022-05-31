@@ -4,7 +4,7 @@ import s from '../index.module.less'
 import classNames from 'classnames'
 import { useEffect, useState } from 'react'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
-import { catrgorizeTask as catrgorizeBlockTask } from '@/util/logseq'
+import { catrgorizeTask as catrgorizeBlockTask, pureTaskBlockContent } from '@/util/logseq'
 import { catrgorizeTask as catrgorizeSchedule } from '@/util/schedule'
 import { Button } from 'antd'
 
@@ -16,7 +16,7 @@ const ListView: React.FC<{
   const [currentTask, setCurrentTask] = useState<ITask>()
 
   const scheduleIds = schedules.map(schedule => schedule.id)
-  const undatedTasks = allTask.filter(block => !scheduleIds.includes(block.id + ''))
+  const undatedTasks = allTask.filter(block => !scheduleIds.includes(block.uuid))
 
   const undatedTaskMap = catrgorizeBlockTask(undatedTasks)
   const schedulesMap = catrgorizeSchedule(schedules)
@@ -25,7 +25,7 @@ const ListView: React.FC<{
   const doneTasks: ITask[] = [...schedulesMap.done, ...undatedTaskMap.done]
   const canceledTasks: ITask[] = [...schedulesMap.canceled, ...undatedTaskMap.canceled]
 
-  const navToBlock = async (blockId: number) => {
+  const navToBlock = async (blockUuid: string) => {
     // const rawData: any = schedule.raw || {}
     // const { id: pageId, originalName } = rawData?.page || {}
     // let pageName = originalName
@@ -34,7 +34,6 @@ const ListView: React.FC<{
     //   const page = await logseq.Editor.getPage(pageId)
     //   pageName = page?.originalName
     // }
-    const { uuid: blockUuid } = await logseq.Editor.getBlock(blockId) || { uuid: '' }
     logseq.Editor.scrollToBlockInPage(projectId, blockUuid)
     logseq.hideMainUI()
   }
@@ -57,15 +56,16 @@ const ListView: React.FC<{
             <div className="pl-4">
               <h3>{currentTask.title}</h3>
               <p className="whitespace-pre-line">{currentTask.raw.fullContent}</p>
-              <Button type="link" className="px-0" onClick={() => navToBlock(Number(currentTask.id))}>Navigate To Block</Button>
+              <Button type="link" className="px-0" onClick={() => navToBlock(currentTask.id as string)}>Navigate To Block</Button>
             </div>
           )
         }
         {
           currentTask && (currentTask as BlockEntity)?.page && (
             <div className="pl-4">
-              <h3>{(currentTask as BlockEntity).content}</h3>
-              <Button type="link" className="px-0" onClick={() => navToBlock(Number(currentTask.id))}>Navigate To Block</Button>
+              <h3>{pureTaskBlockContent(currentTask as BlockEntity)}</h3>
+              <p>{(currentTask as BlockEntity).content}</p>
+              <Button type="link" className="px-0" onClick={() => navToBlock((currentTask as BlockEntity).uuid!)}>Navigate To Block</Button>
             </div>
           )
         }

@@ -3,11 +3,11 @@ import Calendar, { ISchedule } from 'tui-calendar'
 import { format, isSameDay, parse, parseISO } from 'date-fns'
 import { getDefaultCalendarOptions, getInitalSettings } from '@/util/baseInfo'
 import { CALENDAR_VIEWS, SHOW_DATE_FORMAT } from '@/util/constants'
-import { genSchedule, modifyTimeInfo } from '@/util/schedule'
+import { deleteProjectTaskTime, genSchedule, modifyTimeInfo } from '@/util/schedule'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import Sidebar from '@/components/Sidebar'
 import dayjs from 'dayjs'
-import { getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, updateBlock } from '@/util/logseq'
+import { getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, pureTaskBlockContent, updateBlock } from '@/util/logseq'
 import { Button, Modal, Radio, Select, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import Weekly from '@/components/Weekly'
@@ -197,7 +197,7 @@ const CalendarCom: React.FC<{
               end: dayjs(schedule.end),
               isAllDay: schedule?.raw?.category !== 'time',
               calendarId: schedule.calendarId,
-              title: schedule.raw?.content?.split('\n')[0],
+              title: deleteProjectTaskTime(pureTaskBlockContent(schedule.raw)),
               raw: schedule.raw,
             },
           })
@@ -233,7 +233,7 @@ const CalendarCom: React.FC<{
               const newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(schedule.raw?.id, journalName, `[[${logKey?.id}]]`) : await moveBlockToNewPage(schedule.raw?.id, journalName)
               console.log('[faiz:] === newBlock', newBlock, schedule, schedule?.id)
               if (newBlock) {
-                calendarRef.current?.deleteSchedule(String(schedule.id), schedule.calendarId)
+                calendarRef.current?.deleteSchedule(schedule.id, schedule.calendarId)
                 calendarRef.current?.createSchedules([await genSchedule({
                   ...schedule,
                   blockData: newBlock,
@@ -245,7 +245,7 @@ const CalendarCom: React.FC<{
             }
           } else {
             // update other schedule (agenda calendar)
-            await updateBlock(Number(schedule.id), false, properties)
+            await updateBlock(schedule.id, false, properties)
           }
         }
       })

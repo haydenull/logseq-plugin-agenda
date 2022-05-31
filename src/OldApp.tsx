@@ -356,7 +356,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
               const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName)
               console.log('[faiz:] === newBlock', newBlock, schedule, schedule?.id)
               if (newBlock) {
-                calendarRef.current?.deleteSchedule(String(schedule.id), schedule.calendarId)
+                calendarRef.current?.deleteSchedule(schedule.id, schedule.calendarId)
                 calendarRef.current?.createSchedules([await genSchedule({
                   ...schedule,
                   blockData: newBlock,
@@ -368,7 +368,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             }
           } else {
             // update other schedule (agenda calendar)
-            await updateBlock(Number(schedule.id), false, properties)
+            await updateBlock(schedule.id, false, properties)
           }
         }
       })

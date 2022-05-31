@@ -30,7 +30,7 @@ const TodayTaskModal: React.FC<{
   const onClickOk = async () => {
     let blockList: BlockEntity[] = []
     for (let i = 0; i < value.length; i++) {
-      const block = await getBlockData({ id: Number(value[i]?.replace('overdue-', '')) })
+      const block = await getBlockData({ uuid: value[i]?.replace('overdue-', '') })
       blockList.push(block)
     }
     logseq.Editor.insertBatchBlock(

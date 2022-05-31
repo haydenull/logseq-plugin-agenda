@@ -22,13 +22,13 @@ export const updateBlock = async (blockId: number | string, content: string | fa
   return Promise.allSettled(upsertBlockPropertyPromises)
 }
 
-export const moveBlockToNewPage = async (blockId: number, pageName: string) => {
-  const block = await getBlockData({ id: blockId })
-  if (!block) return logseq.App.showMsg('moveBlockToNewPage: Block not found', 'error')
+export const moveBlockToNewPage = async (blockUuid: string, pageName: string) => {
+  // const block = await getBlockData({ id: blockId })
+  // if (!block) return logseq.App.showMsg('moveBlockToNewPage: Block not found', 'error')
   const page = await logseq.Editor.createPage(pageName)
   if (!page) return logseq.App.showMsg('Create page failed', 'error')
-  await logseq.Editor.moveBlock(block.uuid, page.uuid)
-  return await getBlockData({ uuid: block.uuid })
+  await logseq.Editor.moveBlock(blockUuid, page.uuid)
+  return await getBlockData({ uuid: blockUuid })
 }
 export const moveBlockToSpecificBlock = async (srcBlockId: number | string, targetPageName: string, targetBlockContent: string) => {
   const query = typeof srcBlockId === 'number' ? { id: srcBlockId } : { uuid: srcBlockId }
@@ -95,7 +95,6 @@ export const getCurrentTheme = async () => {
 export const getSpecificBlockByContent = async (pageName: string, blockContent: string) => {
   const blocks = await logseq.Editor.getPageBlocksTree(pageName)
   const block = blocks.find(block => block.content === blockContent) || null
-  console.log('[faiz:] === getSpecificBlockByContent xxx', blocks, block)
   return block
 }
 

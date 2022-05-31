@@ -1,3 +1,4 @@
+import { pureTaskBlockContent } from '@/util/logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { Collapse, List } from 'antd'
 import classNames from 'classnames'
@@ -24,7 +25,7 @@ const ListCom: React.FC<{
             <span className={classNames(s.linkText, 'whitespace-nowrap')}>{dayjs(item.start).format('MM-DD')}</span>
           </div>
         )
-        : (item as BlockEntity)?.content
+        : pureTaskBlockContent(item as BlockEntity)
       }
     </List.Item>
   )

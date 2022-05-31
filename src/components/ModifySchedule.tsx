@@ -79,7 +79,7 @@ const ModifySchedule: React.FC<{
           newTitle = isAllDay ? joinPrefixTaskBlockContent(initialValues?.raw, removeTimeInfo(pureTitle)) : joinPrefixTaskBlockContent(initialValues?.raw, modifyTimeInfo(pureTitle, startTime, endTime))
         }
       } else if (newScheduleType === 'project') {
-        newTitle = updateProjectTaskTime(title, { start, end, allDay: isAllDay })
+        newTitle = joinPrefixTaskBlockContent(initialValues?.raw, updateProjectTaskTime(title, { start, end, allDay: isAllDay }))
       } else {
         if (type === 'update') {
           newTitle = joinPrefixTaskBlockContent(initialValues?.raw, deleteProjectTaskTime(removeTimeInfo(pureTaskBlockContent(initialValues?.raw, title))))
@@ -147,15 +147,15 @@ const ModifySchedule: React.FC<{
         let newBlock
         const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
         if (showKeepRef && values?.keepRef) {
-          const block = await logseq.Editor.getBlock(Number(initialValues?.id))
-          if (block) await logseq.Editor.insertBlock(block.uuid, `((${block.uuid}))${isJournalSchedule ? '' : ` #${newCalendarId}`}`, { before: false, sibling: true })
+          // const block = await logseq.Editor.getBlock(initialValues?.id)
+          await logseq.Editor.insertBlock(initialValues?.id, `((${initialValues?.id}))${isJournalSchedule ? '' : ` #${newCalendarId}`}`, { before: false, sibling: true })
         }
         if (newScheduleType === 'journal') {
-          newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(Number(initialValues.id), newCalendarId, `[[${logKey?.id}]]`) : await moveBlockToNewPage(Number(initialValues.id), newCalendarId)
+          newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(initialValues.id, newCalendarId, `[[${logKey?.id}]]`) : await moveBlockToNewPage(initialValues.id, newCalendarId)
         } else if (newScheduleType === 'project') {
           newBlock = await moveBlockToSpecificBlock(initialValues.id, newCalendarId, SCHEDULE_PARENT_BLOCK)
         } else {
-          newBlock = await moveBlockToSpecificBlock(Number(initialValues.id), newCalendarId, SCHEDULE_PARENT_BLOCK)
+          newBlock = await moveBlockToSpecificBlock(initialValues.id, newCalendarId, SCHEDULE_PARENT_BLOCK)
         }
         // 移动完成后需要设置 content
         await updateBlock(newBlock.uuid, newTitle, newBlockPropeties)
@@ -167,7 +167,7 @@ const ModifySchedule: React.FC<{
         if (newBlock && initialValues.calendarId) {
           const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
           // updateSchedule can't update id, so we need to create new schedule after delete old one
-          calendar?.deleteSchedule(String(initialValues.id), initialValues.calendarId)
+          calendar?.deleteSchedule(initialValues.id, initialValues.calendarId)
           calendar?.createSchedules([await genSchedule({
             blockData: _newBlock,
             category: isAllDay ? 'allday' : 'time',
@@ -182,13 +182,13 @@ const ModifySchedule: React.FC<{
       } else if (initialValues?.id) {
         // update schedule
         if (newScheduleType === 'journal') {
-          await updateBlock(Number(initialValues.id), newTitle)
+          await updateBlock(initialValues.id, newTitle)
         } else if (newScheduleType === 'project') {
           await updateBlock(initialValues.id, newTitle)
         } else {
-          await updateBlock(Number(initialValues.id), title, newBlockPropeties)
+          await updateBlock(initialValues.id, title, newBlockPropeties)
         }
-        const blockAfterUpdated = await logseq.Editor.getBlock( newScheduleType === 'project' ? initialValues.id : Number(initialValues.id))
+        const blockAfterUpdated = await logseq.Editor.getBlock(initialValues.id)
         console.log('[faiz:] === blockAfterUpdated', blockAfterUpdated)
         calendar?.updateSchedule(initialValues.id, calendarId?.value, await genSchedule({
           blockData: blockAfterUpdated,
