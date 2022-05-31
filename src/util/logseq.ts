@@ -166,3 +166,18 @@ export const getBlockUuidFromEventPath = (path: HTMLElement[]) => {
   }
   return uuid
 }
+
+export const pureTaskBlockContent = (block: BlockEntity, content?: string) => {
+  const marker = block.marker
+  const priority = block.priority
+  let res = content || block.content
+  return res?.replace(marker, '').trim().replace(`[#${priority}]`, '').trim()
+}
+export const joinPrefixTaskBlockContent = (block: BlockEntity, content: string) => {
+  const marker = block.marker
+  const priority = block.priority
+  let res = content
+  if (priority) res = `[#${priority}] ` + res
+  if (marker) res = marker + ' ' + res
+  return res
+}

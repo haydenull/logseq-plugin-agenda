@@ -438,16 +438,8 @@ export const scheduleStartDayMap = (schedules: ISchedule[]) => {
   return res
 }
 
-export const getProjectTaskTime = (blockContent: string) => {
-  const res = blockContent.match(MARKDOWN_PROJECT_TIME_REG)
-  if (!res || !res?.[1]) return null
-  return parseUrlParams(res[1])
-}
-export const deleteProjectTaskTime = (blockContent: string) => {
-  return blockContent.replace(MARKDOWN_PROJECT_TIME_REG, '')
-}
 export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
-  const url = new URL('agenda-plugin://')
+  const url = new URL('agenda://')
   url.searchParams.append('start', start.toISOString())
   url.searchParams.append('end', end.toISOString())
   if (allDay === false) url.searchParams.append('allDay', 'false')
@@ -460,7 +452,22 @@ export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: 
   if (isSameDay && !allDay) endText = end.format('HH:mm')
 
   const showText = startText + (endText ? ` - ${endText}` : '')
-  const time = `>[${showText}](${url.toString()})`
+  const time = `>[${showText}](#${url.toString()})`
 
   return time
+}
+export const getProjectTaskTime = (blockContent: string) => {
+  const res = blockContent.match(MARKDOWN_PROJECT_TIME_REG)
+  if (!res || !res?.[1]) return null
+  return parseUrlParams(res[1])
+}
+export const deleteProjectTaskTime = (blockContent: string) => {
+  return blockContent.replace(MARKDOWN_PROJECT_TIME_REG, '')
+}
+export const updateProjectTaskTime = (blockContent: string, timeInfo: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
+  const time = genProjectTaskTime(timeInfo)
+  if (MARKDOWN_PROJECT_TIME_REG.test(blockContent)) {
+    return blockContent.replace(MARKDOWN_PROJECT_TIME_REG, time)
+  }
+  return blockContent + time
 }

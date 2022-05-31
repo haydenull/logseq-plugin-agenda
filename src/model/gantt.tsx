@@ -16,8 +16,8 @@ const MOCK_PROJECTS: IGroup[] = [
 
 export const ganttDataAtom = atom<IGroup[] | null>((get) => {
   if (import.meta.env.DEV) return MOCK_PROJECTS
-  const { calendarList, subscriptionList, logKey } = getInitalSettings()
-  const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar?.enabled))
+  const { calendarList, subscriptionList, logKey, projectList = [] } = getInitalSettings()
+  const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[], projectList)?.filter(calendar => calendar?.enabled))
   const ganttData: IGroup[] = (enabledCalendarList.map(calendar => calendar.id)).map(calendarId => {
     const schedules = get(scheduleCalendarMapAtom).get(calendarId)
     if (!schedules) return null

@@ -13,15 +13,15 @@ import { GridComponent, ToolboxComponent, TooltipComponent} from 'echarts/compon
 import { LineChart, GaugeChart } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
-import { initializeSettings } from './util/baseInfo'
+import { getInitalSettings, initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
 import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
-import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage } from './util/logseq'
-import { convertBlockToSchedule, getSchedules } from './util/schedule'
+import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
+import { convertBlockToSchedule, getProjectTaskTime, getSchedules } from './util/schedule'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 
 dayjs.extend(weekday)
@@ -82,24 +82,30 @@ if (isDevelopment) {
       const schedules = await getSchedules()
       const schedule = schedules.find(s => Number(s.id) === blockData.id)
       console.log('[faiz:] === schedule', schedule)
+      const { defaultDuration } = getInitalSettings()
       if (schedule) {
+        const start = dayjs(schedule.start as string)
+        const end = schedule.end ? dayjs(schedule.end as string) : start.add(defaultDuration.value, defaultDuration.unit)
+        // update
         renderModalApp({
           type: 'editSchedule',
           data: {
             type: 'update',
             initialValues: {
               id: schedule.id,
-              start: dayjs(schedule.start as string),
-              end: dayjs(schedule.end as string),
+              start,
+              end,
               isAllDay: schedule?.raw?.category !== 'time',
               calendarId: schedule.calendarId,
               title: (schedule.raw as unknown as BlockEntity)?.content?.split?.('\n')[0],
-              keepRef: true,
+              keepRef: schedule.calendarId?.toLowerCase() === 'journal',
               raw: schedule.raw,
             },
           },
+          showKeepRef: true,
         })
       } else {
+        // convert block to schedule
         const pageData = await logseq.Editor.getPage(blockData.page?.id)
         console.log('[faiz:] === pageData', pageData)
         if (!pageData) return logseq.App.showMsg('Failed to get page data', 'error')
@@ -112,9 +118,12 @@ if (isDevelopment) {
               title: blockData?.content,
               calendarId: (pageData as any)?.properties?.agenda ? pageData.originalName : undefined,
               isAllDay: true,
+              start: dayjs(),
+              end: dayjs(),
               keepRef: false,
             },
           },
+          showKeepRef: true,
         })
       }
       logseq.showMainUI()
@@ -132,20 +141,38 @@ if (isDevelopment) {
     })
 
     logseq.provideStyle(`
-      .external-link[href^="agenda-plugin://"]::before {
+      .external-link[href^="#agenda://"]::before {
         content: '📅';
         margin: 0 4px;
       }
     `)
 
     if (top) {
-      top.document.addEventListener('click', e => {
+      top.document.addEventListener('click', async e => {
         const path = e.composedPath()
         const target = path[0] as HTMLAnchorElement
-        if (target.tagName === 'A' && target.className.includes("external-link") && target.href.startsWith('agenda-plugin://')) {
-          console.log('[faiz:] === click agenda date', target)
+        if (target.tagName === 'A' && target.className.includes('external-link') && target.getAttribute('href')?.startsWith('#agenda://')) {
           const uuid = getBlockUuidFromEventPath(path as unknown as HTMLElement[])
-          console.log('[faiz:] === uuid', uuid)
+          if (!uuid) return
+          const block = await logseq.Editor.getBlock(uuid)
+          const page = await logseq.Editor.getPage(block!.page?.id)
+          const time = getProjectTaskTime(block?.content!)
+          renderModalApp({
+            type: 'editSchedule',
+            data: {
+              type: 'update',
+              initialValues: {
+                id: uuid,
+                title: pureTaskBlockContent(block!),
+                calendarId: page?.originalName,
+                keepRef: false,
+                start: time ? dayjs(time.start) : dayjs(),
+                end: time ? dayjs(time.end) : dayjs(),
+                isAllDay: time?.allDay !== 'false',
+              },
+            },
+          })
+          logseq.showMainUI()
         }
       })
     }
@@ -174,7 +201,7 @@ function renderModalApp(params: IModalAppProps) {
   ReactDOM.render(
     <React.StrictMode>
       {/* @ts-ignore */}
-      <ModalApp type={type} data={data} />
+      <ModalApp type={type} data={data} showKeepRef={params.showKeepRef} />
     </React.StrictMode>,
     document.getElementById('root')
   )

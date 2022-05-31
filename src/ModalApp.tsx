@@ -11,6 +11,7 @@ type IEditSchedule = {
     initialValues?: IScheduleValue
     type?: 'create' | 'update'
   }
+  showKeepRef?: boolean
 }
 type IInsertTodaySchedule = {
   type: 'insertTodaySchedule'
@@ -40,7 +41,7 @@ const ModalApp: React.FC<IModalAppProps> = (props) => {
         type === 'editSchedule' && (
           <ModifySchedule
             visible
-            showKeepRef
+            showKeepRef={props.showKeepRef}
             type={props.data.type}
             initialValues={props.data.initialValues}
             onSave={onSave}

@@ -4,8 +4,8 @@ import dayjs, { Dayjs } from 'dayjs'
 import { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import Calendar from 'tui-calendar'
 import type { ICustomCalendar, ISettingsForm } from '../util/type'
-import { deleteProjectTaskTime, genProjectTaskTime, genSchedule, getAgendaCalendars, modifyTimeInfo, removeTimeInfo } from '@/util/schedule'
-import { createBlockToSpecificBlock, getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, updateBlock } from '@/util/logseq'
+import { deleteProjectTaskTime, genProjectTaskTime, genSchedule, getAgendaCalendars, modifyTimeInfo, removeTimeInfo, updateProjectTaskTime } from '@/util/schedule'
+import { createBlockToSpecificBlock, getPageData, joinPrefixTaskBlockContent, moveBlockToNewPage, moveBlockToSpecificBlock, pureTaskBlockContent, updateBlock } from '@/util/logseq'
 import { format } from 'date-fns'
 import { MARKDOWN_PROJECT_TIME_REG, SCHEDULE_PARENT_BLOCK } from '@/util/constants'
 
@@ -30,7 +30,7 @@ const ModifySchedule: React.FC<{
 }> = ({ visible, initialValues, onCancel, onSave, type='create', calendar, showKeepRef }) => {
   const [agendaCalendars, setAgendaCalendars] = useState<ICustomCalendar[]>([])
   const [showTime, setShowTime] = useState(!initialValues?.isAllDay)
-  const oldScheduleType = logseq.settings?.projectList?.some(project => project?.id === calendarId) ? 'project' : 'calendar'
+  // const oldScheduleType = logseq.settings?.projectList?.some(project => project?.id === initialValues?.calendarId) ? 'project' : 'calendar'
 
   const [form] = Form.useForm()
 
@@ -61,37 +61,41 @@ const ModifySchedule: React.FC<{
       const startTime = dayjs(start).format('HH:mm')
       const endTime = dayjs(end).format('HH:mm')
       const calendarConfig = agendaCalendars.find(c => c.id === calendarId?.value)
-      let newScheduleType: 'journal' | 'project' | 'calendar' = logseq.settings?.projectList?.some(project => project?.id === calendarId) ? 'project' : 'calendar'
+      let newScheduleType: 'journal' | 'project' | 'calendar' = logseq.settings?.projectList?.some(project => project?.id === calendarId?.value) ? 'project' : 'calendar'
+      console.log('[faiz:] === newScheduleType', newScheduleType)
       console.log('[faiz:] === onClickSave', values)
       // 变更后的schedule是否是journal中的schedule
       const isJournalSchedule = calendarId?.value?.toLowerCase() === 'journal'
       if (isJournalSchedule) newScheduleType = 'journal'
-      if (dayjs(start).isAfter(dayjs(end))) return logseq.App.showMsg('Start time cannot be later than end time', 'error')
+      if (dayjs(start).isAfter(dayjs(end), isAllDay ? 'day' : undefined)) return logseq.App.showMsg('Start time cannot be later than end time', 'error')
       if (isJournalSchedule && !dayjs(start).isSame(dayjs(end), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
 
       // new block content
-      let newTitle = `TODO ${title}`
+      let newTitle = title
       if (newScheduleType === 'journal') {
         if (type === 'create') newTitle = isAllDay ? `TODO ${title}` : `TODO ${startTime}-${endTime} ${title}`
         if (type === 'update') {
-          const marker = initialValues?.raw?.marker
-          const pureTitle = deleteProjectTaskTime(title.replace(new RegExp(`^${marker} `), ''))
-          newTitle = isAllDay ? `${marker} ` + removeTimeInfo(pureTitle) : `${marker} ` + modifyTimeInfo(pureTitle, startTime, endTime)
+          const pureTitle = deleteProjectTaskTime(pureTaskBlockContent(initialValues?.raw, title))
+          newTitle = isAllDay ? joinPrefixTaskBlockContent(initialValues?.raw, removeTimeInfo(pureTitle)) : joinPrefixTaskBlockContent(initialValues?.raw, modifyTimeInfo(pureTitle, startTime, endTime))
         }
       } else if (newScheduleType === 'project') {
-
+        newTitle = updateProjectTaskTime(title, { start, end, allDay: isAllDay })
+      } else {
+        if (type === 'update') {
+          newTitle = joinPrefixTaskBlockContent(initialValues?.raw, deleteProjectTaskTime(removeTimeInfo(pureTaskBlockContent(initialValues?.raw, title))))
+        }
       }
-      if (!isJournalSchedule && type === 'update') {
-        const marker = initialValues?.raw?.marker || 'TODO'
-        const pureTitle = title.replace(new RegExp(`^${marker} `), '')
-        newTitle = `${marker} ` + removeTimeInfo(pureTitle)
-      }
+      // if (!isJournalSchedule && type === 'update') {
+      //   const marker = initialValues?.raw?.marker || 'TODO'
+      //   const pureTitle = title.replace(new RegExp(`^${marker} `), '')
+      //   newTitle = `${marker} ` + removeTimeInfo(pureTitle)
+      // }
 
       // new properties
-      const newBlockPropeties = isJournalSchedule ? {} : {
+      const newBlockPropeties = newScheduleType === 'calendar' ? {
         start: isAllDay ? startDate : `${startDate} ${startTime}`,
         end: isAllDay ? endDate : `${endDate} ${endTime}`,
-      }
+      } : {}
 
       const { preferredDateFormat } = await logseq.App.getUserConfigs()
       // oldCalendarId: journal shcedule is journal page, other is calendar id
@@ -113,7 +117,7 @@ const ModifySchedule: React.FC<{
         // create schedule
         const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
         let block
-        if (isJournalSchedule) {
+        if (newScheduleType === 'journal') {
           block = logKey?.enabled
           ? await createBlockToSpecificBlock(newCalendarId, `[[${logKey?.id}]]`, newTitle, newBlockPropeties)
           : await logseq.Editor.insertBlock(newCalendarId, newTitle, {
@@ -121,8 +125,7 @@ const ModifySchedule: React.FC<{
             sibling: true,
             properties: newBlockPropeties,
           })
-        } else if (isProjectSchedule) {
-          newTitle += ' ' + genProjectTaskTime({ start, end, allDay: isAllDay })
+        } else if (newScheduleType === 'project') {
           block = await createBlockToSpecificBlock(newCalendarId, SCHEDULE_PARENT_BLOCK, newTitle)
         } else {
           block = await createBlockToSpecificBlock(newCalendarId, SCHEDULE_PARENT_BLOCK, newTitle, newBlockPropeties)
@@ -147,17 +150,16 @@ const ModifySchedule: React.FC<{
           const block = await logseq.Editor.getBlock(Number(initialValues?.id))
           if (block) await logseq.Editor.insertBlock(block.uuid, `((${block.uuid}))${isJournalSchedule ? '' : ` #${newCalendarId}`}`, { before: false, sibling: true })
         }
-        if (isJournalSchedule) {
+        if (newScheduleType === 'journal') {
           newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(Number(initialValues.id), newCalendarId, `[[${logKey?.id}]]`) : await moveBlockToNewPage(Number(initialValues.id), newCalendarId)
-        } else if (isProjectSchedule) {
-          const title = newTitle + ' ' + genProjectTaskTime({ start, end, allDay: isAllDay })
+        } else if (newScheduleType === 'project') {
           newBlock = await moveBlockToSpecificBlock(initialValues.id, newCalendarId, SCHEDULE_PARENT_BLOCK)
         } else {
           newBlock = await moveBlockToSpecificBlock(Number(initialValues.id), newCalendarId, SCHEDULE_PARENT_BLOCK)
         }
-        // journal 移动到 agenda 日历后，需要设置时间
+        // 移动完成后需要设置 content
         await updateBlock(newBlock.uuid, newTitle, newBlockPropeties)
-        // agenda 日历移动到 journal 需要去除 start end 属性
+        // calendar schedule 移动到 journal project 需要去除 start end 属性
         if (Object.keys(newBlockPropeties).length === 0) {
           await logseq.Editor.removeBlockProperty(newBlock.uuid, 'start')
           await logseq.Editor.removeBlockProperty(newBlock.uuid, 'end')
@@ -179,12 +181,14 @@ const ModifySchedule: React.FC<{
         }
       } else if (initialValues?.id) {
         // update schedule
-        if (calendarId.value === 'journal') {
+        if (newScheduleType === 'journal') {
           await updateBlock(Number(initialValues.id), newTitle)
+        } else if (newScheduleType === 'project') {
+          await updateBlock(initialValues.id, newTitle)
         } else {
           await updateBlock(Number(initialValues.id), title, newBlockPropeties)
         }
-        const blockAfterUpdated = await logseq.Editor.getBlock(Number(initialValues.id))
+        const blockAfterUpdated = await logseq.Editor.getBlock( newScheduleType === 'project' ? initialValues.id : Number(initialValues.id))
         console.log('[faiz:] === blockAfterUpdated', blockAfterUpdated)
         calendar?.updateSchedule(initialValues.id, calendarId?.value, await genSchedule({
           blockData: blockAfterUpdated,
@@ -252,7 +256,7 @@ const ModifySchedule: React.FC<{
         </Form.Item>
         {
           showKeepRef && (
-            <Form.Item name="keepRef" label="Keep Ref" rules={[{ required: true }]}>
+            <Form.Item name="keepRef" label="Keep Ref">
               <Radio.Group>
                 <Radio value={true}>Yes</Radio>
                 <Radio value={false}>No</Radio>
