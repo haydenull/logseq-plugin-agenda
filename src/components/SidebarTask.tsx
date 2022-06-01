@@ -41,17 +41,21 @@ const Task: React.FC<{
     logseq.Editor.scrollToBlockInPage(pageName, task.id!)
   }
   const embedToToday: React.MouseEventHandler = async (e) => {
-    console.log('[faiz:] === embedToToday')
+    console.log('[faiz:] === embedToToday', task)
     e.stopPropagation()
+    const scheduleId = task.id?.replace('overdue-', '')
     const { preferredDateFormat } = await logseq.App.getUserConfigs()
     const todayPage = format(dayjs().valueOf(), preferredDateFormat)
-    const newBlock = await logseq.Editor.insertBlock(task.id!, `((${task?.id})) #${task.calendarId}`, { before: false, sibling: true })
+    const newBlock = await logseq.Editor.insertBlock(scheduleId!, `((${scheduleId})) #${task.calendarId}`, { before: false, sibling: true })
+    console.log('[faiz:] === newBlock', newBlock)
     const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
     if (logKey?.enabled) {
       await moveBlockToSpecificBlock(newBlock?.uuid!, todayPage, `[[${logKey?.id}]]`)
     } else {
       await moveBlockToNewPage(newBlock?.uuid!, todayPage)
     }
+    logseq.Editor.scrollToBlockInPage(todayPage, newBlock?.uuid!)
+    logseq.UI.showMsg('Embed task to today success', 'success')
   }
 
   return (
@@ -75,19 +79,17 @@ const Task: React.FC<{
         }
       </div>
       <div style={{ width: '4px', backgroundColor: task.bgColor, borderRadius: '2px', margin: '0 6px' }}></div>
-      <div>
+      <div style={{ width: 'calc(100% - 90px)', paddingBottom: '24px', position: 'relative' }}>
         <div style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em' }}>{task.calendarId}</div>
-        <div style={{ marginBottom: '-0.2em' }}>{task.title}</div>
+        <div style={{ marginBottom: '-0.2em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', position: 'absolute', bottom: 0, width: '100%' }} title={task.title}>{task.title}</div>
       </div>
-      {/* <div className="flex items-center"> */}
-        {
-          (task.calendarId?.toLocaleLowerCase() !== 'journal' || type === 'overdue') && (
-            <div onClick={embedToToday} className="agenda-sidebar-task__add flex items-center">
-              <GrAddCircle style={{ marginLeft: '4px', color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: '0.7' }} />
-            </div>
-          )
-        }
-      {/* </div> */}
+      {
+        (task.calendarId?.toLocaleLowerCase() !== 'journal' || type === 'overdue') && (
+          <div onClick={embedToToday} className="agenda-sidebar-task__add flex" style={{ alignItems: 'center', paddingLeft: '8px' }}>
+            <GrAddCircle style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: '0.7', marginTop: '0.2em' }} />
+          </div>
+        )
+      }
 
 
       {/* <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: task.bgColor, color: task.color }} title={task.calendarId}>{task?.calendarId?.[0]?.toUpperCase()}</div>

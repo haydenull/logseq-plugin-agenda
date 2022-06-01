@@ -24,6 +24,7 @@ import { IScheduleValue } from '@/components/ModifySchedule'
 import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
 import { convertBlockToSchedule, deleteProjectTaskTime, getProjectTaskTime, getSchedules } from './util/schedule'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
+import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -160,8 +161,19 @@ if (isDevelopment) {
         template: `<div id="${id}"></div>`,
         // style: {},
       })
+      logseq.provideStyle(`${LOGSEQ_PROVIDE_COMMON_STYLE}
+        #block-content-${uuid} .lsp-hook-ui-slot {
+          width: 100%;
+        }
+        #block-content-${uuid} .lsp-hook-ui-slot > div {
+          width: 100%;
+        }
+        #block-content-${uuid} .lsp-hook-ui-slot > div > div {
+          width: 100%;
+        }
+      `)
 
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         ReactDOM.render(
           <React.StrictMode>
             {/* @ts-ignore */}
@@ -169,21 +181,10 @@ if (isDevelopment) {
           </React.StrictMode>,
           parent.document.getElementById(id)
         )
-      })
+      }, 0)
     })
 
-    logseq.provideStyle(`
-      .external-link[href^="#agenda://"]::before {
-        content: '📅';
-        margin: 0 4px;
-      }
-      .agenda-sidebar-task__add {
-        display: none;
-      }
-      .agenda-sidebar-task:hover .agenda-sidebar-task__add {
-        display: flex;
-      }
-    `)
+    logseq.provideStyle(LOGSEQ_PROVIDE_COMMON_STYLE)
 
     if (top) {
       top.document.addEventListener('click', async e => {
