@@ -471,5 +471,22 @@ export const updateProjectTaskTime = (blockContent: string, timeInfo: { start: D
   if (MARKDOWN_PROJECT_TIME_REG.test(blockContent)) {
     return blockContent.replace(MARKDOWN_PROJECT_TIME_REG, time)
   }
-  return blockContent + time
+  return blockContent?.split('\n').map((txt, index) => index === 0 ? txt + ' ' + time : txt).join('\n')
+}
+
+export function categorizeTasks (tasks: ISchedule[]) {
+  let overdueTasks: ISchedule[] = []
+  let allDayTasks: ISchedule[] = []
+  let timeTasks: ISchedule[] = []
+  tasks.forEach(task => {
+    if (task.category === 'task') {
+      overdueTasks.push(task)
+    } else if (task.isAllDay) {
+      allDayTasks.push(task)
+    } else {
+      timeTasks.push(task)
+    }
+  })
+
+  return { overdueTasks, allDayTasks, timeTasks }
 }

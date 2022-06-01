@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import Task from './Task'
 import { useAtom } from 'jotai'
 import { todayTasksAtom } from '@/model/schedule'
+import { categorizeTasks } from '@/util/schedule'
 
 const MOCK_TASKS: ISchedule[] = [
   { id: '111', title: 'foo', start: '2022-05-01T16:00', end: '2022-05-01T17:00', isAllDay: true, calendarId: 'overdue-journal', bgColor: '#aaa' },
@@ -17,23 +18,6 @@ const MOCK_TASKS: ISchedule[] = [
   { id: '5', title: 'dgfd', start: '2022-05-01T20:00', end: '2022-05-01T21:00', isAllDay: false, calendarId: 'journal', bgColor: '#aaa' },
   { id: '6', title: 'dgfsd', start: '2022-05-01T22:00', end: '2022-05-01T23:00', isAllDay: false, calendarId: 'journal', bgColor: '#aaa' },
 ]
-
-function categorizeTasks (tasks: ISchedule[]) {
-  let overdueTasks: ISchedule[] = []
-  let allDayTasks: ISchedule[] = []
-  let timeTasks: ISchedule[] = []
-  tasks.forEach(task => {
-    if (task.category === 'task') {
-      overdueTasks.push(task)
-    } else if (task.isAllDay) {
-      allDayTasks.push(task)
-    } else {
-      timeTasks.push(task)
-    }
-  })
-
-  return { overdueTasks, allDayTasks, timeTasks }
-}
 
 const TaskLines: React.FC<{}> = () => {
   const [todayTasks] = useAtom(todayTasksAtom)

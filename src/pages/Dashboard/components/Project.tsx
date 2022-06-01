@@ -98,7 +98,7 @@ const Project: React.FC<{
                     <span className="text-xs description-text ml-1">{dayjs(milestone.start).format('MMM')}</span>
                   </div>
                   <span className="text-xs description-text">days left: {dayjs(milestone.start).diff(dayjs(), 'day')}d</span>
-                  <span className="text-xs description-text ellipsis w-full" title={milestone.title}>{milestone.title}</span>
+                  <span className="text-xs description-text ellipsis w-full text-center" title={milestone.title}>{milestone.title}</span>
                 </div>
               )
             }

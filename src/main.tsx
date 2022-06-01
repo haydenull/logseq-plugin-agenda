@@ -19,6 +19,7 @@ import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
 import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
 import ModalApp, { IModalAppProps } from './ModalApp'
+import TaskListApp from './TaskListApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
 import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
 import { convertBlockToSchedule, deleteProjectTaskTime, getProjectTaskTime, getSchedules } from './util/schedule'
@@ -141,11 +142,46 @@ if (isDevelopment) {
       logseq.showMainUI()
       return Promise.resolve()
     })
+    logseq.Editor.registerSlashCommand('Agenda: Insert Task List Renderer', async () => {
+      logseq.Editor.insertAtEditingCursor(`{{renderer agenda, task-list}}`)
+    })
+    logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments: args, uuid } }) => {
+      console.log('[faiz:] === onMacroRendererSlotted', slot, args, uuid)
+      if (args?.[0] !== 'agenda' || args?.[1] !== 'task-list') return
+      const renderered = parent.document.getElementById(slot)?.childElementCount
+      console.log('[faiz:] === is renderered', renderered)
+      if (renderered) return
+
+      const id = `agenda-task-list-${slot}`
+      logseq.provideUI({
+        key: `agenda-${slot}`,
+        slot,
+        reset: true,
+        template: `<div id="${id}"></div>`,
+        // style: {},
+      })
+
+      requestAnimationFrame(() => {
+        ReactDOM.render(
+          <React.StrictMode>
+            {/* @ts-ignore */}
+            <TaskListApp />
+          </React.StrictMode>,
+          parent.document.getElementById(id)
+        )
+      })
+    })
 
     logseq.provideStyle(`
       .external-link[href^="#agenda://"]::before {
         content: '📅';
         margin: 0 4px;
+      }
+      .agenda-sidebar-task__add {
+        display: none;
+      }
+      .agenda-sidebar-task:hover .agenda-sidebar-task__add {
+        display: flex;
       }
     `)
 
