@@ -25,7 +25,7 @@ import { managePluginTheme } from '@/util/util'
 const TABS = [
   { value: 'basis', label: 'Basis' },
   { value: 'calendarView', label: 'Calendar View' },
-  { value: 'projects', label: 'Projects' },
+  { value: 'project', label: 'Projects' },
   { value: 'customCalendar', label: 'Custom Calendar' },
   { value: 'subscription', label: 'Subscription' },
 ]

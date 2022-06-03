@@ -12,24 +12,28 @@ import ProjectDetail from '@/pages/ProjectDetail'
 import SidebarTask from './components/SidebarTask'
 
 const App: React.FC<{
-  defaultRoute?: string
-}> = ({ defaultRoute }) => {
+  containerId: string
+}> = ({ containerId }) => {
 
   // TODO: 使用 only-write 减少重新渲染
   const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
   // const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
 
   const [todayTasks] = useAtom(todayTasksAtom)
-  console.log('[faiz:] === todayTasks', todayTasks)
   const { overdueTasks, allDayTasks, timeTasks } = categorizeTasks(todayTasks)
 
   useEffect(() => {
     async function fetchSchedules() {
       setProjectSchedules(await getSchedules())
-      const { subscriptionList } = getInitalSettings()
+      // const { subscriptionList } = getInitalSettings()
       // setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
     }
     fetchSchedules()
+    logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
+      if (txData?.some(item => item?.[1] === 'marker') && parent.document.querySelector('#' + containerId)) {
+        fetchSchedules()
+      }
+    })
   }, [])
 
   return (

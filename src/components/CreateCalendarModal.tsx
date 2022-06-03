@@ -45,7 +45,12 @@ const CreateCalendarModal: React.FC<{
         <Form.Item name="calendarId" label="Calendar ID" rules={[{required: true}]}>
           <Input />
         </Form.Item>
-        <Form.Item name="agenda" label="Control By Agenda" tooltip="Checking means that the plugin may modify this document" initialValue={true}>
+        <Form.Item
+          name="agenda"
+          label="Control By Agenda"
+          tooltip="Checking means that the plugin may modify this document"
+          extra="Not recommended, please use project instead"
+        >
           <Radio.Group>
             <Radio value={true}>Yes</Radio>
             <Radio value={false}>No</Radio>

@@ -42,7 +42,7 @@ export const getSchedules = async () => {
     } else {
       blocks = await logseq.DB.datascriptQuery(script)
     }
-    console.log('[faiz:] === search blocks by query: ', script, blocks)
+    // console.log('[faiz:] === search blocks by query: ', script, blocks)
 
     const buildSchedulePromiseList = flattenDeep(blocks).map((block) => convertBlockToSchedule({ block, queryWithCalendar, agendaCalendarIds, settings }))
     return Promise.all(buildSchedulePromiseList)
@@ -88,6 +88,8 @@ message: ${res.reason.message}`
               ...block,
               // 避免 overdue 的 block 丢失真实 category 信息
               category: rawCategory,
+              rawStart: start,
+              rawEnd: end,
             },
             category: _category,
             start,
@@ -125,7 +127,7 @@ message: ${res.reason.message}`
   // Daily Logs
   if (logKey?.enabled) {
     const logs = await logseq.DB.q(`[[${logKey.id}]]`)
-    console.log('[faiz:] === search logs', logs)
+    // console.log('[faiz:] === search logs', logs)
     const _logs = logs
                   ?.filter(block => {
                     if (block.headingLevel && block.format === 'markdown') {
@@ -217,6 +219,8 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaC
       // 避免 overdue 的 block 丢失真实 category 信息
       category: rawCategory,
       type: 'project',
+      rawStart: _start,
+      rawEnd: _end,
     },
     category: _category,
     start: _start,
@@ -368,7 +372,8 @@ export async function genSchedule(params: {
   return {
     id: id || uuid,
     calendarId: calendarConfig.id,
-    title: isDone ? `✅ ${title}` : title,
+    // title: isDone ? `✅ ${title}` : title,
+    title,
     body: blockData.fullContent,
     category,
     dueDateClass: '',

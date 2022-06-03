@@ -79,7 +79,11 @@ const ModifySchedule: React.FC<{
           newTitle = isAllDay ? joinPrefixTaskBlockContent(initialValues?.raw, removeTimeInfo(pureTitle)) : joinPrefixTaskBlockContent(initialValues?.raw, modifyTimeInfo(pureTitle, startTime, endTime))
         }
       } else if (newScheduleType === 'project') {
-        newTitle = joinPrefixTaskBlockContent(initialValues?.raw, updateProjectTaskTime(title, { start, end, allDay: isAllDay }))
+        if (type === 'create') {
+          newTitle = 'TODO' + updateProjectTaskTime(title, { start, end, allDay: isAllDay })
+        } else if (type === 'update') {
+          newTitle = joinPrefixTaskBlockContent(initialValues?.raw, updateProjectTaskTime(title, { start, end, allDay: isAllDay }))
+        }
       } else {
         if (type === 'update') {
           newTitle = joinPrefixTaskBlockContent(initialValues?.raw, deleteProjectTaskTime(removeTimeInfo(pureTaskBlockContent(initialValues?.raw, title))))
@@ -146,10 +150,10 @@ const ModifySchedule: React.FC<{
         // move schedule: move block to new page
         let newBlock
         const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
-        if (showKeepRef && values?.keepRef) {
-          // const block = await logseq.Editor.getBlock(initialValues?.id)
-          await logseq.Editor.insertBlock(initialValues?.id, `((${initialValues?.id}))${isJournalSchedule ? '' : ` #${newCalendarId}`}`, { before: false, sibling: true })
-        }
+        // if (showKeepRef && values?.keepRef) {
+        //   // const block = await logseq.Editor.getBlock(initialValues?.id)
+        //   await logseq.Editor.insertBlock(initialValues?.id, `((${initialValues?.id}))${isJournalSchedule ? '' : ` #[[${newCalendarId}]]`}`, { before: false, sibling: true })
+        // }
         if (newScheduleType === 'journal') {
           newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(initialValues.id, newCalendarId, `[[${logKey?.id}]]`) : await moveBlockToNewPage(initialValues.id, newCalendarId)
         } else if (newScheduleType === 'project') {
@@ -227,7 +231,7 @@ const ModifySchedule: React.FC<{
       <Form
         form={form}
         onValuesChange={onFormChange}
-        initialValues={{ ...initialValues, calendarId: initialValues?.calendarId ? { value: initialValues?.calendarId } : undefined }}
+        initialValues={{ isAllDay: true, ...initialValues, calendarId: initialValues?.calendarId ? { value: initialValues?.calendarId } : undefined }}
       >
         <Form.Item name="calendarId" label="Calendar" rules={[{ required: true }]}>
           <Select labelInValue>
@@ -254,7 +258,7 @@ const ModifySchedule: React.FC<{
             <Radio value={false}>No</Radio>
           </Radio.Group>
         </Form.Item>
-        {
+        {/* {
           showKeepRef && (
             <Form.Item name="keepRef" label="Keep Ref">
               <Radio.Group>
@@ -263,7 +267,7 @@ const ModifySchedule: React.FC<{
               </Radio.Group>
             </Form.Item>
           )
-        }
+        } */}
       </Form>
     </Modal>
   )

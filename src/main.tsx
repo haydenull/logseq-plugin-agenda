@@ -143,7 +143,7 @@ if (isDevelopment) {
       logseq.showMainUI()
       return Promise.resolve()
     })
-    logseq.Editor.registerSlashCommand('Agenda: Insert Task List Renderer', async () => {
+    logseq.Editor.registerSlashCommand('Agenda: Insert Task List', async () => {
       logseq.Editor.insertAtEditingCursor(`{{renderer agenda, task-list}}`)
     })
     logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments: args, uuid } }) => {
@@ -172,12 +172,10 @@ if (isDevelopment) {
           width: 100%;
         }
       `)
-
       setTimeout(() => {
         ReactDOM.render(
           <React.StrictMode>
-            {/* @ts-ignore */}
-            <TaskListApp />
+            <TaskListApp containerId={id} />
           </React.StrictMode>,
           parent.document.getElementById(id)
         )

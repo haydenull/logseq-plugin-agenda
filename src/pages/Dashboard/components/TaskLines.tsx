@@ -21,7 +21,6 @@ const MOCK_TASKS: ISchedule[] = [
 
 const TaskLines: React.FC<{}> = () => {
   const [todayTasks] = useAtom(todayTasksAtom)
-  console.log('[faiz:] === todayTasks', todayTasks)
   const { overdueTasks, allDayTasks, timeTasks } = categorizeTasks(import.meta.env.DEV ? MOCK_TASKS : todayTasks)
 
   return (

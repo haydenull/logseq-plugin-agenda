@@ -21,7 +21,7 @@ export const scheduleCalendarMapAtom = atom((get) => {
 // 今日日程
 export const todaySchedulesAtom = atom((get) => {
   const _schedules = get(schedulesAtom)
-  console.log('[faiz:] === allSchedulesAtom', _schedules)
+  // console.log('[faiz:] === allSchedulesAtom', _schedules)
   return _schedules.filter(schedule => {
     const start = dayjs(schedule.start as string)
     const end = dayjs(schedule.end as string || start)

@@ -48,10 +48,7 @@ export const createBlockToSpecificBlock = async (targetPageName: string, targetB
   if (!targetPage) targetPage = await logseq.Editor.createPage(targetPageName)
   let targetBlock = await getSpecificBlockByContent(targetPageName, targetBlockContent)
   if (!targetBlock) targetBlock = await logseq.Editor.insertBlock(targetPageName, targetBlockContent, { before: true, isPageBlock: true })
-  if (targetBlock) {
-    return await logseq.Editor.insertBlock(targetBlock.uuid, blockContent, { isPageBlock: false, properties: blockProperties, sibling: false, before: false })
-  }
-  return null
+  return await logseq.Editor.insertBlock(targetBlock!.uuid, blockContent, { isPageBlock: false, properties: blockProperties, sibling: false, before: false })
 }
 
 // https://logseq.github.io/plugins/interfaces/IEditorProxy.html#getBlock
