@@ -24,10 +24,10 @@ import { managePluginTheme } from '@/util/util'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
-  { value: 'calendarView', label: 'Calendar View' },
-  { value: 'project', label: 'Projects' },
+  { value: 'projects', label: 'Project' },
   { value: 'customCalendar', label: 'Custom Calendar' },
   { value: 'subscription', label: 'Subscription' },
+  { value: 'calendarView', label: 'Calendar View' },
 ]
 
 
@@ -128,44 +128,43 @@ const Settings: React.FC<{
               />
             </Form.Item>
             <Form.Item label="Log Key" required>
-            <div className="flex items-center justify-between">
-              <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
-                <Input style={{ width: '240px' }} />
-              </Form.Item>
-              <Form.Item name={['logKey', 'bgColor']} noStyle rules={[{ required: true }]}>
-                <ColorPicker text="background" />
-              </Form.Item>
-              <Form.Item name={['logKey', 'textColor']} noStyle rules={[{ required: true }]}>
-                <ColorPicker text="text" />
-              </Form.Item>
-              <Form.Item name={['logKey', 'borderColor']} noStyle rules={[{ required: true }]}>
-                <ColorPicker text="border" />
-              </Form.Item>
-              <Form.Item name={['logKey', 'enabled']} noStyle valuePropName="checked">
-                <Switch />
-              </Form.Item>
-              {/* <div style={{ width: '60px' }}></div> */}
-            </div>
-          </Form.Item>
-          </div>
-          <div id="calendar" className={classNames(s.formBlock, { [s.show]: tab === 'calendarView' })}>
-            <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
-              <Select options={CALENDAR_VIEWS} />
-            </Form.Item>
-            <Form.Item label="Week Start Day" name="weekStartDay" rules={[{ required: true }]}>
-              <Select>
-                <Select.Option value={0}>Sunday</Select.Option>
-                <Select.Option value={1}>Monday</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Time Grid">
-              <div className="flex items-center">
-                <Form.Item noStyle name="weekHourStart">
-                  <InputNumber min={0} max={24} />
+              <div className="flex items-center justify-between">
+                <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
+                  <Input style={{ width: '240px' }} />
                 </Form.Item>
-                <span className="px-2">-</span>
-                <Form.Item noStyle name="weekHourEnd">
-                  <InputNumber min={0} max={24} />
+                <Form.Item name={['logKey', 'bgColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="background" />
+                </Form.Item>
+                <Form.Item name={['logKey', 'textColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="text" />
+                </Form.Item>
+                <Form.Item name={['logKey', 'borderColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="border" />
+                </Form.Item>
+                <Form.Item name={['logKey', 'enabled']} noStyle valuePropName="checked">
+                  <Switch />
+                </Form.Item>
+              </div>
+            </Form.Item>
+            <Form.Item label="Journal" required>
+              <div className="flex items-center justify-between">
+                <Form.Item noStyle name={['journal', 'id']} rules={[{ required: true }]}>
+                  <Input style={{ width: '240px' }} disabled />
+                </Form.Item>
+                <Form.Item name={['journal', 'bgColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="background" />
+                </Form.Item>
+                <Form.Item name={['journal', 'textColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="text" />
+                </Form.Item>
+                <Form.Item name={['journal', 'borderColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="border" />
+                </Form.Item>
+                <Form.Item name={['journal', 'query']} rules={[{ required: true }]} style={{ display: 'none' }}>
+                  <Query calendarId='query' />
+                </Form.Item>
+                <Form.Item name={['journal', 'enabled']} noStyle valuePropName="checked">
+                  <Switch />
                 </Form.Item>
               </div>
             </Form.Item>
@@ -243,13 +242,10 @@ const Settings: React.FC<{
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                               >
-                                <Form.Item
-                                  required
-                                  label={index === 0 ? 'Calendar' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}
-                                >
+                                <Form.Item>
                                   <div className="flex items-center justify-between">
                                     <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
-                                      <Input placeholder="Calendar ID" disabled={index === 0} style={{ width: '240px' }} />
+                                      <Input placeholder="Calendar ID" style={{ width: '300px' }} />
                                     </Form.Item>
                                     <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
                                       <ColorPicker text="background" />
@@ -266,14 +262,14 @@ const Settings: React.FC<{
                                     <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
                                       <Switch />
                                     </Form.Item>
-                                    {index !== 0 ? <MinusCircleOutlined onClick={() => remove(field.name)} /> : <div style={{ width: '14px' }}></div>}
+                                    <MinusCircleOutlined onClick={() => remove(field.name)} />
                                   </div>
                                 </Form.Item>
                               </div>
                             )}
                           </Draggable>
                         ))}
-                        <Form.Item wrapperCol={{ offset: 4 }}>
+                        <Form.Item>
                           <Button type="dashed" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
                             Add Custom Calendar
                           </Button>
@@ -320,6 +316,28 @@ const Settings: React.FC<{
                 </Form.Item>
               </>)}
             </Form.List>
+          </div>
+          <div id="calendar" className={classNames(s.formBlock, { [s.show]: tab === 'calendarView' })}>
+            <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
+              <Select options={CALENDAR_VIEWS} />
+            </Form.Item>
+            <Form.Item label="Week Start Day" name="weekStartDay" rules={[{ required: true }]}>
+              <Select>
+                <Select.Option value={0}>Sunday</Select.Option>
+                <Select.Option value={1}>Monday</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Time Grid">
+              <div className="flex items-center">
+                <Form.Item noStyle name="weekHourStart">
+                  <InputNumber min={0} max={24} />
+                </Form.Item>
+                <span className="px-2">-</span>
+                <Form.Item noStyle name="weekHourEnd">
+                  <InputNumber min={0} max={24} />
+                </Form.Item>
+              </div>
+            </Form.Item>
           </div>
         </Form>
       </div>

@@ -16,12 +16,31 @@ const MOCK_PROJECTS: IGroup[] = [
 
 export const ganttDataAtom = atom<IGroup[] | null>((get) => {
   if (import.meta.env.DEV) return MOCK_PROJECTS
-  const { calendarList, subscriptionList, logKey, projectList = [] } = getInitalSettings()
-  const enabledCalendarList: ICustomCalendar[] = [logKey!].concat(calendarList, projectList)?.filter(calendar => calendar?.enabled)
+  const { calendarList, subscriptionList, logKey, projectList = [], journal } = getInitalSettings()
+  const enabledCalendarList: ICustomCalendar[] = [journal! as ICustomCalendar].concat(projectList, calendarList)?.filter(calendar => calendar?.enabled)
   console.log('[faiz:] === enabledCalendarList', enabledCalendarList, calendarList)
-  const ganttData: IGroup[] = (enabledCalendarList.map(calendar => calendar.id)).map(calendarId => {
+  const ganttData: IGroup[] = enabledCalendarList.map(calendar => {
+    const calendarId = calendar.id
     const schedules = get(scheduleCalendarMapAtom).get(calendarId)
-    if (!schedules) return null
+    if (!schedules) {
+      return {
+        id: calendarId,
+        title: calendarId,
+        amount: {
+          doing: 0,
+          todo: 0,
+          done: 0,
+        },
+        style: {
+          bgColor: calendar.bgColor || '#fff',
+          borderColor: calendar.borderColor || '#fff',
+          color: calendar.textColor || '#000',
+        },
+        events: [],
+        milestones: [],
+      }
+    }
+
     const { doing, todo, done } = catrgorizeTask(schedules)
     const convertScheduleToGanttEvent = (schedule: ISchedule): IEvent => {
       const { raw = {}, start, end, id = '', title = '' } = schedule

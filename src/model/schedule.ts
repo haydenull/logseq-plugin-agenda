@@ -23,6 +23,8 @@ export const todaySchedulesAtom = atom((get) => {
   const _schedules = get(schedulesAtom)
   // console.log('[faiz:] === allSchedulesAtom', _schedules)
   return _schedules.filter(schedule => {
+    if (schedule.id?.startsWith('overdue-')) return false
+    if (schedule.raw?.rawOverdue) return true
     const start = dayjs(schedule.start as string)
     const end = dayjs(schedule.end as string || start)
     return dayjs().isBetween(start, end, 'day', '[]')

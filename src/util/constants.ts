@@ -47,103 +47,102 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
     borderColor: '#047857',
     enabled: true,
   },
-  projectList: [],
-  calendarList: [
-    {
-      id: 'Journal',
-      bgColor: '#047857',
-      textColor: '#fff',
-      borderColor: '#047857',
-      enabled: true,
-      query: [
-        // schedule tasks
-        {
-          script: `
+  journal: {
+    id: 'Journal',
+    bgColor: '#047857',
+    textColor: '#fff',
+    borderColor: '#047857',
+    enabled: true,
+    query: [
+      // schedule tasks
+      {
+        script: `
 [:find (pull ?block [*])
-  :where
-  [?block :block/marker ?marker]
-  [(missing? $ ?block :block/deadline)]
-  (not [(missing? $ ?block :block/scheduled)])
-  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
-          `,
-          scheduleStart: 'scheduled',
-          dateFormatter: 'yyyyMMdd',
-          queryType: 'advanced',
-          isMilestone: false,
-        },
-        // deadline tasks
-        {
-          script: `
+:where
+[?block :block/marker ?marker]
+[(missing? $ ?block :block/deadline)]
+(not [(missing? $ ?block :block/scheduled)])
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
+        `,
+        scheduleStart: 'scheduled',
+        dateFormatter: 'yyyyMMdd',
+        queryType: 'advanced',
+        isMilestone: false,
+      },
+      // deadline tasks
+      {
+        script: `
 [:find (pull ?block [*])
-  :where
-  [?block :block/marker ?marker]
-  [(missing? $ ?block :block/scheduled)]
-  (not [(missing? $ ?block :block/deadline)])
-  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
-          `,
-          scheduleStart: 'deadline',
-          dateFormatter: 'yyyyMMdd',
-          queryType: 'advanced',
-          isMilestone: false,
-        },
-        // tasks with no deadline or scheduled but in journal
-        {
-          script: `
+:where
+[?block :block/marker ?marker]
+[(missing? $ ?block :block/scheduled)]
+(not [(missing? $ ?block :block/deadline)])
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
+        `,
+        scheduleStart: 'deadline',
+        dateFormatter: 'yyyyMMdd',
+        queryType: 'advanced',
+        isMilestone: false,
+      },
+      // tasks with no deadline or scheduled but in journal
+      {
+        script: `
 [:find (pull
-  ?block
-  [:block/uuid
-    :db/id
-    :block/parent
-    :block/left
-    :block/collapsed?
-    :block/format
-    :block/_refs
-    :block/path-refs
-    :block/tags
-    :block/content
-    :block/marker
-    :block/priority
-    :block/properties
-    :block/pre-block?
-    :block/scheduled
-    :block/deadline
-    :block/repeated?
-    :block/created-at
-    :block/updated-at
-    :block/file
-    :block/heading-level
-    {:block/page
-    [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}])
-  :where
-  [?block :block/page ?page]
-  [?page :block/journal? true]
-  [?block :block/marker ?marker]
-  [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]
-  [(missing? $ ?block :block/scheduled)]
-  [(missing? $ ?block :block/deadline)]]
-          `,
-          scheduleStart: 'page.journal-day',
-          dateFormatter: 'yyyyMMdd',
-          isMilestone: false,
-          queryType: 'advanced',
-        },
-        // milestone
-        {
-          script: `
+?block
+[:block/uuid
+  :db/id
+  :block/parent
+  :block/left
+  :block/collapsed?
+  :block/format
+  :block/_refs
+  :block/path-refs
+  :block/tags
+  :block/content
+  :block/marker
+  :block/priority
+  :block/properties
+  :block/pre-block?
+  :block/scheduled
+  :block/deadline
+  :block/repeated?
+  :block/created-at
+  :block/updated-at
+  :block/file
+  :block/heading-level
+  {:block/page
+  [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}])
+:where
+[?block :block/page ?page]
+[?page :block/journal? true]
+[?block :block/marker ?marker]
+[(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]
+[(missing? $ ?block :block/scheduled)]
+[(missing? $ ?block :block/deadline)]]
+        `,
+        scheduleStart: 'page.journal-day',
+        dateFormatter: 'yyyyMMdd',
+        isMilestone: false,
+        queryType: 'advanced',
+      },
+      // milestone
+      {
+        script: `
 [:find (pull ?block [*])
-  :where
-  [?rp :block/name "milestone"]
-  [?block :block/scheduled]
-  [?block :block/refs ?rp]]
-          `,
-          scheduleStart: 'scheduled',
-          dateFormatter: 'yyyyMMdd',
-          isMilestone: true,
-          queryType: 'advanced',
-        }
-      ],
-    },
-  ],
+:where
+[?rp :block/name "milestone"]
+[?block :block/scheduled]
+[?block :block/refs ?rp]]
+        `,
+        scheduleStart: 'scheduled',
+        dateFormatter: 'yyyyMMdd',
+        isMilestone: true,
+        queryType: 'advanced',
+      }
+    ],
+  },
+  projectList: [],
+  calendarList: [],
   subscriptionList: [],
 }
 

@@ -19,8 +19,8 @@ export const getSchedules = async () => {
   // get calendar configs
   const settings = getInitalSettings()
   console.log('[faiz:] === settings', settings)
-  const { calendarList: calendarConfigs = [], logKey, defaultDuration, projectList } = settings
-  const customCalendarConfigs = calendarConfigs.filter(config => config?.enabled)
+  const { calendarList: calendarConfigs = [], logKey, journal, defaultDuration, projectList } = settings
+  const customCalendarConfigs = calendarConfigs.concat(journal!).filter(config => config?.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
 
@@ -79,7 +79,7 @@ message: ${res.reason.message}`
           let _category: ICategory = allDay === 'false' ? 'time' : 'allday'
           if (isMilestone) _category = 'milestone'
           const rawCategory = _category
-          const _isOverdue = isOverdue(block, end || start)
+          const _isOverdue = isOverdue(block, end || start, allDay !== 'false')
           if (!isMilestone && _isOverdue) _category = 'task'
 
           const schedule = await genSchedule({
@@ -90,6 +90,8 @@ message: ${res.reason.message}`
               category: rawCategory,
               rawStart: start,
               rawEnd: end,
+              rawAllDay: allDay !== 'false',
+              rawOverdue: _isOverdue,
             },
             category: _category,
             start,
@@ -210,7 +212,7 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaC
   let _category: ICategory = hasTime ? 'time' : 'allday'
   if (isMilestone) _category = 'milestone'
   const rawCategory = _category
-  const _isOverdue = isOverdue(block, _end || _start)
+  const _isOverdue = isOverdue(block, _end || _start, !hasTime)
   if (!isMilestone && _isOverdue) _category = 'task'
 
   const schedule = await genSchedule({
@@ -221,6 +223,8 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaC
       type: 'project',
       rawStart: _start,
       rawEnd: _end,
+      rawAllDay: !hasTime,
+      rawOverdue: _isOverdue,
     },
     category: _category,
     start: _start,
@@ -249,9 +253,13 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaC
 /**
  * 判断是否过期
  */
-export const isOverdue = (block: any, date: string) => {
+export const isOverdue = (block: any, date: string, allDay: boolean) => {
   if (block.marker && block.marker !== 'DONE') {
-    return isAfter(startOfDay(new Date()), parseISO(date))
+    // return isAfter(startOfDay(new Date()), parseISO(date))
+    if (allDay) {
+      return dayjs().isAfter(dayjs(date), 'day')
+    }
+    return dayjs().isAfter(dayjs(date), 'minute')
   }
   // 非 todo 及 done 的 block 不过期
   return false
@@ -356,12 +364,10 @@ export async function genSchedule(params: {
   }
   const isSupportEdit = isReadOnly === undefined ? supportEdit() : !isReadOnly
 
-  const { defaultDuration: _defaultDuration } = DEFAULT_SETTINGS
+  const _defaultDuration = defaultDuration ||  getInitalSettings()?.defaultDuration
   let _end = end
-  if (category === 'time' && !end && start && defaultDuration) {
-    const value = defaultDuration.value || _defaultDuration.value
-    const unit = defaultDuration.unit || _defaultDuration.unit
-    _end = dayjs(start).add(value, unit).toISOString()
+  if ((category === 'time' || blockData?.category === 'time') && !end && start && _defaultDuration) {
+    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).toISOString()
   }
   if (blockData?.category !== 'time' && !end) {
     _end = start
@@ -473,10 +479,11 @@ export const deleteProjectTaskTime = (blockContent: string) => {
 }
 export const updateProjectTaskTime = (blockContent: string, timeInfo: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
   const time = genProjectTaskTime(timeInfo)
-  if (MARKDOWN_PROJECT_TIME_REG.test(blockContent)) {
-    return blockContent.replace(MARKDOWN_PROJECT_TIME_REG, time)
+  const newContent = removeTimeInfo(blockContent)?.trim()
+  if (MARKDOWN_PROJECT_TIME_REG.test(newContent)) {
+    return newContent.replace(MARKDOWN_PROJECT_TIME_REG, time)
   }
-  return blockContent?.split('\n').map((txt, index) => index === 0 ? txt + ' ' + time : txt).join('\n')
+  return newContent?.split('\n').map((txt, index) => index === 0 ? txt + ' ' + time : txt).join('\n')
 }
 
 export function categorizeTasks (tasks: ISchedule[]) {
@@ -484,7 +491,7 @@ export function categorizeTasks (tasks: ISchedule[]) {
   let allDayTasks: ISchedule[] = []
   let timeTasks: ISchedule[] = []
   tasks.forEach(task => {
-    if (task.category === 'task') {
+    if (task.raw?.rawOverdue) {
       overdueTasks.push(task)
     } else if (task.isAllDay) {
       allDayTasks.push(task)

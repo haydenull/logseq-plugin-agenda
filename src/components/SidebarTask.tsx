@@ -9,16 +9,22 @@ import { format } from 'date-fns'
 import { ISettingsForm } from '@/util/type'
 
 function getTime(task: ISchedule, overdue = false) {
-  const startStr = overdue ? task?.raw?.rawStart : task?.start
-  const endStr = overdue ? (task?.raw?.rawEnd || task?.raw?.rawStart) : task?.end
+  const startStr = task?.start
+  const endStr = task?.end
 
   const startDay = dayjs(startStr as string)
   const endDay = dayjs(endStr as string)
   const isSameDay = startDay.isSame(endDay, 'day')
 
   if (overdue) {
-    if (!isSameDay) return ({ start: startDay.format('MM-DD'), end: endDay.format('MM-DD') })
-    return ({ start: startDay.format('MM-DD') })
+    if (task.raw?.rawAllDay) {
+      if (isSameDay) return ({ start: startDay.format('MM-DD') })
+      return ({ start: startDay.format('MM-DD'), end: endDay.format('MM-DD') })
+    } else {
+      if (isSameDay && startDay.isSame(dayjs(), 'day')) return ({ start: startDay.format('HH:mm'), end: endDay.format('HH:mm') })
+      if (isSameDay) return ({ start: startDay.format('MM-DD') })
+      return ({ start: startDay.format('MM-DD'), end: endDay.format('MM-DD') })
+    }
   }
 
   if (!isSameDay) return ({ start: startDay.format('MM-DD'), end: endDay.format('MM-DD') })

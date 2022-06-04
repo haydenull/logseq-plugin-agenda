@@ -213,11 +213,11 @@ const ModifySchedule: React.FC<{
   }
 
   useEffect(() => {
-    const { calendarList, projectList = [] } = logseq.settings as unknown as ISettingsForm
+    const { journal, projectList = [] } = logseq.settings as unknown as ISettingsForm
     getAgendaCalendars().then(agendaPages => {
       // if (agendaPages?.length <= 0) return logseq.App.showMsg('No agenda page found\nYou can create an agenda calendar first', 'warning')
       // @ts-ignore
-      setAgendaCalendars([calendarList[0]].concat(agendaPages).concat(projectList))
+      setAgendaCalendars([journal].concat(agendaPages).concat(projectList))
     })
   }, [])
 
