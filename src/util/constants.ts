@@ -9,6 +9,7 @@ export const DEFAULT_LOG_KEY = 'Daily Log'
 // export const TIME_REG = /(?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]/
 export const TIME_REG = /^((?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])(-(?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])*/
 export const MARKDOWN_PROJECT_TIME_REG = />\[.+\]\(#(agenda:\/\/.+)\)/
+export const ORG_PROJECT_TIME_REG = />\[\[#(agenda:\/\/.+)\]\[.+\]\]/
 
 export const CALENDAR_VIEWS = [
   { value: 'day', label: 'Daily' },

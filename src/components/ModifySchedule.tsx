@@ -7,7 +7,7 @@ import type { ICustomCalendar, ISettingsForm } from '../util/type'
 import { deleteProjectTaskTime, genProjectTaskTime, genSchedule, getAgendaCalendars, modifyTimeInfo, removeTimeInfo, updateProjectTaskTime } from '@/util/schedule'
 import { createBlockToSpecificBlock, getPageData, joinPrefixTaskBlockContent, moveBlockToNewPage, moveBlockToSpecificBlock, pureTaskBlockContent, updateBlock } from '@/util/logseq'
 import { format } from 'date-fns'
-import { MARKDOWN_PROJECT_TIME_REG, SCHEDULE_PARENT_BLOCK } from '@/util/constants'
+import { SCHEDULE_PARENT_BLOCK } from '@/util/constants'
 
 export type IScheduleForm = {
   calendarId: string

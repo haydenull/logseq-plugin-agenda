@@ -23,7 +23,7 @@ import TaskListApp from './TaskListApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
 import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
 import { convertBlockToSchedule, deleteProjectTaskTime, getProjectTaskTime, getSchedules } from './util/schedule'
-import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
+import { BlockEntity, AppUserConfigs } from '@logseq/libs/dist/LSPlugin.user'
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 
 dayjs.extend(weekday)
@@ -46,6 +46,10 @@ if (isDevelopment) {
     initializeSettings()
 
     managePluginTheme()
+
+    logseq.App.getUserConfigs().then(configs => {
+      window.logseqAppUserConfigs = configs
+    })
 
     listenEsc(() => logseq.hideMainUI())
 

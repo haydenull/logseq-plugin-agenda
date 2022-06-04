@@ -1,12 +1,13 @@
+import { AppUserConfigs } from '@logseq/libs/dist/LSPlugin.user';
 import { ISchedule } from 'tui-calendar'
 import { flattenDeep, get, has } from 'lodash'
-import { endOfDay, formatISO, isAfter, parse, parseISO, startOfDay } from 'date-fns'
+import { endOfDay, formatISO, parse } from 'date-fns'
 import dayjs, { Dayjs } from 'dayjs'
 import { getInitalSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
-import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, MARKDOWN_PROJECT_TIME_REG, TIME_REG } from './constants'
+import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, MARKDOWN_PROJECT_TIME_REG, ORG_PROJECT_TIME_REG, TIME_REG } from './constants'
 import { getBlockData, getPageData } from './logseq'
-import { PageEntity, BlockEntity } from '@logseq/libs/dist/LSPlugin'
+import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { parseUrlParams } from './util'
 
 export const getSchedules = async () => {
@@ -322,7 +323,6 @@ export async function genSchedule(params: {
 }) {
 
   const { id, blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
-  const debugStartTime = Date.now()
   if (!blockData?.id) {
     // 单个耗时在5-7秒，整体耗时8秒
     const block = await getBlockData({ uuid: blockData.uuid?.$uuid$ }, true)
@@ -348,11 +348,12 @@ export async function genSchedule(params: {
   // 单个耗时在5-7秒，整体耗时11秒
   blockData.fullContent = await fillBlockReference(blockData.content)
 
+  const projectTimeReg = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? ORG_PROJECT_TIME_REG : MARKDOWN_PROJECT_TIME_REG
   const title = blockData.fullContent
                   .split('\n')[0]
                   ?.replace(new RegExp(`^${blockData.marker} `), '')
                   ?.replace(TIME_REG, '')
-                  ?.replace(MARKDOWN_PROJECT_TIME_REG, '')
+                  ?.replace(projectTimeReg, '')
                   ?.replace(' #milestone', '')
                   ?.trim?.()
   const isDone = blockData.marker === 'DONE'
@@ -465,23 +466,26 @@ export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: 
   if (isSameDay && !allDay) endText = end.format('HH:mm')
 
   const showText = startText + (endText ? ` - ${endText}` : '')
-  const time = `>[${showText}](#${url.toString()})`
+  const time = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? `>[[#${url.toString()}][${showText}]]` : `>[${showText}](#${url.toString()})`
 
   return time
 }
 export const getProjectTaskTime = (blockContent: string) => {
-  const res = blockContent.match(MARKDOWN_PROJECT_TIME_REG)
+  const projectTimeReg = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? ORG_PROJECT_TIME_REG : MARKDOWN_PROJECT_TIME_REG
+  const res = blockContent.match(projectTimeReg)
   if (!res || !res?.[1]) return null
   return parseUrlParams(res[1])
 }
 export const deleteProjectTaskTime = (blockContent: string) => {
-  return blockContent.replace(MARKDOWN_PROJECT_TIME_REG, '')
+  const projectTimeReg = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? ORG_PROJECT_TIME_REG : MARKDOWN_PROJECT_TIME_REG
+  return blockContent.replace(projectTimeReg, '')
 }
 export const updateProjectTaskTime = (blockContent: string, timeInfo: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
+  const projectTimeReg = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? ORG_PROJECT_TIME_REG : MARKDOWN_PROJECT_TIME_REG
   const time = genProjectTaskTime(timeInfo)
   const newContent = removeTimeInfo(blockContent)?.trim()
-  if (MARKDOWN_PROJECT_TIME_REG.test(newContent)) {
-    return newContent.replace(MARKDOWN_PROJECT_TIME_REG, time)
+  if (projectTimeReg.test(newContent)) {
+    return newContent.replace(projectTimeReg, time)
   }
   return newContent?.split('\n').map((txt, index) => index === 0 ? txt + ' ' + time : txt).join('\n')
 }
