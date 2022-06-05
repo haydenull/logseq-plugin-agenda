@@ -64,9 +64,9 @@ const Settings: React.FC<{
     console.log('[faiz:] === onValuesChange', changedValues, allValues)
     setSettings(allValues)
     // hack https://github.com/logseq/logseq/issues/4447
-    logseq.updateSettings({calendarList: 1, subscriptionList: 1})
+    logseq.updateSettings({calendarList: 1, subscriptionList: 1, projectList: 1})
     // ensure subscription list is array
-    logseq.updateSettings({subscriptionList: [], ...allValues})
+    logseq.updateSettings({subscriptionList: [], projectList: [], ...allValues})
 
     // exec after 500ms to make sure the settings are updated
     setTimeout(async () => {
