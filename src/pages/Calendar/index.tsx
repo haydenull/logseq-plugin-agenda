@@ -4,9 +4,12 @@ import { useAtom } from 'jotai'
 import { schedulesAtom } from '@/model/schedule'
 import CalendarCom from '@/components/Calendar'
 import s from './index.module.less'
+import { calendarSchedules } from '@/model/events'
 
 const index = () => {
-  const [schedules] = useAtom(schedulesAtom)
+  const [schedules] = useAtom(calendarSchedules)
+
+  console.log('[faiz:] === page calendar: schedules', schedules)
 
   return (
     <div className="page-container flex">

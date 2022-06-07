@@ -16,3 +16,9 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
     color: var(--ls-link-text-color);
   }
 `
+
+export const DEFAULT_CALENDAR_STYLE = {
+  bgColor: '#b8e986',
+  textColor: '#4a4a4a',
+  borderColor: '#047857',
+}
