@@ -1,4 +1,4 @@
-import { todayTasksAtom } from '@/model/schedule'
+import { todayTasksAtom } from '@/model/events'
 import { getBlockData } from '@/util/logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 import { Modal, Checkbox, Divider, Row, Col } from 'antd'
@@ -15,8 +15,8 @@ const TodayTaskModal: React.FC<{
   const [tasks] = useAtom(todayTasksAtom)
 
   const options = tasks.map((task) => ({
-    label: task.title as string,
-    value: task?.id as string,
+    label: task.addOns.showTitle,
+    value: task.uuid,
   }))
   const [value, setValue] = useState<string[]>([])
 

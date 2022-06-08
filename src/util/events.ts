@@ -1,3 +1,4 @@
+import { transformBlockToEvent } from './../helper/transform';
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
 import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import dayjs from 'dayjs'
@@ -7,16 +8,16 @@ import { deleteProjectTaskTime, fillBlockReference, getAgendaCalendars, getProje
 import { ICustomCalendar } from './type'
 
 
-export const getEventTimeInfo = (block: BlockEntity, isAgendaCalendar = false): {
+export const getEventTimeInfo = (block: BlockEntity): {
   start: string
   end?: string
   allDay: boolean
   timeFrom: 'startProperty' | 'customLink' | 'scheduledProperty' | 'deadlineProperty' | 'journal' | 'refs'
 } | null => {
 
-  // start end properties date(only for agenda calendar)
-  if (isAgendaCalendar) {
-    const { start, end } = block.properties
+  // start end properties date(adapt agenda calendar)
+  const { start, end } = block.properties
+  if (start && end) {
     if (start?.length >= 16) return { start: dayjs(start, 'YYYY-MM-DD HH:mm').toISOString(), end: dayjs(end, 'YYYY-MM-DD HH:mm').toISOString(), allDay: false, timeFrom: 'startProperty' }
     return { start: dayjs(start, 'YYYY-MM-DD').toISOString(), end: dayjs(end, 'YYYY-MM-DD').toISOString(), allDay: true, timeFrom: 'startProperty' }
   }
@@ -75,6 +76,7 @@ export type IEvent = BlockEntity & {
     isOverdue: boolean
     isJournal: boolean
     calendarConfig?: ICustomCalendar
+    type: 'task' | 'milestone'
   }
 }
 export type IPageEvent = {
@@ -100,71 +102,19 @@ export const genDefaultProjectEvents = (): IPageEvent => ({
 export const getInternalEvents = async () => {
   const tasks = await logseq.DB.q(`(task todo doing done later now canceled)`)
   if (!tasks || tasks?.length === 0) return null
-  const agendaCalendars = await getAgendaCalendars()
-  const { journal, projectList, defaultDuration } = getInitalSettings()
+  // const agendaCalendars = await getAgendaCalendars()
+  const settings = getInitalSettings()
 
   let fullEvents: IPageEvent = genDefaultProjectEvents()
   let journalEvents: IPageEvent = genDefaultProjectEvents()
   const projectEventsMap = new Map<string, IPageEvent>()
 
   const promiseList = (tasks as BlockEntity[]).map(async task => {
-    const isAgendaCalendar = agendaCalendars.some(calendar => calendar.id === task.page?.originalName)
 
-    const time = getEventTimeInfo(task, isAgendaCalendar)
-    const isMilestone = / #milestone/.test(task.content) || / #\[\[milestone\]\]/.test(task.content)
-    const isJournal = Boolean(task?.page?.journalDay)
-
-    let event: IEvent = time
-                          ? { ...task, rawTime: time, addOns: { showTitle: '', end: '', status: 'todo', isOverdue: false, isJournal: false, ...time } }
-                          : { ...task, addOns: { showTitle: '', status: 'todo', isOverdue: false, isJournal: false } }
-
-    // add show title
-    let showTitle = pureTaskBlockContent(task)
-    if (time?.timeFrom === 'customLink') showTitle = deleteProjectTaskTime(showTitle.trim())
-    if (time?.timeFrom === 'journal' && !time?.allDay) showTitle = removeTimeInfo(showTitle.trim())
-    // if (time?.timeFrom === 'refs') // TODO: remove refs date
-    event.addOns.showTitle = await fillBlockReference(showTitle?.split('\n')?.[0]?.trim())
-
-    // add end time
-    if (time && !time.end) {
-      if (time.allDay) {
-        event.addOns.end = time.start
-      } else {
-        event.addOns.end = dayjs(event.addOns.start).add(defaultDuration.value, defaultDuration.unit).toISOString()
-      }
-    }
-
-    // add status
-    if (['DOING', 'NOW'].includes(task.marker)) {
-      event.addOns.status = 'doing'
-    } else if (task.marker === 'DONE') {
-      event.addOns.status = 'done'
-    } else if (task.marker === 'CANCELED') {
-      event.addOns.status = 'canceled'
-    }
-
-    // add isOverdue
-    if (time && isOverdue(task, event.addOns.end!, time?.allDay)) {
-      event.addOns.isOverdue = true
-    }
-
-    // add isJournal
-    if (isJournal) event.addOns.isJournal = true
-
-    // add calendar config
-    const project = projectList?.find(project => project.id === task?.page?.originalName)
-    if (project) {
-      event.addOns.calendarConfig = project
-    } else if (isJournal) {
-      event.addOns.calendarConfig = journal
-    } else {
-      event.addOns.calendarConfig = {
-        id: task?.page?.originalName,
-        enabled: true,
-        ...DEFAULT_CALENDAR_STYLE,
-      }
-    }
-
+    const event = await transformBlockToEvent(task, settings)
+    const isMilestone = event.addOns.type === 'milestone'
+    const time = event.rawTime
+    const isJournal = event.addOns.isJournal
 
     if (isMilestone) {
       if (time) {

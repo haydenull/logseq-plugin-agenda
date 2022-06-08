@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import TodayTaskModal from './components/TodayTaskModal'
-import { getSchedules } from './util/schedule'
 import { useAtom } from 'jotai'
 import { projectSchedulesAtom } from './model/schedule'
+import { getInternalEvents } from './util/events'
+import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from './model/events'
 
 type IEditSchedule = {
   type: 'editSchedule'
@@ -22,15 +23,22 @@ type IInsertTodaySchedule = {
 export type IModalAppProps = IEditSchedule | IInsertTodaySchedule
 const ModalApp: React.FC<IModalAppProps> = (props) => {
   const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
+  const [, setFullEvents] = useAtom(fullEventsAtom)
+  const [, setJournalEvents] = useAtom(journalEventsAtom)
+  const [, setProjectEvents] = useAtom(projectEventsAtom)
   const type = props.type
   const onSave = () => { logseq.hideMainUI() }
   const onCancel = () => { logseq.hideMainUI() }
 
   useEffect(() => {
     async function fetchSchedules() {
-      setProjectSchedules(await getSchedules())
-      // const { subscriptionList } = getInitalSettings()
-      // setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
+      const res = await getInternalEvents()
+      if (res) {
+        const { fullEvents, journalEvents, projectEventsMap } = res
+        setFullEvents(fullEvents)
+        setJournalEvents(journalEvents)
+        setProjectEvents(projectEventsMap)
+      }
     }
     if (type === 'insertTodaySchedule') fetchSchedules()
   }, [type])

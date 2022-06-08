@@ -1,10 +1,12 @@
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
 import { getInitalSettings } from '@/util/baseInfo'
-import { ICategory } from '@/util/type'
-import { genDefaultProjectEvents, IEvent, IPageEvent } from '@/util/events'
+import { ICategory, ICustomCalendar, ISettingsForm } from '@/util/type'
+import { genDefaultProjectEvents, getEventTimeInfo, IEvent, IPageEvent } from '@/util/events'
 import type { IEvent as IGanttEvent, IGroup } from '@/packages/Gantt/type'
 import dayjs from 'dayjs'
-import { getPageData } from '@/util/logseq'
+import { getPageData, pureTaskBlockContent } from '@/util/logseq'
+import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
+import { deleteProjectTaskTime, fillBlockReference, isOverdue, removeTimeInfo } from '@/util/schedule'
 
 /** ========== calendar schedules ========== */
 export const transformTaskEventToSchedule = (block: IEvent) => {
@@ -87,4 +89,72 @@ export const transformEventToGanttEvent = (event: IEvent): IGanttEvent => {
       }}>Navigate to block</a>
     </div>)
   }
+}
+
+
+// ========== event ========
+export const transformBlockToEvent = async (block: BlockEntity, settings: ISettingsForm) => {
+  const { defaultDuration, journal, projectList } = settings
+  // const isAgendaCalendar = agendaCalendars.some(calendar => calendar.id === block.page?.originalName)
+
+  const time = getEventTimeInfo(block)
+  const isMilestone = / #milestone/.test(block.content) || / #\[\[milestone\]\]/.test(block.content)
+  const isJournal = Boolean(block?.page?.journalDay)
+
+  let event: IEvent = time
+                        ? { ...block, rawTime: time, addOns: { showTitle: '', end: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task', ...time } }
+                        : { ...block, addOns: { showTitle: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task' } }
+
+  // add show title
+  let showTitle = pureTaskBlockContent(block)
+  if (time?.timeFrom === 'customLink') showTitle = deleteProjectTaskTime(showTitle.trim())
+  if (time?.timeFrom === 'journal' && !time?.allDay) showTitle = removeTimeInfo(showTitle.trim())
+  // if (time?.timeFrom === 'refs') // TODO: remove refs date
+  event.addOns.showTitle = await fillBlockReference(showTitle?.split('\n')?.[0]?.trim())
+
+  // add end time
+  if (time && !time.end) {
+    if (time.allDay) {
+      event.addOns.end = time.start
+    } else {
+      event.addOns.end = dayjs(event.addOns.start).add(defaultDuration.value, defaultDuration.unit).toISOString()
+    }
+  }
+
+  // add status
+  if (['DOING', 'NOW'].includes(block.marker)) {
+    event.addOns.status = 'doing'
+  } else if (block.marker === 'DONE') {
+    event.addOns.status = 'done'
+  } else if (block.marker === 'CANCELED') {
+    event.addOns.status = 'canceled'
+  }
+
+  // add isOverdue
+  if (time && isOverdue(block, event.addOns.end!, time?.allDay)) {
+    event.addOns.isOverdue = true
+  }
+
+  // add isJournal
+  if (isJournal) event.addOns.isJournal = true
+
+  // add calendar config
+  const page = block?.page?.originalName ? block.page : await logseq.Editor.getPage(block.page.id)
+  const project = projectList?.find(project => project.id === page!.originalName)
+  if (project) {
+    event.addOns.calendarConfig = project
+  } else if (isJournal) {
+    event.addOns.calendarConfig = journal
+  } else {
+    event.addOns.calendarConfig = {
+      id: page?.originalName,
+      enabled: true,
+      ...DEFAULT_CALENDAR_STYLE,
+    }
+  }
+
+  // add type
+  if (isMilestone) event.addOns.type = 'milestone'
+
+  return event
 }

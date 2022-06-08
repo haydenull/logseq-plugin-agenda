@@ -10,7 +10,7 @@ import { SHOW_DATE_FORMAT, CALENDAR_VIEWS } from './util/constants'
 import ModifySchedule from './components/ModifySchedule'
 import type { IScheduleValue } from './components/ModifySchedule'
 import dayjs, { Dayjs } from 'dayjs'
-import { genSchedule, genScheduleWithCalendarMap, getSchedules, modifyTimeInfo } from './util/schedule'
+import { genSchedule, genScheduleWithCalendarMap, modifyTimeInfo } from './util/schedule'
 import { ICustomCalendar, ISettingsForm } from './util/type'
 import { getPageData, moveBlockToNewPage, updateBlock } from './util/logseq'
 import { getDefaultCalendarOptions, getInitalSettings } from './util/baseInfo'
@@ -126,9 +126,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
     if (calendar) {
       calendar.clear()
 
-      const schedules = await getSchedules()
-      setCalendarSchedules(schedules)
-      calendar.createSchedules(schedules)
+      // const schedules = await getSchedules()
+      // setCalendarSchedules(schedules)
+      // calendar.createSchedules(schedules)
       const { subscriptionList } = await getInitalSettings()
       const subscriptionSchedules = await getSubCalendarSchedules(subscriptionList)
       calendar.createSchedules(subscriptionSchedules)

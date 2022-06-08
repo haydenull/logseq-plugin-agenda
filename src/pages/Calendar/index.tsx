@@ -1,15 +1,27 @@
 import classNames from 'classnames'
 import { useAtom } from 'jotai'
 
-import { schedulesAtom } from '@/model/schedule'
+import { subscriptionSchedulesAtom } from '@/model/schedule'
 import CalendarCom from '@/components/Calendar'
 import s from './index.module.less'
 import { fullCalendarSchedulesAtom } from '@/model/events'
+import { useEffect, useState } from 'react'
+import { getCustomCalendarSchedules } from '@/util/schedule'
 
 const index = () => {
-  const [schedules] = useAtom(fullCalendarSchedulesAtom)
+  const [internalSchedules] = useAtom(fullCalendarSchedulesAtom)
+  const [subscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
+  const [customCalendarSchedules, setCustomCalendarSchedules] = useState<any[]>([])
 
-  console.log('[faiz:] === page calendar: schedules', schedules)
+  useEffect(() => {
+    getCustomCalendarSchedules()
+      .then(res => {
+        setCustomCalendarSchedules(res)
+      })
+  }, [])
+
+  console.log('[faiz:] === page calendar: internalSchedules', internalSchedules)
+  console.log('[faiz:] === page calendar: subscriptionSchedules', subscriptionSchedules)
 
   return (
     <div className="page-container flex">
@@ -17,7 +29,7 @@ const index = () => {
 
         <h1 className="title-text">Calendar</h1>
         <div className="bg-quaternary flex flex-col flex-1 rounded-2xl box-border p-6">
-          <CalendarCom schedules={schedules} isProjectCalendar={false} />
+          <CalendarCom schedules={[...subscriptionSchedules, ...internalSchedules, ...customCalendarSchedules]} isProjectCalendar={false} />
         </div>
       </div>
 

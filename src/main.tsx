@@ -22,9 +22,8 @@ import ModalApp, { IModalAppProps } from './ModalApp'
 import TaskListApp from './TaskListApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
 import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
-import { convertBlockToSchedule, deleteProjectTaskTime, getProjectTaskTime, getSchedules } from './util/schedule'
-import { BlockEntity, AppUserConfigs } from '@logseq/libs/dist/LSPlugin.user'
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
+import { transformBlockToEvent } from './helper/transform'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -83,55 +82,77 @@ if (isDevelopment) {
     })
 
     const editSchedule = async (e) => {
-      const schedules = await getSchedules()
-      const schedule = schedules.find(s => s.id === e.uuid)
-      console.log('[faiz:] === schedule', schedule)
-      const blockData = await logseq.Editor.getBlock(e.uuid)
-      const { defaultDuration, projectList } = getInitalSettings()
-      if (schedule) {
-        const start = dayjs(schedule.start as string)
-        const end = schedule.end ? dayjs(schedule.end as string) : start.add(defaultDuration.value, defaultDuration.unit)
-        // update
-        renderModalApp({
-          type: 'editSchedule',
-          data: {
-            type: 'update',
-            initialValues: {
-              id: schedule.id,
-              start,
-              end,
-              isAllDay: schedule?.raw?.category !== 'time',
-              calendarId: schedule.calendarId,
-              title: deleteProjectTaskTime(pureTaskBlockContent(blockData!)),
-              keepRef: schedule.calendarId?.toLowerCase() === 'journal',
-              raw: schedule.raw,
-            },
+      const block = await logseq.Editor.getBlock(e.uuid)
+      // const agendaCalendars = await getAgendaCalendars()
+      const event = await transformBlockToEvent(block!, getInitalSettings())
+      console.log('[faiz:] === event', event)
+      renderModalApp({
+        type: 'editSchedule',
+        data: {
+          type: 'update',
+          initialValues: {
+            id: event.uuid,
+            start: dayjs(event.addOns.start),
+            end: dayjs(event.addOns.end),
+            isAllDay: event.addOns.allDay,
+            calendarId: event.addOns.calendarConfig?.id,
+            title: event.addOns.showTitle,
+            // keepRef: schedule.calendarId?.toLowerCase() === 'journal',
+            raw: event,
           },
-          showKeepRef: true,
-        })
-      } else {
-        // convert block to schedule
-        const pageData = await logseq.Editor.getPage(blockData!.page?.id)
-        console.log('[faiz:] === pageData', pageData)
-        if (!pageData) return logseq.App.showMsg('Failed to get page data', 'error')
-        renderModalApp({
-          type: 'editSchedule',
-          data: {
-            type: 'update',
-            initialValues: {
-              id: e.uuid,
-              title: deleteProjectTaskTime(pureTaskBlockContent(blockData!)),
-              calendarId: ((pageData as any)?.properties?.agenda || projectList?.some(project => project.id === pageData.originalName)) ? pageData.originalName : undefined,
-              isAllDay: true,
-              start: dayjs(),
-              end: dayjs(),
-              keepRef: false,
-              raw: blockData,
-            },
-          },
-          showKeepRef: true,
-        })
-      }
+        },
+        showKeepRef: true,
+      })
+
+
+      // const schedule = schedules.find(s => s.id === e.uuid)
+      // console.log('[faiz:] === schedule', schedule)
+      // const blockData = await logseq.Editor.getBlock(e.uuid)
+      // const { defaultDuration, projectList } = getInitalSettings()
+      // if (schedule) {
+      //   const start = dayjs(schedule.start as string)
+      //   const end = schedule.end ? dayjs(schedule.end as string) : start.add(defaultDuration.value, defaultDuration.unit)
+      //   // update
+      //   renderModalApp({
+      //     type: 'editSchedule',
+      //     data: {
+      //       type: 'update',
+      //       initialValues: {
+      //         id: schedule.id,
+      //         start,
+      //         end,
+      //         isAllDay: schedule?.raw?.category !== 'time',
+      //         calendarId: schedule.calendarId,
+      //         title: deleteProjectTaskTime(pureTaskBlockContent(blockData!)),
+      //         keepRef: schedule.calendarId?.toLowerCase() === 'journal',
+      //         raw: schedule.raw,
+      //       },
+      //     },
+      //     showKeepRef: true,
+      //   })
+      // } else {
+      //   // convert block to schedule
+      //   const pageData = await logseq.Editor.getPage(blockData!.page?.id)
+      //   console.log('[faiz:] === pageData', pageData)
+      //   if (!pageData) return logseq.App.showMsg('Failed to get page data', 'error')
+      //   renderModalApp({
+      //     type: 'editSchedule',
+      //     data: {
+      //       type: 'update',
+      //       initialValues: {
+      //         id: e.uuid,
+      //         title: deleteProjectTaskTime(pureTaskBlockContent(blockData!)),
+      //         calendarId: ((pageData as any)?.properties?.agenda || projectList?.some(project => project.id === pageData.originalName)) ? pageData.originalName : undefined,
+      //         isAllDay: true,
+      //         start: dayjs(),
+      //         end: dayjs(),
+      //         keepRef: false,
+      //         raw: blockData,
+      //       },
+      //     },
+      //     showKeepRef: true,
+      //   })
+      // }
       logseq.showMainUI()
     }
     logseq.Editor.registerBlockContextMenuItem('Agenda: Modify Schedule', editSchedule)
@@ -197,20 +218,20 @@ if (isDevelopment) {
           if (!uuid) return
           const block = await logseq.Editor.getBlock(uuid)
           const page = await logseq.Editor.getPage(block!.page?.id)
-          const time = getProjectTaskTime(block?.content!)
+          const event = await transformBlockToEvent(block!, getInitalSettings())
           renderModalApp({
             type: 'editSchedule',
             data: {
               type: 'update',
               initialValues: {
                 id: uuid,
-                title: deleteProjectTaskTime(pureTaskBlockContent(block!)),
+                title: event.addOns.showTitle,
                 calendarId: page?.originalName,
                 keepRef: false,
-                start: time ? dayjs(time.start) : dayjs(),
-                end: time ? dayjs(time.end) : dayjs(),
-                isAllDay: time?.allDay !== 'false',
-                raw: block,
+                start: dayjs(event.addOns.start),
+                end: dayjs(event.addOns.end),
+                isAllDay: event.addOns.allDay,
+                raw: event,
               },
             },
           })

@@ -12,7 +12,6 @@ import { getInitalSettings, genAgendaQuery, genDefaultQuery } from '@/util/baseI
 import { useAtom } from 'jotai'
 import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
 import { settingsAtom } from '@/model/settings'
-import { getSchedules } from '@/util/schedule'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import { motion } from 'framer-motion'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
@@ -74,7 +73,7 @@ const Settings: React.FC<{
         managePluginTheme()
       }
       if (changedValues?.calendarList) {
-        setProjectSchedules(await getSchedules())
+        // setProjectSchedules(await getSchedules())
       }
       if (changedValues?.subscriptionList) {
         const { subscriptionList } = await getInitalSettings()

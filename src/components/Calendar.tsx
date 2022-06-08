@@ -15,7 +15,7 @@ import classNames from 'classnames'
 import { ICustomCalendar, ISettingsForm } from '@/util/type'
 import { useAtom } from 'jotai'
 
-import { schedulesAtom } from '@/model/schedule'
+// import { schedulesAtom } from '@/model/schedule'
 
 const CalendarCom: React.FC<{
   schedules: ISchedule[]
@@ -23,12 +23,12 @@ const CalendarCom: React.FC<{
 }> = ({ schedules, isProjectCalendar = true }) => {
   // const [schedules] = useAtom(schedulesAtom)
 
-  const { calendarList, subscriptionList, logKey } = getInitalSettings()
+  const { calendarList, subscriptionList, logKey, projectList = [], journal } = getInitalSettings()
 
   const [showDate, setShowDate] = useState<string>()
   const [isFold, setIsFold] = useState(true)
   const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
-  const enabledCalendarList: ICustomCalendar[] = (logKey?.enabled ? [logKey] : []).concat((calendarList as ICustomCalendar[])?.filter(calendar => calendar?.enabled))
+  const enabledCalendarList: ICustomCalendar[] = [journal!, ...projectList]
   const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription?.enabled) : []
   const [modifyScheduleModal, setModifyScheduleModal] = useState<{
     visible: boolean
@@ -197,7 +197,7 @@ const CalendarCom: React.FC<{
               end: dayjs(schedule.end),
               isAllDay: schedule?.raw?.category !== 'time',
               calendarId: schedule.calendarId,
-              title: deleteProjectTaskTime(pureTaskBlockContent(schedule.raw)),
+              title: schedule.title,
               raw: schedule.raw,
             },
           })

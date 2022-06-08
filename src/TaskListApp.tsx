@@ -4,7 +4,7 @@ import Sider from '@/components/Sider'
 import { MENUS } from '@/constants/elements'
 import { useAtom } from 'jotai'
 import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
-import { getSchedules, categorizeTasks } from '@/util/schedule'
+import { categorizeTasks } from '@/util/schedule'
 import { getInitalSettings } from '@/util/baseInfo'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import { DEFAULT_SETTINGS } from '@/util/constants'
@@ -37,10 +37,6 @@ const App: React.FC<{
         setJournalEvents(journalEvents)
         setProjectEvents(projectEventsMap)
       }
-
-      // setProjectSchedules(await getSchedules())
-      // const { subscriptionList } = getInitalSettings()
-      // setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
     }
     fetchSchedules()
     logseq.DB.onChanged(({ blocks, txData, txMeta }) => {

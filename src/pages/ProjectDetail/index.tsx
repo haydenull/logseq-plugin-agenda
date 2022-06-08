@@ -6,7 +6,7 @@ import s from './index.module.less'
 import { Tabs } from 'antd'
 import { useParams } from 'react-router-dom'
 import CalendarCom from '@/components/Calendar'
-import { scheduleCalendarMapAtom } from '@/model/schedule'
+// import { scheduleCalendarMapAtom } from '@/model/schedule'
 import ListView from './components/ListView'
 import { journalCalendarSchedulesAtom, projectCalendarSchedulesAtom } from '@/model/events'
 
