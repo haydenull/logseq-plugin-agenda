@@ -7,17 +7,18 @@ import dayjs from 'dayjs'
 import { createBlockToSpecificBlock, getPageData, moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
 import { format } from 'date-fns'
 import { ISettingsForm } from '@/util/type'
+import { IEvent } from '@/util/events'
 
-function getTime(task: ISchedule, overdue = false) {
-  const startStr = task?.start
-  const endStr = task?.end
+function getTime(task: IEvent, overdue = false) {
+  const startStr = task?.addOns.start
+  const endStr = task?.addOns.end
 
-  const startDay = dayjs(startStr as string)
-  const endDay = dayjs(endStr as string)
+  const startDay = dayjs(startStr)
+  const endDay = dayjs(endStr)
   const isSameDay = startDay.isSame(endDay, 'day')
 
   if (overdue) {
-    if (task.raw?.rawAllDay) {
+    if (task.addOns.allDay) {
       if (isSameDay) return ({ start: startDay.format('MM-DD') })
       return ({ start: startDay.format('MM-DD'), end: endDay.format('MM-DD') })
     } else {
@@ -28,40 +29,39 @@ function getTime(task: ISchedule, overdue = false) {
   }
 
   if (!isSameDay) return ({ start: startDay.format('MM-DD'), end: endDay.format('MM-DD') })
-  if (task.isAllDay) return ({ start: 'all-day' })
+  if (task.addOns.allDay) return ({ start: 'all-day' })
   return ({ start: startDay.format('HH:mm'), end: endDay.format('HH:mm') })
 }
 
 const Task: React.FC<{
-  task: ISchedule
-  showTimeDot?: boolean
+  task: IEvent
   type?: 'overdue' | 'allDay' | 'time'
-}> = ({ task, showTimeDot = false, type = 'allDay' }) => {
-  const startDay = dayjs(task.start as string)
-  const endDay = dayjs(task.end as string)
+}> = ({ task, type = 'allDay' }) => {
+  const startDay = dayjs(task.addOns.start)
+  const endDay = dayjs(task.addOns.end)
   const isActive = type === 'time' && dayjs().isBetween(startDay, endDay)
-  const isDone = task?.raw?.marker === 'DONE'
+  const isDone = task.addOns.status === 'done'
+  const calendarConfig = task.addOns.calendarConfig
 
   const { start, end } = getTime(task, type === 'overdue')
 
   const navToBlock = async () => {
-    const rawData: any = task.raw
-    const { id: pageId, originalName } = rawData?.page || {}
+    const { id: pageId, originalName } = task?.page || {}
     let pageName = originalName
     if (!pageName) {
       const page = await getPageData({ id: pageId })
       pageName = page?.originalName
     }
-    logseq.Editor.scrollToBlockInPage(pageName, task.id!)
+    logseq.Editor.scrollToBlockInPage(pageName, task.uuid)
   }
   const embedToToday: React.MouseEventHandler = async (e) => {
     console.log('[faiz:] === embedToToday', task)
     e.stopPropagation()
-    const scheduleId = task.id?.replace('overdue-', '')
+    const scheduleId = task.uuid
     const { preferredDateFormat } = await logseq.App.getUserConfigs()
     const todayPage = format(dayjs().valueOf(), preferredDateFormat)
     const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
-    const newBlock = await logseq.Editor.insertBlock(scheduleId!, `((${scheduleId}))` + (task.calendarId?.toLocaleLowerCase() === 'journal' ? '' : ` #[[${task.calendarId}]]`), { before: false, sibling: true })
+    const newBlock = await logseq.Editor.insertBlock(scheduleId, `((${scheduleId}))` + (calendarConfig?.id?.toLocaleLowerCase() === 'journal' ? '' : ` #[[${calendarConfig?.id}]]`), { before: false, sibling: true })
     if (logKey?.enabled) {
       await moveBlockToSpecificBlock(newBlock?.uuid!, todayPage, `[[${logKey?.id}]]`)
       // await createBlockToSpecificBlock(todayPage, `[[${logKey?.id}]]`, `((${scheduleId})) #[[${task.calendarId}]]`)
@@ -86,10 +86,10 @@ const Task: React.FC<{
         <div className="w-full">{start}</div>
         { end && (<div className="w-full" style={{ opacity: 0.6 }}>{end}</div>) }
       </div>
-      <div style={{ width: '4px', backgroundColor: task.bgColor, borderRadius: '2px', margin: '0 6px' }}></div>
+      <div style={{ width: '4px', backgroundColor: calendarConfig?.bgColor, borderRadius: '2px', margin: '0 6px' }}></div>
       <div style={{ width: 'calc(100% - 90px)', paddingBottom: '24px', position: 'relative' }}>
-        <div style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: 0.6 }}>{task.calendarId}</div>
-        <div className="agenda-sidebar-task__title" style={{ marginBottom: '-0.2em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', position: 'absolute', bottom: 0, width: 'calc(100% - 30px)' }} title={task.title}>{task.title}</div>
+        <div style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: 0.6 }}>{calendarConfig?.id}</div>
+        <div className="agenda-sidebar-task__title" style={{ marginBottom: '-0.2em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', position: 'absolute', bottom: 0, width: 'calc(100% - 30px)' }} title={task.addOns.showTitle}>{task.addOns.showTitle}</div>
         { isActive && <span
           className="ui__button bg-indigo-600"
           style={{ fontSize: '0.5em', position: 'absolute', right: 0, bottom: 0, padding: '0 3px', borderRadius: '3px' }}

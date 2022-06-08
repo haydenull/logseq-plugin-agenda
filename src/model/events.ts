@@ -4,65 +4,63 @@ import { getInitalSettings } from '@/util/baseInfo'
 import { ICategory } from '@/util/type'
 import { atom } from 'jotai'
 import { genDefaultProjectEvents, IEvent, IPageEvent } from '../util/events'
+import { transformMilestoneEventToSchedule, transformTaskEventToSchedule } from '@/helper/transform'
+import { getAgendaCalendars } from '@/util/schedule'
+import dayjs from 'dayjs'
 
 export const fullEventsAtom = atom<IPageEvent>(genDefaultProjectEvents())
 export const journalEventsAtom = atom<IPageEvent>(genDefaultProjectEvents())
 export const projectEventsAtom = atom<Map<string, IPageEvent>>(new Map())
 
 
-export const calendarSchedules = atom<Array<ISchedule & { raw: IEvent }>>((get) => {
+// ========================= calendar schedules =========================
+export const fullCalendarSchedulesAtom = atom<Array<ISchedule & { raw: IEvent }>>((get) => {
   const fullEvents = get(fullEventsAtom)
 
-  const { journal, projectList = [] } = getInitalSettings()
-
-  const tasks = fullEvents.tasks.withTime.map((block) => {
-    let category: ICategory = block?.addOns?.allDay ? 'allday' : 'time'
-    if (block?.addOns?.isOverdue) category = 'task'
-
-    let calendarStyle: { bgColor: string; textColor: string; borderColor: string; } | undefined = block?.addOns?.isJournal ? journal : projectList.find(project => project.id === block?.page?.originalName)
-    if (!calendarStyle) calendarStyle = DEFAULT_CALENDAR_STYLE
-
-    return {
-      id: block.uuid,
-      calendarId: block.addOns.isJournal ? 'Journal' : block.page?.originalName,
-      title: block.addOns.showTitle,
-      body: block.content,
-      category,
-      dueDateClass: '',
-      start: block.addOns.start,
-      end: block.addOns.end,
-      raw: block,
-      color: calendarStyle?.textColor,
-      bgColor: calendarStyle?.bgColor,
-      borderColor: calendarStyle?.borderColor,
-      isAllDay: !block?.addOns?.isOverdue && block.addOns.allDay,
-      customStyle: block.addOns.status === 'done' ? 'opacity: 0.6;' : '',
-      isReadOnly: false,
-    }
-  })
-
-  const milestones = fullEvents.milestones.withTime.map((block) => {
-    let calendarStyle: { bgColor: string; textColor: string; borderColor: string; } | undefined = block?.addOns?.isJournal ? journal : projectList.find(project => project.id === block?.page?.originalName)
-    if (!calendarStyle) calendarStyle = DEFAULT_CALENDAR_STYLE
-    return {
-      id: block.uuid,
-      calendarId: block.addOns.isJournal ? 'Journal' : block.page?.originalName,
-      title: block.addOns.showTitle,
-      body: block.content,
-      category: 'milestone',
-      dueDateClass: '',
-      start: block.addOns.start,
-      end: block.addOns.end,
-      raw: block,
-      color: calendarStyle?.textColor,
-      bgColor: calendarStyle?.bgColor,
-      borderColor: calendarStyle?.borderColor,
-      isAllDay: !block?.addOns?.isOverdue && block.addOns.allDay,
-      customStyle: block.addOns.status === 'done' ? 'opacity: 0.6;' : '',
-      isReadOnly: false,
-    }
-  })
+  const tasks = fullEvents.tasks.withTime.map(transformTaskEventToSchedule)
+  const milestones = fullEvents.milestones.withTime.map(transformMilestoneEventToSchedule)
 
   // @ts-ignore
   return tasks.concat(milestones)
+})
+export const journalCalendarSchedulesAtom = atom((get) => {
+  const { journal } = getInitalSettings()
+  const full = get(fullCalendarSchedulesAtom)
+  return {
+    calendarConfig: journal,
+    schedules: full.filter(({ calendarId }) => calendarId === 'Journal'),
+  }
+})
+export const projectCalendarSchedulesAtom = atom((get) => {
+  const { projectList= [] } = getInitalSettings()
+  const full = get(fullCalendarSchedulesAtom)
+  return projectList?.map(project => ({
+    calendarConfig: project,
+    schedules: full.filter(({ calendarId }) => calendarId === project.id),
+  }))
+})
+
+
+// ========================= dashboard =========================
+
+// 最近 14 天任务
+export const latest14DaysTasksAtom = atom((get) => {
+  const events = get(fullEventsAtom)
+  const start = dayjs().subtract(14, 'day')
+  const end = dayjs()
+  return events.tasks.withTime.filter(task => {
+    const taskDay = dayjs(task.start as string)
+    return taskDay.isBetween(start, end, 'day', '(]')
+  })
+})
+// 今日任务
+export const todayTasksAtom = atom((get) => {
+  const events = get(fullEventsAtom)
+  return events.tasks.withTime.filter(event => {
+    if (event.addOns.status === 'canceled') return false
+    if (event.addOns.isOverdue) return true
+    const start = dayjs(event.addOns.start)
+    const end = dayjs(event.addOns.end)
+    return dayjs().isBetween(start, end, 'day', '[]')
+  }).sort((a, b) => dayjs(a.addOns.start).diff(dayjs(b.addOns.start)))
 })

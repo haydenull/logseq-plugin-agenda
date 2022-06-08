@@ -4,10 +4,10 @@ import { useAtom } from 'jotai'
 import { schedulesAtom } from '@/model/schedule'
 import CalendarCom from '@/components/Calendar'
 import s from './index.module.less'
-import { calendarSchedules } from '@/model/events'
+import { fullCalendarSchedulesAtom } from '@/model/events'
 
 const index = () => {
-  const [schedules] = useAtom(calendarSchedules)
+  const [schedules] = useAtom(fullCalendarSchedulesAtom)
 
   console.log('[faiz:] === page calendar: schedules', schedules)
 

@@ -1,8 +1,10 @@
+import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
 import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import dayjs from 'dayjs'
 import { getInitalSettings } from './baseInfo'
 import { pureTaskBlockContent } from './logseq'
 import { deleteProjectTaskTime, fillBlockReference, getAgendaCalendars, getProjectTaskTime, getTimeInfo, isOverdue, removeTimeInfo } from './schedule'
+import { ICustomCalendar } from './type'
 
 
 export const getEventTimeInfo = (block: BlockEntity, isAgendaCalendar = false): {
@@ -72,6 +74,7 @@ export type IEvent = BlockEntity & {
     status: 'todo' | 'doing' | 'done' | 'canceled'
     isOverdue: boolean
     isJournal: boolean
+    calendarConfig?: ICustomCalendar
   }
 }
 export type IPageEvent = {
@@ -133,11 +136,11 @@ export const getInternalEvents = async () => {
 
     // add status
     if (['DOING', 'NOW'].includes(task.marker)) {
-      event.addOns.status === 'doing'
+      event.addOns.status = 'doing'
     } else if (task.marker === 'DONE') {
-      event.addOns.status === 'done'
+      event.addOns.status = 'done'
     } else if (task.marker === 'CANCELED') {
-      event.addOns.status === 'canceled'
+      event.addOns.status = 'canceled'
     }
 
     // add isOverdue
@@ -147,6 +150,20 @@ export const getInternalEvents = async () => {
 
     // add isJournal
     if (isJournal) event.addOns.isJournal = true
+
+    // add calendar config
+    const project = projectList?.find(project => project.id === task?.page?.originalName)
+    if (project) {
+      event.addOns.calendarConfig = project
+    } else if (isJournal) {
+      event.addOns.calendarConfig = journal
+    } else {
+      event.addOns.calendarConfig = {
+        id: task?.page?.originalName,
+        enabled: true,
+        ...DEFAULT_CALENDAR_STYLE,
+      }
+    }
 
 
     if (isMilestone) {

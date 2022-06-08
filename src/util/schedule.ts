@@ -9,6 +9,7 @@ import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, MARKDOWN_PR
 import { getBlockData, getPageData, pureTaskBlockContent } from './logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { parseUrlParams } from './util'
+import { IEvent } from './events';
 
 export const getSchedules = async () => {
   const agendaCalendars = await getAgendaCalendars()
@@ -255,7 +256,7 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaC
  * 判断是否过期
  */
 export const isOverdue = (block: any, date: string, allDay: boolean) => {
-  if (block.marker && block.marker !== 'DONE') {
+  if (block.marker && block.marker !== 'DONE' && block.marker !== 'CANCELED') {
     // return isAfter(startOfDay(new Date()), parseISO(date))
     if (allDay) {
       return dayjs().isAfter(dayjs(date), 'day')
@@ -428,26 +429,22 @@ export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
   return false
 }
 
-export const catrgorizeTask = (schedules: ISchedule[]) => {
-  const DOING_CATEGORY = ['DOING', 'NOW']
-  const TODO_CATEGORY = ['TODO', 'LATER']
-  const DONE_CATEGORY = ['DONE']
-  const CANCELED_CATEGORY = ['CANCELED']
+export const catrgorizeTask = (events: IEvent[]) => {
   return {
-    doing: schedules.filter(schedule => DOING_CATEGORY.includes(schedule?.raw?.marker as string)),
-    todo: schedules.filter(schedule => TODO_CATEGORY.includes(schedule?.raw?.marker as string)),
-    done: schedules.filter(schedule => DONE_CATEGORY.includes(schedule?.raw?.marker as string)),
-    canceled: schedules.filter(schedule => CANCELED_CATEGORY.includes(schedule?.raw?.marker as string)),
+    doing: events.filter(event => event?.addOns?.status === 'doing'),
+    todo: events.filter(event => event?.addOns?.status === 'todo'),
+    done: events.filter(event => event?.addOns?.status === 'done'),
+    canceled: events.filter(event => event?.addOns?.status === 'canceled'),
   }
 }
 
 // 以开始时间为为key，转为map
-export const scheduleStartDayMap = (schedules: ISchedule[]) => {
-  const res = new Map<string, ISchedule[]>()
-  schedules.forEach(schedule => {
-    const key = dayjs(schedule.start as string).startOf('day').toISOString()
+export const scheduleStartDayMap = (events: IEvent[]) => {
+  const res = new Map<string, IEvent[]>()
+  events.forEach(event => {
+    const key = dayjs(event.addOns.start).startOf('day').toISOString()
     if (!res.has(key)) res.set(key, [])
-    res.get(key)?.push(schedule)
+    res.get(key)?.push(event)
   })
   return res
 }
@@ -490,14 +487,14 @@ export const updateProjectTaskTime = (blockContent: string, timeInfo: { start: D
   return newContent?.split('\n').map((txt, index) => index === 0 ? txt + ' ' + time : txt).join('\n')
 }
 
-export function categorizeTasks (tasks: ISchedule[]) {
-  let overdueTasks: ISchedule[] = []
-  let allDayTasks: ISchedule[] = []
-  let timeTasks: ISchedule[] = []
+export function categorizeTasks (tasks: IEvent[]) {
+  let overdueTasks: IEvent[] = []
+  let allDayTasks: IEvent[] = []
+  let timeTasks: IEvent[] = []
   tasks.forEach(task => {
-    if (task.raw?.rawOverdue) {
+    if (task.addOns.isOverdue) {
       overdueTasks.push(task)
-    } else if (task.isAllDay) {
+    } else if (task.addOns.allDay) {
       allDayTasks.push(task)
     } else {
       timeTasks.push(task)

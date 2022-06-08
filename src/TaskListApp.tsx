@@ -3,13 +3,15 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import Sider from '@/components/Sider'
 import { MENUS } from '@/constants/elements'
 import { useAtom } from 'jotai'
-import { projectSchedulesAtom, subscriptionSchedulesAtom, todayTasksAtom } from '@/model/schedule'
+import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
 import { getSchedules, categorizeTasks } from '@/util/schedule'
 import { getInitalSettings } from '@/util/baseInfo'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import { DEFAULT_SETTINGS } from '@/util/constants'
 import ProjectDetail from '@/pages/ProjectDetail'
 import SidebarTask from './components/SidebarTask'
+import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'
+import { getInternalEvents } from './util/events'
 
 const App: React.FC<{
   containerId: string
@@ -22,9 +24,21 @@ const App: React.FC<{
   const [todayTasks] = useAtom(todayTasksAtom)
   const { overdueTasks, allDayTasks, timeTasks } = categorizeTasks(todayTasks)
 
+  const [, setFullEvents] = useAtom(fullEventsAtom)
+  const [, setJournalEvents] = useAtom(journalEventsAtom)
+  const [, setProjectEvents] = useAtom(projectEventsAtom)
+
   useEffect(() => {
     async function fetchSchedules() {
-      setProjectSchedules(await getSchedules())
+      const res = await getInternalEvents()
+      if (res) {
+        const { fullEvents, journalEvents, projectEventsMap } = res
+        setFullEvents(fullEvents)
+        setJournalEvents(journalEvents)
+        setProjectEvents(projectEventsMap)
+      }
+
+      // setProjectSchedules(await getSchedules())
       // const { subscriptionList } = getInitalSettings()
       // setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
     }
@@ -68,7 +82,7 @@ const App: React.FC<{
             {/* <span>Time</span> */}
             {
               timeTasks.map(task => (
-                <SidebarTask key={task.id} task={task} type="time" showTimeDot />
+                <SidebarTask key={task.id} task={task} type="time" />
               ))
             }
           </div>

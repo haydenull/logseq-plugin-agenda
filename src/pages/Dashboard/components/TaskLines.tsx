@@ -7,7 +7,7 @@ import classNames from 'classnames'
 import dayjs from 'dayjs'
 import Task from './Task'
 import { useAtom } from 'jotai'
-import { todayTasksAtom } from '@/model/schedule'
+import { todayTasksAtom } from '@/model/events'
 import { categorizeTasks } from '@/util/schedule'
 
 const MOCK_TASKS: ISchedule[] = [
@@ -21,7 +21,7 @@ const MOCK_TASKS: ISchedule[] = [
 
 const TaskLines: React.FC<{}> = () => {
   const [todayTasks] = useAtom(todayTasksAtom)
-  const { overdueTasks, allDayTasks, timeTasks } = categorizeTasks(import.meta.env.DEV ? MOCK_TASKS : todayTasks)
+  const { overdueTasks, allDayTasks, timeTasks } = categorizeTasks(todayTasks)
 
   return (
     <div className={s.taskLine}>

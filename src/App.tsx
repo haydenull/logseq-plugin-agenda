@@ -9,7 +9,7 @@ import { getInitalSettings } from '@/util/baseInfo'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import { DEFAULT_SETTINGS } from '@/util/constants'
 import ProjectDetail from '@/pages/ProjectDetail'
-import { fullEventsAtom } from './model/events'
+import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from './model/events'
 import { getInternalEvents } from './util/events'
 
 const App: React.FC<{
@@ -21,6 +21,8 @@ const App: React.FC<{
   const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
 
   const [, setFullEvents] = useAtom(fullEventsAtom)
+  const [, setJournalEvents] = useAtom(journalEventsAtom)
+  const [, setProjectEvents] = useAtom(projectEventsAtom)
 
   const { homePage = DEFAULT_SETTINGS.homePage } = getInitalSettings()
   const homePageElement = MENUS.find(item => item.value === homePage)?.element
@@ -28,10 +30,11 @@ const App: React.FC<{
   useEffect(() => {
     async function fetchSchedules() {
       const res = await getInternalEvents()
-      console.log('[faiz:] === App getInternalEvents res', res)
       if (res) {
-        const { fullEvents } = res
+        const { fullEvents, journalEvents, projectEventsMap } = res
         setFullEvents(fullEvents)
+        setJournalEvents(journalEvents)
+        setProjectEvents(projectEventsMap)
       }
 
       // setProjectSchedules(await getSchedules())

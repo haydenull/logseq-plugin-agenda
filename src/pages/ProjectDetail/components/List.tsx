@@ -1,3 +1,4 @@
+import { IEvent } from '@/util/events'
 import { pureTaskBlockContent } from '@/util/logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { Collapse, List } from 'antd'
@@ -6,27 +7,24 @@ import dayjs from 'dayjs'
 import { ISchedule } from 'tui-calendar'
 import s from '../index.module.less'
 
-export type ITask = BlockEntity | ISchedule
 const ListCom: React.FC<{
-  upcomingList: ITask[]
-  doneList: ITask[]
-  canceledList: ITask[]
-  onSelect: (task: ITask) => void
+  upcomingList: IEvent[]
+  doneList: IEvent[]
+  canceledList: IEvent[]
+  onSelect: (task: IEvent) => void
   value?: string
 }> = ({ upcomingList, doneList, canceledList, onSelect, value }) => {
 
-  const renderListItem =(item: ITask) => (
+  const renderListItem =(item: IEvent) => (
     <List.Item onClick={() => onSelect(item)} className={classNames('cursor-pointer px-2 rounded', {'bg-quinary': item.id + '' === value})}>
-      {
-        item?.calendarId
-        ? (
-          <div className="flex justify-between w-full">
-            <span>{item.title}</span>
-            <span className={classNames(s.linkText, 'whitespace-nowrap')}>{dayjs(item.start).format('MM-DD')}</span>
-          </div>
-        )
-        : pureTaskBlockContent(item as BlockEntity)
-      }
+      <div className="flex justify-between w-full">
+        <span>{item.addOns.showTitle}</span>
+        {
+          item.rawTime && (
+            <span className={classNames(s.linkText, 'whitespace-nowrap')}>{dayjs(item.addOns.start).format('MM-DD')}</span>
+          )
+        }
+      </div>
     </List.Item>
   )
 

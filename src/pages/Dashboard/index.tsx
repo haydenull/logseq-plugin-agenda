@@ -1,7 +1,6 @@
 import GaugeChart from '@/components/GaugeChart'
 import Polygonal from '@/components/Polygonal'
 import { ganttDataAtom } from '@/model/gantt'
-import { latest14DaysTasksAtom, todayTasksAtom } from '@/model/schedule'
 import { IGroup } from '@/packages/Gantt/type'
 import { catrgorizeTask, scheduleStartDayMap } from '@/util/schedule'
 import classNames from 'classnames'
@@ -11,9 +10,9 @@ import React, { useState } from 'react'
 import { format, parse } from 'date-fns'
 import Project from './components/Project'
 import TaskLines from './components/TaskLines'
-
 import s from './index.module.less'
 import { SHOW_DATE_FORMAT } from '@/util/constants'
+import { latest14DaysTasksAtom, todayTasksAtom } from '@/model/events'
 
 const MOCK_POLYGONAL_DATA: { date: string; value: number }[] = [
   { date: '2020-04-26', value: parseInt(Math.random() * 30 + '') },

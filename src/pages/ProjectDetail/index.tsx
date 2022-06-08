@@ -8,12 +8,14 @@ import { useParams } from 'react-router-dom'
 import CalendarCom from '@/components/Calendar'
 import { scheduleCalendarMapAtom } from '@/model/schedule'
 import ListView from './components/ListView'
+import { journalCalendarSchedulesAtom, projectCalendarSchedulesAtom } from '@/model/events'
 
 const index: React.FC<{}> = () => {
   const { projectId } = useParams()
 
-  const [calendarSchedulesMap] = useAtom(scheduleCalendarMapAtom)
-  const calendarSchedules = projectId && calendarSchedulesMap.get(projectId) || []
+  const [journalCalendarSchedules] = useAtom(journalCalendarSchedulesAtom)
+  const [projectCalendarSchedules] = useAtom(projectCalendarSchedulesAtom)
+  const calendarSchedules = projectId === 'Journal' ? journalCalendarSchedules?.schedules : (projectCalendarSchedules.find(item => item?.calendarConfig?.id === projectId)?.schedules || [])
 
   return (
     <div className={classNames(s.page, 'page-container p-8 flex flex-col items-center')}>
@@ -23,7 +25,7 @@ const index: React.FC<{}> = () => {
           projectId && (
             <Tabs className="w-full" tabPosition="left">
               <Tabs.TabPane tab="List" key="list">
-                <ListView projectId={projectId} schedules={calendarSchedules} />
+                <ListView projectId={projectId} />
               </Tabs.TabPane>
               <Tabs.TabPane tab="Calendar" key="calendar">
                 <CalendarCom schedules={calendarSchedules} isProjectCalendar />
