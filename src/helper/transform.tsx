@@ -55,7 +55,7 @@ export const transformMilestoneEventToSchedule = (block: IEvent) => {
     color: calendarStyle?.textColor,
     bgColor: calendarStyle?.bgColor,
     borderColor: calendarStyle?.borderColor,
-    isAllDay: !block?.addOns?.isOverdue && block.addOns.allDay,
+    isAllDay: false,
     customStyle: block.addOns.status === 'done' ? 'opacity: 0.6;' : '',
     isReadOnly: false,
   }
