@@ -1,3 +1,24 @@
+# [2.3.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.2.0...v2.3.0) (2022-06-09)
+
+
+### Bug Fixes
+
+* 🐛 can not locate today in gantt view ([08489b4](https://github.com/haydenull/logseq-plugin-agenda/commit/08489b411b3dde59f0096b8c86be5c1f02bde58a))
+
+
+### Features
+
+* ✨ add list view ([09038ee](https://github.com/haydenull/logseq-plugin-agenda/commit/09038ee2e299293d118b6484469613c0fe9f1368))
+* ✨ add project detail ([2beeacb](https://github.com/haydenull/logseq-plugin-agenda/commit/2beeacb827d7cc8e8d50adf91b1e3d8cf13be1c8))
+* ✨ complete journal chrono view(but not release for now) ([a288c6c](https://github.com/haydenull/logseq-plugin-agenda/commit/a288c6ce90c926971fa626303895813c2e903c0b))
+* ✨ preload antd css ([88dcc2a](https://github.com/haydenull/logseq-plugin-agenda/commit/88dcc2a1d0e5c263e09fe58b92ec05c919d8fa3e))
+* ✨ supports move project ([389cc08](https://github.com/haydenull/logseq-plugin-agenda/commit/389cc080c5074392b60bdc44a2935faa3a1fe2ff))
+* ✨ supports project ([7bcc820](https://github.com/haydenull/logseq-plugin-agenda/commit/7bcc820f2a22fc6ef179dd08d31a67dcae3af390))
+* add check all button ([86ebc03](https://github.com/haydenull/logseq-plugin-agenda/commit/86ebc0322a0335d67f7950e0e4bfc600cda77e65))
+* add chrono view ([cbabc76](https://github.com/haydenull/logseq-plugin-agenda/commit/cbabc7660a9a50321fee9d06a5b54f93e899ef05))
+* add sidebar timeline ([0ce840d](https://github.com/haydenull/logseq-plugin-agenda/commit/0ce840d2b9e9a4369ae9c64e9154f17de2321d4b))
+* supports modify project schedule from modal ([5798c75](https://github.com/haydenull/logseq-plugin-agenda/commit/5798c751257be630246a8690c998ead23747358f))
+
 # [2.2.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.1.2...v2.2.0) (2022-05-13)
 
 
