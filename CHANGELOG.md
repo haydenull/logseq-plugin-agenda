@@ -1,3 +1,10 @@
+## [2.3.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.3.0...v2.3.1) (2022-06-09)
+
+
+### Bug Fixes
+
+* 🐛 parse milestone category error ([42d93d7](https://github.com/haydenull/logseq-plugin-agenda/commit/42d93d7ba8164cf942c5f39566949867733e5082))
+
 # [2.3.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.2.0...v2.3.0) (2022-06-09)
 
 
