@@ -12,19 +12,21 @@ import { getInitalSettings, genAgendaQuery, genDefaultQuery } from '@/util/baseI
 import { useAtom } from 'jotai'
 import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
 import { settingsAtom } from '@/model/settings'
-import { getSchedules } from '@/util/schedule'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import { motion } from 'framer-motion'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 import Tabs from './components/Tabs'
 import s from './index.module.less'
 import { MENUS } from '@/constants/elements'
+import { managePluginTheme } from '@/util/util'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
-  { value: 'calendar', label: 'Calendar View' },
-  { value: 'projects', label: 'Projects' },
+  { value: 'projects', label: 'Project' },
+  { value: 'customCalendar', label: 'Custom Calendar' },
   { value: 'subscription', label: 'Subscription' },
+  { value: 'calendarView', label: 'Calendar View' },
 ]
 
 
@@ -61,15 +63,17 @@ const Settings: React.FC<{
     console.log('[faiz:] === onValuesChange', changedValues, allValues)
     setSettings(allValues)
     // hack https://github.com/logseq/logseq/issues/4447
-    logseq.updateSettings({calendarList: 1, subscriptionList: 1})
+    logseq.updateSettings({calendarList: 1, subscriptionList: 1, projectList: 1})
     // ensure subscription list is array
-    logseq.updateSettings({subscriptionList: [], ...allValues})
+    logseq.updateSettings({subscriptionList: [], projectList: [], ...allValues})
 
     // exec after 500ms to make sure the settings are updated
     setTimeout(async () => {
-      // managePluginTheme()
+      if (changedValues?.lightThemeType || changedValues.theme) {
+        managePluginTheme()
+      }
       if (changedValues?.calendarList) {
-        setProjectSchedules(await getSchedules())
+        // setProjectSchedules(await getSchedules())
       }
       if (changedValues?.subscriptionList) {
         const { subscriptionList } = await getInitalSettings()
@@ -82,7 +86,7 @@ const Settings: React.FC<{
     <div className="page-container p-8 flex flex-col items-center">
       <h1 className={classNames(s.title, 'title-text')}>Settings</h1>
       <div className={classNames(s.content, 'rounded-2xl flex')}>
-        <div className="flex flex-col justify-between">
+        <div className="flex flex-col justify-between pr-5">
           <Tabs value={tab} tabs={TABS} onChange={onTabChange} />
           <Popconfirm
             title={<span>Are you sure you want to restore default settings?<br />This is an irreversible operation.</span>}
@@ -123,81 +127,156 @@ const Settings: React.FC<{
               />
             </Form.Item>
             <Form.Item label="Log Key" required>
-            <div className="flex items-center justify-between">
-              <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
-                <Input style={{ width: '240px' }} />
-              </Form.Item>
-              <Form.Item name={['logKey', 'bgColor']} noStyle rules={[{ required: true }]}>
-                <ColorPicker text="background" />
-              </Form.Item>
-              <Form.Item name={['logKey', 'textColor']} noStyle rules={[{ required: true }]}>
-                <ColorPicker text="text" />
-              </Form.Item>
-              <Form.Item name={['logKey', 'borderColor']} noStyle rules={[{ required: true }]}>
-                <ColorPicker text="border" />
-              </Form.Item>
-              <Form.Item name={['logKey', 'enabled']} noStyle valuePropName="checked">
-                <Switch />
-              </Form.Item>
-              {/* <div style={{ width: '60px' }}></div> */}
-            </div>
-          </Form.Item>
-          </div>
-          <div id="calendar" className={classNames(s.formBlock, { [s.show]: tab === 'calendar' })}>
-            <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
-              <Select options={CALENDAR_VIEWS} />
-            </Form.Item>
-            <Form.Item label="Week Start Day" name="weekStartDay" rules={[{ required: true }]}>
-              <Select>
-                <Select.Option value={0}>Sunday</Select.Option>
-                <Select.Option value={1}>Monday</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Time Grid">
-              <div className="flex items-center">
-                <Form.Item noStyle name="weekHourStart">
-                  <InputNumber min={0} max={24} />
+              <div className="flex items-center justify-between">
+                <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
+                  <Input style={{ width: '240px' }} />
                 </Form.Item>
-                <span className="px-2">-</span>
-                <Form.Item noStyle name="weekHourEnd">
-                  <InputNumber min={0} max={24} />
+                <Form.Item name={['logKey', 'bgColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="background" />
+                </Form.Item>
+                <Form.Item name={['logKey', 'textColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="text" />
+                </Form.Item>
+                <Form.Item name={['logKey', 'borderColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="border" />
+                </Form.Item>
+                <Form.Item name={['logKey', 'enabled']} noStyle valuePropName="checked">
+                  <Switch />
+                </Form.Item>
+              </div>
+            </Form.Item>
+            <Form.Item label="Journal" required>
+              <div className="flex items-center justify-between">
+                <Form.Item noStyle name={['journal', 'id']} rules={[{ required: true }]}>
+                  <Input style={{ width: '240px' }} disabled />
+                </Form.Item>
+                <Form.Item name={['journal', 'bgColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="background" />
+                </Form.Item>
+                <Form.Item name={['journal', 'textColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="text" />
+                </Form.Item>
+                <Form.Item name={['journal', 'borderColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="border" />
+                </Form.Item>
+                <Form.Item name={['journal', 'query']} rules={[{ required: true }]} style={{ display: 'none' }}>
+                  <Query calendarId='query' />
+                </Form.Item>
+                <Form.Item name={['journal', 'enabled']} noStyle valuePropName="checked">
+                  <Switch />
                 </Form.Item>
               </div>
             </Form.Item>
           </div>
           <div id="projects" className={classNames(s.formBlock, { [s.show]: tab === 'projects' })}>
+            <Form.List name="projectList">
+              {(fields, { add, remove, move }) => (<>
+                <DragDropContext onDragEnd={(e) => {
+                  console.log('[faiz:] === onDragEnd', e)
+                  if (e?.destination) move(e.source.index, e.destination.index)
+                }}>
+                  <Droppable droppableId="droppable-projects">
+                    {(provided, snapshot) => (
+                      <div ref={provided.innerRef}>
+                        {fields.map((field, index) => (
+                          <Draggable draggableId={`drag ${index}`} index={index} key={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <Form.Item>
+                                  <div className="flex items-center justify-between">
+                                    <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
+                                      <Input placeholder="Project ID (Page Name)" style={{ width: '300px' }} />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="background" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="text" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'borderColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="border" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
+                                      <Switch />
+                                    </Form.Item>
+                                    <MinusCircleOutlined onClick={() => remove(field.name)} />
+                                  </div>
+                                </Form.Item>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        <Form.Item>
+                          <Button type="dashed" onClick={() => add({ id: undefined, bgColor: '#b8e986', textColor: '#4a4a4a', borderColor: '#047857', enabled: true })} block icon={<PlusOutlined />}>
+                            Add Project
+                          </Button>
+                        </Form.Item>
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              </>)}
+            </Form.List>
+          </div>
+          <div id="customCalendar" className={classNames(s.formBlock, { [s.show]: tab === 'customCalendar' })}>
             <Form.List name="calendarList">
-              {(fields, { add, remove }) => (<>
-                {fields.map((field, index) => (
-                  <Form.Item required label={index === 0 ? 'Project' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}>
-                    <div className="flex items-center justify-between">
-                      <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
-                        <Input placeholder="Calendar ID" disabled={index === 0} style={{ width: '240px' }} />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
-                        <ColorPicker text="background" />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
-                        <ColorPicker text="text" />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'borderColor']} noStyle rules={[{ required: true }]}>
-                        <ColorPicker text="border" />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'query']} noStyle rules={[{ required: true }]}>
-                        <Query calendarId='query' />
-                      </Form.Item>
-                      <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
-                        <Switch />
-                      </Form.Item>
-                      {index !== 0 ? <MinusCircleOutlined onClick={() => remove(field.name)} /> : <div style={{ width: '14px' }}></div>}
-                    </div>
-                  </Form.Item>
-                ))}
-                <Form.Item wrapperCol={{ offset: 4 }}>
-                  <Button type="dashed" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
-                    Add Calendar
-                  </Button>
-                </Form.Item>
+              {(fields, { add, remove, move }) => (<>
+                <DragDropContext onDragEnd={(e) => {
+                  console.log('[faiz:] === onDragEnd', e)
+                  if (e?.destination?.index === 0 || e?.source?.index === 0) return
+                  if (e?.destination) move(e.source.index, e.destination.index)
+                }}>
+                  <Droppable droppableId="droppable-1">
+                    {(provided, snapshot) => (
+                      <div ref={provided.innerRef}>
+                        {fields.map((field, index) => (
+                          <Draggable draggableId={`drag ${index}`} index={index} key={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <Form.Item>
+                                  <div className="flex items-center justify-between">
+                                    <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
+                                      <Input placeholder="Calendar ID" style={{ width: '300px' }} />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="background" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="text" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'borderColor']} noStyle rules={[{ required: true }]}>
+                                      <ColorPicker text="border" />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'query']} noStyle rules={[{ required: true }]}>
+                                      <Query calendarId='query' />
+                                    </Form.Item>
+                                    <Form.Item name={[field.name, 'enabled']} noStyle valuePropName="checked">
+                                      <Switch />
+                                    </Form.Item>
+                                    <MinusCircleOutlined onClick={() => remove(field.name)} />
+                                  </div>
+                                </Form.Item>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        <Form.Item>
+                          <Button type="dashed" onClick={() => setCreateCalendarModalVisible(true)} block icon={<PlusOutlined />}>
+                            Add Custom Calendar
+                          </Button>
+                        </Form.Item>
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
               </>)}
             </Form.List>
           </div>
@@ -236,6 +315,28 @@ const Settings: React.FC<{
                 </Form.Item>
               </>)}
             </Form.List>
+          </div>
+          <div id="calendar" className={classNames(s.formBlock, { [s.show]: tab === 'calendarView' })}>
+            <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
+              <Select options={CALENDAR_VIEWS} />
+            </Form.Item>
+            <Form.Item label="Week Start Day" name="weekStartDay" rules={[{ required: true }]}>
+              <Select>
+                <Select.Option value={0}>Sunday</Select.Option>
+                <Select.Option value={1}>Monday</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Time Grid">
+              <div className="flex items-center">
+                <Form.Item noStyle name="weekHourStart">
+                  <InputNumber min={0} max={24} />
+                </Form.Item>
+                <span className="px-2">-</span>
+                <Form.Item noStyle name="weekHourEnd">
+                  <InputNumber min={0} max={24} />
+                </Form.Item>
+              </div>
+            </Form.Item>
           </div>
         </Form>
       </div>

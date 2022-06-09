@@ -2,4 +2,5 @@
 
 interface Window {
   faizNavigate: (e: any) => void
+  logseqAppUserConfigs: any
 }

@@ -133,25 +133,25 @@ const Calendar: React.FC<{
                   group.events.map(event => {
                     const { coordinates, size, detailPopup } = event
                     return (
-                      <div
-                        key={event.id}
-                        className="calendar__event absolute bg-quaternary rounded cursor-pointer single_ellipsis shadow"
-                        style={{
-                          left: coordinates.x,
-                          top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,
-                          width: size.width + 'px',
-                          height: size.height + 'px',
-                          zIndex: 1,
-                        }}
-                        title={event.title}
+                      <Popover
+                        content={detailPopup}
+                        trigger="click"
                       >
-                        <Popover
-                          content={detailPopup}
-                          trigger="click"
+                        <div
+                          key={event.id}
+                          className="calendar__event absolute bg-quaternary rounded cursor-pointer single_ellipsis shadow"
+                          style={{
+                            left: coordinates.x,
+                            top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,
+                            width: size.width + 'px',
+                            height: size.height + 'px',
+                            zIndex: 1,
+                          }}
+                          title={event.title}
                         >
                           {event.title}
-                        </Popover>
-                      </div>
+                        </div>
+                      </Popover>
                     )
                   })
                 }
@@ -165,21 +165,21 @@ const Calendar: React.FC<{
                         <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
                           {/* <span className="absolute ml-3">{milestone.title}</span> */}
                         </div>
-                        <div
-                          key={'milestone-text' + milestone.id}
-                          className="calendar__milestone__text absolute flex items-center cursor-pointer"
-                          style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}
-                          title={milestone.title}
+                        <Popover
+                          content={detailPopup}
+                          trigger="click"
                         >
-                          <span className="single_ellipsis" style={{ maxWidth: calendarEventWidth - 20 }}>
-                            <Popover
-                              content={detailPopup}
-                              trigger="click"
-                            >
+                          <div
+                            key={'milestone-text' + milestone.id}
+                            className="calendar__milestone__text absolute flex items-center cursor-pointer"
+                            style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}
+                            title={milestone.title}
+                          >
+                            <span className="single_ellipsis" style={{ maxWidth: calendarEventWidth - 20 }}>
                               {milestone.title}
-                            </Popover>
-                          </span>
-                        </div>
+                            </span>
+                          </div>
+                        </Popover>
                       </>
                     )
                   })

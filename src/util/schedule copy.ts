@@ -9,17 +9,19 @@ import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, MARKDOWN_PR
 import { getBlockData, getPageData, pureTaskBlockContent } from './logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { parseUrlParams } from './util'
-import { IEvent } from './events';
 
-export const getCustomCalendarSchedules = async () => {
+export const getSchedules = async () => {
+  const agendaCalendars = await getAgendaCalendars()
+  const agendaCalendarIds = agendaCalendars.map(calendar => calendar.id)
 
   // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
   const settings = getInitalSettings()
-  const { calendarList: calendarConfigs = [], logKey, defaultDuration } = settings
-  const customCalendarConfigs = calendarConfigs.filter(config => config?.enabled)
+  console.log('[faiz:] === settings', settings)
+  const { calendarList: calendarConfigs = [], logKey, journal, defaultDuration, projectList } = settings
+  const customCalendarConfigs = calendarConfigs.concat(journal!).filter(config => config?.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
 
@@ -33,8 +35,8 @@ export const getCustomCalendarSchedules = async () => {
   }).filter(Boolean).flat()
 
   const queryPromiseList = scheduleQueryList.map(async queryWithCalendar => {
-    const { query } = queryWithCalendar
-    const { script = '', queryType } = query
+    const { calendarConfig, query } = queryWithCalendar
+    const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone, queryType } = query
     let blocks: any[] = []
     if (queryType === 'simple') {
       blocks = await logseq.DB.q(script) || []
@@ -43,7 +45,7 @@ export const getCustomCalendarSchedules = async () => {
     }
     // console.log('[faiz:] === search blocks by query: ', script, blocks)
 
-    const buildSchedulePromiseList = flattenDeep(blocks).map((block) => convertBlockToSchedule({ block, queryWithCalendar, settings }))
+    const buildSchedulePromiseList = flattenDeep(blocks).map((block) => convertBlockToSchedule({ block, queryWithCalendar, agendaCalendarIds, settings }))
     return Promise.all(buildSchedulePromiseList)
   })
 
@@ -63,6 +65,67 @@ message: ${res.reason.message}`
     }
   })
   calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleResFulfilled))
+
+  // Projects
+  const validProjectList = projectList?.filter(project => Boolean(project?.id))
+  if (validProjectList && validProjectList.length > 0) {
+    const promiseList = validProjectList.map(async project => {
+      const tasks = await logseq.DB.q(`(and (task todo doing now later done) [[${project.id}]])`)
+      const milestones = await logseq.DB.q(`(and (page "${project.id}") [[milestone]])`)
+      function blockToSchedule(list: BlockEntity[], isMilestone = false) {
+        return Promise.all(list.map(async (block: BlockEntity) => {
+          const timeInfo = getProjectTaskTime(block.content)
+          if (!timeInfo) return null
+          const {start, end, allDay} = timeInfo
+          let _category: ICategory = allDay === 'false' ? 'time' : 'allday'
+          if (isMilestone) _category = 'milestone'
+          const rawCategory = _category
+          const _isOverdue = isOverdue(block, end || start, allDay !== 'false')
+          if (!isMilestone && _isOverdue) _category = 'task'
+
+          const schedule = await genSchedule({
+            id: block.uuid,
+            blockData: {
+              ...block,
+              // 避免 overdue 的 block 丢失真实 category 信息
+              category: rawCategory,
+              rawStart: start,
+              rawEnd: end,
+              rawAllDay: allDay !== 'false',
+              rawOverdue: _isOverdue,
+            },
+            category: _category,
+            start,
+            end,
+            calendarConfig: project,
+            defaultDuration,
+            isAllDay: !isMilestone && allDay !== 'false' && !_isOverdue,
+            isReadOnly: false,
+          })
+          // show overdue tasks in today
+          return _isOverdue
+            ? [
+              schedule,
+              {
+                ...schedule,
+                id: `overdue-${schedule.id}`,
+                start: dayjs().startOf('day').toISOString(),
+                end: dayjs().endOf('day').toISOString(),
+                isAllDay: false,
+              },
+            ]
+            : schedule
+        }))
+      }
+      const taskSchedules = (tasks && tasks.length > 0) ? await blockToSchedule(tasks) : []
+      const milestoneSchedules = (milestones && milestones.length > 0) ? await blockToSchedule(milestones, true) : []
+      return taskSchedules.concat(milestoneSchedules)?.flat().filter(Boolean)
+    })
+    const projectSchedules = await Promise.all(promiseList)
+    console.log('[faiz:] === projectSchedules', projectSchedules)
+    // @ts-ignore
+    calendarSchedules = flattenDeep(calendarSchedules.concat(projectSchedules))
+  }
 
   // Daily Logs
   if (logKey?.enabled) {
@@ -103,7 +166,7 @@ message: ${res.reason.message}`
   return calendarSchedules
 }
 
-export const convertBlockToSchedule = async ({ block, queryWithCalendar, settings }: { block: any; queryWithCalendar: IQueryWithCalendar, settings: ISettingsForm }) => {
+export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaCalendarIds, settings }: { block: any; queryWithCalendar: IQueryWithCalendar, agendaCalendarIds: string[], settings: ISettingsForm }) => {
   const { calendarConfig, query } = queryWithCalendar
   const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone, queryType } = query
   const { defaultDuration } = settings
@@ -170,7 +233,7 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, setting
     calendarConfig,
     defaultDuration,
     isAllDay: !isMilestone && !hasTime && !_isOverdue,
-    isReadOnly: true,
+    isReadOnly: !supportEdit(block, calendarConfig.id, agendaCalendarIds),
   })
   // show overdue tasks in today
   return _isOverdue
@@ -192,7 +255,7 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, setting
  * 判断是否过期
  */
 export const isOverdue = (block: any, date: string, allDay: boolean) => {
-  if (block.marker && block.marker !== 'DONE' && block.marker !== 'CANCELED') {
+  if (block.marker && block.marker !== 'DONE') {
     // return isAfter(startOfDay(new Date()), parseISO(date))
     if (allDay) {
       return dayjs().isAfter(dayjs(date), 'day')
@@ -365,22 +428,26 @@ export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
   return false
 }
 
-export const catrgorizeTask = (events: IEvent[]) => {
+export const catrgorizeTask = (schedules: ISchedule[]) => {
+  const DOING_CATEGORY = ['DOING', 'NOW']
+  const TODO_CATEGORY = ['TODO', 'LATER']
+  const DONE_CATEGORY = ['DONE']
+  const CANCELED_CATEGORY = ['CANCELED']
   return {
-    doing: events.filter(event => event?.addOns?.status === 'doing'),
-    todo: events.filter(event => event?.addOns?.status === 'todo'),
-    done: events.filter(event => event?.addOns?.status === 'done'),
-    canceled: events.filter(event => event?.addOns?.status === 'canceled'),
+    doing: schedules.filter(schedule => DOING_CATEGORY.includes(schedule?.raw?.marker as string)),
+    todo: schedules.filter(schedule => TODO_CATEGORY.includes(schedule?.raw?.marker as string)),
+    done: schedules.filter(schedule => DONE_CATEGORY.includes(schedule?.raw?.marker as string)),
+    canceled: schedules.filter(schedule => CANCELED_CATEGORY.includes(schedule?.raw?.marker as string)),
   }
 }
 
 // 以开始时间为为key，转为map
-export const scheduleStartDayMap = (events: IEvent[]) => {
-  const res = new Map<string, IEvent[]>()
-  events.forEach(event => {
-    const key = dayjs(event.addOns.start).startOf('day').toISOString()
+export const scheduleStartDayMap = (schedules: ISchedule[]) => {
+  const res = new Map<string, ISchedule[]>()
+  schedules.forEach(schedule => {
+    const key = dayjs(schedule.start as string).startOf('day').toISOString()
     if (!res.has(key)) res.set(key, [])
-    res.get(key)?.push(event)
+    res.get(key)?.push(schedule)
   })
   return res
 }
@@ -423,14 +490,14 @@ export const updateProjectTaskTime = (blockContent: string, timeInfo: { start: D
   return newContent?.split('\n').map((txt, index) => index === 0 ? txt + ' ' + time : txt).join('\n')
 }
 
-export function categorizeTasks (tasks: IEvent[]) {
-  let overdueTasks: IEvent[] = []
-  let allDayTasks: IEvent[] = []
-  let timeTasks: IEvent[] = []
+export function categorizeTasks (tasks: ISchedule[]) {
+  let overdueTasks: ISchedule[] = []
+  let allDayTasks: ISchedule[] = []
+  let timeTasks: ISchedule[] = []
   tasks.forEach(task => {
-    if (task.addOns.isOverdue) {
+    if (task.raw?.rawOverdue) {
       overdueTasks.push(task)
-    } else if (task.addOns.allDay) {
+    } else if (task.isAllDay) {
       allDayTasks.push(task)
     } else {
       timeTasks.push(task)

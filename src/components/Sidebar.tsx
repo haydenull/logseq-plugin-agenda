@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Collapse, Tooltip, Typography } from 'antd'
+import { Collapse, Divider, Tooltip, Typography } from 'antd'
 import { DownOutlined } from '@ant-design/icons'
 import Checkbox from './Checkbox'
 import { ICustomCalendar } from '../util/type'
@@ -21,6 +21,15 @@ const Sidebar: React.FC<{
     setCheckedCalendarList(newCheckedCalendarList)
     onShowCalendarChange?.(newCheckedCalendarList)
   }
+  const onCheckAll = (checked: boolean) => {
+    let newCheckedCalendarList: string[] = []
+    if (checked) {
+      newCheckedCalendarList = calendarList.map(calendar => calendar.id)?.concat(subscriptionList?.map(subscription => subscription.id))
+    }
+    setCheckedCalendarList(newCheckedCalendarList)
+    onShowCalendarChange?.(newCheckedCalendarList)
+  }
+
   const renderCollapsePanelHeader = (title: string) => {
     return <span className="text text-xs">{title}</span>
   }
@@ -34,7 +43,7 @@ const Sidebar: React.FC<{
         expandIcon={({ isActive }) => <span className="opacity-50"><DownOutlined rotate={isActive ? 0 : -90} /></span>}
         onChange={key => setCollapseActiveKeys(typeof key === 'string' ? [key] : key)}
       >
-        <Collapse.Panel header={renderCollapsePanelHeader('Calendar')} key="calendar">
+        <Collapse.Panel header={renderCollapsePanelHeader('Project')} key="calendar">
             {
               calendarList.map(calendar => (
                 <Checkbox
@@ -73,6 +82,17 @@ const Sidebar: React.FC<{
           )
         }
       </Collapse>
+
+      <Divider className="my-2" />
+      <div style={{ padding: '0 10px' }}>
+        <Checkbox
+          color="#047857"
+          checked={checkedCalendarList?.length === calendarList.length + subscriptionList?.length}
+          onChange={(checked) => onCheckAll(checked)}
+        >
+          <span className="cursor-pointer">Check All</span>
+        </Checkbox>
+      </div>
     </div>
   )
 }

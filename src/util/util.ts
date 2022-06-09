@@ -1,4 +1,5 @@
 import { format, parse } from 'date-fns'
+import { Dayjs } from 'dayjs'
 // import en from 'dayjs/locale/en'
 import { DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
 import { ISettingsForm } from './type'
@@ -85,12 +86,13 @@ export const getOS = () => {
   return 'unknown'
 }
 
-let antdCssFile: HTMLLinkElement | null = null
+// let antdCssFile: HTMLLinkElement | null = null
 // 插入 css 文件
 export const insertCss = (css: string) => {
   const style = document.createElement('link')
   style.rel = 'stylesheet'
   style.href = css
+  style.className = 'antd-css'
 
   const head = document.head || document.getElementsByTagName('head')[0]
   const firstChild = head.childNodes[0]
@@ -99,8 +101,11 @@ export const insertCss = (css: string) => {
   } else {
     head.appendChild(style)
   }
-  if (antdCssFile) head.removeChild(antdCssFile)
-  antdCssFile = style
+  const antdCssFileList = head.querySelectorAll('.antd-css')
+  Array.from(antdCssFileList)?.slice(1)?.forEach(element => {
+    head.removeChild(element)
+  })
+  // if (antdCssFile?.[1]) head.removeChild(antdCssFile[1])
 }
 
 export const toggleAppTransparent = (transparent: boolean) => {
@@ -113,4 +118,30 @@ export const toggleAppTransparent = (transparent: boolean) => {
     html?.classList.remove('modal-app')
     body?.classList.remove('modal-app')
   }
+}
+
+export const extractDays = (startDate: Dayjs, endDate: Dayjs): Dayjs[] => {
+  const days: Dayjs[] = []
+  let day = startDate
+  while (day.isSameOrBefore(endDate)) {
+    days.push(day.clone())
+    day = day.add(1, 'day')
+  }
+  return days
+}
+
+export const genRandomString = (length: number = 6) => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let result = ''
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
+}
+
+export const parseUrlParams = (url: string): Record<string, string> => {
+  const l = new URL(url).searchParams
+  let res = {}
+  l.forEach((val, key) => res[key] = val)
+  return res
 }

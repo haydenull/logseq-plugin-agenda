@@ -27,6 +27,8 @@ export type ISettingsForm = {
     value: number
   },
   logKey?: ICustomCalendar
+  journal: ICustomCalendar & { query: ISettingsFormQuery[] }
+  projectList?: ICustomCalendar[]
   calendarList: Array<ICustomCalendar & { query: ISettingsFormQuery[] }>
   subscriptionList?: Array<ICustomCalendar & { url: string }>
 }

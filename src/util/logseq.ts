@@ -1,4 +1,12 @@
+import { BlockEntity } from "@logseq/libs/dist/LSPlugin"
+import { format, parse } from "date-fns"
+import { Dayjs } from "dayjs"
+import { async } from "node-ical"
+import { getInitalSettings } from "./baseInfo"
+import { SHOW_DATE_FORMAT } from "./constants"
+import { fillBlockReference } from "./schedule"
 import { ISettingsForm } from "./type"
+import { extractDays } from "./util"
 
 export const updateBlock = async (blockId: number | string, content: string | false, properties?: Record<string, any>) => {
   const block = await logseq.Editor.getBlock(blockId)
@@ -14,16 +22,17 @@ export const updateBlock = async (blockId: number | string, content: string | fa
   return Promise.allSettled(upsertBlockPropertyPromises)
 }
 
-export const moveBlockToNewPage = async (blockId: number, pageName: string) => {
-  const block = await getBlockData({ id: blockId })
-  if (!block) return logseq.App.showMsg('moveBlockToNewPage: Block not found', 'error')
+export const moveBlockToNewPage = async (blockUuid: string, pageName: string) => {
+  // const block = await getBlockData({ id: blockId })
+  // if (!block) return logseq.App.showMsg('moveBlockToNewPage: Block not found', 'error')
   const page = await logseq.Editor.createPage(pageName)
   if (!page) return logseq.App.showMsg('Create page failed', 'error')
-  await logseq.Editor.moveBlock(block.uuid, page.uuid)
-  return await getBlockData({ uuid: block.uuid })
+  await logseq.Editor.moveBlock(blockUuid, page.uuid)
+  return await getBlockData({ uuid: blockUuid })
 }
-export const moveBlockToSpecificBlock = async (srcBlockId: number, targetPageName: string, targetBlockContent: string) => {
-  const srcBlock = await getBlockData({ id: srcBlockId })
+export const moveBlockToSpecificBlock = async (srcBlockId: number | string, targetPageName: string, targetBlockContent: string) => {
+  const query = typeof srcBlockId === 'number' ? { id: srcBlockId } : { uuid: srcBlockId }
+  const srcBlock = await getBlockData(query)
   if (!srcBlock) return logseq.App.showMsg('moveBlockToSpecificBlock: Block not found', 'error')
   let targetPage = await getPageData({ originalName: targetPageName })
   if (!targetPage) targetPage = await logseq.Editor.createPage(targetPageName)
@@ -39,10 +48,7 @@ export const createBlockToSpecificBlock = async (targetPageName: string, targetB
   if (!targetPage) targetPage = await logseq.Editor.createPage(targetPageName)
   let targetBlock = await getSpecificBlockByContent(targetPageName, targetBlockContent)
   if (!targetBlock) targetBlock = await logseq.Editor.insertBlock(targetPageName, targetBlockContent, { before: true, isPageBlock: true })
-  if (targetBlock) {
-    return await logseq.Editor.insertBlock(targetBlock.uuid, blockContent, { isPageBlock: false, properties: blockProperties, sibling: false, before: false })
-  }
-  return null
+  return await logseq.Editor.insertBlock(targetBlock!.uuid, blockContent, { isPageBlock: false, properties: blockProperties, sibling: false, before: false })
 }
 
 // https://logseq.github.io/plugins/interfaces/IEditorProxy.html#getBlock
@@ -86,6 +92,88 @@ export const getCurrentTheme = async () => {
 export const getSpecificBlockByContent = async (pageName: string, blockContent: string) => {
   const blocks = await logseq.Editor.getPageBlocksTree(pageName)
   const block = blocks.find(block => block.content === blockContent) || null
-  console.log('[faiz:] === getSpecificBlockByContent xxx', blocks, block)
   return block
+}
+
+export const getJouralPageBlocksTree = async (start: Dayjs, end: Dayjs) => {
+  const days = extractDays(start, end)
+  const { preferredDateFormat } = await logseq.App.getUserConfigs()
+  const promises = days.map(day => {
+    const date = format(day.toDate(), preferredDateFormat)
+    return logseq.Editor.getPageBlocksTree(date)
+  })
+  // @ts-ignore item是存在value属性的
+  return (await Promise.allSettled(promises)).map(item => item?.value)
+}
+
+export const extractBlockContentToText = (block: BlockEntity) => {
+  if (!block) return block
+  let { content, children } = block
+  if (children) {
+    const childrenContent = children.map(child => extractBlockContentToText(child as BlockEntity)).join('\n')
+    return content += '\n' + childrenContent
+  }
+  return content
+}
+
+export const extractBlockContentToHtml = async (block: BlockEntity, depth = 1): Promise<string> => {
+  if (!block) return block
+  let { content, children } = block
+  content = await fillBlockReference(content)
+  console.log('[faiz:] === content', content)
+  const intent = `margin-left: ${(depth - 1) * 20}px;`
+  const contentHtml = `<p style="${intent} white-space: pre-line;">${content}</p>`
+  if (children && children?.length > 0) {
+    const childrenContent = (await Promise.all(children.map(async child => extractBlockContentToHtml(child as BlockEntity, depth + 1)))).join('')
+    return contentHtml + childrenContent
+  }
+  return contentHtml
+}
+
+export const isEnabledAgendaPage = (pageName: string) => {
+  const { calendarList } = getInitalSettings()
+  return calendarList?.filter(calendar => calendar.enabled).some(calendar => calendar.id === pageName)
+}
+
+export const catrgorizeTask = (blocks: BlockEntity[]) => {
+  const DOING_CATEGORY = ['DOING', 'NOW']
+  const TODO_CATEGORY = ['TODO', 'LATER']
+  const DONE_CATEGORY = ['DONE']
+  const CANCELED_CATEGORY = ['CANCELED']
+  return {
+    doing: blocks.filter(block => DOING_CATEGORY.includes(block.marker)),
+    todo: blocks.filter(block => TODO_CATEGORY.includes(block.marker)),
+    done: blocks.filter(block => DONE_CATEGORY.includes(block.marker)),
+    canceled: blocks.filter(block => CANCELED_CATEGORY.includes(block.marker)),
+  }
+}
+
+export const getBlockUuidFromEventPath = (path: HTMLElement[]) => {
+  let uuid: null | string = null
+  for (let i = 0; i < path.length; i++) {
+    const element = path[i]
+    // const blockid = (element as any)?.blockid
+    const blockid = element.getAttribute('blockid')
+    if (element?.className?.includes('block-content') && blockid) {
+      uuid = blockid
+      break
+    }
+    i++
+  }
+  return uuid
+}
+
+export const pureTaskBlockContent = (block: BlockEntity, content?: string) => {
+  const marker = block.marker
+  const priority = block.priority
+  let res = content || block.content
+  return res?.replace(marker, '').trim().replace(`[#${priority}]`, '').trim()
+}
+export const joinPrefixTaskBlockContent = (block: BlockEntity, content: string) => {
+  const marker = block.marker
+  const priority = block.priority
+  let res = content
+  if (priority) res = `[#${priority}] ` + res
+  if (marker) res = marker + ' ' + res
+  return res
 }
