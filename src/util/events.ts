@@ -16,7 +16,7 @@ export const getEventTimeInfo = (block: BlockEntity): {
 } | null => {
 
   // start end properties date(adapt agenda calendar)
-  const { start, end } = block.properties
+  const { start, end } = block.properties || {}
   if (start && end) {
     if (start?.length >= 16) return { start: dayjs(start, 'YYYY-MM-DD HH:mm').toISOString(), end: dayjs(end, 'YYYY-MM-DD HH:mm').toISOString(), allDay: false, timeFrom: 'startProperty' }
     return { start: dayjs(start, 'YYYY-MM-DD').toISOString(), end: dayjs(end, 'YYYY-MM-DD').toISOString(), allDay: true, timeFrom: 'startProperty' }

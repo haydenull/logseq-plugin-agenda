@@ -97,9 +97,12 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   const { defaultDuration, journal, projectList } = settings
   // const isAgendaCalendar = agendaCalendars.some(calendar => calendar.id === block.page?.originalName)
 
+  // replace page
+  const page = block?.page?.originalName ? block.page : await logseq.Editor.getPage(block.page.id)
+  block.page = page!
   const time = getEventTimeInfo(block)
   const isMilestone = / #milestone/.test(block.content) || / #\[\[milestone\]\]/.test(block.content)
-  const isJournal = Boolean(block?.page?.journalDay)
+  const isJournal = Boolean(page?.journalDay)
 
   let event: IEvent = time
                         ? { ...block, rawTime: time, addOns: { showTitle: '', end: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task', ...time } }
@@ -139,7 +142,6 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   if (isJournal) event.addOns.isJournal = true
 
   // add calendar config
-  const page = block?.page?.originalName ? block.page : await logseq.Editor.getPage(block.page.id)
   const project = projectList?.find(project => project.id === page!.originalName)
   if (project) {
     event.addOns.calendarConfig = project

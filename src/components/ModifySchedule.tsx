@@ -11,6 +11,7 @@ import { SCHEDULE_PARENT_BLOCK } from '@/util/constants'
 import { getInitalSettings, initializeSettings } from '@/util/baseInfo'
 import { IEvent } from '@/util/events'
 import { transformBlockToEvent, transformMilestoneEventToSchedule, transformTaskEventToSchedule } from '@/helper/transform'
+import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
 
 export type IScheduleForm = {
   calendarId: string
@@ -34,6 +35,11 @@ const ModifySchedule: React.FC<{
   console.log('[faiz:] === initialValues', initialValues)
   // const [agendaCalendars, setAgendaCalendars] = useState<ICustomCalendar[]>([])
   const [showTime, setShowTime] = useState(!initialValues?.isAllDay)
+  const { defaultDuration, projectList = [], journal } = getInitalSettings()
+
+  const isInitialJournal = initialValues?.calendarId === 'Journal'
+  const isInitialProject = projectList.some(({ id }) => id === initialValues?.calendarId)
+  let projects = (!isInitialProject && !isInitialJournal && type === 'update') ? [journal, { id: initialValues?.calendarId, ...DEFAULT_CALENDAR_STYLE }, ...projectList] : [journal, ...projectList]
   // const oldScheduleType = logseq.settings?.projectList?.some(project => project?.id === initialValues?.calendarId) ? 'project' : 'calendar'
 
   const [form] = Form.useForm()
@@ -43,7 +49,6 @@ const ModifySchedule: React.FC<{
       setShowTime(!changedValues.isAllDay)
     }
     if (changedValues.start !== undefined) {
-      const { defaultDuration } = getInitalSettings()
       form.setFieldsValue({
         end: changedValues.start.add(defaultDuration.value, defaultDuration.unit),
       })
@@ -60,13 +65,13 @@ const ModifySchedule: React.FC<{
   }
   const onClickSave = () => {
     form.validateFields().then(async values => {
-      const { title, start, end, isAllDay } = values
+      const { title, start, end, isAllDay, calendarId } = values
       const startDate = dayjs(start).format('YYYY-MM-DD')
       const endDate = dayjs(end).format('YYYY-MM-DD')
       const startTime = dayjs(start).format('HH:mm')
       const endTime = dayjs(end).format('HH:mm')
       const settings = getInitalSettings()
-      const calendarConfig = initialValues?.raw?.addOns.calendarConfig
+      const calendarConfig = projects.find(({ id }) => id === calendarId.value)
       let newScheduleType: 'journal' | 'project' = calendarConfig?.id === 'Journal' ? 'journal' : 'project'
       console.log('[faiz:] === newScheduleType', newScheduleType)
       console.log('[faiz:] === onClickSave', values)
@@ -108,7 +113,7 @@ const ModifySchedule: React.FC<{
       }
 
       // newCalendarId: journal shcedule is journal page, other is calendar id
-      let newCalendarId = initialValues?.calendarId
+      let newCalendarId = calendarId.value
       if (isJournalSchedule) {
         const journalName = format(start.valueOf(), preferredDateFormat)
         const newPage = await logseq.Editor.createPage(journalName, {}, { journal: true })
@@ -187,15 +192,6 @@ const ModifySchedule: React.FC<{
     onCancel?.()
   }
 
-  useEffect(() => {
-    const { journal, projectList = [] } = logseq.settings as unknown as ISettingsForm
-    getAgendaCalendars().then(agendaPages => {
-      // if (agendaPages?.length <= 0) return logseq.App.showMsg('No agenda page found\nYou can create an agenda calendar first', 'warning')
-      // @ts-ignore
-      setAgendaCalendars([journal].concat(agendaPages).concat(projectList))
-    })
-  }, [])
-
   return (
     <Modal
       title="Modify Schedule"
@@ -208,16 +204,16 @@ const ModifySchedule: React.FC<{
         onValuesChange={onFormChange}
         initialValues={{ isAllDay: true, ...initialValues, calendarId: initialValues?.calendarId ? { value: initialValues?.calendarId } : undefined }}
       >
-        {/* <Form.Item name="calendarId" label="Calendar" rules={[{ required: true }]}>
+        <Form.Item name="calendarId" label="Project" rules={[{ required: true }]}>
           <Select labelInValue>
-            {agendaCalendars.map(calendar => (
-              <Select.Option key={calendar.id} value={calendar.id}>
-                <span style={{ width: '12px', height: '12px', display: 'inline-block', backgroundColor: calendar.bgColor, verticalAlign: 'middle', marginRight: '5px', borderRadius: '4px'}}></span>
-                {calendar.id}
+            {projects.map(calendar => (
+              <Select.Option key={calendar?.id} value={calendar?.id}>
+                <span style={{ width: '12px', height: '12px', display: 'inline-block', backgroundColor: calendar?.bgColor, verticalAlign: 'middle', marginRight: '5px', borderRadius: '4px'}}></span>
+                {calendar?.id}
               </Select.Option>
             ))}
           </Select>
-        </Form.Item> */}
+        </Form.Item>
         <Form.Item name="title" label="Schedule Title" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
