@@ -82,10 +82,10 @@ if (isDevelopment) {
     })
 
     const editSchedule = async (e) => {
-      const block = await logseq.Editor.getBlock(e.uuid)
-      // const agendaCalendars = await getAgendaCalendars()
+      let block = await logseq.Editor.getBlock(e.uuid)
+      const blockRefs = await Promise.all(block!.refs?.map(ref => logseq.Editor.getPage(ref.id)))
+      block!.refs = blockRefs
       const event = await transformBlockToEvent(block!, getInitalSettings())
-      console.log('[faiz:] === event', event)
       renderModalApp({
         type: 'editSchedule',
         data: {

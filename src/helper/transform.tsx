@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import { getPageData, pureTaskBlockContent } from '@/util/logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 import { deleteProjectTaskTime, fillBlockReference, isOverdue, removeTimeInfo } from '@/util/schedule'
+import { format } from 'date-fns'
 
 /** ========== calendar schedules ========== */
 export const transformTaskEventToSchedule = (block: IEvent) => {
@@ -112,7 +113,11 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   let showTitle = pureTaskBlockContent(block)
   if (time?.timeFrom === 'customLink') showTitle = deleteProjectTaskTime(showTitle.trim())
   if (time?.timeFrom === 'journal' && !time?.allDay) showTitle = removeTimeInfo(showTitle.trim())
-  // if (time?.timeFrom === 'refs') // TODO: remove refs date
+  if (time?.timeFrom === 'refs') {
+    const { preferredDateFormat } = await logseq.App.getUserConfigs()
+    const journalName = format(dayjs(time.start).valueOf(), preferredDateFormat)
+    showTitle = showTitle.replace(`[[${journalName}]]`, '')?.trim()
+  }
   event.addOns.showTitle = await fillBlockReference(showTitle?.split('\n')?.[0]?.trim())
 
   // add end time

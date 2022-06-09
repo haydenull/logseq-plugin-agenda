@@ -43,8 +43,8 @@ export const getEventTimeInfo = (block: BlockEntity): {
   }
 
   // refs date
-  const refsDatePage = block.refs?.find(page => Boolean(page?.['journal-day']))
-  if (refsDatePage) return { start: dayjs(refsDatePage?.['journal-day'], 'YYYYMMDD').toISOString(), allDay: true, timeFrom: 'refs' }
+  const refsDatePage = block.refs?.find(page => Boolean(page?.journalDay))
+  if (refsDatePage) return { start: dayjs(refsDatePage?.journalDay + '', 'YYYYMMDD').toISOString(), allDay: true, timeFrom: 'refs' }
 
   // journal date
   const isJournal = Boolean(block?.page?.journalDay)
@@ -100,8 +100,40 @@ export const genDefaultProjectEvents = (): IPageEvent => ({
   },
 })
 export const getInternalEvents = async () => {
-  const tasks = await logseq.DB.q(`(task todo doing done later now canceled)`)
+  let tasks = await logseq.DB.datascriptQuery(`
+  [:find (pull
+    ?block
+    [:block/uuid
+      :block/parent
+      :db/id
+      :block/left
+      :block/collapsed?
+      :block/format
+      :block/_refs
+      :block/path-refs
+      :block/tags
+      :block/content
+      :block/marker
+      :block/priority
+      :block/properties
+      :block/pre-block?
+      :block/scheduled
+      :block/deadline
+      :block/repeated?
+      :block/created-at
+      :block/updated-at
+      :block/file
+      :block/heading-level
+      {:block/page
+        [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
+      {:block/refs
+        [:block/journal-day]}])
+    :where
+    [?block :block/marker ?marker]
+    [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE" "CANCELED"} ?marker)]]
+  `)
   if (!tasks || tasks?.length === 0) return null
+  tasks = tasks.flat()
   // const agendaCalendars = await getAgendaCalendars()
   const settings = getInitalSettings()
 
@@ -110,6 +142,20 @@ export const getInternalEvents = async () => {
   const projectEventsMap = new Map<string, IPageEvent>()
 
   const promiseList = (tasks as BlockEntity[]).map(async task => {
+
+    task = {
+      ...task,
+      uuid: task.uuid?.['$uuid$'],
+      page: {
+        ...task.page,
+        originalName: task.page?.['original-name'],
+        journalDay: task.page?.['journal-day'],
+      },
+      refs: task.refs?.map(_page => ({
+        ..._page,
+        journalDay: _page?.['journal-day'],
+      })),
+    }
 
     const event = await transformBlockToEvent(task, settings)
     const isMilestone = event.addOns.type === 'milestone'
