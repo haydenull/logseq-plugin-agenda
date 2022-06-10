@@ -21,28 +21,35 @@ export const zh: SidebarConfig = {
     {
       text: '设置',
       children: [
-        '/zh/settings/README.md',
+        // '/zh/settings/README.md',
+        '/zh/settings/basis.md',
+        '/zh/settings/project.md',
+        '/zh/settings/customCalendar.md',
+        '/zh/settings/subscription.md',
+        '/zh/settings/calendarView.md',
       ],
     },
-    {
-      text: '自定义日历',
-      children: [
-        '/zh/calendar/custom.md',
-        '/zh/calendar/agenda.md',
-        '/zh/calendar/subscription.md',
-      ],
-    },
-    {
-      text: '视图',
-      children: [
-        '/zh/views/gantt.md',
-      ],
-    },
+    // {
+    //   text: '自定义日历',
+    //   children: [
+    //     '/zh/calendar/custom.md',
+    //     '/zh/calendar/agenda.md',
+    //     '/zh/calendar/subscription.md',
+    //   ],
+    // },
+    // {
+    //   text: '视图',
+    //   children: [
+    //     '/zh/views/gantt.md',
+    //   ],
+    // },
     {
       text: '其他',
       children: [
-        '/zh/other/query.md',
-        '/zh/other/testQuery.md',
+        // '/zh/other/query.md',
+        // '/zh/other/testQuery.md',
+        '/zh/other/create.md',
+        '/zh/other/modify.md',
         '/zh/other/command.md',
       ],
     }

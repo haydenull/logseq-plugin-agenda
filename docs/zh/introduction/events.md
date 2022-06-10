@@ -5,21 +5,22 @@
 - project：其他笔记中的任务
 
 ## Journal
-示例截图：
-- all-day
-- 时间点
-- 时间段
+
+以日记的日期作为任务的日期, 任务以时间开头时, 将其视为任务的具体时间.
+
+示例:
+![journal tasks](../../../screenshots/journal-tasks.png)
+
 
 
 ## Project
-示例截图：
-- all-day
-- 时间点
-- 时间段
-- 跨天
 
-- date-ref
-- custom-link
-- schduled
+支持以下方式设置任务日期:
+- 日期双链引用: `task [[Jun 10th, 2022]]`
+- scheduled
 - deadline
-- start end
+- agenda 链接: (鼠标右键 block 圆点, 选择"Modify Schedule")
+- start end 属性
+
+示例:
+![project tasks](../../../screenshots/project-tasks.png)
