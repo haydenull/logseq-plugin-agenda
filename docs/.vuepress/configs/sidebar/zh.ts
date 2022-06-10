@@ -6,20 +6,22 @@ export const zh: SidebarConfig = {
       text: '介绍',
       children: [
         '/zh/README.md',
-        '/zh/introduction/demo.md',
+        // '/zh/introduction/demo.md',
+        '/zh/introduction/events.md',
+        '/zh/introduction/sidebar.md',
       ],
     },
+    // {
+    //   text: '日历事件',
+    //   children: [
+    //     '/zh/event/journal.md',
+    //     '/zh/event/dailylog.md',
+    //   ],
+    // },
     {
       text: '设置',
       children: [
         '/zh/settings/README.md',
-      ],
-    },
-    {
-      text: '日历事件',
-      children: [
-        '/zh/event/journal.md',
-        '/zh/event/dailylog.md',
       ],
     },
     {
