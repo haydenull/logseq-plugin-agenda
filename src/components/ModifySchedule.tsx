@@ -90,7 +90,7 @@ const ModifySchedule: React.FC<{
         }
       } else if (newScheduleType === 'project') {
         if (type === 'create') {
-          newTitle = 'TODO' + updateProjectTaskTime(title, { start, end, allDay: isAllDay })
+          newTitle = 'TODO ' + updateProjectTaskTime(title, { start, end, allDay: isAllDay })
         } else if (type === 'update') {
           newTitle = joinPrefixTaskBlockContent(initialValues?.raw!, updateProjectTaskTime(title, { start, end, allDay: isAllDay }))
         }
@@ -141,7 +141,7 @@ const ModifySchedule: React.FC<{
         if (!block) return logseq.App.showMsg('Create block failed', 'error')
         const _block = await logseq.Editor.getBlock(block.uuid)
         const event = await transformBlockToEvent(_block!, settings)
-        const schedule = initialValues?.raw?.addOns.type === 'task' ? transformTaskEventToSchedule(event) : transformMilestoneEventToSchedule(event)
+        const schedule = event?.addOns?.type === 'milestone' ? transformMilestoneEventToSchedule(event) : transformTaskEventToSchedule(event)
         calendar?.createSchedules([schedule])
       } else if (newCalendarId !== oldCalendarId) {
         // move schedule: move block to new page
@@ -171,7 +171,7 @@ const ModifySchedule: React.FC<{
           // updateSchedule can't update id, so we need to create new schedule after delete old one
           calendar?.deleteSchedule(initialValues?.id!, initialValues.calendarId)
           const event = await transformBlockToEvent(_newBlock!, settings)
-          const schedule = initialValues?.raw?.addOns.type === 'task' ? transformTaskEventToSchedule(event) : transformMilestoneEventToSchedule(event)
+          const schedule = initialValues?.raw?.addOns.type === 'milestone' ? transformMilestoneEventToSchedule(event) : transformTaskEventToSchedule(event)
           calendar?.createSchedules([schedule])
         }
       } else {

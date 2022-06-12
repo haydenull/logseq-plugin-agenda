@@ -192,8 +192,7 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, setting
  * 判断是否过期
  */
 export const isOverdue = (block: any, date: string, allDay: boolean) => {
-  if (block.marker && block.marker !== 'DONE' && block.marker !== 'CANCELED') {
-    // return isAfter(startOfDay(new Date()), parseISO(date))
+  if (block.marker && block.marker !== 'DONE' && block.marker !== 'CANCELED' && block.marker !== 'WAITING') {
     if (allDay) {
       return dayjs().isAfter(dayjs(date), 'day')
     }
@@ -367,8 +366,9 @@ export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
 
 export const catrgorizeTask = (events: IEvent[]) => {
   return {
-    doing: events.filter(event => event?.addOns?.status === 'doing'),
+    waiting: events.filter(event => event?.addOns?.status === 'waiting'),
     todo: events.filter(event => event?.addOns?.status === 'todo'),
+    doing: events.filter(event => event?.addOns?.status === 'doing'),
     done: events.filter(event => event?.addOns?.status === 'done'),
     canceled: events.filter(event => event?.addOns?.status === 'canceled'),
   }
@@ -438,4 +438,8 @@ export function categorizeTasks (tasks: IEvent[]) {
   })
 
   return { overdueTasks, allDayTasks, timeTasks }
+}
+
+export const judgeIsMilestone = (block: BlockEntity) => {
+  return / #milestone/.test(block.content) || / #\[\[milestone\]\]/.test(block.content)
 }

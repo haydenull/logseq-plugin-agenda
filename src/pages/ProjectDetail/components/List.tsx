@@ -9,11 +9,12 @@ import s from '../index.module.less'
 
 const ListCom: React.FC<{
   upcomingList: IEvent[]
+  waitingList: IEvent[]
   doneList: IEvent[]
   canceledList: IEvent[]
   onSelect: (task: IEvent) => void
   value?: string
-}> = ({ upcomingList, doneList, canceledList, onSelect, value }) => {
+}> = ({ upcomingList, waitingList, doneList, canceledList, onSelect, value }) => {
 
   const renderListItem =(item: IEvent) => (
     <List.Item onClick={() => onSelect(item)} className={classNames('cursor-pointer px-2 rounded', {'bg-quinary': item.id + '' === value})}>
@@ -30,10 +31,16 @@ const ListCom: React.FC<{
 
   return (
     <div className="w-full h-full">
-      <Collapse ghost defaultActiveKey={['upcoming', 'done']}>
+      <Collapse ghost defaultActiveKey={['upcoming', 'waiting']}>
         <Collapse.Panel header={<span><b>Upcoming</b><span className="ml-2 description-text">{upcomingList.length}</span></span>} key="upcoming">
           <List
             dataSource={upcomingList}
+            renderItem={renderListItem}
+          />
+        </Collapse.Panel>
+        <Collapse.Panel header={<span><b>Waiting</b><span className="ml-2 description-text">{waitingList.length}</span></span>} key="upcoming">
+          <List
+            dataSource={waitingList}
             renderItem={renderListItem}
           />
         </Collapse.Panel>

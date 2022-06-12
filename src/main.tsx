@@ -248,7 +248,7 @@ async function renderApp(env: string) {
   let defaultRoute = ''
   const page = await logseq.Editor.getCurrentPage()
   const { projectList = [] } = getInitalSettings()
-  if (isEnabledAgendaPage(page?.originalName) || projectList.some(project => project.id === page?.originalName)) defaultRoute = `project/${page?.originalName}`
+  if (isEnabledAgendaPage(page?.originalName) || projectList.some(project => project.id === page?.originalName)) defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
   ReactDOM.render(
     <React.StrictMode>
       {/* <App env={env} /> */}

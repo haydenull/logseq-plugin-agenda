@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Modal, Form, Select, Input, Button, Switch, Popconfirm, InputNumber } from 'antd'
+import { Modal, Form, Select, Input, Button, Switch, Popconfirm, InputNumber, Alert } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { useForm } from 'antd/lib/form/Form'
 import classNames from 'classnames'
@@ -223,6 +223,7 @@ const Settings: React.FC<{
             </Form.List>
           </div>
           <div id="customCalendar" className={classNames(s.formBlock, { [s.show]: tab === 'customCalendar' })}>
+            <Alert message="Do not use this setting unless you need to write your own Query to get the calendar." type="warning" className="mb-6" />
             <Form.List name="calendarList">
               {(fields, { add, remove, move }) => (<>
                 <DragDropContext onDragEnd={(e) => {
