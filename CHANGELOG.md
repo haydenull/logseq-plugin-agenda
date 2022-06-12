@@ -1,3 +1,11 @@
+## [2.3.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.3.1...v2.3.2) (2022-06-12)
+
+
+### Bug Fixes
+
+* namespace page project detail empty ([b3ca9ce](https://github.com/haydenull/logseq-plugin-agenda/commit/b3ca9cea3688231708fa46e875cd5f731e1c2e75))
+* Waitting task should not expire ([b789568](https://github.com/haydenull/logseq-plugin-agenda/commit/b7895681d8b4569f6fa5e394ce765accf9e85652))
+
 ## [2.3.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.3.0...v2.3.1) (2022-06-09)
 
 
