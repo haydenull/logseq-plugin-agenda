@@ -28,7 +28,6 @@ const App: React.FC<{
 
   useEffect(() => {
     async function fetchSchedules() {
-      console.log('======xxxxxx')
       const res = await getInternalEvents()
       console.log('[faiz:] === res', res)
       if (res) {
