@@ -72,7 +72,7 @@ export type IEvent = BlockEntity & {
     start?: string
     end?: string
     allDay?: boolean
-    status: 'todo' | 'doing' | 'done' | 'canceled'
+    status: 'waiting' | 'todo' | 'doing' | 'done' | 'canceled'
     isOverdue: boolean
     isJournal: boolean
     calendarConfig?: ICustomCalendar

@@ -6,7 +6,7 @@ import type { IEvent as IGanttEvent, IGroup } from '@/packages/Gantt/type'
 import dayjs from 'dayjs'
 import { getPageData, pureTaskBlockContent } from '@/util/logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
-import { deleteProjectTaskTime, fillBlockReference, isOverdue, removeTimeInfo } from '@/util/schedule'
+import { deleteProjectTaskTime, fillBlockReference, isOverdue, judgeIsMilestone, removeTimeInfo } from '@/util/schedule'
 import { format } from 'date-fns'
 
 /** ========== calendar schedules ========== */
@@ -102,7 +102,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   const page = block?.page?.originalName ? block.page : await logseq.Editor.getPage(block.page.id)
   block.page = page!
   const time = getEventTimeInfo(block)
-  const isMilestone = / #milestone/.test(block.content) || / #\[\[milestone\]\]/.test(block.content)
+  const isMilestone = judgeIsMilestone(block)
   const isJournal = Boolean(page?.journalDay)
 
   let event: IEvent = time
@@ -132,6 +132,8 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   // add status
   if (['DOING', 'NOW'].includes(block.marker)) {
     event.addOns.status = 'doing'
+  } else if (block.marker === 'WAITING') {
+    event.addOns.status = 'waiting'
   } else if (block.marker === 'DONE') {
     event.addOns.status = 'done'
   } else if (block.marker === 'CANCELED') {

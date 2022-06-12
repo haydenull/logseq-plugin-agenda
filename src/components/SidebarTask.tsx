@@ -1,10 +1,6 @@
-import classNames from 'classnames'
-import React, { useState } from 'react'
-import { RiExternalLinkLine } from 'react-icons/ri'
-import { GrAddCircle } from 'react-icons/gr'
-import type { ISchedule } from 'tui-calendar'
+import { RiAddCircleLine } from 'react-icons/ri'
 import dayjs from 'dayjs'
-import { createBlockToSpecificBlock, getPageData, moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
+import { getPageData, moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
 import { format } from 'date-fns'
 import { ISettingsForm } from '@/util/type'
 import { IEvent } from '@/util/events'
@@ -97,7 +93,7 @@ const Task: React.FC<{
       </div>
 
       <div onClick={embedToToday} className="agenda-sidebar-task__add flex" style={{ alignItems: 'center', paddingLeft: '8px' }}>
-        <GrAddCircle style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: '0.7', marginTop: '0.2em' }} />
+        <RiAddCircleLine style={{ color: 'var(--ls-icon-color)', fontSize: '0.9em', opacity: '0.7', marginTop: '0.2em' }} />
       </div>
 
       {/* <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: task.bgColor, color: task.color }} title={task.calendarId}>{task?.calendarId?.[0]?.toUpperCase()}</div>

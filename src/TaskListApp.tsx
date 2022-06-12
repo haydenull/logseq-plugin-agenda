@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
-import Sider from '@/components/Sider'
-import { MENUS } from '@/constants/elements'
 import { useAtom } from 'jotai'
-import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
+import { projectSchedulesAtom } from '@/model/schedule'
 import { categorizeTasks } from '@/util/schedule'
-import { getInitalSettings } from '@/util/baseInfo'
-import { getSubCalendarSchedules } from '@/util/subscription'
-import { DEFAULT_SETTINGS } from '@/util/constants'
-import ProjectDetail from '@/pages/ProjectDetail'
 import SidebarTask from './components/SidebarTask'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'
 import { getInternalEvents } from './util/events'
@@ -48,6 +41,11 @@ const App: React.FC<{
 
   return (
     <main>
+      {
+        overdueTasks?.length === 0 && allDayTasks?.length === 0 && timeTasks?.length === 0 && (
+          <div>Empty task list</div>
+        )
+      }
       {
         overdueTasks.length > 0 && (
           <div style={{ margin: '8px 0' }}>

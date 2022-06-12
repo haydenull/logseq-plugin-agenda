@@ -1,10 +1,7 @@
-import { ISchedule } from 'tui-calendar'
 import List from './List'
 import s from '../index.module.less'
 import classNames from 'classnames'
-import { useEffect, useState } from 'react'
-import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
-import { pureTaskBlockContent } from '@/util/logseq'
+import { useState } from 'react'
 import { catrgorizeTask } from '@/util/schedule'
 import { Button } from 'antd'
 import { IEvent } from '@/util/events'
@@ -26,6 +23,7 @@ const ListView: React.FC<{
   const todoTasks: IEvent[] = [...schedulesMap.doing, ...schedulesMap.todo, ...undatedTaskMap.doing, ...undatedTaskMap.todo]
   const doneTasks: IEvent[] = [...schedulesMap.done, ...undatedTaskMap.done]
   const canceledTasks: IEvent[] = [...schedulesMap.canceled, ...undatedTaskMap.canceled]
+  const waitingTasks: IEvent[] = [...schedulesMap.waiting, ...undatedTaskMap.waiting]
 
   const navToBlock = async (blockUuid: string) => {
     logseq.Editor.scrollToBlockInPage(projectId, blockUuid)
@@ -35,7 +33,7 @@ const ListView: React.FC<{
   return (
     <div className="w-full h-full flex">
       <div className={classNames('w-1/2 overflow-auto', s.border)}>
-        <List upcomingList={todoTasks} doneList={doneTasks} canceledList={canceledTasks} onSelect={setCurrentTask} value={currentTask?.id + ''} />
+        <List waitingList={waitingTasks} upcomingList={todoTasks} doneList={doneTasks} canceledList={canceledTasks} onSelect={setCurrentTask} value={currentTask?.id + ''} />
       </div>
       <div className="w-1/2 overflow-auto">
         {
