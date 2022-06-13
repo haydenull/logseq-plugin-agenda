@@ -24,6 +24,7 @@ import { IScheduleValue } from '@/components/ModifySchedule'
 import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
+import PomodoroApp from './PomodoroApp'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -171,40 +172,68 @@ if (isDevelopment) {
     logseq.Editor.registerSlashCommand('Agenda: Insert Task List', async () => {
       logseq.Editor.insertAtEditingCursor(`{{renderer agenda, task-list}}`)
     })
+    logseq.Editor.registerSlashCommand('Agenda: Pomodoro Timer', async () => {
+      logseq.Editor.insertAtEditingCursor(`{{renderer agenda, pomodoro-timer, 40, 'nostarted', 0}}`)
+    })
     logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments: args, uuid } }) => {
       console.log('[faiz:] === onMacroRendererSlotted', slot, args, uuid)
-      if (args?.[0] !== 'agenda' || args?.[1] !== 'task-list') return
-      const renderered = parent.document.getElementById(slot)?.childElementCount
-      console.log('[faiz:] === is renderered', renderered)
-      if (renderered) return
+      if (args?.[0] !== 'agenda') return
+      if (args?.[1] === 'task-list') {
+        const renderered = parent.document.getElementById(slot)?.childElementCount
+        console.log('[faiz:] === is task-list renderered', renderered)
+        if (renderered) return
 
-      const id = `agenda-task-list-${slot}`
-      logseq.provideUI({
-        key: `agenda-${slot}`,
-        slot,
-        reset: true,
-        template: `<div id="${id}"></div>`,
-        // style: {},
-      })
-      logseq.provideStyle(`${LOGSEQ_PROVIDE_COMMON_STYLE}
-        #block-content-${uuid} .lsp-hook-ui-slot {
-          width: 100%;
-        }
-        #block-content-${uuid} .lsp-hook-ui-slot > div {
-          width: 100%;
-        }
-        #block-content-${uuid} .lsp-hook-ui-slot > div > div {
-          width: 100%;
-        }
-      `)
-      setTimeout(() => {
-        ReactDOM.render(
-          <React.StrictMode>
-            <TaskListApp containerId={id} />
-          </React.StrictMode>,
-          parent.document.getElementById(id)
-        )
-      }, 0)
+        const id = `agenda-task-list-${slot}`
+        logseq.provideUI({
+          key: `agenda-${slot}`,
+          slot,
+          reset: true,
+          template: `<div id="${id}"></div>`,
+          // style: {},
+        })
+        logseq.provideStyle(`${LOGSEQ_PROVIDE_COMMON_STYLE}
+          #block-content-${uuid} .lsp-hook-ui-slot {
+            width: 100%;
+          }
+          #block-content-${uuid} .lsp-hook-ui-slot > div {
+            width: 100%;
+          }
+          #block-content-${uuid} .lsp-hook-ui-slot > div > div {
+            width: 100%;
+          }
+        `)
+        setTimeout(() => {
+          ReactDOM.render(
+            <React.StrictMode>
+              <TaskListApp containerId={id} />
+            </React.StrictMode>,
+            parent.document.getElementById(id)
+          )
+        }, 0)
+      } else if (args?.[1] === 'pomodoro-timer') {
+        const renderered = parent.document.getElementById(slot)?.childElementCount
+        console.log('[faiz:] === is pomodoro-timer renderered', renderered)
+
+        const id = `agenda-pomodoro-timer-${slot}`
+        const duration = args?.[2] || 40
+        const status = args?.[3] || 'nostarted'
+        const count = args?.[4] || 0
+        logseq.provideUI({
+          key: `agenda-${slot}`,
+          slot,
+          reset: true,
+          template: `<div id="${id}"></div>`,
+          // style: {},
+        })
+        setTimeout(() => {
+          ReactDOM.render(
+            <React.StrictMode>
+              <PomodoroApp duration={Number(duration)} initialStatus={status} uuid={uuid} />
+            </React.StrictMode>,
+            parent.document.getElementById(id)
+          )
+        }, 0)
+      }
     })
 
     logseq.provideStyle(LOGSEQ_PROVIDE_COMMON_STYLE)

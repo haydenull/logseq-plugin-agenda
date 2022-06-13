@@ -145,3 +145,9 @@ export const parseUrlParams = (url: string): Record<string, string> => {
   l.forEach((val, key) => res[key] = val)
   return res
 }
+
+export const secondsToTime = (seconds: number) => {
+  const minute = Math.floor((seconds % 3600) / 60)
+  const second = Math.floor(seconds % 60)
+  return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`
+}
