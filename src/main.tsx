@@ -17,7 +17,7 @@ import { getInitalSettings, initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
-import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
+import { genToolbarPomodoro, listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent, togglePomodoro } from './util/util'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import TaskListApp from './TaskListApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
@@ -38,7 +38,8 @@ echarts.use([GridComponent, LineChart, GaugeChart, CanvasRenderer, UniversalTran
 const isDevelopment = import.meta.env.DEV
 
 if (isDevelopment) {
-  renderApp('browser')
+  // renderApp('browser')
+  renderPomodoroApp('sdfasfasfsa')
 } else {
   console.log('=== logseq-plugin-agenda loaded ===')
   logseq.ready(() => {
@@ -58,7 +59,7 @@ if (isDevelopment) {
     })
 
     logseq.on('ui:visible:changed', (e) => {
-      if (!e.visible) {
+      if (!e.visible && window.currentApp === 'app') {
         ReactDOM.unmountComponentAtNode(document.getElementById('root') as Element)
       }
     })
@@ -66,6 +67,12 @@ if (isDevelopment) {
     logseq.provideModel({
       show() {
         renderApp('logseq')
+        logseq.showMainUI()
+      },
+      showPomodoro(e) {
+        const uuid = e.dataset.uuid
+        if (!uuid) return logseq.App.showMsg('uuid is required')
+        renderPomodoroApp(uuid)
         logseq.showMainUI()
       },
     })
@@ -104,59 +111,16 @@ if (isDevelopment) {
         },
         showKeepRef: true,
       })
-
-
-      // const schedule = schedules.find(s => s.id === e.uuid)
-      // console.log('[faiz:] === schedule', schedule)
-      // const blockData = await logseq.Editor.getBlock(e.uuid)
-      // const { defaultDuration, projectList } = getInitalSettings()
-      // if (schedule) {
-      //   const start = dayjs(schedule.start as string)
-      //   const end = schedule.end ? dayjs(schedule.end as string) : start.add(defaultDuration.value, defaultDuration.unit)
-      //   // update
-      //   renderModalApp({
-      //     type: 'editSchedule',
-      //     data: {
-      //       type: 'update',
-      //       initialValues: {
-      //         id: schedule.id,
-      //         start,
-      //         end,
-      //         isAllDay: schedule?.raw?.category !== 'time',
-      //         calendarId: schedule.calendarId,
-      //         title: deleteProjectTaskTime(pureTaskBlockContent(blockData!)),
-      //         keepRef: schedule.calendarId?.toLowerCase() === 'journal',
-      //         raw: schedule.raw,
-      //       },
-      //     },
-      //     showKeepRef: true,
-      //   })
-      // } else {
-      //   // convert block to schedule
-      //   const pageData = await logseq.Editor.getPage(blockData!.page?.id)
-      //   console.log('[faiz:] === pageData', pageData)
-      //   if (!pageData) return logseq.App.showMsg('Failed to get page data', 'error')
-      //   renderModalApp({
-      //     type: 'editSchedule',
-      //     data: {
-      //       type: 'update',
-      //       initialValues: {
-      //         id: e.uuid,
-      //         title: deleteProjectTaskTime(pureTaskBlockContent(blockData!)),
-      //         calendarId: ((pageData as any)?.properties?.agenda || projectList?.some(project => project.id === pageData.originalName)) ? pageData.originalName : undefined,
-      //         isAllDay: true,
-      //         start: dayjs(),
-      //         end: dayjs(),
-      //         keepRef: false,
-      //         raw: blockData,
-      //       },
-      //     },
-      //     showKeepRef: true,
-      //   })
-      // }
       logseq.showMainUI()
     }
     logseq.Editor.registerBlockContextMenuItem('Agenda: Modify Schedule', editSchedule)
+    logseq.Editor.registerBlockContextMenuItem('Agenda: Start pomodoro Timer', async ({ uuid }) => {
+      // logseq.Editor.insertAtEditingCursor(`{{renderer agenda, pomodoro-timer, 40, 'nostarted', 0}}`)
+      logseq.App.registerUIItem('toolbar', {
+        key: 'logseq-plugin-agenda-pomodoro',
+        template: genToolbarPomodoro(uuid, '--:--'),
+      })
+    })
     logseq.Editor.registerSlashCommand('Agenda: Modify Schedule', editSchedule)
     logseq.Editor.registerSlashCommand("Agenda: Insert Today's Task", (e) => {
       console.log('[faiz:] === registerSlashCommand', e)
@@ -171,9 +135,6 @@ if (isDevelopment) {
     })
     logseq.Editor.registerSlashCommand('Agenda: Insert Task List', async () => {
       logseq.Editor.insertAtEditingCursor(`{{renderer agenda, task-list}}`)
-    })
-    logseq.Editor.registerSlashCommand('Agenda: Pomodoro Timer', async () => {
-      logseq.Editor.insertAtEditingCursor(`{{renderer agenda, pomodoro-timer, 40, 'nostarted', 0}}`)
     })
     logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments: args, uuid } }) => {
       console.log('[faiz:] === onMacroRendererSlotted', slot, args, uuid)
@@ -225,14 +186,14 @@ if (isDevelopment) {
           template: `<div id="${id}"></div>`,
           // style: {},
         })
-        setTimeout(() => {
-          ReactDOM.render(
-            <React.StrictMode>
-              <PomodoroApp duration={Number(duration)} initialStatus={status} uuid={uuid} />
-            </React.StrictMode>,
-            parent.document.getElementById(id)
-          )
-        }, 0)
+        // setTimeout(() => {
+        //   ReactDOM.render(
+        //     <React.StrictMode>
+        //       <PomodoroApp duration={Number(duration)} initialStatus={status} uuid={uuid} />
+        //     </React.StrictMode>,
+        //     parent.document.getElementById(id)
+        //   )
+        // }, 0)
       }
     })
 
@@ -273,6 +234,8 @@ if (isDevelopment) {
 }
 
 async function renderApp(env: string) {
+  window.currentApp = 'app'
+  togglePomodoro(false)
   toggleAppTransparent(false)
   let defaultRoute = ''
   const page = await logseq.Editor.getCurrentPage()
@@ -289,6 +252,7 @@ async function renderApp(env: string) {
 
 // function renderModalApp({ type, initialValues }: { type: 'create' | 'update', initialValues?: IScheduleValue }) {
 function renderModalApp(params: IModalAppProps) {
+  window.currentApp = 'modal'
   const {type, data} = params
   toggleAppTransparent(true)
   ReactDOM.render(
@@ -297,5 +261,17 @@ function renderModalApp(params: IModalAppProps) {
       <ModalApp type={type} data={data} showKeepRef={params.showKeepRef} />
     </React.StrictMode>,
     document.getElementById('root')
+  )
+}
+
+function renderPomodoroApp(uuid: string) {
+  window.currentApp = 'pomodoro'
+  togglePomodoro(true)
+  toggleAppTransparent(true)
+  ReactDOM.render(
+    <React.StrictMode>
+      <PomodoroApp uuid={uuid} />
+    </React.StrictMode>,
+    document.getElementById('pomodoro-root')
   )
 }

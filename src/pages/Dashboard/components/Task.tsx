@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import React, { useState } from 'react'
 import { RiExternalLinkLine } from 'react-icons/ri'
-import type { ISchedule } from 'tui-calendar'
 import dayjs from 'dayjs'
 import { getPageData } from '@/util/logseq'
 import s from '../index.module.less'
