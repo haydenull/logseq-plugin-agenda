@@ -17,7 +17,8 @@ import { getInitalSettings, initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
-import { genToolbarPomodoro, listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent, togglePomodoro } from './util/util'
+import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
+import { genToolbarPomodoro, togglePomodoro } from '@/helper/pomodoro'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import TaskListApp from './TaskListApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
@@ -59,7 +60,7 @@ if (isDevelopment) {
     })
 
     logseq.on('ui:visible:changed', (e) => {
-      if (!e.visible && window.currentApp === 'app') {
+      if (!e.visible && window.currentApp !== 'pomodoro') {
         ReactDOM.unmountComponentAtNode(document.getElementById('root') as Element)
       }
     })
@@ -88,6 +89,8 @@ if (isDevelopment) {
       renderApp('logseq')
       logseq.showMainUI()
     })
+
+    window.unmountPomodoroApp = () => ReactDOM.unmountComponentAtNode(document.getElementById('pomodoro-root') as Element)
 
     const editSchedule = async (e) => {
       let block = await logseq.Editor.getBlock(e.uuid)
@@ -118,8 +121,13 @@ if (isDevelopment) {
       // logseq.Editor.insertAtEditingCursor(`{{renderer agenda, pomodoro-timer, 40, 'nostarted', 0}}`)
       logseq.App.registerUIItem('toolbar', {
         key: 'logseq-plugin-agenda-pomodoro',
-        template: genToolbarPomodoro(uuid, '--:--'),
+        template: genToolbarPomodoro(uuid, '--:--', 0),
       })
+      if (window?.currentPomodoro?.uuid !== uuid && window?.currentPomodoro?.state?.paused === false) return logseq.App.showMsg('Another block is running pomodoro timer, please finish it first', 'error')
+      setTimeout(() => {
+        renderPomodoroApp(uuid)
+        logseq.showMainUI()
+      }, 0)
     })
     logseq.Editor.registerSlashCommand('Agenda: Modify Schedule', editSchedule)
     logseq.Editor.registerSlashCommand("Agenda: Insert Today's Task", (e) => {
@@ -253,6 +261,7 @@ async function renderApp(env: string) {
 // function renderModalApp({ type, initialValues }: { type: 'create' | 'update', initialValues?: IScheduleValue }) {
 function renderModalApp(params: IModalAppProps) {
   window.currentApp = 'modal'
+  togglePomodoro(false)
   const {type, data} = params
   toggleAppTransparent(true)
   ReactDOM.render(

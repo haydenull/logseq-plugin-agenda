@@ -8,6 +8,7 @@ import { getPageData, pureTaskBlockContent } from '@/util/logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 import { deleteProjectTaskTime, fillBlockReference, isOverdue, judgeIsMilestone, removeTimeInfo } from '@/util/schedule'
 import { format } from 'date-fns'
+import { getPomodoroInfo, removePomodoroInfo } from './pomodoro'
 
 /** ========== calendar schedules ========== */
 export const transformTaskEventToSchedule = (block: IEvent) => {
@@ -102,6 +103,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   const page = block?.page?.originalName ? block.page : await logseq.Editor.getPage(block.page.id)
   block.page = page!
   const time = getEventTimeInfo(block)
+  const pomodoros = getPomodoroInfo(block.content, block.format)
   const isMilestone = judgeIsMilestone(block)
   const isJournal = Boolean(page?.journalDay)
 
@@ -118,6 +120,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
     const journalName = format(dayjs(time.start).valueOf(), preferredDateFormat)
     showTitle = showTitle.replace(`[[${journalName}]]`, '')?.trim()
   }
+  if (pomodoros) showTitle = removePomodoroInfo(showTitle, block.format)
   event.addOns.showTitle = await fillBlockReference(showTitle?.split('\n')?.[0]?.trim())
 
   // add end time
@@ -164,6 +167,9 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
 
   // add type
   if (isMilestone) event.addOns.type = 'milestone'
+
+  // add pomodoros
+  event.addOns.pomodoros = pomodoros || []
 
   return event
 }

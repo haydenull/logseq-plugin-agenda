@@ -20,7 +20,16 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
     display: none;
   }
   .external-link[href^="#agenda-pomo://"] {
-    fonweight: bold;
+    font-weight: 600;
+    border: 1px solid #0F9960;
+    background: #defcf0;
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: #222;
+  }
+  .dark .external-link[href^="#agenda-pomo://"] {
+    background-color: #1a543b;
+    color: #ddd;
   }
 
   .agenda-toolbar-pompdoro {
@@ -33,13 +42,31 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
     margin: 0 0.125rem;
     color: #cd3838;
     border: 1px solid #cd3838;
-    background: #f6dbdb;
     text-align: center;
+    position: relative;
+  }
+  .agenda-toolbar-pompdoro .timer-progress-back {
+    width: 0;
+    height: 100%;
+    background: #f6dbdb;
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    top: 0;
+    transition: width 0.5s;
+  }
+  .dark .agenda-toolbar-pompdoro .timer-progress-back {
+    background-color: #a69494;
   }
   .agenda-toolbar-pompdoro.break {
     color: #0F9960;
     border-color: #0F9960;
-    background: #defcf0;
+  }
+  .agenda-toolbar-pompdoro.break .timer-progress-back {
+    background-color: #defcf0;
+  }
+  .dark .agenda-toolbar-pompdoro.break .timer-progress-back {
+    background-color: #1a543b;
   }
 `
 

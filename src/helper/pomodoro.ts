@@ -7,8 +7,11 @@ export const secondsToTime = (seconds: number) => {
   return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`
 }
 
-export const genToolbarPomodoro = (uuid: string, time: string, isBreak: boolean = false) => {
-  return `<div data-on-click="showPomodoro" class="agenda-toolbar-pompdoro ${isBreak ? 'break' : ''}" data-uuid="${uuid}">${time}</div>`
+export const genToolbarPomodoro = (uuid: string, time: string, progress: number, isBreak: boolean = false) => {
+  return `<div data-on-click="showPomodoro" class="agenda-toolbar-pompdoro ${isBreak ? 'break' : ''}" data-uuid="${uuid}">
+    ${time}
+    <div class="timer-progress-back" style="width: ${progress * 100}%;"></div>
+  </div>`
 }
 
 export const togglePomodoro = (show: boolean = true) => {
@@ -79,5 +82,10 @@ export const updatePomodoroInfo = async (
   } else {
     newContent = `${block.content} ${newInfo}`
   }
-  return logseq.Editor.updateBlock(uuid, newContent)
+  return newContent
+}
+
+export const removePomodoroInfo = (blockContent: string, format: BlockEntity['format']) => {
+  const reg = format === 'markdown' ? MARKDOWN_POMODORO_REG : ORG_POMODORO_REG
+  return blockContent.replace(reg, '')?.trim()
 }

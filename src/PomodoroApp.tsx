@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { usePomodoro } from 'use-pomodoro'
 import { RiExternalLinkLine } from 'react-icons/ri'
+import { FaPowerOff } from 'react-icons/fa'
 import { transformBlockToEvent } from './helper/transform'
 import { getInitalSettings } from './util/baseInfo'
 import { IEvent } from './util/events'
-import { genToolbarPomodoro, secondsToTime } from '@/helper/pomodoro'
+import { genToolbarPomodoro, secondsToTime, updatePomodoroInfo } from '@/helper/pomodoro'
 import { getPageData } from './util/logseq'
+import dayjs from 'dayjs'
 
 const OperationButton = ({ label, onClick, classNames = '' }: {label: string, onClick: () => void, classNames?: string}) => (
   <button
@@ -24,6 +26,7 @@ const SetTimeButton = ({ label, onClick, classNames = '' }: {label: string, onCl
   </button>
 )
 
+const { pomodoro: pomodoroConfig } = getInitalSettings()
 export type IPomodoroAppProps = {
   uuid: string
 }
@@ -34,12 +37,10 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   //   logseq.Editor.updateBlock(uuid, `test {{renderer agenda, pomodoro-timer, 40, 'timing', 0}}`)
   // }
   const { state, start, stop, reset, goPomodoro, goShortBreak, goLongBreak, changeConfig } = usePomodoro({
-    pomodoro: 10,
-    shortBreak: 5,
-    longBreak: 15,
-    autoStartBreaks: false,
-    autoStartPomodoros: false,
-    longBreakInterval: 4,
+    ...pomodoroConfig,
+    pomodoro: pomodoroConfig.pomodoro * 60,
+    shortBreak: pomodoroConfig.shortBreak * 60,
+    longBreak: pomodoroConfig.longBreak * 60,
     notificationConfig: {
       type: 'every',
       time: 5,
@@ -48,20 +49,12 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   const times = [10, 15, 20, 25, 40]
   const [event, setEvent] = useState<IEvent>()
   const isWorking = state.type === 'pomodoro'
+  const startTimeRef = useRef<number>()
 
   const changeTimeConfig = (time: number) => {
     changeConfig({
-      // pomodoro: time * 60,
-      pomodoro: time,
-      shortBreak: 5,
-      longBreak: 15,
-      autoStartBreaks: false,
-      autoStartPomodoros: false,
-      longBreakInterval: 4,
-      notificationConfig: {
-        type: 'every',
-        time: 5,
-      },
+      ...state.config,
+      pomodoro: time * 60,
     })
   }
   const navToBlock = async () => {
@@ -74,16 +67,31 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
     }
     logseq.Editor.scrollToBlockInPage(pageName, event.uuid)
   }
+  const startPomodoro = () => {
+    start()
+    startTimeRef.current = dayjs().valueOf()
+  }
+  const finishPomodoro = async () => {
+    const pomodoroLength = state.config.pomodoro
+    const timer = state.timer
+    reset()
+    const newContent = await updatePomodoroInfo(uuid, {
+      isFull: false,
+      start: startTimeRef.current!,
+      length: pomodoroLength - timer,
+    })
+    if (newContent) logseq.Editor.updateBlock(uuid, newContent)
+  }
 
   const renderButtons = () => {
     const { progress } = state
 
     if (isWorking) {
       return progress === 0
-        ? <OperationButton label="start" onClick={start} />
+        ? <OperationButton label="start" onClick={startPomodoro} />
         : [
           <OperationButton key="stop" label="stop" onClick={reset} />,
-          <OperationButton key="finish" label="finish" onClick={reset} classNames="ml-2" />,
+          <OperationButton key="finish" label="finish" onClick={finishPomodoro} classNames="ml-2" />,
         ]
     } else {
       return progress === 0
@@ -96,11 +104,16 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
     console.log('[faiz:] === state', state)
     logseq.App.registerUIItem('toolbar', {
       key: 'logseq-plugin-agenda-pomodoro',
-      template: genToolbarPomodoro(uuid, state.formattedTimer, state.type !== 'pomodoro'),
+      template: genToolbarPomodoro(uuid, state.formattedTimer, state.progress, state.type !== 'pomodoro'),
     })
-  }, [state.formattedTimer, state.type, uuid])
+    window.currentPomodoro = {
+      uuid,
+      state: { paused: state.paused },
+    }
+  }, [state.formattedTimer, state.type, state.paused, uuid])
   useEffect(() => {
     if (!uuid) return
+    if (!state.paused) return logseq.App.showMsg('Pomodoro is running, please stop it first.', 'error')
     logseq.Editor.getBlock(uuid).then(async block => {
       if (!block) return
       const event = await transformBlockToEvent(block!, getInitalSettings())
@@ -108,10 +121,14 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
     })
   }, [uuid])
   useEffect(() => {
-    if (isWorking && state.progress === 100 && uuid) {
-
+    if (isWorking && state.progress === 1 && uuid) {
+      updatePomodoroInfo(uuid, {
+        isFull: true,
+        start: startTimeRef.current!,
+        length: state.config.pomodoro,
+      }).then(newContent => logseq.Editor.updateBlock(uuid, newContent!))
     }
-  }, [isWorking, state.progress])
+  }, [isWorking, state.progress, uuid])
 
   return (
     <>
@@ -126,13 +143,22 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col w-12 justify-between">
+        <div className="flex flex-col w-12 justify-between pt-2">
           {
             times.map(time => (
               <SetTimeButton key={time} label={time + 'min'} onClick={() => changeTimeConfig(time)} />
             ))
           }
         </div>
+
+        <FaPowerOff
+          className="absolute right-2 top-2"
+          onClick={() => {
+            logseq.hideMainUI()
+            window?.unmountPomodoroApp()
+            window.currentPomodoro = {}
+          }}
+        />
 
       </div>
     </>
