@@ -145,19 +145,3 @@ export const parseUrlParams = (url: string): Record<string, string> => {
   l.forEach((val, key) => res[key] = val)
   return res
 }
-
-export const secondsToTime = (seconds: number) => {
-  const minute = Math.floor((seconds % 3600) / 60)
-  const second = Math.floor(seconds % 60)
-  return `${minute < 10 ? '0' + minute : minute}:${second < 10 ? '0' + second : second}`
-}
-
-export const genToolbarPomodoro = (uuid: string, time: string, isBreak: boolean = false) => {
-  return `<div data-on-click="showPomodoro" class="agenda-toolbar-pompdoro ${isBreak ? 'break' : ''}" data-uuid="${uuid}">${time}</div>`
-}
-
-export const togglePomodoro = (show: boolean = true) => {
-  const pomodoro = document.querySelector('#pomodoro-root')
-  if (pomodoro && show) pomodoro.classList.remove('hide')
-  if (pomodoro && !show) pomodoro.classList.add('hide')
-}

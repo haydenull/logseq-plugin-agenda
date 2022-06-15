@@ -4,7 +4,7 @@ import { RiExternalLinkLine } from 'react-icons/ri'
 import { transformBlockToEvent } from './helper/transform'
 import { getInitalSettings } from './util/baseInfo'
 import { IEvent } from './util/events'
-import { genToolbarPomodoro, secondsToTime } from './util/util'
+import { genToolbarPomodoro, secondsToTime } from '@/helper/pomodoro'
 import { getPageData } from './util/logseq'
 
 const OperationButton = ({ label, onClick, classNames = '' }: {label: string, onClick: () => void, classNames?: string}) => (
@@ -47,6 +47,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   })
   const times = [10, 15, 20, 25, 40]
   const [event, setEvent] = useState<IEvent>()
+  const isWorking = state.type === 'pomodoro'
 
   const changeTimeConfig = (time: number) => {
     changeConfig({
@@ -75,8 +76,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   }
 
   const renderButtons = () => {
-    const { type, progress } = state
-    const isWorking = type === 'pomodoro'
+    const { progress } = state
 
     if (isWorking) {
       return progress === 0
@@ -107,6 +107,11 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
       setEvent(event)
     })
   }, [uuid])
+  useEffect(() => {
+    if (isWorking && state.progress === 100 && uuid) {
+
+    }
+  }, [isWorking, state.progress])
 
   return (
     <>
