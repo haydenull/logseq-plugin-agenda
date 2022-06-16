@@ -68,6 +68,9 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
   .dark .agenda-toolbar-pompdoro.break .timer-progress-back {
     background-color: #1a543b;
   }
+  .agenda-toolbar-pompdoro.hide {
+    display: none;
+  }
 `
 
 export const DEFAULT_CALENDAR_STYLE = {

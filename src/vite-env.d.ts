@@ -11,4 +11,5 @@ interface Window {
     }
   }
   unmountPomodoroApp: () => void
+  interruptionMap: Map<number, any>
 }

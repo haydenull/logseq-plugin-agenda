@@ -347,3 +347,5 @@ export const YES_NO_SELECTION = [
   { label: 'Yes', value: true },
   { label: 'No', value: false },
 ]
+
+export const POMODORO_INTERRUPTION_SEPARATOR = '|`~|'

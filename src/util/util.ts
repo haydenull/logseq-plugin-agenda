@@ -145,3 +145,10 @@ export const parseUrlParams = (url: string): Record<string, string> => {
   l.forEach((val, key) => res[key] = val)
   return res
 }
+
+export const notification = (msg: string) => {
+  const notification = new Notification(msg)
+  notification.onclick = () => {
+    notification.close()
+  }
+}

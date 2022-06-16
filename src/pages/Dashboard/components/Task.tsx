@@ -47,7 +47,7 @@ const Task: React.FC<{
   return (
     <div className={classNames(s.task, { [s.taskActive]: isActive, [s.taskDone]: isDone }, s?.[type], 'flex pl-5 pr-4 py-2 items-center justify-between')}>
       { showTimeDot && <div className={classNames(s.time)}><span>{startDay?.format('HH:mm')}</span></div> }
-      <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: calendarConfig?.bgColor, color: calendarConfig?.textColor }} title={calendarConfig?.id}>{calendarConfig?.id?.[0]?.toUpperCase()}</div>
+      <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: calendarConfig?.bgColor, color: calendarConfig?.textColor }} title={calendarConfig?.id}>{Array.from(calendarConfig?.id!)?.[0]?.toUpperCase()}</div>
       <div className="flex flex-col flex-1 ellipsis mx-4">
         <span className="ellipsis text">{task.addOns.showTitle}</span>
         <div className={classNames(s.subscription, 'text-xs flex justify-between')}>

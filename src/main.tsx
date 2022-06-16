@@ -49,6 +49,8 @@ if (isDevelopment) {
 
     managePluginTheme()
 
+    Notification.requestPermission()
+
     logseq.App.getUserConfigs().then(configs => {
       window.logseqAppUserConfigs = configs
     })
@@ -91,6 +93,7 @@ if (isDevelopment) {
     })
 
     window.unmountPomodoroApp = () => ReactDOM.unmountComponentAtNode(document.getElementById('pomodoro-root') as Element)
+    window.interruptionMap = new Map()
 
     const editSchedule = async (e) => {
       let block = await logseq.Editor.getBlock(e.uuid)

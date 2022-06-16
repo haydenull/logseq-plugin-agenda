@@ -1,4 +1,4 @@
-import { MARKDOWN_POMODORO_REG, ORG_POMODORO_REG } from '@/util/constants'
+import { MARKDOWN_POMODORO_REG, ORG_POMODORO_REG, POMODORO_INTERRUPTION_SEPARATOR } from '@/util/constants'
 import { parseUrlParams } from '@/util/util'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 export const secondsToTime = (seconds: number) => {
@@ -20,47 +20,71 @@ export const togglePomodoro = (show: boolean = true) => {
   if (pomodoro && !show) pomodoro.classList.add('hide')
 }
 
+export type IInterruption = {
+  type: number   // 1: internal interruption  2: external interruption
+  time: number
+  remark: string
+}
 export type IPomodoroInfo = {
   isFull: boolean;
   start: number;
   length: number;
-  interruptionRemark?: string
+  interruptions?: IInterruption[]
 }
 export const getPomodoroInfo = (blockContent: string, format: BlockEntity['format']): IPomodoroInfo[] | null => {
   const reg = format === 'markdown' ? MARKDOWN_POMODORO_REG : ORG_POMODORO_REG
   const res = blockContent.match(reg)
   if (!res || !res?.[1]) return null
-  // >[🍅 50min](#agenda-pomo://?t=f-20220614123213-10,p-2023829809-4,p-2023829809-3-text)
+  // >[🍅 50min](#agenda-pomo://?t=f-20220614123213-10,p-2023829809-4,p-2023829809-3-113040990remarkkkk|`~|213040990remarkkkk)
   const params = parseUrlParams(res[1])
   const pomodoroInfo = params.t
   if (!pomodoroInfo) return null
   const pomodoros = pomodoroInfo.split(',')
   return pomodoros.map(pomodoro => {
     const info = pomodoro.split('-')
-    const [type, start, length, remark] = info
+    const [type, start, length, ...interruption] = info
+    const interruptionStr = interruption.join('-')
+
+    const interruptions = interruptionStr.split(POMODORO_INTERRUPTION_SEPARATOR)
+
     return {
       isFull: type === 'f',
       start: parseInt(start),
       length: parseInt(length),
-      interruptionRemark: remark,
+      interruptions: interruptions.map(str => {
+        return {
+          type: Number(str?.[0]),
+          time: Number(str.substring(1, 14)),
+          remark: str.substring(14),
+        }
+      }),
     }
   })
 }
 
 export const updatePomodoroInfo = async (
   uuid: string,
-  pomodoro: IPomodoroInfo
+  newPomodoro: IPomodoroInfo | IPomodoroInfo[],
+  type: 'addon' | 'update' = 'addon',
 ) => {
   const block = await logseq.Editor.getBlock(uuid)
   if (!block) return
-  const pomodoros = getPomodoroInfo(block.content, block.format)
-
+  let newPomodoros = ([] as IPomodoroInfo[]).concat(newPomodoro)
+  if (type === 'addon') {
+    const pomodoros = getPomodoroInfo(block.content, block.format) || []
+    newPomodoros = pomodoros.concat(newPomodoro)
+  }
   // gen new pomodoro info text
-  const newPomodoros = pomodoros ? [...pomodoros, pomodoro] : [pomodoro]
   const newInfoText = newPomodoros.map(pomodoro => {
-    const { isFull, start, length, interruptionRemark } = pomodoro
+    const { isFull, start, length, interruptions } = pomodoro
     const type = isFull ? 'f' : 'p'
-    return `${type}-${start}-${length}${interruptionRemark ? `-${interruptionRemark}` : ''}`
+
+    const interruptionStr = interruptions?.map(interruption => {
+      const { type, time, remark } = interruption
+      return `${type}${time}${remark}`
+    }).join(POMODORO_INTERRUPTION_SEPARATOR)
+
+    return `${type}-${start}-${length}${interruptionStr ? `-${interruptionStr}` : ''}`
   }).join(',')
 
   const url = new URL('agenda-pomo://')
@@ -70,7 +94,7 @@ export const updatePomodoroInfo = async (
     return acc + pomodoro.length
   }, 0)
   const tomato = newPomodoros.filter(pomodoro => pomodoro.isFull)?.map(() => '🍅')?.join('') || '🍅'
-  const showText = `${tomato} ${countTime / 60}min`
+  const showText = `${tomato} ${Math.ceil(countTime / 60)}min`
 
   const newInfo = block?.format === 'org' ? `>[[#${url.toString()}][${showText}]]` : `>[${showText}](#${url.toString()})`
 
