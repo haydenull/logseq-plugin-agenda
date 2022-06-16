@@ -342,3 +342,8 @@ export const DURATION_UNITS = [
 ]
 
 export const SCHEDULE_PARENT_BLOCK = 'Agenda'
+
+export const YES_NO_SELECTION = [
+  { label: 'Yes', value: true },
+  { label: 'No', value: false },
+]

@@ -4,7 +4,7 @@ import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { useForm } from 'antd/lib/form/Form'
 import classNames from 'classnames'
 import ColorPicker from '@/components/ColorPicker'
-import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME } from '@/util/constants'
+import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME, YES_NO_SELECTION } from '@/util/constants'
 import Query from '@/components/Query'
 import CreateCalendarModal from '@/components/CreateCalendarModal'
 import type { ISettingsForm } from '@/util/type'
@@ -27,6 +27,7 @@ const TABS = [
   { value: 'customCalendar', label: 'Custom Calendar' },
   { value: 'subscription', label: 'Subscription' },
   { value: 'calendarView', label: 'Calendar View' },
+  { value: 'pomodoro', label: 'Pomodoro' },
 ]
 
 
@@ -337,6 +338,26 @@ const Settings: React.FC<{
                   <InputNumber min={0} max={24} />
                 </Form.Item>
               </div>
+            </Form.Item>
+          </div>
+          <div id="pomodoro" className={classNames(s.formBlock, { [s.show]: tab === 'pomodoro' })}>
+            <Form.Item label="Pomodoro Length" name={['pomodoro', 'pomodoro']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <InputNumber min={3} precision={0} addonAfter="min" />
+            </Form.Item>
+            <Form.Item label="Short Break Length" name={['pomodoro', 'shortBreak']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <InputNumber min={1} precision={0} addonAfter="min" />
+            </Form.Item>
+            <Form.Item label="Long Break Length" name={['pomodoro', 'longBreak']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <InputNumber min={1} precision={0} addonAfter="min" />
+            </Form.Item>
+            <Form.Item label="Auto Start Breaks" name={['pomodoro', 'autoStartBreaks']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <Select options={YES_NO_SELECTION} />
+            </Form.Item>
+            <Form.Item label="Auto Start Pomodoros" name={['pomodoro', 'autoStartPomodoros']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <Select options={YES_NO_SELECTION} />
+            </Form.Item>
+            <Form.Item label="Long Break Interval" name={['pomodoro', 'longBreakInterval']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <InputNumber min={1} precision={0} />
             </Form.Item>
           </div>
         </Form>

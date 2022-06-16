@@ -3,8 +3,9 @@ import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import TodayTaskModal from './components/TodayTaskModal'
 import { useAtom } from 'jotai'
 import { projectSchedulesAtom } from './model/schedule'
-import { getInternalEvents } from './util/events'
+import { getInternalEvents, IEvent } from './util/events'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from './model/events'
+import PomodoroModal from './components/PomodoroModal'
 
 type IEditSchedule = {
   type: 'editSchedule'
@@ -20,7 +21,11 @@ type IInsertTodaySchedule = {
     uuid: string
   }
 }
-export type IModalAppProps = IEditSchedule | IInsertTodaySchedule
+type IPomodoroModal = {
+  type: 'pomodoro'
+  data: IEvent
+}
+export type IModalAppProps = IEditSchedule | IInsertTodaySchedule | IPomodoroModal
 const ModalApp: React.FC<IModalAppProps> = (props) => {
   const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
   const [, setFullEvents] = useAtom(fullEventsAtom)
@@ -63,6 +68,16 @@ const ModalApp: React.FC<IModalAppProps> = (props) => {
             visible
             uuid={props.data.uuid}
             onSave={onSave}
+            onCancel={onCancel}
+          />
+        )
+      }
+      {
+        type === 'pomodoro' && (
+          <PomodoroModal
+            visible
+            data={props.data}
+            onOk={onSave}
             onCancel={onCancel}
           />
         )

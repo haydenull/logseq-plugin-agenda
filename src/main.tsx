@@ -211,28 +211,38 @@ if (isDevelopment) {
       top.document.addEventListener('click', async e => {
         const path = e.composedPath()
         const target = path[0] as HTMLAnchorElement
-        if (target.tagName === 'A' && target.className.includes('external-link') && target.getAttribute('href')?.startsWith('#agenda://')) {
+        if (target.tagName === 'A' && target.className.includes('external-link') && target.getAttribute('href')?.startsWith('#agenda')) {
+          let modalType = 'agenda'
+          if (target.getAttribute('href')?.startsWith('#agenda-pomo://')) modalType = 'pomodoro'
+
           const uuid = getBlockUuidFromEventPath(path as unknown as HTMLElement[])
           if (!uuid) return
           const block = await logseq.Editor.getBlock(uuid)
           const page = await logseq.Editor.getPage(block!.page?.id)
           const event = await transformBlockToEvent(block!, getInitalSettings())
-          renderModalApp({
-            type: 'editSchedule',
-            data: {
-              type: 'update',
-              initialValues: {
-                id: uuid,
-                title: event.addOns.showTitle,
-                calendarId: page?.originalName,
-                keepRef: false,
-                start: dayjs(event.addOns.start),
-                end: dayjs(event.addOns.end),
-                isAllDay: event.addOns.allDay,
-                raw: event,
+          if (modalType === 'agenda') {
+            renderModalApp({
+              type: 'editSchedule',
+              data: {
+                type: 'update',
+                initialValues: {
+                  id: uuid,
+                  title: event.addOns.showTitle,
+                  calendarId: page?.originalName,
+                  keepRef: false,
+                  start: dayjs(event.addOns.start),
+                  end: dayjs(event.addOns.end),
+                  isAllDay: event.addOns.allDay,
+                  raw: event,
+                },
               },
-            },
-          })
+            })
+          } else if (modalType === 'pomodoro') {
+            renderModalApp({
+              type: 'pomodoro',
+              data: event,
+            })
+          }
           logseq.showMainUI()
         }
       })
