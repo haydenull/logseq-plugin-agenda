@@ -91,9 +91,6 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
     })
     if (newContent) logseq.Editor.updateBlock(uuid, newContent)
   }
-  const recordInterruption = () => {
-    
-  }
 
   const renderButtons = () => {
     const { progress } = state

@@ -45,7 +45,9 @@ export const getPomodoroInfo = (blockContent: string, format: BlockEntity['forma
     const [type, start, length, ...interruption] = info
     const interruptionStr = interruption.join('-')
 
-    const interruptions = interruptionStr.split(POMODORO_INTERRUPTION_SEPARATOR)
+    const interruptions = interruption?.length > 0 ? interruptionStr.split(POMODORO_INTERRUPTION_SEPARATOR) : []
+
+    console.log('[faiz:] === interruption', interruption, interruptionStr, interruptions)
 
     return {
       isFull: type === 'f',

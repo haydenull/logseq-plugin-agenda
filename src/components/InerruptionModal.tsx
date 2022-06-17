@@ -40,7 +40,7 @@ const InerruptionModal: React.FC<{
           />
         </Form.Item>
         <Form.Item name="remark" label="Remark" rules={[{ required: true }]}>
-          <Input maxLength={50} />
+          <Input maxLength={50} showCount />
         </Form.Item>
       </Form>
     </Modal>

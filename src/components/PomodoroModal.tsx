@@ -13,7 +13,7 @@ const PomodoroModal: React.FC<{
     <Modal
       title="Pomodoro"
       okText="Save"
-      width="1000px"
+      width="600px"
       visible={visible}
       onCancel={onCancel}
       onOk={async () => {
@@ -34,25 +34,11 @@ const PomodoroModal: React.FC<{
           }, },
           { title: 'Start', dataIndex: 'start', width: '200px', render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm') },
           { title: 'Length', dataIndex: 'length', render: value => `${Math.ceil(value / 60)} min` },
+          Table.EXPAND_COLUMN,
           {
             title: 'Interruption',
             dataIndex: 'interruptions',
-            render: (value, record, index) => {
-              if (!value?.length) return '-'
-              return (
-                <Descriptions>
-                  {
-                    value.map((interruption, index) => {
-                      return <>
-                        <Descriptions.Item label="Type">{ interruption.type === 1 ? <Tag color="green">Internal</Tag> : <Tag color="magenta">External</Tag> }</Descriptions.Item>
-                        <Descriptions.Item label="Time">{dayjs(interruption.time).format('HH:mm')}</Descriptions.Item>
-                        <Descriptions.Item label="Reason">{interruption.reason}</Descriptions.Item>
-                      </>
-                    })
-                  }
-                </Descriptions>
-              )
-            },
+            render: (value, record, index) => value?.length || 0,
           },
           {
             title: 'Action',
@@ -64,6 +50,21 @@ const PomodoroModal: React.FC<{
             }
           }
         ]}
+        expandable={{
+          rowExpandable: record => Boolean(record?.interruptions?.length),
+          expandedRowRender: record => (
+            <Table
+              size="small"
+              dataSource={record.interruptions}
+              pagination={false}
+              columns={[
+                { title: 'Type', dataIndex: 'type', render: value => (value === 1 ? <Tag color="green">Internal</Tag> : <Tag color="magenta">External</Tag>) },
+                { title: 'Time', dataIndex: 'time', render: value => dayjs(value).format('YYYY-MM-DD HH:mm') },
+                { title: 'Remark', dataIndex: 'remark' },
+              ]}
+            />
+          ),
+        }}
         summary={(currentData) => {
           if (!currentData?.length) return null
           return (
@@ -74,6 +75,9 @@ const PomodoroModal: React.FC<{
                 </Table.Summary.Cell>
                 <Table.Summary.Cell index={1} colSpan={3}>
                   {Math.ceil(currentData!.reduce((acc, cur) => acc + cur.length, 0) / 60)} min
+                </Table.Summary.Cell>
+                <Table.Summary.Cell index={4} colSpan={2}>
+                  {currentData!.reduce((acc, cur) => acc + (cur.interruptions?.length || 0), 0)}
                 </Table.Summary.Cell>
               </Table.Summary.Row>
             </>
