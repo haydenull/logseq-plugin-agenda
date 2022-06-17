@@ -1,7 +1,9 @@
-import { updatePomodoroInfo } from '@/helper/pomodoro'
+import { IPomodoroInfo, updatePomodoroInfo } from '@/helper/pomodoro'
+import { getInitalSettings } from '@/util/baseInfo'
 import { IEvent } from '@/util/events'
 import { Button, Descriptions, Modal, Table, Tag } from 'antd'
 import dayjs from 'dayjs'
+import { useEffect, useState } from 'react'
 
 const PomodoroModal: React.FC<{
   data: IEvent
@@ -9,25 +11,39 @@ const PomodoroModal: React.FC<{
   onOk: () => void
   onCancel: () => void
 }> = ({ data, onCancel, onOk, visible }) => {
+  const [pompdoroData, setPomodoroData] = useState<IPomodoroInfo[]>(data.addOns.pomodoros || [])
+
+  const addNewPomodoro = () => {
+    const { pomodoro } = getInitalSettings()
+    setPomodoroData([...pompdoroData, {
+      start: dayjs().valueOf(),
+      length: pomodoro.pomodoro * 60,
+      isFull: true,
+    }])
+  }
+
+  useEffect(() => {
+    setPomodoroData(data.addOns.pomodoros || [])
+  }, [data.uuid])
+
   return (
     <Modal
       title="Pomodoro"
       okText="Save"
-      width="600px"
+      width="800px"
       visible={visible}
       onCancel={onCancel}
       onOk={async () => {
-        // const newContent = await updatePomodoroInfo(data.uuid, {
-        //   isFull: false,
-        //   start: startTimeRef.current!,
-        //   length: pomodoroLength - timer,
-        // })
-        // if (newContent) logseq.Editor.updateBlock(uuid, newContent)
+        const newContent = await updatePomodoroInfo(data.uuid, pompdoroData, 'update')
+        if (newContent) logseq.Editor.updateBlock(data.uuid, newContent)
+        onCancel()
       }}
     >
+      <Button type="primary" onClick={addNewPomodoro} className="mb-2" size="small">Add New Pomodoro</Button>
       <Table
         pagination={false}
-        dataSource={data?.addOns.pomodoros}
+        dataSource={pompdoroData}
+        id="start"
         columns={[
           { title: 'Full Tomato', dataIndex: 'isFull', render(value, record, index) {
             return value ? '✅' : '❌'
