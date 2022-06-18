@@ -2,8 +2,10 @@ import { IPomodoroInfo, updatePomodoroInfo } from '@/helper/pomodoro'
 import { getInitalSettings } from '@/util/baseInfo'
 import { IEvent } from '@/util/events'
 import { Button, Descriptions, Modal, Table, Tag } from 'antd'
+import { PlusOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
+import ModifyPomodoro from './ModifyPomodoro'
 
 const PomodoroModal: React.FC<{
   data: IEvent
@@ -12,6 +14,7 @@ const PomodoroModal: React.FC<{
   onCancel: () => void
 }> = ({ data, onCancel, onOk, visible }) => {
   const [pompdoroData, setPomodoroData] = useState<IPomodoroInfo[]>(data.addOns.pomodoros || [])
+  const [modifyPomodoro, setModifyPomodoro] = useState<{ visible: boolean, data?: IPomodoroInfo }>({ visible: false })
 
   const addNewPomodoro = () => {
     const { pomodoro } = getInitalSettings()
@@ -39,7 +42,7 @@ const PomodoroModal: React.FC<{
         onCancel()
       }}
     >
-      <Button type="primary" onClick={addNewPomodoro} className="mb-2" size="small">Add New Pomodoro</Button>
+      <Button type="primary" onClick={addNewPomodoro} className="mb-4" icon={<PlusOutlined />}>Add New Pomodoro</Button>
       <Table
         pagination={false}
         dataSource={pompdoroData}
@@ -61,7 +64,7 @@ const PomodoroModal: React.FC<{
             dataIndex: 'operation',
             render: (value, record, index) => {
               return (
-                <Button type="link">Edit</Button>
+                <Button type="link" onClick={() => setModifyPomodoro({ visible: true, data: record })}>Edit</Button>
               )
             }
           }
@@ -98,6 +101,22 @@ const PomodoroModal: React.FC<{
               </Table.Summary.Row>
             </>
           )
+        }}
+      />
+      <ModifyPomodoro
+        visible={modifyPomodoro.visible}
+        data={modifyPomodoro.data!}
+        onCancel={() => setModifyPomodoro({ visible: false })}
+        onOk={(data) => {
+          if (modifyPomodoro?.data?.start) {
+            setPomodoroData(pompdoroData.map((item) => {
+              if (item.start === modifyPomodoro.data?.start) {
+                return { ...item, ...data }
+              }
+              return item
+            }))
+            setModifyPomodoro({ visible: false })
+          }
         }}
       />
     </Modal>

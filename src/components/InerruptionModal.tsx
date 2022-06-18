@@ -28,8 +28,8 @@ const InerruptionModal: React.FC<{
         onCancel()
       }}
     >
-      <Form form={form}>
-        <Form.Item name="type" label="Type" initialValue={1}>
+      <Form form={form} labelCol={{ span: 4 }}>
+        <Form.Item name="type" label="Type" initialValue={1} rules={[{ required: true }]}>
           <Radio.Group
             optionType="button"
             buttonStyle="solid"

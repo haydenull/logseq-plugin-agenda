@@ -162,10 +162,10 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
           }
         </div>
 
-        <div className="absolute right-2 top-2">
-          <FaHeartBroken onClick={() => setShowInterruptionModal(true)} />
+        <div className="absolute right-5 top-1 opacity-60">
+          <FaHeartBroken className="cursor-pointer" onClick={() => setShowInterruptionModal(true)} />
           <FaPowerOff
-            className="ml-2"
+            className="ml-2 cursor-pointer"
             onClick={() => {
               logseq.hideMainUI()
               window?.unmountPomodoroApp()
