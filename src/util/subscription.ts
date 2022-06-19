@@ -13,7 +13,7 @@ import { ISettingsForm } from './type'
   const enabledCalendarList = subscriptionCalendarList?.filter(calendar => calendar?.enabled)
   if (!enabledCalendarList?.length) return []
 
-  const resList = await Promise.allSettled(enabledCalendarList.map(calendar => axios(calendar.url)))
+  const resList = await Promise.allSettled(enabledCalendarList.map(calendar => axios.get(calendar.url, { headers: { accept: 'text/calendar' } })))
 
   const subPromiseList = resList.map(async (res, index) => {
     if (res.status === 'rejected') {

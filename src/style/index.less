@@ -69,6 +69,7 @@ html, body {
   color: var(--ls-tint-text-color);
 }
 
+// ============= calendar start =============
 .tui-full-calendar-popup-container {
   background-color: var(--ls-quaternary-background-color);
   border-color: var(--ls-description-text-color);
@@ -82,11 +83,25 @@ html, body {
 .tui-full-calendar-popup-vertical-line {
   background-color: var(--ls-description-text-color);
 }
+.dark .tui-full-calendar-weekday-schedule-title {
+  color: var(--ls-title-text-color) !important;
+}
+.dark .tui-full-calendar-month-more {
+  background-color: var(--ls-quaternary-background-color) !important;
+  border-color: #58595c !important;
+  .tui-full-calendar-month-more-title-day {
+    color: var(--ls-title-text-color);
+  }
+  .tui-full-calendar-month-more-title-day-label {
+    color: var(--ls-title-text-color);
+  }
+}
 
 .calendar-popup-detail-content {
   max-height: 200px;
   overflow-y: auto;
 }
+// ============= calendar end =============
 
 .check-box {
   position: relative;
