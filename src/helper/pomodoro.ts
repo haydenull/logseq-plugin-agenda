@@ -101,14 +101,15 @@ export const updatePomodoroInfo = async (
   const newInfo = block?.format === 'org' ? `>[[#${url.toString()}][${showText}]]` : `>[${showText}](#${url.toString()})`
 
   // replace
-  let newContent = block.content
+  const [firstLine, ...otherLines] = block.content?.split('\n') || []
+  let newFirstLine = firstLine
   const reg = block.format === 'markdown' ? MARKDOWN_POMODORO_REG : ORG_POMODORO_REG
   if (reg.test(block.content)) {
-    newContent = block.content.replace(reg, newInfo)
+    newFirstLine = firstLine.replace(reg, newInfo)
   } else {
-    newContent = `${block.content} ${newInfo}`
+    newFirstLine = `${firstLine} ${newInfo}`
   }
-  return newContent
+  return `${newFirstLine}\n${otherLines.join('\n')}`
 }
 
 export const removePomodoroInfo = (blockContent: string, format: BlockEntity['format']) => {

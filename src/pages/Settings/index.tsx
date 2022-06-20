@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Modal, Form, Select, Input, Button, Switch, Popconfirm, InputNumber, Alert } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { useForm } from 'antd/lib/form/Form'
@@ -39,6 +39,7 @@ const Settings: React.FC<{
 }> = ({ ...props }) => {
   const [settingForm] = useForm<ISettingsForm>()
   const [tab, setTab] = useState(TABS[0].value)
+  const [pageOptions, setPageOptions] = useState<any>([])
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
   const initialValues = getInitalSettings()
@@ -82,6 +83,18 @@ const Settings: React.FC<{
       }
     }, 500)
   }
+
+  useEffect(() => {
+    logseq.Editor.getAllPages().then(res => {
+      setPageOptions(
+        res?.filter(item => !item?.['journal?'])
+          .map(item => ({
+            value: item.originalName,
+            label: item.originalName,
+          }))
+      )
+    })
+  }, [])
 
   return (
     <div className="page-container p-8 flex flex-col items-center">
@@ -190,7 +203,15 @@ const Settings: React.FC<{
                                 <Form.Item>
                                   <div className="flex items-center justify-between">
                                     <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
-                                      <Input placeholder="Project ID (Page Name)" style={{ width: '300px' }} />
+                                      {/* <Input placeholder="Project ID (Page Name)" style={{ width: '300px' }} /> */}
+                                      <Select
+                                        showSearch
+                                        placeholder="Project ID (Page Name)"
+                                        optionFilterProp="label"
+                                        style={{ width: '300px' }}
+                                        options={pageOptions}
+                                        filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+                                      />
                                     </Form.Item>
                                     <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
                                       <ColorPicker text="background" />

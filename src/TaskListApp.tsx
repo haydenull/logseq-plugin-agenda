@@ -23,8 +23,6 @@ const App: React.FC<{
   const [, setJournalEvents] = useAtom(journalEventsAtom)
   const [, setProjectEvents] = useAtom(projectEventsAtom)
 
-  console.log('[faiz:] === subscriptions tasklist', todaySubscriptions)
-
   useEffect(() => {
     async function fetchSchedules() {
       const res = await getInternalEvents()

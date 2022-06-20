@@ -89,6 +89,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
       length: pomodoroLength - timer,
       interruptions: window.interruptionMap.get(startTimeRef.current!) || [],
     })
+    console.log('[faiz:] === newContent', newContent, uuid)
     if (newContent) logseq.Editor.updateBlock(uuid, newContent)
   }
 

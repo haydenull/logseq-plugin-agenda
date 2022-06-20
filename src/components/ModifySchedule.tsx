@@ -67,8 +67,6 @@ const ModifySchedule: React.FC<{
   const onClickSave = () => {
     form.validateFields().then(async values => {
       const { title, start, end, isAllDay, calendarId } = values
-      const startDate = dayjs(start).format('YYYY-MM-DD')
-      const endDate = dayjs(end).format('YYYY-MM-DD')
       const startTime = dayjs(start).format('HH:mm')
       const endTime = dayjs(end).format('HH:mm')
       const settings = getInitalSettings()
@@ -86,7 +84,6 @@ const ModifySchedule: React.FC<{
       const pomoReg = initialValues?.raw?.format === 'markdown' ? MARKDOWN_POMODORO_REG : ORG_POMODORO_REG
       console.log('[faiz:] === pomoReg', pomoReg, initialValues?.raw?.content, initialValues?.raw?.content.match(pomoReg))
       let newTitle = (type === 'update' && initialValues?.raw?.addOns.pomodoros?.length) ? `${title} ${initialValues?.raw?.content.match(pomoReg)?.[0]}` : title
-      console.log('[faiz:] === newTitle 1', newTitle)
       if (newScheduleType === 'journal') {
         if (type === 'create') newTitle = isAllDay ? `TODO ${newTitle}` : `TODO ${startTime}-${endTime} ${newTitle}`
         if (type === 'update') {
@@ -100,7 +97,6 @@ const ModifySchedule: React.FC<{
           newTitle = joinPrefixTaskBlockContent(initialValues?.raw!, updateProjectTaskTime(newTitle, { start, end, allDay: isAllDay }))
         }
       }
-      console.log('[faiz:] === newTitle 2', newTitle)
       // else {
       //   if (type === 'update') {
       //     newTitle = joinPrefixTaskBlockContent(initialValues?.raw, deleteProjectTaskTime(removeTimeInfo(pureTaskBlockContent(initialValues?.raw, title))))
