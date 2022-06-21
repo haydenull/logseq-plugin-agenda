@@ -1,3 +1,17 @@
+# [2.4.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.3.2...v2.4.0) (2022-06-21)
+
+
+### Bug Fixes
+
+* calendar time schedule text error in dark mode ([36886ed](https://github.com/haydenull/logseq-plugin-agenda/commit/36886ed79a97411946198e8ce225bcd5e41ef399))
+
+
+### Features
+
+* ✨ add project id supports search ([7b3d6d3](https://github.com/haydenull/logseq-plugin-agenda/commit/7b3d6d3fe5a65e4c61b870ac78faeea7259d9364))
+* show subscriptions in sidebar ([d786bc7](https://github.com/haydenull/logseq-plugin-agenda/commit/d786bc78b7c1b28013270bc7af4a628aed57a886))
+* supports pomodoro timer ([4b9e280](https://github.com/haydenull/logseq-plugin-agenda/commit/4b9e280c771c19986bf88bae3aa74e0133ffe349))
+
 ## [2.3.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.3.1...v2.3.2) (2022-06-12)
 
 
