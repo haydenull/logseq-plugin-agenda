@@ -18,6 +18,7 @@ The original journalDateFormatter configuration required the user to read the da
 - Supports gantt view
 - Supports timeline view
 - Supports subscription calendar(basic event)
+- Supports pomodoro timer
 
 ![dashboard-light](../screenshots/dashboard-light.png)
 ![dashboard-purple](../screenshots/dashboard-purple.png)
@@ -27,6 +28,7 @@ The original journalDateFormatter configuration required the user to read the da
 ![WeeklyView](../screenshots/weeklyView.png)
 ![GanttView](../screenshots/gantt-advanced.png)
 ![Timeline](../screenshots/timeline.png)
+![Pomodoro](../screenshots/pomodoro.png)
 <!-- ![settings](../screenshots/settings.png)
 ![query](../screenshots/query.png)
 ![agenda](../screenshots/modifyAgenda.png) -->

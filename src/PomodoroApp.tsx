@@ -147,7 +147,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
       <div className="fixed top-0 left-0 w-screen h-screen" onClick={() => logseq.hideMainUI()}></div>
       <div className="fixed right-10 shadow-md px-4 py-6 rounded-md bg-quaternary flex" style={{ top: '48px', minWidth: '300px' }}>
         <div className="flex-1">
-          <div className="singlge-line-ellipsis cursor-pointer description-text flex justify-center" style={{ maxWidth: '220px' }} onClick={navToBlock} title={event?.addOns.showTitle}>{event?.addOns.showTitle}<RiExternalLinkLine /></div>
+          <div className="singlge-line-ellipsis cursor-pointer description-text flex items-center" style={{ maxWidth: '220px' }} onClick={navToBlock} title={event?.addOns.showTitle}>{event?.addOns.showTitle}<RiExternalLinkLine /></div>
           <div>
             <p className="text-center text-4xl mt-6 mb-6">{ state.formattedTimer }</p>
             <div className="flex flex-row justify-center">

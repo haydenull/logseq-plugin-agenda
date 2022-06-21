@@ -9,6 +9,7 @@ export const zh: SidebarConfig = {
         // '/zh/introduction/demo.md',
         '/zh/introduction/events.md',
         '/zh/introduction/sidebar.md',
+        '/zh/introduction/pomodoro.md',
       ],
     },
     // {
@@ -27,6 +28,7 @@ export const zh: SidebarConfig = {
         '/zh/settings/customCalendar.md',
         '/zh/settings/subscription.md',
         '/zh/settings/calendarView.md',
+        '/zh/settings/pomodoro.md',
       ],
     },
     // {

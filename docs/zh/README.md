@@ -16,6 +16,7 @@
 - 支持甘特图视图
 - 支持时间线视图
 - 支持订阅日历
+- 支持番茄钟
 
 ![dashboard-light](../../screenshots/dashboard-light.png)
 ![dashboard-purple](../../screenshots/dashboard-purple.png)
@@ -25,6 +26,7 @@
 ![WeeklyView](../../screenshots/weeklyView.png)
 ![GanttView](../../screenshots/gantt-advanced.png)
 ![Timeline](../../screenshots/timeline.png)
+![Pomodoro](../../screenshots/pomodoro.png)
 <!-- ![settings](../../screenshots/settings.png)
 ![query](../../screenshots/query.png)
 ![agenda](../../screenshots/modifyAgenda.png) -->
