@@ -1,3 +1,10 @@
+## [2.4.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.4.1...v2.4.2) (2022-06-21)
+
+
+### Bug Fixes
+
+* 🐛 subscription  end day error ([d2e03d2](https://github.com/haydenull/logseq-plugin-agenda/commit/d2e03d2bbd941854e8975b2c12a047328165c32f))
+
 ## [2.4.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.4.0...v2.4.1) (2022-06-21)
 
 
