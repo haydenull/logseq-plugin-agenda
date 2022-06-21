@@ -39,8 +39,8 @@ echarts.use([GridComponent, LineChart, GaugeChart, CanvasRenderer, UniversalTran
 const isDevelopment = import.meta.env.DEV
 
 if (isDevelopment) {
-  // renderApp('browser')
-  renderPomodoroApp('sdfasfasfsa')
+  renderApp('browser')
+  // renderPomodoroApp('sdfasfasfsa')
 } else {
   console.log('=== logseq-plugin-agenda loaded ===')
   logseq.ready(() => {

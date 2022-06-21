@@ -195,6 +195,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
     autoStartBreaks: false,
     autoStartPomodoros: false,
     longBreakInterval: 4,
+    commonPomodoros: [10, 15, 20, 25, 40]
   }
 }
 

@@ -38,6 +38,7 @@ export type ISettingsForm = {
     autoStartBreaks: boolean,
     autoStartPomodoros: boolean,
     longBreakInterval: number,
+    commonPomodoros: number[],
   },
 }
 export type IQueryWithCalendar = {

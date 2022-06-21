@@ -371,15 +371,27 @@ const Settings: React.FC<{
             <Form.Item label="Long Break Length" name={['pomodoro', 'longBreak']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
               <InputNumber min={1} precision={0} addonAfter="min" />
             </Form.Item>
-            <Form.Item label="Auto Start Breaks" name={['pomodoro', 'autoStartBreaks']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+            {/* <Form.Item label="Auto Start Breaks" name={['pomodoro', 'autoStartBreaks']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
               <Select options={YES_NO_SELECTION} />
             </Form.Item>
             <Form.Item label="Auto Start Pomodoros" name={['pomodoro', 'autoStartPomodoros']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
               <Select options={YES_NO_SELECTION} />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item label="Long Break Interval" name={['pomodoro', 'longBreakInterval']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
               <InputNumber min={1} precision={0} />
             </Form.Item>
+            {
+              [...new Array(5).keys()].map((i) => (
+                <Form.Item
+                  name={['pomodoro', 'commonPomodoros', i]}
+                  label={i === 0 ? 'Common Pomodoro' : ''}
+                  labelCol={{ span: 5 }}
+                  {...(i === 0 ? {} : { wrapperCol: {offset: 5} })}
+                >
+                  <InputNumber min={1} addonAfter="min" />
+                </Form.Item>
+              ))
+            }
           </div>
         </Form>
       </div>
