@@ -1,3 +1,10 @@
+## [2.4.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.4.0...v2.4.1) (2022-06-21)
+
+
+### Bug Fixes
+
+* 🐛 nav error when project name include slash ([4262941](https://github.com/haydenull/logseq-plugin-agenda/commit/4262941867102d27fc03bc1cb8d5254b35faa9f3))
+
 # [2.4.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.3.2...v2.4.0) (2022-06-21)
 
 
