@@ -8,8 +8,11 @@ export const DEFAULT_LOG_KEY = 'Daily Log'
 
 // export const TIME_REG = /(?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]/
 export const TIME_REG = /^((?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])(-(?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])*/
-export const MARKDOWN_PROJECT_TIME_REG = />\[.+\]\(#(agenda:\/\/.+)\)/
-export const ORG_PROJECT_TIME_REG = />\[\[#(agenda:\/\/.+)\]\[.+\]\]/
+export const MARKDOWN_PROJECT_TIME_REG = />\[.+\]\(#(agenda:\/\/[^\n\r ]+)\)/
+export const ORG_PROJECT_TIME_REG = />\[\[#(agenda:\/\/[^\n\r ]+)\]\[.+\]\]/
+export const MARKDOWN_POMODORO_REG = />\[.+\]\(#(agenda-pomo:\/\/[^\n\r ]+)\)/
+export const ORG_POMODORO_REG = />\[\[#(agenda-pomo:\/\/[^\n\r ]+)\]\[.+\]\]/
+// >[🍅](#agenda-pomo://?t=p-20220614123213-10,h-2023829809-4)
 
 export const CALENDAR_VIEWS = [
   { value: 'day', label: 'Daily' },
@@ -185,6 +188,15 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   projectList: [],
   calendarList: [],
   subscriptionList: [],
+  pomodoro: {
+    pomodoro: 25,
+    shortBreak: 5,
+    longBreak: 15,
+    autoStartBreaks: false,
+    autoStartPomodoros: false,
+    longBreakInterval: 4,
+    commonPomodoros: [10, 15, 20, 25, 40]
+  }
 }
 
 export const DAILY_LOG_CONFIG = {
@@ -331,3 +343,10 @@ export const DURATION_UNITS = [
 ]
 
 export const SCHEDULE_PARENT_BLOCK = 'Agenda'
+
+export const YES_NO_SELECTION = [
+  { label: 'Yes', value: true },
+  { label: 'No', value: false },
+]
+
+export const POMODORO_INTERRUPTION_SEPARATOR = '|`~|'

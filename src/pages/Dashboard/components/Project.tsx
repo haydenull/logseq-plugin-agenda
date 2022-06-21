@@ -74,7 +74,7 @@ const Project: React.FC<{
             <div
               className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-lg font-medium"
               style={{backgroundColor: data?.style?.bgColor, color: data?.style?.color}}
-            >{data.title?.[0]?.toUpperCase()}</div>
+            >{Array.from(data.title)?.[0]?.toUpperCase()}</div>
             <div className="ml-3">
               <div className="text-lg title-text">{data.title}</div>
               <div className="mt-1 description-text">

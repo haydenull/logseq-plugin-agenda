@@ -1,7 +1,7 @@
 import { todayTasksAtom } from '@/model/events'
 import { getBlockData } from '@/util/logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
-import { Modal, Checkbox, Divider, Row, Col } from 'antd'
+import { Modal, Checkbox, Divider, Row, Col, Alert } from 'antd'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
 
@@ -64,6 +64,8 @@ const TodayTaskModal: React.FC<{
       onCancel={onCancel}
       onOk={onClickOk}
     >
+      <Alert className="mb-2" message="It is not recommended to use this feature for the time being, as it may cause some block refs to be lost after reindex, unless you ensure that all embed blocks generate id." type="warning" />
+      <Alert className="mb-2" message="You can jump to the corresponding block by clicking the task from the sidebar and then copy the block ref." type="warning" />
       <Checkbox.Group value={value} onChange={list => setValue(list as string[])}>
         {options.map((option, index) => (
           <Row>

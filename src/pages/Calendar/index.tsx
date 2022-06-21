@@ -20,12 +20,9 @@ const index = () => {
       })
   }, [])
 
-  console.log('[faiz:] === page calendar: internalSchedules', internalSchedules)
-  console.log('[faiz:] === page calendar: subscriptionSchedules', subscriptionSchedules)
-
   return (
     <div className="page-container flex">
-      <div className={classNames(s.content, 'flex flex-1 flex-col overflow-hidden p-8')} style={{ maxWidth: '1400px' }}>
+      <div className={classNames(s.content, 'flex flex-1 flex-col overflow-hidden p-8')} style={{ maxWidth: '1800px' }}>
 
         <h1 className="title-text">Calendar</h1>
         <div className="bg-quaternary flex flex-col flex-1 rounded-2xl box-border p-6">

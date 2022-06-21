@@ -6,6 +6,7 @@ import { getInitalSettings } from './baseInfo'
 import { pureTaskBlockContent } from './logseq'
 import { deleteProjectTaskTime, fillBlockReference, getAgendaCalendars, getProjectTaskTime, getTimeInfo, isOverdue, removeTimeInfo } from './schedule'
 import { ICustomCalendar } from './type'
+import { IPomodoroInfo } from '@/helper/pomodoro';
 
 
 export const getEventTimeInfo = (block: BlockEntity): {
@@ -77,6 +78,7 @@ export type IEvent = BlockEntity & {
     isJournal: boolean
     calendarConfig?: ICustomCalendar
     type: 'task' | 'milestone'
+    pomodoros?: IPomodoroInfo[]
   }
 }
 export type IPageEvent = {

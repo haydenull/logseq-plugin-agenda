@@ -31,6 +31,15 @@ export type ISettingsForm = {
   projectList?: ICustomCalendar[]
   calendarList: Array<ICustomCalendar & { query: ISettingsFormQuery[] }>
   subscriptionList?: Array<ICustomCalendar & { url: string }>
+  pomodoro: {
+    pomodoro: number,
+    shortBreak: number,
+    longBreak: number,
+    autoStartBreaks: boolean,
+    autoStartPomodoros: boolean,
+    longBreakInterval: number,
+    commonPomodoros: number[],
+  },
 }
 export type IQueryWithCalendar = {
   calendarConfig: ISettingsForm['calendarList'][number]

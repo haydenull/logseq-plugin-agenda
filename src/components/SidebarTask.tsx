@@ -92,30 +92,10 @@ const Task: React.FC<{
           >NOW</span> }
       </div>
 
-      <div onClick={embedToToday} className="agenda-sidebar-task__add flex" style={{ alignItems: 'center', paddingLeft: '8px' }}>
+      {/* need set block id api to fixed uuid */}
+      {/* <div onClick={embedToToday} className="agenda-sidebar-task__add flex" style={{ alignItems: 'center', paddingLeft: '8px' }}>
         <RiAddCircleLine style={{ color: 'var(--ls-icon-color)', fontSize: '0.9em', opacity: '0.7', marginTop: '0.2em' }} />
-      </div>
-
-      {/* <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: task.bgColor, color: task.color }} title={task.calendarId}>{task?.calendarId?.[0]?.toUpperCase()}</div>
-      <div className="flex flex-col flex-1 ellipsis mx-4">
-        <span className="ellipsis text">{task.title}</span>
-        <div className={classNames(s.subscription, 'text-xs flex justify-between')}>
-          <span className="description-text">{getTime(task)}</span>
-          <span className="ml-2 ellipsis #6b531a" title={task.calendarId}>{task.calendarId}</span>
-        </div>
-      </div>
-      <div className="w-5 h-5 cursor-pointer text" onClick={async () => {
-        const rawData: any = task.raw
-        const { id: pageId, originalName } = rawData?.page || {}
-        let pageName = originalName
-        if (!pageName) {
-          const page = await getPageData({ id: pageId })
-          pageName = page?.originalName
-        }
-        const { uuid: blockUuid } = await logseq.Editor.getBlock(rawData.id) || { uuid: '' }
-        logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
-        logseq.hideMainUI()
-      }}><RiExternalLinkLine /></div> */}
+      </div> */}
     </div>
   )
 }

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useAtom } from 'jotai'
-import { projectSchedulesAtom } from '@/model/schedule'
-import { categorizeTasks } from '@/util/schedule'
+import { projectSchedulesAtom, subscriptionSchedulesAtom, todaySubscriptionSchedulesAtom } from '@/model/schedule'
+import { categorizeSubscriptions, categorizeTasks } from '@/util/schedule'
 import SidebarTask from './components/SidebarTask'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'
 import { getInternalEvents } from './util/events'
+import SidebarSubscription from './components/SidebarSubscription'
 
 const App: React.FC<{
   containerId: string
@@ -12,8 +13,9 @@ const App: React.FC<{
 
   // TODO: 使用 only-write 减少重新渲染
   const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
-  // const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
 
+  const [todaySubscriptions] = useAtom(todaySubscriptionSchedulesAtom)
+  const { allDaySubscriptions, timeSubscriptions } = categorizeSubscriptions(todaySubscriptions)
   const [todayTasks] = useAtom(todayTasksAtom)
   const { overdueTasks, allDayTasks, timeTasks } = categorizeTasks(todayTasks)
 
@@ -59,9 +61,14 @@ const App: React.FC<{
         )
       }
       {
-        allDayTasks.length > 0 && (
+        (allDayTasks.length > 0 || allDaySubscriptions.length > 0) && (
           <div>
             {/* <span>All Day</span> */}
+            {
+              allDaySubscriptions.map(subscription => (
+                <SidebarSubscription key={subscription.id} subscription={subscription} type="allDay" />
+              ))
+            }
             {
               allDayTasks.map(task => (
                 <SidebarTask key={task.id} task={task} type="allDay" />
@@ -71,9 +78,14 @@ const App: React.FC<{
         )
       }
       {
-        timeTasks.length > 0 && (
+        (timeTasks.length > 0 || timeSubscriptions.length > 0) && (
           <div>
             {/* <span>Time</span> */}
+            {
+              timeSubscriptions.map(subscription => (
+                <SidebarSubscription key={subscription.id} subscription={subscription} type="time" />
+              ))
+            }
             {
               timeTasks.map(task => (
                 <SidebarTask key={task.id} task={task} type="time" />

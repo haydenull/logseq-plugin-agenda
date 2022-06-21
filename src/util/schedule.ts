@@ -440,6 +440,20 @@ export function categorizeTasks (tasks: IEvent[]) {
   return { overdueTasks, allDayTasks, timeTasks }
 }
 
+export function categorizeSubscriptions (subscriptions: ISchedule[]) {
+  let allDaySubscriptions: ISchedule[] = []
+  let timeSubscriptions: ISchedule[] = []
+  subscriptions.forEach(subscription => {
+    if (subscription.isAllDay) {
+      allDaySubscriptions.push(subscription)
+    } else {
+      timeSubscriptions.push(subscription)
+    }
+  })
+
+  return { allDaySubscriptions, timeSubscriptions }
+}
+
 export const judgeIsMilestone = (block: BlockEntity) => {
   return / #milestone/.test(block.content) || / #\[\[milestone\]\]/.test(block.content)
 }

@@ -9,6 +9,7 @@ export const en: SidebarConfig = {
         // '/introduction/demo.md',
         '/introduction/events.md',
         '/introduction/sidebar.md',
+        '/introduction/pomodoro.md',
       ],
     },
     // {
@@ -27,6 +28,7 @@ export const en: SidebarConfig = {
         '/settings/customCalendar.md',
         '/settings/subscription.md',
         '/settings/calendarView.md',
+        '/settings/pomodoro.md',
       ],
     },
     // {

@@ -7,11 +7,12 @@ import type { ICustomCalendar, ISettingsForm } from '../util/type'
 import { deleteProjectTaskTime, genProjectTaskTime, genSchedule, getAgendaCalendars, modifyTimeInfo, removeTimeInfo, updateProjectTaskTime } from '@/util/schedule'
 import { createBlockToSpecificBlock, getPageData, joinPrefixTaskBlockContent, moveBlockToNewPage, moveBlockToSpecificBlock, pureTaskBlockContent, updateBlock } from '@/util/logseq'
 import { format } from 'date-fns'
-import { SCHEDULE_PARENT_BLOCK } from '@/util/constants'
+import { MARKDOWN_POMODORO_REG, ORG_POMODORO_REG, SCHEDULE_PARENT_BLOCK } from '@/util/constants'
 import { getInitalSettings, initializeSettings } from '@/util/baseInfo'
 import { IEvent } from '@/util/events'
 import { transformBlockToEvent, transformMilestoneEventToSchedule, transformTaskEventToSchedule } from '@/helper/transform'
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
+import { updatePomodoroInfo } from '@/helper/pomodoro'
 
 export type IScheduleForm = {
   calendarId: string
@@ -66,8 +67,6 @@ const ModifySchedule: React.FC<{
   const onClickSave = () => {
     form.validateFields().then(async values => {
       const { title, start, end, isAllDay, calendarId } = values
-      const startDate = dayjs(start).format('YYYY-MM-DD')
-      const endDate = dayjs(end).format('YYYY-MM-DD')
       const startTime = dayjs(start).format('HH:mm')
       const endTime = dayjs(end).format('HH:mm')
       const settings = getInitalSettings()
@@ -81,18 +80,21 @@ const ModifySchedule: React.FC<{
       if (isJournalSchedule && !dayjs(start).isSame(dayjs(end), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
 
       // new block content
-      let newTitle = title
+      // let newTitle = title
+      const pomoReg = initialValues?.raw?.format === 'markdown' ? MARKDOWN_POMODORO_REG : ORG_POMODORO_REG
+      console.log('[faiz:] === pomoReg', pomoReg, initialValues?.raw?.content, initialValues?.raw?.content.match(pomoReg))
+      let newTitle = (type === 'update' && initialValues?.raw?.addOns.pomodoros?.length) ? `${title} ${initialValues?.raw?.content.match(pomoReg)?.[0]}` : title
       if (newScheduleType === 'journal') {
-        if (type === 'create') newTitle = isAllDay ? `TODO ${title}` : `TODO ${startTime}-${endTime} ${title}`
+        if (type === 'create') newTitle = isAllDay ? `TODO ${newTitle}` : `TODO ${startTime}-${endTime} ${newTitle}`
         if (type === 'update') {
           // const pureTitle = deleteProjectTaskTime(pureTaskBlockContent(initialValues?.raw, title))
-          newTitle = isAllDay ? joinPrefixTaskBlockContent(initialValues?.raw!, title) : joinPrefixTaskBlockContent(initialValues?.raw!, modifyTimeInfo(title, startTime, endTime))
+          newTitle = isAllDay ? joinPrefixTaskBlockContent(initialValues?.raw!, newTitle) : joinPrefixTaskBlockContent(initialValues?.raw!, modifyTimeInfo(newTitle, startTime, endTime))
         }
       } else if (newScheduleType === 'project') {
         if (type === 'create') {
-          newTitle = 'TODO ' + updateProjectTaskTime(title, { start, end, allDay: isAllDay })
+          newTitle = 'TODO ' + updateProjectTaskTime(newTitle, { start, end, allDay: isAllDay })
         } else if (type === 'update') {
-          newTitle = joinPrefixTaskBlockContent(initialValues?.raw!, updateProjectTaskTime(title, { start, end, allDay: isAllDay }))
+          newTitle = joinPrefixTaskBlockContent(initialValues?.raw!, updateProjectTaskTime(newTitle, { start, end, allDay: isAllDay }))
         }
       }
       // else {

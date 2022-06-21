@@ -61,7 +61,7 @@ export const getXCoordinate = (start: Dayjs, day: Dayjs, itemWidth: number): num
 }
 
 export const scrollToDate = (date: Dayjs, uniqueId = '') => {
-  document.querySelector(`#date${uniqueId}${date.format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
+  document.getElementById(`date${uniqueId}${date.format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
 }
 
 export const transformDataToAdvancedMode = (data: IGroup[]) => {

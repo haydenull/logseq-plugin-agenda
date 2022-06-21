@@ -16,6 +16,7 @@ Click [here](https://haydenull.github.io/logseq-plugin-agenda/) for the full doc
 - Supports gantt view
 - Supports timeline view
 - Supports subscription calendar(basic event)
+- Supports pomodoro timer
 
 ![dashboard-light](./screenshots/dashboard-light.png)
 ![dashboard-purple](./screenshots/dashboard-purple.png)
@@ -25,6 +26,7 @@ Click [here](https://haydenull.github.io/logseq-plugin-agenda/) for the full doc
 ![WeeklyView](./screenshots/weeklyView.png)
 ![GanttView](./screenshots/gantt-advanced.png)
 ![Timeline](./screenshots/timeline.png)
+![Pomodoro](./screenshots/pomodoro.png)
 <!-- ![settings](./screenshots/settings.png)
 ![query](./screenshots/query.png)
 ![agenda](./screenshots/modifyAgenda.png) -->

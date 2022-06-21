@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Modal, Form, Select, Input, Button, Switch, Popconfirm, InputNumber, Alert } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { useForm } from 'antd/lib/form/Form'
 import classNames from 'classnames'
 import ColorPicker from '@/components/ColorPicker'
-import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME } from '@/util/constants'
+import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME, YES_NO_SELECTION } from '@/util/constants'
 import Query from '@/components/Query'
 import CreateCalendarModal from '@/components/CreateCalendarModal'
 import type { ISettingsForm } from '@/util/type'
@@ -27,6 +27,7 @@ const TABS = [
   { value: 'customCalendar', label: 'Custom Calendar' },
   { value: 'subscription', label: 'Subscription' },
   { value: 'calendarView', label: 'Calendar View' },
+  { value: 'pomodoro', label: 'Pomodoro' },
 ]
 
 
@@ -38,6 +39,7 @@ const Settings: React.FC<{
 }> = ({ ...props }) => {
   const [settingForm] = useForm<ISettingsForm>()
   const [tab, setTab] = useState(TABS[0].value)
+  const [pageOptions, setPageOptions] = useState<any>([])
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
   const initialValues = getInitalSettings()
@@ -81,6 +83,18 @@ const Settings: React.FC<{
       }
     }, 500)
   }
+
+  useEffect(() => {
+    logseq.Editor.getAllPages().then(res => {
+      setPageOptions(
+        res?.filter(item => !item?.['journal?'])
+          .map(item => ({
+            value: item.originalName,
+            label: item.originalName,
+          }))
+      )
+    })
+  }, [])
 
   return (
     <div className="page-container p-8 flex flex-col items-center">
@@ -189,7 +203,15 @@ const Settings: React.FC<{
                                 <Form.Item>
                                   <div className="flex items-center justify-between">
                                     <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
-                                      <Input placeholder="Project ID (Page Name)" style={{ width: '300px' }} />
+                                      {/* <Input placeholder="Project ID (Page Name)" style={{ width: '300px' }} /> */}
+                                      <Select
+                                        showSearch
+                                        placeholder="Project ID (Page Name)"
+                                        optionFilterProp="label"
+                                        style={{ width: '300px' }}
+                                        options={pageOptions}
+                                        filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+                                      />
                                     </Form.Item>
                                     <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
                                       <ColorPicker text="background" />
@@ -338,6 +360,38 @@ const Settings: React.FC<{
                 </Form.Item>
               </div>
             </Form.Item>
+          </div>
+          <div id="pomodoro" className={classNames(s.formBlock, { [s.show]: tab === 'pomodoro' })}>
+            <Form.Item label="Pomodoro Length" name={['pomodoro', 'pomodoro']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <InputNumber min={3} precision={0} addonAfter="min" />
+            </Form.Item>
+            <Form.Item label="Short Break Length" name={['pomodoro', 'shortBreak']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <InputNumber min={1} precision={0} addonAfter="min" />
+            </Form.Item>
+            <Form.Item label="Long Break Length" name={['pomodoro', 'longBreak']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <InputNumber min={1} precision={0} addonAfter="min" />
+            </Form.Item>
+            {/* <Form.Item label="Auto Start Breaks" name={['pomodoro', 'autoStartBreaks']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <Select options={YES_NO_SELECTION} />
+            </Form.Item>
+            <Form.Item label="Auto Start Pomodoros" name={['pomodoro', 'autoStartPomodoros']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <Select options={YES_NO_SELECTION} />
+            </Form.Item> */}
+            <Form.Item label="Long Break Interval" name={['pomodoro', 'longBreakInterval']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
+              <InputNumber min={1} precision={0} />
+            </Form.Item>
+            {
+              [...new Array(5).keys()].map((i) => (
+                <Form.Item
+                  name={['pomodoro', 'commonPomodoros', i]}
+                  label={i === 0 ? 'Common Pomodoro' : ''}
+                  labelCol={{ span: 5 }}
+                  {...(i === 0 ? {} : { wrapperCol: {offset: 5} })}
+                >
+                  <InputNumber min={1} addonAfter="min" />
+                </Form.Item>
+              ))
+            }
           </div>
         </Form>
       </div>

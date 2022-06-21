@@ -61,7 +61,7 @@ const Calendar: React.FC<{
   console.log('[faiz:] === dataWithCoordinates', dataWithCoordinates)
 
   useEffect(() => {
-    document.querySelector(`#date${uniqueId}${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center' })
+    document.getElementById(`date${uniqueId}${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center' })
   }, [])
 
   useImperativeHandle(ref, () => ({
