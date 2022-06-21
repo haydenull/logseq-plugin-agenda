@@ -55,7 +55,7 @@ const Project: React.FC<{
   }
   const onClickProjectTitle = async () => {
     const pageName = data.id
-    const pageData = await getPageData({ originalName: pageName })
+    // const pageData = await getPageData({ originalName: pageName })
     // if (pageData?.properties?.agenda) {
     //   logseq.App.pushState('page', { name: pageData.originalName })
     //   logseq.hideMainUI()
@@ -63,7 +63,7 @@ const Project: React.FC<{
     // } else {
     //   logseq.App.showMsg('This is not an agenda project.', 'warning')
     // }
-    navigate(`/project/${pageName}`)
+    navigate(`/project/${encodeURIComponent(pageName)}`)
   }
 
   return (
