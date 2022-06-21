@@ -4,6 +4,7 @@ import { formatISO, parseISO } from 'date-fns'
 import ical from 'ical.js'
 import { genSchedule } from './schedule'
 import { ISettingsForm } from './type'
+import dayjs from 'dayjs'
 
 /**
  * get ical data
@@ -30,7 +31,7 @@ import { ISettingsForm } from './type'
           blockData: { id: new Date().valueOf(), content: `${summary?.value || 'no summary'}\n${description?.value || ''}`, subscription: true },
           category: hasTime ? 'time' : 'allday',
           start: dtstart.value,
-          end: dtend ? (hasTime ? dtend?.value : formatISO(parseISO(dtend?.value))) : undefined,
+          end: dtend ? (hasTime ? dtend?.value : dayjs(dtend.value).subtract(1, 'day').endOf('day').format()) : undefined,
           calendarConfig: enabledCalendarList[index],
           defaultDuration,
           isAllDay: !hasTime,
