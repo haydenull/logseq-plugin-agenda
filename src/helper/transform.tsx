@@ -108,10 +108,10 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   const isJournal = Boolean(page?.journalDay)
 
   let event: IEvent = time
-                        ? { ...block, rawTime: time, addOns: { showTitle: '', end: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task', ...time } }
-                        : { ...block, addOns: { showTitle: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task' } }
+                        ? { ...block, rawTime: time, addOns: { showTitle: '', contentWithoutTime: '', end: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task', ...time } }
+                        : { ...block, addOns: { showTitle: '', contentWithoutTime: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task' } }
 
-  // add show title
+  // add show title and contentWithoutTime
   let showTitle = pureTaskBlockContent(block)
   if (time?.timeFrom === 'customLink') showTitle = deleteProjectTaskTime(showTitle.trim())
   if (time?.timeFrom === 'journal' && !time?.allDay) showTitle = removeTimeInfo(showTitle.trim())
@@ -120,6 +120,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
     const journalName = format(dayjs(time.start).valueOf(), preferredDateFormat)
     showTitle = showTitle.replace(`[[${journalName}]]`, '')?.trim()
   }
+  event.addOns.contentWithoutTime = showTitle
   if (pomodoros) showTitle = removePomodoroInfo(showTitle, block.format)
   event.addOns.showTitle = await fillBlockReference(showTitle?.split('\n')?.[0]?.trim())
 

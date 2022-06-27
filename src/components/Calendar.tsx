@@ -1,19 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
-import { format, isSameDay, parse, parseISO } from 'date-fns'
+import { format, isSameDay, parse } from 'date-fns'
 import { getDefaultCalendarOptions, getInitalSettings } from '@/util/baseInfo'
 import { CALENDAR_VIEWS, SHOW_DATE_FORMAT } from '@/util/constants'
-import { deleteProjectTaskTime, genSchedule, modifyTimeInfo } from '@/util/schedule'
+import { deleteProjectTaskTime, updateProjectTaskTime } from '@/util/schedule'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import Sidebar from '@/components/Sidebar'
 import dayjs from 'dayjs'
-import { getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, pureTaskBlockContent, updateBlock } from '@/util/logseq'
-import { Button, Modal, Radio, Select, Tooltip } from 'antd'
+import { moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
+import { Button, Modal, Radio, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import Weekly from '@/components/Weekly'
-import classNames from 'classnames'
-import { ICustomCalendar, ISettingsForm } from '@/util/type'
-import { useAtom } from 'jotai'
+import { ICustomCalendar } from '@/util/type'
+import { IEvent } from '@/util/events'
 
 // import { schedulesAtom } from '@/model/schedule'
 
@@ -204,49 +203,38 @@ const CalendarCom: React.FC<{
         } else if (changes) {
           // drag on calendar view
           if (schedule.calendarId === 'journal' && !dayjs(finalStart).isSame(dayjs(finalEnd), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
-          let properties = {}
-          let scheduleChanges = {}
-          Object.keys(changes).forEach(key => {
-            if (schedule.isAllDay) {
-              properties[key] = dayjs(changes[key]).format('YYYY-MM-DD')
-            } else {
-              properties[key] = dayjs(changes[key]).format('YYYY-MM-DD HH:mm')
+          // let properties = {}
+          // let scheduleChanges = {}
+          const event: IEvent = schedule.raw
+          const scheduleType = (schedule as ISchedule).calendarId === 'Journal' ? 'journal' : 'project'
+
+          const start = changes?.start ? changes.start : event.rawTime?.start
+          const end = changes?.end ? changes.end : event.rawTime?.end
+
+          // drag journal schedule
+          if (scheduleType === 'journal' && changes.start) {
+            // Jourbal tasks are not allowed for multiple days
+            calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
+            const { preferredDateFormat } = await logseq.App.getUserConfigs()
+
+            let content = event.content
+            if (event.rawTime?.timeFrom === 'customLink') content = deleteProjectTaskTime(content.trim())
+            if (event.rawTime?.timeFrom === 'refs') {
+              const journalName = format(dayjs(event.rawTime.start).valueOf(), preferredDateFormat)
+              content = content.replace(`[[${journalName}]]`, '')?.trim()
             }
-            scheduleChanges[key] = dayjs(changes[key]).format()
-          })
-          calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
-          if (schedule.calendarId === 'journal') {
-            // update journal schedule
-            const marker = schedule?.raw?.marker
-            const _content = schedule?.isAllDay ? false : `${marker} ` + modifyTimeInfo(schedule?.raw?.content?.replace(new RegExp(`^${marker} `), ''), dayjs(schedule?.start).format('HH:mm'), dayjs(schedule?.end).format('HH:mm'))
-            let journalDay = schedule?.raw?.page?.journalDay
-            if (!journalDay) {
-              const page = await getPageData(schedule?.raw?.page?.id)
-              journalDay = page?.journalDay
-            }
-            if (changes.start && !dayjs(changes.start).isSame(dayjs(String(journalDay), 'YYYYMMDD'), 'day')) {
-              // if the start day is different from the original start day, then execute move operation
-              console.log('[faiz:] === move journal schedule')
-              const { preferredDateFormat } = await logseq.App.getUserConfigs()
-              const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
-              const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
-              const newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(schedule.raw?.id, journalName, `[[${logKey?.id}]]`) : await moveBlockToNewPage(schedule.raw?.id, journalName)
-              console.log('[faiz:] === newBlock', newBlock, schedule, schedule?.id)
-              if (newBlock) {
-                calendarRef.current?.deleteSchedule(schedule.id, schedule.calendarId)
-                calendarRef.current?.createSchedules([await genSchedule({
-                  ...schedule,
-                  blockData: newBlock,
-                  calendarConfig: calendarList?.find(calendar => calendar.id === 'journal'),
-                })])
-              }
-            } else {
-              await updateBlock(schedule.raw?.id, _content)
-            }
-          } else {
-            // update other schedule (agenda calendar)
-            await updateBlock(schedule.id, false, properties)
+
+            const journalName = format(start.valueOf(), preferredDateFormat)
+            const newPage = await logseq.Editor.createPage(journalName, {}, { journal: true })
+            const newCalendarId = newPage!.originalName
+            await logseq.Editor.updateBlock(schedule.id, content)
+            logKey?.enabled ? await moveBlockToSpecificBlock(schedule?.id!, newCalendarId!, `[[${logKey?.id}]]`) : await moveBlockToNewPage(schedule?.id!, newCalendarId!)
+          } else if (scheduleType === 'project') {
+            calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
+            const content = updateProjectTaskTime(event.addOns.contentWithoutTime, { start: dayjs(start), end: dayjs(end), allDay: event.addOns.allDay })
+            await logseq.Editor.updateBlock(schedule.id, content)
           }
+
         }
       })
       calendarRef.current.on('beforeDeleteSchedule', function(event) {

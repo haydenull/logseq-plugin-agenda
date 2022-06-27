@@ -70,6 +70,7 @@ export type IEvent = BlockEntity & {
   }
   addOns: {
     showTitle: string
+    contentWithoutTime: string
     start?: string
     end?: string
     allDay?: boolean
