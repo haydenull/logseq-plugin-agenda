@@ -172,19 +172,7 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, setting
     isAllDay: !isMilestone && !hasTime && !_isOverdue,
     isReadOnly: true,
   })
-  // show overdue tasks in today
-  return _isOverdue
-    ? [
-      schedule,
-      {
-        ...schedule,
-        id: `overdue-${schedule.id}`,
-        start: dayjs().startOf('day').toISOString(),
-        end: dayjs().endOf('day').toISOString(),
-        isAllDay: false,
-      },
-    ]
-    : schedule
+  return schedule
 }
 
 
