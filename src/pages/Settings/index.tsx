@@ -131,6 +131,16 @@ const Settings: React.FC<{
             <Form.Item label="Home Page" name="homePage">
               <Select options={MENUS} />
             </Form.Item>
+            <Form.Item label="Ignore Tag" name="ignoreTag">
+              <Select
+                showSearch
+                placeholder="Project ID (Page Name)"
+                optionFilterProp="label"
+                style={{ width: '300px' }}
+                options={pageOptions}
+                filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+              />
+            </Form.Item>
             <Form.Item label="Default Duration" name={["defaultDuration", 'value']}>
               <InputNumber
                 addonAfter={

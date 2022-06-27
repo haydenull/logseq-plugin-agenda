@@ -129,15 +129,21 @@ export const getInternalEvents = async () => {
       {:block/page
         [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
       {:block/refs
-        [:block/journal-day]}])
+        [:block/journal-day :block/original-name]}])
     :where
     [?block :block/marker ?marker]
     [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE" "CANCELED"} ?marker)]]
   `)
   if (!tasks || tasks?.length === 0) return null
-  tasks = tasks.flat()
-  // const agendaCalendars = await getAgendaCalendars()
   const settings = getInitalSettings()
+  tasks = tasks.flat()
+  if (settings.ignoreTag) {
+    tasks = tasks.filter(task => {
+      const shouldIgnore = task.refs?.some(ref => ref?.['original-name'] === settings.ignoreTag)
+      return !shouldIgnore
+    })
+  }
+  console.log('[faiz:] === tasks', tasks)
 
   let fullEvents: IPageEvent = genDefaultProjectEvents()
   let journalEvents: IPageEvent = genDefaultProjectEvents()
