@@ -51,8 +51,8 @@ const PomodoroModal: React.FC<{
           { title: 'Full Tomato', dataIndex: 'isFull', render(value, record, index) {
             return value ? '✅' : '❌'
           }, },
-          { title: 'Start', dataIndex: 'start', width: '200px', render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm') },
           { title: 'Length', dataIndex: 'length', render: value => `${Math.ceil(value / 60)} min` },
+          { title: 'Start', dataIndex: 'start', width: '200px', render: (value) => dayjs(value).format('YYYY-MM-DD HH:mm') },
           Table.EXPAND_COLUMN,
           {
             title: 'Interruption',

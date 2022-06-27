@@ -42,7 +42,7 @@ const Settings: React.FC<{
   const [pageOptions, setPageOptions] = useState<any>([])
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
-  const initialValues = getInitalSettings()
+  const initialValues = getInitalSettings({ filterInvalideProject: false })
   // TODO: 使用 only-write 减少重新渲染
   const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
   const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)

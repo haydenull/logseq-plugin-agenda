@@ -261,7 +261,8 @@ async function renderApp(env: string) {
   let defaultRoute = ''
   const page = await logseq.Editor.getCurrentPage()
   const { projectList = [] } = getInitalSettings()
-  if (isEnabledAgendaPage(page?.originalName) || projectList.some(project => project.id === page?.originalName)) defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
+  if (projectList.some(project => Boolean(project.id) && project.id === page?.originalName)) defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
+  console.log('[faiz:] === defaultRoute', defaultRoute)
   ReactDOM.render(
     <React.StrictMode>
       {/* <App env={env} /> */}
