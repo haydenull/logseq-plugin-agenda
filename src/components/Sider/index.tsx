@@ -11,12 +11,13 @@ import { getInitalSettings } from '@/util/baseInfo'
 
 const index: React.FC<{
   defaultRoute?: string
-}> = ({ defaultRoute }) => {
+  menus: typeof MENUS,
+}> = ({ defaultRoute, menus }) => {
   const navigate = useNavigate()
   const { homePage = DEFAULT_SETTINGS.homePage } = getInitalSettings()
 
   const onRouteChange = (value: string) => {
-    const { path } = MENUS.find(item => item.value === value) || { path: '/' }
+    const { path } = menus.find(item => item.value === value) || { path: '/' }
     navigate(path)
   }
 
@@ -31,7 +32,7 @@ const index: React.FC<{
       </div>
       {/* <div className="mb-28"></div> */}
 
-      <SiderTabs tabs={MENUS} onChange={onRouteChange} initialValue={homePage} />
+      <SiderTabs tabs={menus} onChange={onRouteChange} initialValue={homePage} />
 
       <div className={s.close} onClick={() => logseq.hideMainUI()}><FaPowerOff /></div>
     </div>

@@ -104,6 +104,14 @@ export const getDefaultCalendarOptions = async () => {
   }
 }
 
+export const genDailyLogCalendarOptions = (defaultOptions) => {
+  return {
+    ...defaultOptions,
+    defaultView: 'week',
+    taskView: ['time'],
+  }
+}
+
 export const genDefaultQuery = (pageName: string) => {
   return {
     id: pageName,

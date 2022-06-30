@@ -47,7 +47,7 @@ const App: React.FC<{
   return (
     <main className="w-screen h-screen flex" prefix="custom">
       <MemoryRouter>
-        <Sider defaultRoute={defaultRoute} />
+        <Sider defaultRoute={defaultRoute} menus={menus} />
         <Routes>
           <Route path="/" element={homePageElement} />
           {

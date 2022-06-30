@@ -38,7 +38,7 @@ const SearchForm: React.FC<{
           allowClear
           ranges={{
             Today: [dayjs(), dayjs()],
-            'This Week': [dayjs().startOf('week'), dayjs().endOf('week')],
+            'This Week': [dayjs().weekday(0), dayjs().weekday(6)],
           }}
         />
       </Form.Item>

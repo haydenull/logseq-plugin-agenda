@@ -21,7 +21,7 @@ const index = () => {
 
         <h1 className="title-text">Daily Log</h1>
         <div className="bg-quaternary flex flex-col flex-1 rounded-2xl box-border p-6">
-          <CalendarCom schedules={dailyLogSchedules} isProjectCalendar={false} />
+          <CalendarCom schedules={dailyLogSchedules} isProjectCalendar={false} isDailyLogCalendar />
         </div>
       </div>
     </div>

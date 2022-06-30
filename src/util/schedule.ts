@@ -89,6 +89,7 @@ export const getDailyLogSchedules = async () => {
     const date = block?.page?.journalDay
     const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
     const hasTime = _startTime || _endTime
+    if (!hasTime) return undefined
     return await genSchedule({
       blockData: block,
       category: hasTime ? 'time' : 'allday',
@@ -101,7 +102,7 @@ export const getDailyLogSchedules = async () => {
     })
   })
   const _logSchedules = await Promise.all(_logSchedulePromises)
-  return _logSchedules
+  return _logSchedules.filter(Boolean)
 }
 
 export const convertBlockToSchedule = async ({ block, queryWithCalendar, settings }: { block: any; queryWithCalendar: IQueryWithCalendar, settings: ISettingsForm }) => {
