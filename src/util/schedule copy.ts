@@ -428,7 +428,7 @@ export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
   return false
 }
 
-export const catrgorizeTask = (schedules: ISchedule[]) => {
+export const categorizeTask = (schedules: ISchedule[]) => {
   const DOING_CATEGORY = ['DOING', 'NOW']
   const TODO_CATEGORY = ['TODO', 'LATER']
   const DONE_CATEGORY = ['DONE']

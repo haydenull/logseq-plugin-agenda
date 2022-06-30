@@ -6,7 +6,7 @@
 // import dayjs from 'dayjs'
 // import { scheduleCalendarMapAtom } from './schedule'
 // import { getPageData } from '@/util/logseq'
-// import { catrgorizeTask } from '@/util/schedule'
+// import { categorizeTask } from '@/util/schedule'
 
 // const MOCK_PROJECTS: IGroup[] = [
 //   { id: '111', title: 'project1', events: [ { title: 'xxxxxxx', start: '2022-05-03', end: '2022-05-04', id: 'yyyy' } ], milestones: [ {start: '2022-05-07', end: '2022-05-07', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
@@ -41,7 +41,7 @@
 //       }
 //     }
 
-//     const { doing, todo, done } = catrgorizeTask(schedules)
+//     const { doing, todo, done } = categorizeTask(schedules)
 //     const convertScheduleToGanttEvent = (schedule: ISchedule): IEvent => {
 //       const { raw = {}, start, end, id = '', title = '' } = schedule
 //       const dayjsStart = dayjs(start as string)

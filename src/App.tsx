@@ -30,7 +30,7 @@ const App: React.FC<{
   useEffect(() => {
     async function fetchSchedules() {
       const res = await getInternalEvents()
-      console.log('[faiz:] === res', res)
+      console.log('[faiz:] === getInternalEvents res', res)
       if (res) {
         const { fullEvents, journalEvents, projectEventsMap } = res
         setFullEvents(fullEvents)
