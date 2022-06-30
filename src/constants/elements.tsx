@@ -16,6 +16,7 @@ import Stats from '@/pages/Stats'
 import Settings from '@/pages/Settings'
 import Journal from '@/pages/Journal'
 import Review from '@/pages/Review'
+import DailyLogCalendar from '@/pages/DailyLogCalendar'
 
 export const MENUS = [
   { label: 'Dashboard', value: 'dashboard', icon: <MdOutlineDashboard />, path: '/dashboard', element: <Dashboard /> },
@@ -24,6 +25,7 @@ export const MENUS = [
   { label: 'Gantt', value: 'gantt', icon: <AiOutlineAlignLeft />, path: '/gantt', element: <Gantt /> },
   { label: 'Timeline', value: 'timeline', icon: <RiMenu4Line />, path: '/timeline', element: <Timeline /> },
   { label: 'Review', value: 'review', icon: <RiRecycleLine />, path: '/review', element: <Review /> },
+  { label: 'Daily Log', value: 'dailyLogCalendar', icon: <RiRecycleLine />, path: '/dailyLogCalendar', element: <DailyLogCalendar /> },
   // { label: 'Board', value: 'board', icon: <BsClipboardData />, path: '/board', element: <Board /> },
   // { label: 'Journal', value: 'journal', icon: <IoJournalOutline />, path: '/journal', element: <Journal /> },
   // { label: 'Stats', value: 'stats', icon: <FaChartArea />, path: '/stats', element: <Stats /> },

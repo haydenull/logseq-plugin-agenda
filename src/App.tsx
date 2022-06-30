@@ -23,8 +23,9 @@ const App: React.FC<{
   const [, setJournalEvents] = useAtom(journalEventsAtom)
   const [, setProjectEvents] = useAtom(projectEventsAtom)
 
-  const { homePage = DEFAULT_SETTINGS.homePage } = getInitalSettings()
+  const { homePage = DEFAULT_SETTINGS.homePage, logKey } = getInitalSettings()
   const homePageElement = MENUS.find(item => item.value === homePage)?.element
+  const menus = logKey?.enabled ? MENUS : MENUS.filter(item => item.value !== 'dailyLogCalendar')
 
   useEffect(() => {
     async function fetchSchedules() {
@@ -50,7 +51,7 @@ const App: React.FC<{
         <Routes>
           <Route path="/" element={homePageElement} />
           {
-            MENUS.map(item => (
+            menus.map(item => (
               <Route path={item.path} element={item.element} key={item.value} />
             ))
           }

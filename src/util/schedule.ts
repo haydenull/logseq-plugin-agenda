@@ -18,7 +18,7 @@ export const getCustomCalendarSchedules = async () => {
 
   // get calendar configs
   const settings = getInitalSettings()
-  const { calendarList: calendarConfigs = [], logKey, defaultDuration } = settings
+  const { calendarList: calendarConfigs = [] } = settings
   const customCalendarConfigs = calendarConfigs.filter(config => config?.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
@@ -64,43 +64,44 @@ message: ${res.reason.message}`
   })
   calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleResFulfilled))
 
-  // Daily Logs
-  if (logKey?.enabled) {
-    const logs = await logseq.DB.q(`[[${logKey.id}]]`)
-    // console.log('[faiz:] === search logs', logs)
-    const _logs = logs
-                  ?.filter(block => {
-                    if (block.headingLevel && block.format === 'markdown') {
-                      block.content = block.content.replace(new RegExp(`^#{${block.headingLevel}} `), '')
-                    }
-                    return block.content?.trim() === `[[${logKey.id}]]`
-                  })
-                  ?.map(block => Array.isArray(block.parent) ? block.parent : [])
-                  ?.flat()
-                  ?.filter(block => {
-                    const _content = block.content?.trim()
-                    return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
-                  }) || []
-    const _logSchedulePromises = _logs?.map(async block => {
-      const date = block?.page?.journalDay
-      const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
-      const hasTime = _startTime || _endTime
-      return await genSchedule({
-        blockData: block,
-        category: hasTime ? 'time' : 'allday',
-        start: _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
-        end: _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
-        calendarConfig: logKey,
-        defaultDuration,
-        isAllDay: !hasTime,
-        isReadOnly: true,
-      })
-    })
-    const _logSchedules = await Promise.all(_logSchedulePromises)
-    calendarSchedules = calendarSchedules.concat(_logSchedules)
-  }
-
   return calendarSchedules
+}
+
+export const getDailyLogSchedules = async () => {
+  const { logKey, defaultDuration } = getInitalSettings()
+  if (!logKey?.enabled) return []
+  const logs = await logseq.DB.q(`[[${logKey.id}]]`)
+  // console.log('[faiz:] === search logs', logs)
+  const _logs = logs
+                ?.filter(block => {
+                  if (block.headingLevel && block.format === 'markdown') {
+                    block.content = block.content.replace(new RegExp(`^#{${block.headingLevel}} `), '')
+                  }
+                  return block.content?.trim() === `[[${logKey.id}]]`
+                })
+                ?.map(block => Array.isArray(block.parent) ? block.parent : [])
+                ?.flat()
+                ?.filter(block => {
+                  const _content = block.content?.trim()
+                  return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
+                }) || []
+  const _logSchedulePromises = _logs?.map(async block => {
+    const date = block?.page?.journalDay
+    const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
+    const hasTime = _startTime || _endTime
+    return await genSchedule({
+      blockData: block,
+      category: hasTime ? 'time' : 'allday',
+      start: _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
+      end: _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
+      calendarConfig: logKey,
+      defaultDuration,
+      isAllDay: !hasTime,
+      isReadOnly: true,
+    })
+  })
+  const _logSchedules = await Promise.all(_logSchedulePromises)
+  return _logSchedules
 }
 
 export const convertBlockToSchedule = async ({ block, queryWithCalendar, settings }: { block: any; queryWithCalendar: IQueryWithCalendar, settings: ISettingsForm }) => {
