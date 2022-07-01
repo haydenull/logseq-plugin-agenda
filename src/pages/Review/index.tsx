@@ -5,11 +5,12 @@ import SearchForm, { IReviewSearchForm } from './components/SearchForm'
 import { categorizeTask } from '@/util/schedule'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from '@/model/events'
 import { IEvent } from '@/util/events'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { useState } from 'react'
 import { Table } from 'antd'
+import { IPomodoroInfo } from '@/helper/pomodoro'
+import { extractDays } from '@/util/util'
 
-const initialFilter = {}
 
 const filterEvents = (rawEvents: IEvent[], filter: IReviewSearchForm) => {
   let events = rawEvents
@@ -39,6 +40,30 @@ const filterEvents = (rawEvents: IEvent[], filter: IReviewSearchForm) => {
 
   return events.sort((a, b) => dayjs(a.addOns.start).diff(dayjs(b.addOns.start)))
 }
+const genPomoData = (events: IEvent[], timeframe?: [Dayjs, Dayjs]) => {
+  const pomos = events.map(event => event.addOns.pomodoros).filter(Boolean)?.flat()
+
+  const pomoDayMap = new Map<number, IPomodoroInfo[]>()
+  pomos.forEach(pomo => {
+    if (!pomo) return
+    const key = dayjs(pomo.start).startOf('day').valueOf()
+    if (!pomoDayMap.has(key)) pomoDayMap.set(key, [])
+    pomoDayMap.get(key)?.push(pomo)
+  })
+
+  const minDay = Math.min(...Array.from(pomoDayMap.keys()))
+  const maxDay = Math.max(...Array.from(pomoDayMap.keys()))
+  const [ start, end ] = timeframe || [dayjs(minDay), dayjs(maxDay)]
+  const days = extractDays(start, end)
+
+  return days.map(day => {
+    const timestamp = day.valueOf()
+    return {
+      date: timestamp,
+      pomodoros: pomoDayMap.get(timestamp) || [],
+    }
+  })
+}
 
 const index = () => {
   // const [internalSchedules] = useAtom(fullCalendarSchedulesAtom)
@@ -48,11 +73,14 @@ const index = () => {
   const [journalEvents] = useAtom(journalEventsAtom)
   const [projectEvents] = useAtom(projectEventsAtom)
 
-  const [events, setEvents] = useState<IEvent[]>(filterEvents(fullEvents.tasks.withTime, initialFilter))
+  const [filter, setFilter] = useState<IReviewSearchForm>({})
+  const events = filterEvents(fullEvents.tasks.withTime, filter)
+
+  const pomodoros = genPomoData(events, filter?.timeframe)
 
   const onSearch = (values: IReviewSearchForm) => {
     console.log('[faiz:] === values', values)
-    setEvents(filterEvents(fullEvents.tasks.withTime,values))
+    setFilter(values)
   }
 
   // useEffect(() => {
