@@ -1,15 +1,16 @@
 import classNames from 'classnames'
 import { useAtom } from 'jotai'
-import s from './index.module.less'
 import SearchForm, { IReviewSearchForm } from './components/SearchForm'
 import { categorizeTask } from '@/util/schedule'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from '@/model/events'
-import { IEvent } from '@/util/events'
+import { getEventPomodoroLength, IEvent } from '@/util/events'
 import dayjs, { Dayjs } from 'dayjs'
 import { useState } from 'react'
 import { Table } from 'antd'
 import { IPomodoroInfo } from '@/helper/pomodoro'
 import { extractDays } from '@/util/util'
+import MixLineBar from './components/MixLineBar'
+import TreeMap from './components/TreeMap'
 
 
 const filterEvents = (rawEvents: IEvent[], filter: IReviewSearchForm) => {
@@ -44,7 +45,7 @@ const genPomoData = (events: IEvent[], timeframe?: [Dayjs, Dayjs]) => {
   const pomos = events.map(event => event.addOns.pomodoros).filter(Boolean)?.flat()
 
   const pomoDayMap = new Map<number, IPomodoroInfo[]>()
-  pomos.forEach(pomo => {
+  pomos?.forEach(pomo => {
     if (!pomo) return
     const key = dayjs(pomo.start).startOf('day').valueOf()
     if (!pomoDayMap.has(key)) pomoDayMap.set(key, [])
@@ -57,12 +58,33 @@ const genPomoData = (events: IEvent[], timeframe?: [Dayjs, Dayjs]) => {
   const days = extractDays(start, end)
 
   return days.map(day => {
-    const timestamp = day.valueOf()
+    const timestamp = day?.startOf('day').valueOf()
     return {
       date: timestamp,
       pomodoros: pomoDayMap.get(timestamp) || [],
     }
   })
+}
+const genPomoByProjectData = (events: IEvent[]) => {
+  const eventProjectMap = new Map<string, IEvent[]>()
+  events.forEach(event => {
+    const key = event.addOns.project
+    if (!eventProjectMap.has(key)) eventProjectMap.set(key, [])
+    eventProjectMap.get(key)?.push(event)
+  })
+
+  let data: any = []
+  eventProjectMap.forEach((_events, key) => {
+    data.push({
+      name: key,
+      value: Math.ceil((_events.reduce((acc, event) => (acc + getEventPomodoroLength(event)), 0)) / 60),
+      children: _events.map((event) => ({
+        name: event.addOns.showTitle,
+        value: Math.ceil(getEventPomodoroLength(event) / 60),
+      })),
+    })
+  })
+  return data
 }
 
 const index = () => {
@@ -77,6 +99,8 @@ const index = () => {
   const events = filterEvents(fullEvents.tasks.withTime, filter)
 
   const pomodoros = genPomoData(events, filter?.timeframe)
+  console.log('[faiz:] === pomodoros', pomodoros)
+  const pomodoroByProject = genPomoByProjectData(events)
 
   const onSearch = (values: IReviewSearchForm) => {
     console.log('[faiz:] === values', values)
@@ -133,6 +157,9 @@ const index = () => {
               },
             ]}
           />
+
+          <MixLineBar data={pomodoros} />
+          <TreeMap data={pomodoroByProject} />
         </div>
       </div>
     </div>

@@ -71,6 +71,7 @@ export type IEvent = BlockEntity & {
   addOns: {
     showTitle: string
     contentWithoutTime: string
+    project: string
     start?: string
     end?: string
     allDay?: boolean
@@ -225,4 +226,10 @@ export const getInternalEvents = async () => {
   await Promise.all(promiseList)
 
   return { journalEvents, projectEventsMap, fullEvents }
+}
+
+export const getEventPomodoroLength = (event: IEvent) => {
+  return event.addOns.pomodoros?.reduce((acc, pomo) => {
+    return acc + pomo.length
+  }, 0) || 0
 }

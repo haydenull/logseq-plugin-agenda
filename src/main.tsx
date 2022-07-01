@@ -61,6 +61,17 @@ if (isDevelopment) {
       setPluginTheme(mode)
     })
 
+    logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
+      console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
+    })
+
+    // setInterval(async () => {
+    //   const editing = await logseq.Editor.checkEditing()
+    //   console.log('[faiz:] === editing', editing)
+    //   const currentBlock = await logseq.Editor.getCurrentBlock()
+    //   console.log('[faiz:] === currentBlock', currentBlock)
+    // }, 2000)
+
     logseq.on('ui:visible:changed', (e) => {
       if (!e.visible && window.currentApp !== 'pomodoro') {
         ReactDOM.unmountComponentAtNode(document.getElementById('root') as Element)

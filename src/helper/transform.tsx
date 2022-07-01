@@ -108,8 +108,8 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   const isJournal = Boolean(page?.journalDay)
 
   let event: IEvent = time
-                        ? { ...block, rawTime: time, addOns: { showTitle: '', contentWithoutTime: '', end: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task', ...time } }
-                        : { ...block, addOns: { showTitle: '', contentWithoutTime: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task' } }
+                        ? { ...block, rawTime: time, addOns: { showTitle: '', project: 'Journal', contentWithoutTime: '', end: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task', ...time } }
+                        : { ...block, addOns: { showTitle: '', project: 'Journal', contentWithoutTime: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task' } }
 
   // add show title and contentWithoutTime
   let showTitle = pureTaskBlockContent(block)
@@ -171,6 +171,9 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
 
   // add pomodoros
   event.addOns.pomodoros = pomodoros || []
+
+  // add project
+  event.addOns.project = isJournal ? 'Journal' : page?.originalName
 
   return event
 }
