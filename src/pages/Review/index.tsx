@@ -11,6 +11,7 @@ import { IPomodoroInfo } from '@/helper/pomodoro'
 import { extractDays } from '@/util/util'
 import MixLineBar from './components/MixLineBar'
 import TreeMap from './components/TreeMap'
+import { getInitalSettings } from '@/util/baseInfo'
 
 
 const filterEvents = (rawEvents: IEvent[], filter: IReviewSearchForm) => {
@@ -86,17 +87,17 @@ const genPomoByProjectData = (events: IEvent[]) => {
   })
   return data
 }
+const getEventDateValue = (event: IEvent) => (event.rawTime ? dayjs(event.addOns.start).valueOf() : 0)
 
 const index = () => {
   // const [internalSchedules] = useAtom(fullCalendarSchedulesAtom)
   // const [subscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
   // const [customCalendarSchedules, setCustomCalendarSchedules] = useState<any[]>([])
   const [fullEvents] = useAtom(fullEventsAtom)
-  const [journalEvents] = useAtom(journalEventsAtom)
-  const [projectEvents] = useAtom(projectEventsAtom)
 
-  const [filter, setFilter] = useState<IReviewSearchForm>({})
-  const events = filterEvents(fullEvents.tasks.withTime, filter)
+  const { weekStartDay } = getInitalSettings()
+  const [filter, setFilter] = useState<IReviewSearchForm>({timeframe: [dayjs().weekday(0).add(weekStartDay, 'day'), dayjs().weekday(6).add(weekStartDay, 'day')]})
+  const events = filterEvents(fullEvents.tasks.withTime.concat(fullEvents.tasks.noTime), filter)
 
   const pomodoros = genPomoData(events, filter?.timeframe)
   console.log('[faiz:] === pomodoros', pomodoros)
@@ -119,7 +120,7 @@ const index = () => {
       <div className={classNames('flex flex-1 flex-col overflow-hidden p-8')}>
         <h1 className="title-text">Review</h1>
         <div className="bg-quaternary flex flex-col flex-1 rounded-2xl box-border p-6 overflow-auto">
-          <SearchForm onSearch={onSearch} />
+          <SearchForm onSearch={onSearch} initialValues={filter} />
           {/* <CalendarCom schedules={[...subscriptionSchedules, ...internalSchedules, ...customCalendarSchedules]} isProjectCalendar={false} /> */}
           <Table
             dataSource={events}
@@ -139,7 +140,18 @@ const index = () => {
                 title: 'Date',
                 dataIndex: ['addOns', 'start'],
                 width: '240px',
-                render: (text, record) => `${dayjs(text).format('YYYY-MM-DD')} - ${dayjs(record.addOns.end).format('YYYY-MM-DD')}`
+                render: (text, record) => record.rawTime ? `${dayjs(text).format('YYYY-MM-DD')} - ${dayjs(record.addOns.end).format('YYYY-MM-DD')}` : '-',
+                defaultSortOrder: 'descend',
+                sorter: (a, b) => getEventDateValue(a) - getEventDateValue(b),
+                filters: [
+                  { text: 'Scheduled', value: 'scheduled' },
+                  { text: 'No Schedule', value: 'noSchedule' },
+                ],
+                onFilter: (value, record) => {
+                  if (value === 'noSchedule') return !Boolean(record.rawTime)
+                  if (value === 'scheduled') return Boolean(record.rawTime)
+                  return true
+                },
               },
               {
                 title: 'Status',

@@ -1,7 +1,7 @@
 import { getInitalSettings } from '@/util/baseInfo'
 import { Button, Checkbox, DatePicker, Form, Select } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const STATUS_OPTIONS = [
   { value: 'todo', label: 'todo' },
@@ -18,11 +18,13 @@ export type IReviewSearchForm = {
   project?: string[],
 }
 const SearchForm: React.FC<{
+  initialValues?: IReviewSearchForm
   onSearch: (params: IReviewSearchForm) => void,
-}> = ({ onSearch }) => {
+}> = ({ onSearch, initialValues }) => {
   const [form] = Form.useForm()
-  const { projectList = [] } = getInitalSettings()
-  const pageOptions = [{value: 'journal', label: 'Journal'}].concat(projectList.map(p => ({ value: p.id, label: p.id })))
+  const { projectList = [], weekStartDay } = getInitalSettings()
+  const [pageOptions, setPageOptions] = useState<any>([])
+  // const pageOptions = [{value: 'journal', label: 'Journal'}].concat(projectList.map(p => ({ value: p.id, label: p.id })))
 
   const onClickSearch = () => {
     form.validateFields().then(values => {
@@ -30,15 +32,29 @@ const SearchForm: React.FC<{
     })
   }
 
+  useEffect(() => {
+    logseq.Editor.getAllPages().then(res => {
+      setPageOptions(
+        [{value: 'journal', label: 'Journal'}].concat(
+          res?.filter(item => !item?.['journal?'])
+            .map(item => ({
+              value: item.originalName,
+              label: item.originalName,
+            }))
+        )
+      )
+    })
+  }, [])
+
   return (
-    <Form form={form} layout="inline" className="mb-6">
+    <Form form={form} initialValues={initialValues} layout="inline" className="mb-6">
       <Form.Item label="Timeframe" name="timeframe">
         {/* @ts-ignore */}
         <DatePicker.RangePicker
           allowClear
           ranges={{
             Today: [dayjs(), dayjs()],
-            'This Week': [dayjs().weekday(0), dayjs().weekday(6)],
+            'This Week': [dayjs().weekday(0).add(weekStartDay, 'day'), dayjs().weekday(6).add(weekStartDay, 'day')],
           }}
         />
       </Form.Item>
@@ -46,7 +62,16 @@ const SearchForm: React.FC<{
         <Select options={STATUS_OPTIONS} mode="multiple" placeholder="Please select" style={{ minWidth: '100px' }} allowClear />
       </Form.Item>
       <Form.Item label="Project" name="project">
-        <Select options={pageOptions} mode="multiple" placeholder="Please select" style={{ minWidth: '240px' }} allowClear />
+        <Select
+          showSearch
+          allowClear
+          mode="multiple"
+          placeholder="Project ID (Page Name)"
+          optionFilterProp="label"
+          style={{ minWidth: '240px' }}
+          options={pageOptions}
+          filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+        />
       </Form.Item>
       <Form.Item>
         <Button type="primary" onClick={() => onClickSearch()}>Review</Button>

@@ -19,13 +19,41 @@ const Polygonal: React.FC<{
 
   useEffect(() => {
     const chartDom = document.getElementById('treemap')
+    const formatUtil = echarts.format
     async function initChart() {
       if (!chartDom || !theme) return
       const option = {
+        tooltip: {
+          formatter: function (info: any) {
+            var value = info.value;
+            var treePathInfo = info.treePathInfo;
+            var treePath = [];
+
+            for (var i = 1; i < treePathInfo.length; i++) {
+              // @ts-ignore
+              treePath.push(treePathInfo[i].name);
+            }
+
+            return [
+              '<div class="tooltip-title">' +
+                formatUtil.encodeHTML(treePath.join('/')) +
+                '</div>',
+              'Pomodoro Length: ' + formatUtil.addCommas(value) + ' min'
+            ].join('');
+          }
+        },
         series: [
           {
             type: 'treemap',
+            visibleMin: 300,
             data,
+            label: {
+              show: true,
+              formatter: '{b}'
+            },
+            itemStyle: {
+              borderColor: '#fff',
+            },
           }
         ]
       };
