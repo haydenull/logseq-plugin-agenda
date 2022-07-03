@@ -2,7 +2,7 @@ import GaugeChart from '@/components/GaugeChart'
 import Polygonal from '@/components/Polygonal'
 import { ganttDataAtom } from '@/model/gantt'
 import { IGroup } from '@/packages/Gantt/type'
-import { catrgorizeTask, scheduleStartDayMap } from '@/util/schedule'
+import { categorizeTask, scheduleStartDayMap } from '@/util/schedule'
 import classNames from 'classnames'
 import dayjs, { Dayjs } from 'dayjs'
 import { useAtom } from 'jotai'
@@ -33,7 +33,7 @@ const MOCK_POLYGONAL_DATA: { date: string; value: number }[] = [
 
 function genLatest14PolygonalData() {
   const [latest14Tasks] = useAtom(latest14DaysTasksAtom)
-  const tasksMap = scheduleStartDayMap(catrgorizeTask(latest14Tasks)?.done)
+  const tasksMap = scheduleStartDayMap(categorizeTask(latest14Tasks)?.done)
   const start = dayjs().subtract(13, 'day').startOf('day')
   const dateArr: Dayjs[] = [start]
   for (let i = 1; i < 14; i++) {
@@ -57,7 +57,7 @@ const index: React.FC<{}> = () => {
   const projectData = projects || []
 
   const [todayTasks] = useAtom(todayTasksAtom)
-  const todayTaskMap = isDev ? { todo: [], doing: [], done: [] } : catrgorizeTask(todayTasks)
+  const todayTaskMap = isDev ? { todo: [], doing: [], done: [] } : categorizeTask(todayTasks)
   const upcomingTasksCount = todayTaskMap?.todo?.length + todayTaskMap?.doing?.length
   const completedTasksCount = todayTaskMap?.done?.length
   const tasksAmount = upcomingTasksCount + completedTasksCount

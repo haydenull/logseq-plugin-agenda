@@ -53,7 +53,7 @@ const ModifyPomodoro: React.FC<{
           </Radio.Group>
         </Form.Item>
         <Form.Item name="start" label="Start Time" rules={[{ required: true }]}>
-          <DatePicker showTime={{ format: 'HH:mm' }} />
+          <DatePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" />
         </Form.Item>
         <Form.Item name="length" label="Length" rules={[{ required: true }]}>
           <InputNumber min={1} addonAfter="min" />

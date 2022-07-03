@@ -3,7 +3,8 @@ import { ISchedule } from 'tui-calendar'
 import { CALENDAR_THEME, DEFAULT_SETTINGS } from './constants'
 import { ISettingsForm } from './type'
 
-export const getInitalSettings = (): ISettingsForm => {
+export const getInitalSettings = (params = { filterInvalideProject: true }): ISettingsForm => {
+  const { filterInvalideProject } = params
   let logKey = DEFAULT_SETTINGS.logKey
   const settingLogKey = logseq.settings?.logKey
   if (settingLogKey) {
@@ -35,11 +36,13 @@ export const getInitalSettings = (): ISettingsForm => {
   //   },
   //   ...calendarList.slice(1),
   // ]
+  const projectList = logseq.settings?.projectList || DEFAULT_SETTINGS.projectList
   return {
     ...DEFAULT_SETTINGS,
     ...logseq.settings,
     // calendarList,
     logKey,
+    projectList: filterInvalideProject ? projectList?.filter(project => Boolean(project.id)) : projectList,
   }
 }
 
@@ -98,6 +101,14 @@ export const getDefaultCalendarOptions = async () => {
         `
       },
     },
+  }
+}
+
+export const genDailyLogCalendarOptions = (defaultOptions) => {
+  return {
+    ...defaultOptions,
+    defaultView: 'week',
+    taskView: ['time'],
   }
 }
 

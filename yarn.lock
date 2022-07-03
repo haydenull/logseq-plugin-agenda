@@ -511,6 +511,11 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
   integrity sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==
 
+"@haydenull/use-pomodoro@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@haydenull/use-pomodoro/-/use-pomodoro-1.1.4.tgz#e448ea06e41e653d78123169a2da02c86ebb8430"
+  integrity sha512-m9l1zzMRFIige9KafkNpvr7K5TNvlqH13DTpqq/yvMvj9gi25kXmGHB+Qrbn/PezcDNAv674ze8EH2rULXo46Q==
+
 "@icons/material@^0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@icons/material/-/material-0.2.4.tgz#e90c9f71768b3736e76d7dd6783fc6c2afa88bc8"
@@ -6361,11 +6366,6 @@ use-memo-one@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/use-memo-one/-/use-memo-one-1.1.2.tgz#0c8203a329f76e040047a35a1197defe342fab20"
   integrity sha512-u2qFKtxLsia/r8qG0ZKkbytbztzRb317XCkT7yP8wxL0tZ/CzK2G+WWie5vWvpyeP7+YoPIwbJoIHJ4Ba4k0oQ==
-
-use-pomodoro@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/use-pomodoro/-/use-pomodoro-1.1.3.tgz#9ef36c9557ab504f54b645e75b48167a38177be6"
-  integrity sha512-viH9cCS4bWvYPASMU+7R4B6tkRPiNP0tNmrNvSqJZo/cKU4e+suvVD0AODcyWbTw33rPCmQibwX29hKX2/qPBQ==
 
 util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"

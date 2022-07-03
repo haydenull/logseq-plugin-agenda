@@ -1,11 +1,8 @@
 import { ISchedule } from 'tui-calendar';
-import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
 import { getInitalSettings } from '@/util/baseInfo'
-import { ICategory } from '@/util/type'
 import { atom } from 'jotai'
 import { genDefaultProjectEvents, IEvent, IPageEvent } from '../util/events'
 import { transformMilestoneEventToSchedule, transformTaskEventToSchedule } from '@/helper/transform'
-import { getAgendaCalendars } from '@/util/schedule'
 import dayjs from 'dayjs'
 
 export const fullEventsAtom = atom<IPageEvent>(genDefaultProjectEvents())

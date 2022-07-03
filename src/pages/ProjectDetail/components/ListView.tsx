@@ -2,7 +2,7 @@ import List from './List'
 import s from '../index.module.less'
 import classNames from 'classnames'
 import { useState } from 'react'
-import { catrgorizeTask } from '@/util/schedule'
+import { categorizeTask } from '@/util/schedule'
 import { Button } from 'antd'
 import { IEvent } from '@/util/events'
 import { useAtom } from 'jotai'
@@ -17,8 +17,8 @@ const ListView: React.FC<{
   const [projectEvents] = useAtom(projectEventsAtom)
   const events = projectId === 'Journal' ? journalEvents : projectEvents.get(projectId)
 
-  const undatedTaskMap = catrgorizeTask(events?.tasks?.noTime || [])
-  const schedulesMap = catrgorizeTask(events?.tasks?.withTime || [])
+  const undatedTaskMap = categorizeTask(events?.tasks?.noTime || [])
+  const schedulesMap = categorizeTask(events?.tasks?.withTime || [])
 
   const todoTasks: IEvent[] = [...schedulesMap.doing, ...schedulesMap.todo, ...undatedTaskMap.doing, ...undatedTaskMap.todo]
   const doneTasks: IEvent[] = [...schedulesMap.done, ...undatedTaskMap.done]

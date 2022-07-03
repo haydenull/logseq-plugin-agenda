@@ -26,6 +26,7 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
     border-radius: 4px;
     padding: 1px 6px;
     color: #222;
+    white-space: nowrap;
   }
   .dark .external-link[href^="#agenda-pomo://"] {
     background-color: #1a543b;

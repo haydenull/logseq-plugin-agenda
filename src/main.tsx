@@ -3,14 +3,15 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import dayjs from 'dayjs'
 import weekday from 'dayjs/plugin/weekday'
+import updateLocale from 'dayjs/plugin/updateLocale'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
 import isBetween from 'dayjs/plugin/isBetween'
 import * as echarts from 'echarts/core'
-import { GridComponent, ToolboxComponent, TooltipComponent} from 'echarts/components'
-import { LineChart, GaugeChart } from 'echarts/charts'
+import { GridComponent, ToolboxComponent, TooltipComponent, LegendComponent} from 'echarts/components'
+import { LineChart, GaugeChart, BarChart, TreemapChart } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import { getInitalSettings, initializeSettings } from './util/baseInfo'
@@ -33,8 +34,9 @@ dayjs.extend(isSameOrAfter)
 dayjs.extend(localeData)
 dayjs.extend(difference)
 dayjs.extend(isBetween)
+dayjs.extend(updateLocale)
 
-echarts.use([GridComponent, LineChart, GaugeChart, CanvasRenderer, UniversalTransition, ToolboxComponent, TooltipComponent])
+echarts.use([GridComponent, LineChart, BarChart, GaugeChart, TreemapChart, CanvasRenderer, UniversalTransition, ToolboxComponent, TooltipComponent, LegendComponent])
 
 const isDevelopment = import.meta.env.DEV
 
@@ -46,6 +48,10 @@ if (isDevelopment) {
   logseq.ready(() => {
 
     initializeSettings()
+
+    dayjs.updateLocale('en', {
+      weekStart: getInitalSettings().weekStartDay,
+    })
 
     managePluginTheme()
 
@@ -60,6 +66,17 @@ if (isDevelopment) {
     logseq.App.onThemeModeChanged(({ mode }) => {
       setPluginTheme(mode)
     })
+
+    logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
+      console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
+    })
+
+    // setInterval(async () => {
+    //   const editing = await logseq.Editor.checkEditing()
+    //   console.log('[faiz:] === editing', editing)
+    //   const currentBlock = await logseq.Editor.getCurrentBlock()
+    //   console.log('[faiz:] === currentBlock', currentBlock)
+    // }, 2000)
 
     logseq.on('ui:visible:changed', (e) => {
       if (!e.visible && window.currentApp !== 'pomodoro') {
@@ -261,7 +278,8 @@ async function renderApp(env: string) {
   let defaultRoute = ''
   const page = await logseq.Editor.getCurrentPage()
   const { projectList = [] } = getInitalSettings()
-  if (isEnabledAgendaPage(page?.originalName) || projectList.some(project => project.id === page?.originalName)) defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
+  if (projectList.some(project => Boolean(project.id) && project.id === page?.originalName)) defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
+  console.log('[faiz:] === defaultRoute', defaultRoute)
   ReactDOM.render(
     <React.StrictMode>
       {/* <App env={env} /> */}

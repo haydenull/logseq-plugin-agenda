@@ -23,13 +23,14 @@ const App: React.FC<{
   const [, setJournalEvents] = useAtom(journalEventsAtom)
   const [, setProjectEvents] = useAtom(projectEventsAtom)
 
-  const { homePage = DEFAULT_SETTINGS.homePage } = getInitalSettings()
+  const { homePage = DEFAULT_SETTINGS.homePage, logKey } = getInitalSettings()
   const homePageElement = MENUS.find(item => item.value === homePage)?.element
+  const menus = logKey?.enabled ? MENUS : MENUS.filter(item => item.value !== 'dailyLogCalendar')
 
   useEffect(() => {
     async function fetchSchedules() {
       const res = await getInternalEvents()
-      console.log('[faiz:] === res', res)
+      console.log('[faiz:] === getInternalEvents res', res)
       if (res) {
         const { fullEvents, journalEvents, projectEventsMap } = res
         setFullEvents(fullEvents)
@@ -46,11 +47,11 @@ const App: React.FC<{
   return (
     <main className="w-screen h-screen flex" prefix="custom">
       <MemoryRouter>
-        <Sider defaultRoute={defaultRoute} />
+        <Sider defaultRoute={defaultRoute} menus={menus} />
         <Routes>
           <Route path="/" element={homePageElement} />
           {
-            MENUS.map(item => (
+            menus.map(item => (
               <Route path={item.path} element={item.element} key={item.value} />
             ))
           }

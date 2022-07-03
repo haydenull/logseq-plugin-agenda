@@ -2,7 +2,7 @@ import type { IEvent as IGanttEvent, IGroup } from '@/packages/Gantt/type'
 import { getInitalSettings } from '@/util/baseInfo'
 import { ICustomCalendar } from '@/util/type'
 import { atom } from 'jotai'
-import { catrgorizeTask } from '@/util/schedule'
+import { categorizeTask } from '@/util/schedule'
 import { journalEventsAtom, projectEventsAtom } from './events'
 import { transformEventToGanttEvent } from '@/helper/transform'
 
@@ -39,7 +39,7 @@ export const ganttDataAtom = atom<IGroup[] | null>((get) => {
       }
     }
 
-    const { doing, todo, done } = catrgorizeTask(events?.tasks?.withTime)
+    const { doing, todo, done } = categorizeTask(events?.tasks?.withTime)
 
     return {
       id: calendarId,

@@ -135,7 +135,7 @@ export const isEnabledAgendaPage = (pageName: string) => {
   return calendarList?.filter(calendar => calendar.enabled).some(calendar => calendar.id === pageName)
 }
 
-export const catrgorizeTask = (blocks: BlockEntity[]) => {
+export const categorizeTask = (blocks: BlockEntity[]) => {
   const DOING_CATEGORY = ['DOING', 'NOW']
   const TODO_CATEGORY = ['TODO', 'LATER']
   const DONE_CATEGORY = ['DONE']

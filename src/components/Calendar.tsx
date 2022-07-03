@@ -1,33 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
-import { format, isSameDay, parse, parseISO } from 'date-fns'
-import { getDefaultCalendarOptions, getInitalSettings } from '@/util/baseInfo'
+import { format, isSameDay, parse } from 'date-fns'
+import { getDefaultCalendarOptions, getInitalSettings, genDailyLogCalendarOptions } from '@/util/baseInfo'
 import { CALENDAR_VIEWS, SHOW_DATE_FORMAT } from '@/util/constants'
-import { deleteProjectTaskTime, genSchedule, modifyTimeInfo } from '@/util/schedule'
+import { deleteProjectTaskTime, updateProjectTaskTime } from '@/util/schedule'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import Sidebar from '@/components/Sidebar'
 import dayjs from 'dayjs'
-import { getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, pureTaskBlockContent, updateBlock } from '@/util/logseq'
-import { Button, Modal, Radio, Select, Tooltip } from 'antd'
+import { moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
+import { Button, Modal, Radio, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
-import Weekly from '@/components/Weekly'
-import classNames from 'classnames'
-import { ICustomCalendar, ISettingsForm } from '@/util/type'
-import { useAtom } from 'jotai'
+import { ICustomCalendar } from '@/util/type'
+import { IEvent } from '@/util/events'
 
 // import { schedulesAtom } from '@/model/schedule'
 
 const CalendarCom: React.FC<{
   schedules: ISchedule[]
-  isProjectCalendar: boolean
-}> = ({ schedules, isProjectCalendar = true }) => {
+  isProjectCalendar?: boolean
+  isDailyLogCalendar?: boolean
+}> = ({ schedules, isProjectCalendar = true, isDailyLogCalendar = false }) => {
   // const [schedules] = useAtom(schedulesAtom)
 
-  const { calendarList, subscriptionList, logKey, projectList = [], journal } = getInitalSettings()
+  const { subscriptionList, logKey, projectList = [], journal } = getInitalSettings()
 
   const [showDate, setShowDate] = useState<string>()
   const [isFold, setIsFold] = useState(true)
-  const [currentView, setCurrentView] = useState(logseq.settings?.defaultView || 'month')
+  const [currentView, setCurrentView] = useState(() => {
+    if (isDailyLogCalendar) return 'week'
+    return logseq.settings?.defaultView || 'month'
+  })
   const enabledCalendarList: ICustomCalendar[] = [journal!, ...projectList]
   const enabledSubscriptionList: ICustomCalendar[] = subscriptionList ? subscriptionList?.filter(subscription => subscription?.enabled) : []
   const [modifyScheduleModal, setModifyScheduleModal] = useState<{
@@ -38,21 +40,6 @@ const CalendarCom: React.FC<{
     visible: false,
     type: 'create',
   })
-  const [modifyProjectScheduleModal, setModifyProjectScheduleModal] = useState<{
-    visible: boolean
-    type?: 'create' | 'update'
-    values?: IScheduleValue
-  }>({
-    visible: false,
-    type: 'create',
-  })
-  const [showExportWeekly, setShowExportWeekly] = useState<boolean>(Boolean(logseq.settings?.logKey?.enabled) && logseq.settings?.defaultView === 'week')
-  const [weeklyModal, setWeeklyModal] = useState<{
-    visible: boolean
-    start?: string
-    end?: string
-  }>({ visible: false })
-
   const calendarRef = useRef<Calendar>()
 
   const changeShowDate = () => {
@@ -87,7 +74,6 @@ const CalendarCom: React.FC<{
       calendarRef.current?.changeView(value)
     }
     changeShowDate()
-    setShowExportWeekly(logseq.settings?.logKey?.enabled && value === 'week')
   }
   const onShowCalendarChange = (showCalendarList: string[]) => {
     const enabledCalendarIds = enabledCalendarList.concat(enabledSubscriptionList)?.map(calendar => calendar.id)
@@ -121,14 +107,6 @@ const CalendarCom: React.FC<{
       logseq.hideMainUI()
     }
   }
-  const onClickExportWeekly = async () => {
-    const [start, end] = showDate?.split(' ~ ') || []
-    setWeeklyModal({
-      visible: true,
-      start,
-      end,
-    })
-  }
 
   useEffect(() => {
     if (calendarRef.current) {
@@ -142,7 +120,8 @@ const CalendarCom: React.FC<{
     // Delay execution to avoid the TUI not being able to acquire the height correctly
     // The bug manifests as the weekly view cannot auto scroll to the current time
     window.requestAnimationFrame(async () => {
-      const calendarOptions = await getDefaultCalendarOptions()
+      let calendarOptions = await getDefaultCalendarOptions()
+      if (isDailyLogCalendar) calendarOptions = genDailyLogCalendarOptions(calendarOptions)
       console.log('[faiz:] === calendarOptions', calendarOptions)
       calendarRef.current = new Calendar('#calendar', {
         ...calendarOptions,
@@ -204,49 +183,38 @@ const CalendarCom: React.FC<{
         } else if (changes) {
           // drag on calendar view
           if (schedule.calendarId === 'journal' && !dayjs(finalStart).isSame(dayjs(finalEnd), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
-          let properties = {}
-          let scheduleChanges = {}
-          Object.keys(changes).forEach(key => {
-            if (schedule.isAllDay) {
-              properties[key] = dayjs(changes[key]).format('YYYY-MM-DD')
-            } else {
-              properties[key] = dayjs(changes[key]).format('YYYY-MM-DD HH:mm')
+          // let properties = {}
+          // let scheduleChanges = {}
+          const event: IEvent = schedule.raw
+          const scheduleType = (schedule as ISchedule).calendarId === 'Journal' ? 'journal' : 'project'
+
+          const start = changes?.start ? changes.start : event.rawTime?.start
+          const end = changes?.end ? changes.end : event.rawTime?.end
+
+          // drag journal schedule
+          if (scheduleType === 'journal' && changes.start) {
+            // Jourbal tasks are not allowed for multiple days
+            calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
+            const { preferredDateFormat } = await logseq.App.getUserConfigs()
+
+            let content = event.content
+            if (event.rawTime?.timeFrom === 'customLink') content = deleteProjectTaskTime(content.trim())
+            if (event.rawTime?.timeFrom === 'refs') {
+              const journalName = format(dayjs(event.rawTime.start).valueOf(), preferredDateFormat)
+              content = content.replace(`[[${journalName}]]`, '')?.trim()
             }
-            scheduleChanges[key] = dayjs(changes[key]).format()
-          })
-          calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
-          if (schedule.calendarId === 'journal') {
-            // update journal schedule
-            const marker = schedule?.raw?.marker
-            const _content = schedule?.isAllDay ? false : `${marker} ` + modifyTimeInfo(schedule?.raw?.content?.replace(new RegExp(`^${marker} `), ''), dayjs(schedule?.start).format('HH:mm'), dayjs(schedule?.end).format('HH:mm'))
-            let journalDay = schedule?.raw?.page?.journalDay
-            if (!journalDay) {
-              const page = await getPageData(schedule?.raw?.page?.id)
-              journalDay = page?.journalDay
-            }
-            if (changes.start && !dayjs(changes.start).isSame(dayjs(String(journalDay), 'YYYYMMDD'), 'day')) {
-              // if the start day is different from the original start day, then execute move operation
-              console.log('[faiz:] === move journal schedule')
-              const { preferredDateFormat } = await logseq.App.getUserConfigs()
-              const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
-              const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
-              const newBlock = logKey?.enabled ? await moveBlockToSpecificBlock(schedule.raw?.id, journalName, `[[${logKey?.id}]]`) : await moveBlockToNewPage(schedule.raw?.id, journalName)
-              console.log('[faiz:] === newBlock', newBlock, schedule, schedule?.id)
-              if (newBlock) {
-                calendarRef.current?.deleteSchedule(schedule.id, schedule.calendarId)
-                calendarRef.current?.createSchedules([await genSchedule({
-                  ...schedule,
-                  blockData: newBlock,
-                  calendarConfig: calendarList?.find(calendar => calendar.id === 'journal'),
-                })])
-              }
-            } else {
-              await updateBlock(schedule.raw?.id, _content)
-            }
-          } else {
-            // update other schedule (agenda calendar)
-            await updateBlock(schedule.id, false, properties)
+
+            const journalName = format(start.valueOf(), preferredDateFormat)
+            const newPage = await logseq.Editor.createPage(journalName, {}, { journal: true })
+            const newCalendarId = newPage!.originalName
+            await logseq.Editor.updateBlock(schedule.id, content)
+            logKey?.enabled ? await moveBlockToSpecificBlock(schedule?.id!, newCalendarId!, `[[${logKey?.id}]]`) : await moveBlockToNewPage(schedule?.id!, newCalendarId!)
+          } else if (scheduleType === 'project') {
+            calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
+            const content = updateProjectTaskTime(event.addOns.contentWithoutTime, { start: dayjs(start), end: dayjs(end), allDay: event.addOns.allDay })
+            await logseq.Editor.updateBlock(schedule.id, content)
           }
+
         }
       })
       calendarRef.current.on('beforeDeleteSchedule', function(event) {
@@ -272,7 +240,7 @@ const CalendarCom: React.FC<{
       {/* ========= title bar start ========= */}
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center">
-          { !isProjectCalendar && (<Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />) }
+          { (!isProjectCalendar && !isDailyLogCalendar) && (<Button className="mr-2" onClick={toggleFold} icon={isFold ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} />) }
 
           <Button className="ml-2" shape="circle" icon={<LeftOutlined />} onClick={onClickPrev}></Button>
           <Button className="ml-1" shape="circle" icon={<RightOutlined />} onClick={onClickNext}></Button>
@@ -289,7 +257,6 @@ const CalendarCom: React.FC<{
       </div>
 
         <div>
-          { showExportWeekly && <Button className="mr-4" onClick={onClickExportWeekly}>Export Weekly</Button> }
           <Radio.Group
             options={CALENDAR_VIEWS}
             value={currentView}
@@ -317,12 +284,6 @@ const CalendarCom: React.FC<{
       </div>
       {/* ========= content end ========= */}
 
-      <Weekly
-        visible={weeklyModal.visible}
-        start={weeklyModal.start}
-        end={weeklyModal.end}
-        onCancel={() => setWeeklyModal({ visible: false })}
-      />
       {
         modifyScheduleModal.visible
         ? <ModifySchedule

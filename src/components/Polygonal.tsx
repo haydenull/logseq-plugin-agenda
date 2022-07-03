@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import * as echarts from 'echarts/core'
 import type { ECharts } from 'echarts/lib/echarts'
 import dayjs from 'dayjs'
 import { POLYGONAL_COLOR_CONFIG } from '@/constants/theme'
-import { getCurrentTheme } from '@/util/logseq'
 import useTheme from '@/hooks/useTheme'
 
 const Polygonal: React.FC<{
@@ -11,8 +10,6 @@ const Polygonal: React.FC<{
 }> = ({ data }) => {
   const chartRef = useRef<ECharts>()
   const theme = useTheme()
-
-  console.log('[faiz:] === Polygonal theme', theme)
 
   useEffect(() => {
     const chartDom = document.getElementById('polygonal')

@@ -20,6 +20,7 @@ import Tabs from './components/Tabs'
 import s from './index.module.less'
 import { MENUS } from '@/constants/elements'
 import { managePluginTheme } from '@/util/util'
+import dayjs from 'dayjs'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
@@ -42,7 +43,7 @@ const Settings: React.FC<{
   const [pageOptions, setPageOptions] = useState<any>([])
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
-  const initialValues = getInitalSettings()
+  const initialValues = getInitalSettings({ filterInvalideProject: false })
   // TODO: 使用 only-write 减少重新渲染
   const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
   const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
@@ -68,6 +69,12 @@ const Settings: React.FC<{
     logseq.updateSettings({calendarList: 1, subscriptionList: 1, projectList: 1})
     // ensure subscription list is array
     logseq.updateSettings({subscriptionList: [], projectList: [], ...allValues})
+
+    if (typeof changedValues.weekStartDay === 'number') {
+      dayjs.updateLocale('en', {
+        weekStart: changedValues.weekStartDay,
+      })
+    }
 
     // exec after 500ms to make sure the settings are updated
     setTimeout(async () => {
@@ -130,6 +137,16 @@ const Settings: React.FC<{
             </Form.Item>
             <Form.Item label="Home Page" name="homePage">
               <Select options={MENUS} />
+            </Form.Item>
+            <Form.Item label="Ignore Tag" name="ignoreTag">
+              <Select
+                showSearch
+                placeholder="Project ID (Page Name)"
+                optionFilterProp="label"
+                style={{ width: '300px' }}
+                options={pageOptions}
+                filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+              />
             </Form.Item>
             <Form.Item label="Default Duration" name={["defaultDuration", 'value']}>
               <InputNumber

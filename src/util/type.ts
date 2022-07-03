@@ -21,6 +21,7 @@ export type ISettingsForm = {
   weekStartDay: 0 | 1
   weekHourStart?: number
   weekHourEnd?: number
+  ignoreTag?: string
   // journalDateFormatter: string
   defaultDuration: {
     unit: string

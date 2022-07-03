@@ -70,6 +70,8 @@ export type IEvent = BlockEntity & {
   }
   addOns: {
     showTitle: string
+    contentWithoutTime: string
+    project: string
     start?: string
     end?: string
     allDay?: boolean
@@ -129,15 +131,21 @@ export const getInternalEvents = async () => {
       {:block/page
         [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
       {:block/refs
-        [:block/journal-day]}])
+        [:block/journal-day :block/original-name]}])
     :where
     [?block :block/marker ?marker]
     [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE" "CANCELED"} ?marker)]]
   `)
   if (!tasks || tasks?.length === 0) return null
-  tasks = tasks.flat()
-  // const agendaCalendars = await getAgendaCalendars()
   const settings = getInitalSettings()
+  tasks = tasks.flat()
+  if (settings.ignoreTag) {
+    tasks = tasks.filter(task => {
+      const shouldIgnore = task.refs?.some(ref => ref?.['original-name'] === settings.ignoreTag)
+      return !shouldIgnore
+    })
+  }
+  console.log('[faiz:] === tasks', tasks)
 
   let fullEvents: IPageEvent = genDefaultProjectEvents()
   let journalEvents: IPageEvent = genDefaultProjectEvents()
@@ -218,4 +226,10 @@ export const getInternalEvents = async () => {
   await Promise.all(promiseList)
 
   return { journalEvents, projectEventsMap, fullEvents }
+}
+
+export const getEventPomodoroLength = (event: IEvent) => {
+  return event.addOns.pomodoros?.reduce((acc, pomo) => {
+    return acc + pomo.length
+  }, 0) || 0
 }

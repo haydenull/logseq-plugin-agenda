@@ -82,7 +82,6 @@ const ModifySchedule: React.FC<{
       // new block content
       // let newTitle = title
       const pomoReg = initialValues?.raw?.format === 'markdown' ? MARKDOWN_POMODORO_REG : ORG_POMODORO_REG
-      console.log('[faiz:] === pomoReg', pomoReg, initialValues?.raw?.content, initialValues?.raw?.content.match(pomoReg))
       let newTitle = (type === 'update' && initialValues?.raw?.addOns.pomodoros?.length) ? `${title} ${initialValues?.raw?.content.match(pomoReg)?.[0]}` : title
       if (newScheduleType === 'journal') {
         if (type === 'create') newTitle = isAllDay ? `TODO ${newTitle}` : `TODO ${startTime}-${endTime} ${newTitle}`
@@ -220,10 +219,10 @@ const ModifySchedule: React.FC<{
           <Input />
         </Form.Item>
         <Form.Item name="start" label="Start" rules={[{ required: true }]}>
-          <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} />
+          <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} format={ showTime ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD' } />
         </Form.Item>
         <Form.Item name="end" label="End" rules={[{ required: true }]}>
-          <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} />
+          <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} format={ showTime ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD' } />
         </Form.Item>
         <Form.Item name="isAllDay" label="All Day" rules={[{ required: true }]}>
           <Radio.Group>
