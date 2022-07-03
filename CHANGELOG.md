@@ -1,3 +1,19 @@
+# [2.5.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.4.2...v2.5.0) (2022-07-03)
+
+
+### Bug Fixes
+
+* Projects without ids should be ignored ([e7fffb1](https://github.com/haydenull/logseq-plugin-agenda/commit/e7fffb1aa72bd71d1218a63092310bc435ee0b2e))
+* update block error after drag from calendar ([53fe825](https://github.com/haydenull/logseq-plugin-agenda/commit/53fe8252f7019d6ab0cbf64259f2efb755610b27))
+
+
+### Features
+
+* add daily log calendar ([714c480](https://github.com/haydenull/logseq-plugin-agenda/commit/714c4806cebed06c5b2a204db4e14609cd1acf48))
+* add review page ([0f74697](https://github.com/haydenull/logseq-plugin-agenda/commit/0f74697647a76e58023d4e4783bf20413463ba0e))
+* Past overdue tasks are not displayed today calendar ([e3d151a](https://github.com/haydenull/logseq-plugin-agenda/commit/e3d151aa4fa2298d7f6d95c50f0ac43a141ab2ff))
+* supports ignore tasks by specified tag ([e46195d](https://github.com/haydenull/logseq-plugin-agenda/commit/e46195d6ab44a2ebb5ff77d735960932e69421c1))
+
 ## [2.4.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.4.1...v2.4.2) (2022-06-21)
 
 
