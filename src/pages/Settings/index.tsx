@@ -20,6 +20,7 @@ import Tabs from './components/Tabs'
 import s from './index.module.less'
 import { MENUS } from '@/constants/elements'
 import { managePluginTheme } from '@/util/util'
+import dayjs from 'dayjs'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
@@ -68,6 +69,12 @@ const Settings: React.FC<{
     logseq.updateSettings({calendarList: 1, subscriptionList: 1, projectList: 1})
     // ensure subscription list is array
     logseq.updateSettings({subscriptionList: [], projectList: [], ...allValues})
+
+    if (typeof changedValues.weekStartDay === 'number') {
+      dayjs.updateLocale('en', {
+        weekStart: changedValues.weekStartDay,
+      })
+    }
 
     // exec after 500ms to make sure the settings are updated
     setTimeout(async () => {

@@ -6,9 +6,9 @@ import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from '@/model/ev
 import { getEventPomodoroLength, IEvent } from '@/util/events'
 import dayjs, { Dayjs } from 'dayjs'
 import { useState } from 'react'
-import { Table } from 'antd'
+import { Button, message, Table } from 'antd'
 import { IPomodoroInfo } from '@/helper/pomodoro'
-import { extractDays } from '@/util/util'
+import { copyToClipboard, extractDays } from '@/util/util'
 import MixLineBar from './components/MixLineBar'
 import TreeMap from './components/TreeMap'
 import { getInitalSettings } from '@/util/baseInfo'
@@ -96,7 +96,7 @@ const index = () => {
   const [fullEvents] = useAtom(fullEventsAtom)
 
   const { weekStartDay } = getInitalSettings()
-  const [filter, setFilter] = useState<IReviewSearchForm>({timeframe: [dayjs().weekday(0).add(weekStartDay, 'day'), dayjs().weekday(6).add(weekStartDay, 'day')]})
+  const [filter, setFilter] = useState<IReviewSearchForm>({timeframe: [dayjs().weekday(0), dayjs().weekday(6)]})
   const events = filterEvents(fullEvents.tasks.withTime.concat(fullEvents.tasks.noTime), filter)
 
   const pomodoros = genPomoData(events, filter?.timeframe)
@@ -121,9 +121,20 @@ const index = () => {
         <h1 className="title-text">Review</h1>
         <div className="bg-quaternary flex flex-col flex-1 rounded-2xl box-border p-6 overflow-auto">
           <SearchForm onSearch={onSearch} initialValues={filter} />
-          {/* <CalendarCom schedules={[...subscriptionSchedules, ...internalSchedules, ...customCalendarSchedules]} isProjectCalendar={false} /> */}
           <Table
             dataSource={events}
+            title={() => (
+              <div className="flex justify-end">
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    copyToClipboard(events.map(event => event.addOns.showTitle).join('\n'))
+                    message.success(`🥳 ${events.length} pieces of data have been copied to clipboard!`)
+                  }}
+                >Export</Button>
+              </div>
+            )}
             columns={[
               {
                 title: 'Title',

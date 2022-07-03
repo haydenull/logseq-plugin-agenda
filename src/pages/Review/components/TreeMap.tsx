@@ -1,11 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
-import * as echarts from 'echarts'
+import React, { useEffect, useRef } from 'react'
+import * as echarts from 'echarts/core'
 import type { ECharts } from 'echarts/lib/echarts'
-import dayjs from 'dayjs'
-import { POLYGONAL_COLOR_CONFIG } from '@/constants/theme'
-import { getCurrentTheme } from '@/util/logseq'
 import useTheme from '@/hooks/useTheme'
-import { IPomodoroInfo } from '@/helper/pomodoro'
 
 export type IData = {
   name: string
@@ -23,6 +19,16 @@ const Polygonal: React.FC<{
     async function initChart() {
       if (!chartDom || !theme) return
       const option = {
+        title: {
+          text: 'Project Time',
+          left: 'center',
+        },
+        toolbox: {
+          feature: {
+            dataView: { show: true, readOnly: true },
+            saveAsImage: { show: true }
+          }
+        },
         tooltip: {
           formatter: function (info: any) {
             var value = info.value;
@@ -44,6 +50,7 @@ const Polygonal: React.FC<{
         },
         series: [
           {
+            name: 'Project Time',
             type: 'treemap',
             visibleMin: 300,
             data,
@@ -51,9 +58,45 @@ const Polygonal: React.FC<{
               show: true,
               formatter: '{b}'
             },
+            upperLabel: {
+              show: true,
+              height: 30,
+            },
             itemStyle: {
               borderColor: '#fff',
             },
+            levels: [
+              {
+                itemStyle: {
+                  borderColor: '#777',
+                  borderWidth: 0,
+                  gapWidth: 1
+                },
+                upperLabel: {
+                  show: false
+                }
+              },
+              {
+                itemStyle: {
+                  borderColor: '#555',
+                  borderWidth: 5,
+                  gapWidth: 1
+                },
+                emphasis: {
+                  itemStyle: {
+                    borderColor: '#ddd'
+                  }
+                }
+              },
+              {
+                colorSaturation: [0.35, 0.5],
+                itemStyle: {
+                  borderWidth: 5,
+                  gapWidth: 1,
+                  borderColorSaturation: 0.6
+                }
+              }
+            ],
           }
         ]
       };

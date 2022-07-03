@@ -10,7 +10,6 @@ import dayjs from 'dayjs'
 import { moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
 import { Button, Modal, Radio, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
-import Weekly from '@/components/Weekly'
 import { ICustomCalendar } from '@/util/type'
 import { IEvent } from '@/util/events'
 
@@ -41,13 +40,6 @@ const CalendarCom: React.FC<{
     visible: false,
     type: 'create',
   })
-  const showExportWeekly = isDailyLogCalendar && currentView === 'week'
-  const [weeklyModal, setWeeklyModal] = useState<{
-    visible: boolean
-    start?: string
-    end?: string
-  }>({ visible: false })
-
   const calendarRef = useRef<Calendar>()
 
   const changeShowDate = () => {
@@ -114,14 +106,6 @@ const CalendarCom: React.FC<{
       logseq.App.pushState('page', { name: date })
       logseq.hideMainUI()
     }
-  }
-  const onClickExportWeekly = async () => {
-    const [start, end] = showDate?.split(' ~ ') || []
-    setWeeklyModal({
-      visible: true,
-      start,
-      end,
-    })
   }
 
   useEffect(() => {
@@ -273,7 +257,6 @@ const CalendarCom: React.FC<{
       </div>
 
         <div>
-          { showExportWeekly && <Button className="mr-4" onClick={onClickExportWeekly}>Export Weekly</Button> }
           <Radio.Group
             options={CALENDAR_VIEWS}
             value={currentView}
@@ -301,12 +284,6 @@ const CalendarCom: React.FC<{
       </div>
       {/* ========= content end ========= */}
 
-      <Weekly
-        visible={weeklyModal.visible}
-        start={weeklyModal.start}
-        end={weeklyModal.end}
-        onCancel={() => setWeeklyModal({ visible: false })}
-      />
       {
         modifyScheduleModal.visible
         ? <ModifySchedule

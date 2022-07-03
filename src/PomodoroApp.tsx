@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { PomodoroConfig, usePomodoro } from 'use-pomodoro'
+import { PomodoroConfig, usePomodoro } from '@haydenull/use-pomodoro'
 import { RiExternalLinkLine } from 'react-icons/ri'
 import { FaPowerOff, FaHeartBroken } from 'react-icons/fa'
 import { transformBlockToEvent } from './helper/transform'

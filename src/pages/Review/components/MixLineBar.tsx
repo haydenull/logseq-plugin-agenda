@@ -1,9 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
-import * as echarts from 'echarts'
+import React, { useEffect, useRef } from 'react'
+import * as echarts from 'echarts/core'
 import type { ECharts } from 'echarts/lib/echarts'
 import dayjs from 'dayjs'
-import { POLYGONAL_COLOR_CONFIG } from '@/constants/theme'
-import { getCurrentTheme } from '@/util/logseq'
 import useTheme from '@/hooks/useTheme'
 import { IPomodoroInfo } from '@/helper/pomodoro'
 
@@ -29,7 +27,7 @@ const Polygonal: React.FC<{
         },
         toolbox: {
           feature: {
-            dataView: { show: true, readOnly: false },
+            dataView: { show: true, readOnly: true },
             magicType: { show: true, type: ['line', 'bar'] },
             restore: { show: true },
             saveAsImage: { show: true }
