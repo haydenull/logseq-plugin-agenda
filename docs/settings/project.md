@@ -1,7 +1,11 @@
 # Project
 
-After you add the name of the project (page name) here and set the style, the project will appear in the Dashboard.
+Add your project pages to this menu to show the projects in your Dashboard. You can customise the style of each project, and also toggle displaying the project in the Dashboard on and off. 
 
-When logseq is in the specified project page, clicking the icon to open the plugin will automatically navigate to the project details page.
+When Logseq is in the specified project page, clicking the plugin icon will automatically navigate to the project details page.
+
+Notes: 
+- The plugin accepts Namespaces in the project page name. 
+- Only enter the page name, i.e. don't use square brackets
 
 ![project-demo](../../screenshots/project-demo.gif)
