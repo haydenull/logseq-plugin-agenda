@@ -1,9 +1,7 @@
 import { BlockEntity } from "@logseq/libs/dist/LSPlugin"
-import { format, parse } from "date-fns"
+import { format } from "date-fns"
 import { Dayjs } from "dayjs"
-import { async } from "node-ical"
 import { getInitalSettings } from "./baseInfo"
-import { SHOW_DATE_FORMAT } from "./constants"
 import { fillBlockReference } from "./schedule"
 import { ISettingsForm } from "./type"
 import { extractDays } from "./util"
@@ -176,4 +174,18 @@ export const joinPrefixTaskBlockContent = (block: BlockEntity, content: string) 
   if (priority) res = `[#${priority}] ` + res
   if (marker) res = marker + ' ' + res
   return res
+}
+
+let DBChangeTimerID = 0
+export const DBChangeCallback = (cb, delay = 2000) => {
+  return ({ blocks, txData, txMeta }) => {
+    console.log('[faiz:] === DBChangeCallback', blocks, txData, txMeta)
+    const { marker, properties, uuid } = blocks[0]
+    if (!marker || !properties?.todoistId || !uuid) return
+    if (DBChangeTimerID) clearTimeout(DBChangeTimerID)
+    DBChangeTimerID = window.setTimeout(async () => {
+      // TODO: 检查uuid 是否还在编辑
+      // const checking = await logseq.Editor.checkEditing()
+    }, delay)
+  }
 }
