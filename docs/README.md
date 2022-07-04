@@ -9,8 +9,17 @@
 The original journalDateFormatter configuration required the user to read the dayjs document to fill in correctly, Version 1.8.1 removes the journalDateFormatter setting. Instead, I got it from logseq on my own, which unfortunately affected the original date parsing. If you get the error `Use yyyyy instead of YYYY (in YYYYMMDD) for formatting`, please click the fx button in the settings to change all `YYYYMMDD` to `yyyyMMdd`
 ::: -->
 
+## Overview Video
+For visual learners there is a great [video walkthrough](https://www.youtube.com/watch?v=m2RFQHmA-zA) of the plugin.  The narration is in Chinese but non-native speakers may still find it useful.
+
 
 ## 🎨 Features
+The agenda plugin provides a calendar view that integrates with logseq task management.   You can access the calendar view from the access button:
+
+![plugin-button](../screenshots/plugin-button.jpg)
+
+added to the upper right hand icon menu in logseq when the plugin is installed.
+
 - Supports dashboard
 - Supports sidebar
 - Supports dark mode
