@@ -176,16 +176,22 @@ export const joinPrefixTaskBlockContent = (block: BlockEntity, content: string) 
   return res
 }
 
-let DBChangeTimerID = 0
-export const DBChangeCallback = (cb, delay = 2000) => {
+let DBChangeTimerIDMap = new Map<string, number>()
+export const genDBTaskChangeCallback = (cb: (uuid: string) => void, delay = 2000) => {
   return ({ blocks, txData, txMeta }) => {
     console.log('[faiz:] === DBChangeCallback', blocks, txData, txMeta)
     const { marker, properties, uuid } = blocks[0]
     if (!marker || !properties?.todoistId || !uuid) return
-    if (DBChangeTimerID) clearTimeout(DBChangeTimerID)
-    DBChangeTimerID = window.setTimeout(async () => {
-      // TODO: 检查uuid 是否还在编辑
-      // const checking = await logseq.Editor.checkEditing()
-    }, delay)
+    const timerId = DBChangeTimerIDMap.get(uuid)
+    if (timerId) clearInterval(timerId)
+    DBChangeTimerIDMap.set(uuid, window.setInterval(async () => {
+      const checking = await logseq.Editor.checkEditing()
+      if (checking !== uuid) {
+        // 该 block 不在编辑状态
+        const _timerId = DBChangeTimerIDMap.get(uuid)
+        clearInterval(_timerId)
+        cb(uuid)
+      }
+    }, delay))
   }
 }

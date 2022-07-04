@@ -23,10 +23,11 @@ import { genToolbarPomodoro, togglePomodoro } from '@/helper/pomodoro'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import TaskListApp from './TaskListApp'
 import { IScheduleValue } from '@/components/ModifySchedule'
-import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
+import { genDBTaskChangeCallback, getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
+import { pullTask, todoistInstance, uploadBlock } from './helper/todoist'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -49,8 +50,10 @@ if (isDevelopment) {
 
     initializeSettings()
 
+    const { weekStartDay, todoist } = getInitalSettings()
+
     dayjs.updateLocale('en', {
-      weekStart: getInitalSettings().weekStartDay,
+      weekStart: weekStartDay,
     })
 
     managePluginTheme()
@@ -68,7 +71,8 @@ if (isDevelopment) {
     })
 
     logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
-      console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
+      // console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
+      genDBTaskChangeCallback(uploadBlock)?.({ blocks, txData, txMeta })
     })
 
     // setInterval(async () => {
@@ -95,12 +99,22 @@ if (isDevelopment) {
         renderPomodoroApp(uuid)
         logseq.showMainUI()
       },
+      pullTodoistTasks() {
+        pullTask()
+      },
     })
 
     logseq.App.registerUIItem('toolbar', {
       key: 'logseq-plugin-agenda',
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
+    if (todoist?.token && todoist.project) {
+      logseq.App.registerUIItem('toolbar', {
+        key: 'plugin-agenda-todoist',
+        template: '<a data-on-click="pullTodoistTasks" class="button"><i class="ti ti-sort-descending-2"></i></a>',
+      })
+      todoistInstance()
+    }
     logseq.App.registerCommandPalette({
       key: 'logseq-plugin-agenda:show',
       label: 'Show Agenda',

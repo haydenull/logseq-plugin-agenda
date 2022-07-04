@@ -29,6 +29,7 @@ const TABS = [
   { value: 'subscription', label: 'Subscription' },
   { value: 'calendarView', label: 'Calendar View' },
   { value: 'pomodoro', label: 'Pomodoro' },
+  { value: 'todoist', label: 'Todoist' },
 ]
 
 
@@ -409,6 +410,14 @@ const Settings: React.FC<{
                 </Form.Item>
               ))
             }
+          </div>
+          <div id="todoist" className={classNames(s.formBlock, { [s.show]: tab === 'todoist' })}>
+            <Form.Item label="API Token" name={['todoist', 'token']} labelCol={{ span: 5 }}>
+              <Input placeholder="Please input todoist api token" />
+            </Form.Item>
+            <Form.Item label="Project ID" name={['todoist', 'project']} labelCol={{ span: 5 }}>
+              <Input placeholder="Please input todoist project ID" />
+            </Form.Item>
           </div>
         </Form>
       </div>
