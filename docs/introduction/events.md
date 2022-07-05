@@ -13,7 +13,9 @@ Enter the task on the journal page for that date. If the task starts at a certai
 ### Example:
 ![journal tasks](../../screenshots/journal-tasks.png)
 
-## All pages (including non-project pages) 
+## All non-journal pages
+
+including pages that are not specified as 'Projects' in the plugin.
 
 The following methods are supported to set event dates:
 
@@ -27,3 +29,11 @@ The following methods are supported to set event dates:
 
 ### Example:
 ![project tasks](../../screenshots/project-tasks.png)
+
+## Milestone: A special kind of event
+
+When an event contains a milestone tag, it is displayed separately on the calendar.
+
+### Example:
+![milestone block](../../screenshots/milestone-block.png)
+![milestone calendar](../../screenshots/milestone-calendar.png)

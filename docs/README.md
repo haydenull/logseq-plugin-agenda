@@ -16,7 +16,7 @@ For visual learners there is a great [video walkthrough](https://www.youtube.com
 ## 🎨 Features
 The agenda plugin provides a calendar view that integrates with logseq task management.   You can access the calendar view from the access button:
 
-![plugin-button](../screenshots/plugin-button.jpg)
+![plugin-button](../screenshots/plugin-button.png)
 
 added to the upper right hand icon menu in logseq when the plugin is installed.
 
