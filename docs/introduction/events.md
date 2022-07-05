@@ -1,26 +1,29 @@
 # Events
 
-Events fall into two categories:
-- journal: tasks in the journal
-- project: tasks in other notes
+Events are any blocks in your database that have both a time dimension and a Logseq task property associated with them (e.g. TODO, DOING, LATER, NOW, WAITING)
 
-## Journal
+Events can be in your journal or in any other page. Note that there are slight differences in setting up events in the journal vs in other pages. 
 
-Use the date of the diary as the date of the task, and when the task starts with a time, treat it as the specific time of the task.
+Also note that if you want events to show up in your project dashboard, you have have to insert those blocks in the relevant project page.
 
-Example:
+## Journal page only
+
+Enter the task on the journal page for that date. If the task starts at a certain time, specify the time at the start of the block. You can also specify the end time, or alternatively the plugin will use your default time for events when displaying the event in your calendar.
+
+### Example:
 ![journal tasks](../../screenshots/journal-tasks.png)
 
+## All pages (including non-project pages) 
 
-## Project
+The following methods are supported to set event dates:
 
-The following methods are supported to set the task date:
+### With ability to specify times:
+- Logseq's built-in SCHEDULED and DEADLINE functionality
+- Agenda link: (Right mouse button block dot, select "Modify Schedule")
+  
+### No ability to specify times: 
+- Tasks with a date-reference: e.g. `LATER task [[Jun 10th, 2022]]`
+- A user definted start:: and end:: block property to block full days (note: properties are dates in the format 'YYYY-MM-DD'.)
 
-- date reference: `task [[Jun 10th, 2022]]`
-- scheduled
-- deadline
-- agenda link: (Right mouse button block dot, select "Modify Schedule")
-- start and end property
-
-Example:
+### Example:
 ![project tasks](../../screenshots/project-tasks.png)
