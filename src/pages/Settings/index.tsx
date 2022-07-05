@@ -21,6 +21,7 @@ import s from './index.module.less'
 import { MENUS } from '@/constants/elements'
 import { managePluginTheme } from '@/util/util'
 import dayjs from 'dayjs'
+import { getTodoistInstance } from '@/helper/todoist'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
@@ -415,8 +416,39 @@ const Settings: React.FC<{
             <Form.Item label="API Token" name={['todoist', 'token']} labelCol={{ span: 5 }}>
               <Input placeholder="Please input todoist api token" />
             </Form.Item>
-            <Form.Item label="Project ID" name={['todoist', 'project']} labelCol={{ span: 5 }}>
-              <Input placeholder="Please input todoist project ID" />
+            <Form.Item
+              label="Label"
+              name={['todoist', 'label']}
+              labelCol={{ span: 5 }}
+              // shouldUpdate={(prev, cur) => cur.todoist?.token?.Length === 40 && prev.todoist?.token !== cur.todoist?.token}
+              shouldUpdate={true}
+            >
+              {/* <Select.OptGroup
+                options={
+                  async ({ getFieldsValue }) => {
+                    console.log('[faiz:] === getFieldsValue', getFieldsValue(['todoist', 'token']))
+                    const todoist = getTodoistInstance(getFieldsValue(['todoist', 'token']))
+                    console.log('[faiz:] === todoist', todoist)
+                    const labels = await todoist?.getLabels()
+                    console.log('[faiz:] === labels', labels)
+                    return labels?.map(label => (
+                      { value: label.id, label: label.name }
+                    ))
+                  }
+                }
+              /> */}
+              <Select>
+                {({ getFieldsValue }) => {
+                  console.log('[faiz:] === getFieldsValue', getFieldsValue(['todoist', 'token']))
+                  // const todoist = getTodoistInstance(getFieldsValue(['todoist', 'token']))
+                  // console.log('[faiz:] === todoist', todoist)
+                  // const labels = await todoist?.getLabels()
+                  // console.log('[faiz:] === labels', labels)
+                  // return labels?.map(label => (
+                  //   <Select.Option value={label.id} key={label.id}>{label.name}</Select.Option>
+                  // ))
+                }}
+              </Select>
             </Form.Item>
           </div>
         </Form>

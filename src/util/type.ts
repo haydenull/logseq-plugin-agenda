@@ -42,8 +42,8 @@ export type ISettingsForm = {
     commonPomodoros: number[],
   },
   todoist?: {
-    token: string
-    project: number
+    token?: string
+    label?: number
   },
 }
 export type IQueryWithCalendar = {

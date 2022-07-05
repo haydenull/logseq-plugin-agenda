@@ -27,7 +27,7 @@ import { genDBTaskChangeCallback, getBlockData, getBlockUuidFromEventPath, isEna
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
-import { pullTask, todoistInstance, uploadBlock } from './helper/todoist'
+import { pullTask, getTodoistInstance, uploadBlock } from './helper/todoist'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -108,12 +108,12 @@ if (isDevelopment) {
       key: 'logseq-plugin-agenda',
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
-    if (todoist?.token && todoist.project) {
+    if (todoist?.token && todoist.label) {
       logseq.App.registerUIItem('toolbar', {
         key: 'plugin-agenda-todoist',
         template: '<a data-on-click="pullTodoistTasks" class="button"><i class="ti ti-sort-descending-2"></i></a>',
       })
-      todoistInstance()
+      getTodoistInstance()
     }
     logseq.App.registerCommandPalette({
       key: 'logseq-plugin-agenda:show',

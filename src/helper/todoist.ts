@@ -2,9 +2,11 @@ import { getInitalSettings } from '@/util/baseInfo'
 import { TodoistApi } from '@doist/todoist-api-typescript'
 
 let instance: TodoistApi | null = null
-export const todoistInstance = () => {
+export const getTodoistInstance = (token?: string) => {
+  if (token) return instance = new TodoistApi(token)
+
   const {todoist} = getInitalSettings()
-  if (todoist?.token && todoist?.project) return instance = new TodoistApi(todoist.token)
+  if (todoist?.token && todoist?.label) return instance = new TodoistApi(todoist.token)
 }
 
 export const uploadBlock = (uuid) => {
