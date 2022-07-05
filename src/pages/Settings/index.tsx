@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Form, Select, Input, Button, Switch, Popconfirm, InputNumber, Alert } from 'antd'
+import { Form, Select, Input, Button, Switch, Popconfirm, InputNumber, Alert } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { useForm } from 'antd/lib/form/Form'
 import classNames from 'classnames'
 import ColorPicker from '@/components/ColorPicker'
-import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME, YES_NO_SELECTION } from '@/util/constants'
+import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME } from '@/util/constants'
 import Query from '@/components/Query'
 import CreateCalendarModal from '@/components/CreateCalendarModal'
 import type { ISettingsForm } from '@/util/type'
 import { getInitalSettings, genAgendaQuery, genDefaultQuery } from '@/util/baseInfo'
 import { useAtom } from 'jotai'
-import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
+import { subscriptionSchedulesAtom } from '@/model/schedule'
 import { settingsAtom } from '@/model/settings'
 import { getSubCalendarSchedules } from '@/util/subscription'
-import { motion } from 'framer-motion'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 
 import Tabs from './components/Tabs'
@@ -22,6 +21,7 @@ import { MENUS } from '@/constants/elements'
 import { managePluginTheme } from '@/util/util'
 import dayjs from 'dayjs'
 import { getTodoistInstance } from '@/helper/todoist'
+import { TodoistApi } from '@doist/todoist-api-typescript'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
@@ -43,11 +43,11 @@ const Settings: React.FC<{
   const [settingForm] = useForm<ISettingsForm>()
   const [tab, setTab] = useState(TABS[0].value)
   const [pageOptions, setPageOptions] = useState<any>([])
+  const [todoistProjectOptions, setTodoistProjectOptions] = useState<any>([])
+  const [todoistLabelOptions, setTodoistLabelOptions] = useState<any>([])
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
   const initialValues = getInitalSettings({ filterInvalideProject: false })
-  // TODO: 使用 only-write 减少重新渲染
-  const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
   const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
   const [, setSettings] = useAtom(settingsAtom)
 
@@ -66,6 +66,10 @@ const Settings: React.FC<{
   }
   const onValuesChange = (changedValues: Partial<ISettingsForm>, allValues: ISettingsForm) => {
     console.log('[faiz:] === onValuesChange', changedValues, allValues)
+    if (changedValues.todoist?.token?.length === 40) {
+      const todoist = getTodoistInstance(changedValues.todoist?.token)
+      setTodoistOptions(todoist)
+    }
     setSettings(allValues)
     // hack https://github.com/logseq/logseq/issues/4447
     logseq.updateSettings({calendarList: 1, subscriptionList: 1, projectList: 1})
@@ -93,6 +97,16 @@ const Settings: React.FC<{
     }, 500)
   }
 
+  const setTodoistOptions = (todoist?: TodoistApi) => {
+    if (!todoist) return
+    todoist?.getProjects().then(projects => {
+      setTodoistProjectOptions(projects?.map(project => ({ value: project.id, label: project.name })))
+    })
+    todoist?.getLabels().then(labels => {
+      setTodoistLabelOptions(labels?.map(label => ({ value: label.id, label: label.name })))
+    })
+  }
+
   useEffect(() => {
     logseq.Editor.getAllPages().then(res => {
       setPageOptions(
@@ -103,6 +117,8 @@ const Settings: React.FC<{
           }))
       )
     })
+    const todoist = getTodoistInstance()
+    setTodoistOptions(todoist)
   }, [])
 
   return (
@@ -413,42 +429,34 @@ const Settings: React.FC<{
             }
           </div>
           <div id="todoist" className={classNames(s.formBlock, { [s.show]: tab === 'todoist' })}>
-            <Form.Item label="API Token" name={['todoist', 'token']} labelCol={{ span: 5 }}>
+            <Form.Item label="API Token" name={['todoist', 'token']} labelCol={{ span: 8 }}>
               <Input placeholder="Please input todoist api token" />
             </Form.Item>
-            <Form.Item
-              label="Label"
-              name={['todoist', 'label']}
-              labelCol={{ span: 5 }}
-              // shouldUpdate={(prev, cur) => cur.todoist?.token?.Length === 40 && prev.todoist?.token !== cur.todoist?.token}
-              shouldUpdate={true}
-            >
-              {/* <Select.OptGroup
-                options={
-                  async ({ getFieldsValue }) => {
-                    console.log('[faiz:] === getFieldsValue', getFieldsValue(['todoist', 'token']))
-                    const todoist = getTodoistInstance(getFieldsValue(['todoist', 'token']))
-                    console.log('[faiz:] === todoist', todoist)
-                    const labels = await todoist?.getLabels()
-                    console.log('[faiz:] === labels', labels)
-                    return labels?.map(label => (
-                      { value: label.id, label: label.name }
-                    ))
-                  }
-                }
-              /> */}
-              <Select>
-                {({ getFieldsValue }) => {
-                  console.log('[faiz:] === getFieldsValue', getFieldsValue(['todoist', 'token']))
-                  // const todoist = getTodoistInstance(getFieldsValue(['todoist', 'token']))
-                  // console.log('[faiz:] === todoist', todoist)
-                  // const labels = await todoist?.getLabels()
-                  // console.log('[faiz:] === labels', labels)
-                  // return labels?.map(label => (
-                  //   <Select.Option value={label.id} key={label.id}>{label.name}</Select.Option>
-                  // ))
-                }}
-              </Select>
+            <Form.Item label="Sync" name={['todoist', 'sync']} labelCol={{ span: 8 }}>
+              <Select
+                placeholder="Please select"
+                options={[
+                  { label: 'All Todoist Projects', value: 0 },
+                  { label: 'A Specific Todoist Project', value: 1 },
+                ]}
+              />
+            </Form.Item>
+            <Form.Item noStyle shouldUpdate={(prev, cur) => prev.todoist?.sync !== cur.todoist?.sync}>
+              {({ getFieldValue }) => {
+                const sync = getFieldValue(['todoist', 'sync'])
+                return (
+                  <Form.Item
+                    label={sync === 0 ? 'Todoist project' : 'Todoist project for new logseq events'}
+                    name={['todoist', 'project']}
+                    labelCol={{ span: 8 }}
+                  >
+                    <Select placeholder="Please select a todoist project" options={todoistProjectOptions} />
+                  </Form.Item>
+                )
+              }}
+            </Form.Item>
+            <Form.Item label="Todoist label for new logseq events" name={['todoist', 'label']} labelCol={{ span: 8 }}>
+              <Select placeholder="Please select todoist label" options={todoistLabelOptions} />
             </Form.Item>
           </div>
         </Form>

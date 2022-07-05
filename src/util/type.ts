@@ -43,6 +43,8 @@ export type ISettingsForm = {
   },
   todoist?: {
     token?: string
+    sync?: number
+    project?: number
     label?: number
   },
 }
