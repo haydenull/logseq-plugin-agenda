@@ -108,7 +108,7 @@ if (isDevelopment) {
       key: 'logseq-plugin-agenda',
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
-    if (todoist?.token && todoist.label) {
+    if (todoist?.token) {
       logseq.App.registerUIItem('toolbar', {
         key: 'plugin-agenda-todoist',
         template: '<a data-on-click="pullTodoistTasks" class="button"><i class="ti ti-sort-descending-2"></i></a>',
