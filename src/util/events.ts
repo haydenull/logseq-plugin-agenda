@@ -145,7 +145,6 @@ export const getInternalEvents = async () => {
       return !shouldIgnore
     })
   }
-  console.log('[faiz:] === tasks', tasks)
 
   let fullEvents: IPageEvent = genDefaultProjectEvents()
   let journalEvents: IPageEvent = genDefaultProjectEvents()

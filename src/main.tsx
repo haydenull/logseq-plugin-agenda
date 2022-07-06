@@ -27,7 +27,8 @@ import { genDBTaskChangeCallback, getBlockData, getBlockUuidFromEventPath, isEna
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
-import { pullTask, getTodoistInstance, uploadBlock } from './helper/todoist'
+import { pullTask, getTodoistInstance, uploadBlock, updateTask } from './helper/todoist'
+import { UpdateTaskArgs } from '@doist/todoist-api-typescript'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -72,7 +73,22 @@ if (isDevelopment) {
 
     logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
       // console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
-      genDBTaskChangeCallback(uploadBlock)?.({ blocks, txData, txMeta })
+      const syncToTodoist = async (uuid: string) => {
+        const block = await logseq.Editor.getBlock(uuid)
+        const event = await transformBlockToEvent(block!, getInitalSettings())
+
+        let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
+        if (event.rawTime) {
+          params = {
+            ...params,
+            dueDate: dayjs(event.addOns.start).format('YYYY-MM-DD'),
+            dueDatetime: event.addOns.allDay ? undefined : dayjs(event.addOns.start).toISOString(),
+          }
+        }
+        updateTask(event.properties?.todoistId, params)
+        // TODO: 关闭与重新打开 task
+      }
+      genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
     })
 
     // setInterval(async () => {
