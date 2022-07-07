@@ -57,9 +57,10 @@ export const pullTask = async () => {
   needCreateTasks.forEach(task => createBlock(task, preferredDateFormat))
   needUpdateEvents.forEach(event => updateBlock(event, event.todoistTask))
 }
-export const updateTask = (id: number, params: UpdateTaskArgs) => {
-  return instance?.updateTask(id, params)
-}
+export const updateTask = (id: number, params: UpdateTaskArgs) => instance?.updateTask(id, params)
+export const getTask = (id: number) => instance?.getTask(id)
+export const closeTask = (id: number) => instance?.closeTask(id)
+export const reopenTask = (id: number) => instance?.reopenTask(id)
 
 export const destroy = () => {
   instance = null

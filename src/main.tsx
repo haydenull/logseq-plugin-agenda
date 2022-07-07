@@ -27,7 +27,7 @@ import { genDBTaskChangeCallback, getBlockData, getBlockUuidFromEventPath, isEna
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
-import { pullTask, getTodoistInstance, uploadBlock, updateTask } from './helper/todoist'
+import { pullTask, getTodoistInstance, uploadBlock, updateTask, closeTask, getTask, reopenTask } from './helper/todoist'
 import { UpdateTaskArgs } from '@doist/todoist-api-typescript'
 
 dayjs.extend(weekday)
@@ -85,7 +85,12 @@ if (isDevelopment) {
             dueDatetime: event.addOns.allDay ? undefined : dayjs(event.addOns.start).toISOString(),
           }
         }
-        updateTask(event.properties?.todoistId, params)
+        const todoistId = event.properties?.todoistId
+        const task = await getTask(todoistId)
+        console.log('[faiz:] === changed task', task)
+        if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
+        if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
+        updateTask(todoistId, params)
         // TODO: 关闭与重新打开 task
       }
       genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
