@@ -40,9 +40,9 @@ function genLatest14PolygonalData() {
     dateArr.push(start.add(i, 'day'))
   }
   return dateArr.map((date) => {
-    const tasks = tasksMap.get(date.toISOString())
+    const tasks = tasksMap.get(date.format())
     return {
-      date: date.toISOString(),
+      date: date.format(),
       value: tasks?.length || 0,
     }
   })

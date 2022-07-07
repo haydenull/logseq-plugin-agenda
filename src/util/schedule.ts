@@ -294,7 +294,7 @@ export async function genSchedule(params: {
   const _defaultDuration = defaultDuration ||  getInitalSettings()?.defaultDuration
   let _end = end
   if ((category === 'time' || blockData?.category === 'time') && !end && start && _defaultDuration) {
-    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).toISOString()
+    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).format()
   }
   if (blockData?.category !== 'time' && !end) {
     _end = start
@@ -368,7 +368,7 @@ export const categorizeTask = (events: IEvent[]) => {
 export const scheduleStartDayMap = (events: IEvent[]) => {
   const res = new Map<string, IEvent[]>()
   events.forEach(event => {
-    const key = dayjs(event.addOns.start).startOf('day').toISOString()
+    const key = dayjs(event.addOns.start).startOf('day').format()
     if (!res.has(key)) res.set(key, [])
     res.get(key)?.push(event)
   })
@@ -377,8 +377,8 @@ export const scheduleStartDayMap = (events: IEvent[]) => {
 
 export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
   const url = new URL('agenda://')
-  url.searchParams.append('start', start.toISOString())
-  url.searchParams.append('end', end.toISOString())
+  url.searchParams.append('start', start.format())
+  url.searchParams.append('end', end.format())
   if (allDay === false) url.searchParams.append('allDay', 'false')
 
   const startText = allDay ? start.format('YYYY-MM-DD') : start.format('YYYY-MM-DD HH:mm')

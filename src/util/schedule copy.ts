@@ -109,8 +109,8 @@ message: ${res.reason.message}`
               {
                 ...schedule,
                 id: `overdue-${schedule.id}`,
-                start: dayjs().startOf('day').toISOString(),
-                end: dayjs().endOf('day').toISOString(),
+                start: dayjs().startOf('day').format(),
+                end: dayjs().endOf('day').format(),
                 isAllDay: false,
               },
             ]
@@ -242,8 +242,8 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaC
       {
         ...schedule,
         id: `overdue-${schedule.id}`,
-        start: dayjs().startOf('day').toISOString(),
-        end: dayjs().endOf('day').toISOString(),
+        start: dayjs().startOf('day').format(),
+        end: dayjs().endOf('day').format(),
         isAllDay: false,
       },
     ]
@@ -368,7 +368,7 @@ export async function genSchedule(params: {
   const _defaultDuration = defaultDuration ||  getInitalSettings()?.defaultDuration
   let _end = end
   if ((category === 'time' || blockData?.category === 'time') && !end && start && _defaultDuration) {
-    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).toISOString()
+    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).format()
   }
   if (blockData?.category !== 'time' && !end) {
     _end = start
@@ -445,7 +445,7 @@ export const categorizeTask = (schedules: ISchedule[]) => {
 export const scheduleStartDayMap = (schedules: ISchedule[]) => {
   const res = new Map<string, ISchedule[]>()
   schedules.forEach(schedule => {
-    const key = dayjs(schedule.start as string).startOf('day').toISOString()
+    const key = dayjs(schedule.start as string).startOf('day').format()
     if (!res.has(key)) res.set(key, [])
     res.get(key)?.push(schedule)
   })
@@ -454,8 +454,8 @@ export const scheduleStartDayMap = (schedules: ISchedule[]) => {
 
 export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
   const url = new URL('agenda://')
-  url.searchParams.append('start', start.toISOString())
-  url.searchParams.append('end', end.toISOString())
+  url.searchParams.append('start', start.format())
+  url.searchParams.append('end', end.format())
   if (allDay === false) url.searchParams.append('allDay', 'false')
 
   const startText = allDay ? start.format('YYYY-MM-DD') : start.format('YYYY-MM-DD HH:mm')

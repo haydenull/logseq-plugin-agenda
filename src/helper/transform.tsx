@@ -22,7 +22,7 @@ export const transformTaskEventToSchedule = (block: IEvent) => {
 
   return {
     id: block.uuid,
-    calendarId: block.addOns.isJournal ? 'Journal' : block.page?.originalName,
+    calendarId: block.addOns.isJournal ? 'Journal' : block.addOns.project,
     title: block.addOns.showTitle,
     body: block.content,
     category,
@@ -45,7 +45,7 @@ export const transformMilestoneEventToSchedule = (block: IEvent) => {
   if (!calendarStyle) calendarStyle = DEFAULT_CALENDAR_STYLE
   return {
     id: block.uuid,
-    calendarId: block.addOns.isJournal ? 'Journal' : block.page?.originalName,
+    calendarId: block.addOns.isJournal ? 'Journal' : block.addOns.project,
     title: block.addOns.showTitle,
     body: block.content,
     category: 'milestone',
@@ -79,7 +79,7 @@ export const transformEventToGanttEvent = (event: IEvent): IGanttEvent => {
       <p className="whitespace-pre-line">{event.content}</p>
 
       <a onClick={async () => {
-        const { id: pageId, originalName } = event || {}
+        const { id: pageId, originalName } = event.page || {}
         let pageName = originalName
         // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
         if (!pageName) {
@@ -97,8 +97,6 @@ export const transformEventToGanttEvent = (event: IEvent): IGanttEvent => {
 // ========== event ========
 export const transformBlockToEvent = async (block: BlockEntity, settings: ISettingsForm) => {
   const { defaultDuration, journal, projectList } = settings
-  // const isAgendaCalendar = agendaCalendars.some(calendar => calendar.id === block.page?.originalName)
-
   // replace page
   const page = block?.page?.originalName ? block.page : await logseq.Editor.getPage(block.page.id)
   block.page = page!
@@ -132,7 +130,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
     if (time.allDay) {
       event.addOns.end = time.start
     } else {
-      event.addOns.end = dayjs(event.addOns.start).add(defaultDuration.value, defaultDuration.unit).toISOString()
+      event.addOns.end = dayjs(event.addOns.start).add(defaultDuration.value, defaultDuration.unit).format()
     }
   }
 
