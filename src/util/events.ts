@@ -1,6 +1,6 @@
 import { transformBlockToEvent } from './../helper/transform';
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
-import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
+import type { BlockEntity, PageEntity } from '@logseq/libs/dist/LSPlugin'
 import dayjs from 'dayjs'
 import { getInitalSettings } from './baseInfo'
 import { pureTaskBlockContent } from './logseq'
@@ -72,6 +72,7 @@ export type IEvent = BlockEntity & {
     showTitle: string
     contentWithoutTime: string
     project: string
+    projectPage?: PageEntity
     start?: string
     end?: string
     allDay?: boolean
@@ -163,6 +164,7 @@ export const getInternalEvents = async () => {
       refs: task.refs?.map(_page => ({
         ..._page,
         journalDay: _page?.['journal-day'],
+        originalName: _page?.['original-name'],
       })),
     }
 
@@ -203,8 +205,8 @@ export const getInternalEvents = async () => {
       }
     } else {
       // project
-      const pageName = task.page?.originalName
-      const projectEvents = projectEventsMap.get(pageName) || genDefaultProjectEvents()
+      const projectName = event.addOns.project
+      const projectEvents = projectEventsMap.get(projectName) || genDefaultProjectEvents()
       if (isMilestone) {
         if (time) {
           projectEvents.milestones.withTime.push(event)
@@ -218,7 +220,7 @@ export const getInternalEvents = async () => {
           projectEvents.tasks.noTime.push(event)
         }
       }
-      projectEventsMap.set(pageName, projectEvents)
+      projectEventsMap.set(projectName, projectEvents)
     }
   })
 

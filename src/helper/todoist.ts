@@ -1,6 +1,6 @@
 import { transformBlockToEvent } from './transform';
 import { getInitalSettings } from '@/util/baseInfo'
-import { TodoistApi, Task, UpdateTaskArgs } from '@doist/todoist-api-typescript'
+import { TodoistApi, Task, UpdateTaskArgs, AddTaskArgs } from '@doist/todoist-api-typescript'
 import { IEvent } from '@/util/events';
 import dayjs from 'dayjs';
 import { format } from 'date-fns';
@@ -13,9 +13,6 @@ export const getTodoistInstance = (token?: string) => {
   if (todoist?.token) return instance = new TodoistApi(todoist.token)
 }
 
-export const uploadBlock = (uuid) => {
-  console.log('[faiz:] === uploadBlock', uuid)
-}
 
 export const pullTask = async () => {
   if (!instance) return logseq.App.showMsg('Please check your todoist configuration', 'error')
@@ -61,6 +58,7 @@ export const updateTask = (id: number, params: UpdateTaskArgs) => instance?.upda
 export const getTask = (id: number) => instance?.getTask(id)
 export const closeTask = (id: number) => instance?.closeTask(id)
 export const reopenTask = (id: number) => instance?.reopenTask(id)
+export const createTask = (args: AddTaskArgs) => instance?.addTask(args)
 
 export const destroy = () => {
   instance = null
@@ -114,8 +112,8 @@ export const updateBlock = async (event: IEvent, task?: Task) => {
     content += `\nSCHEDULED: <${dayjs(date).format(template)}>`
   }
 
-  console.log('[faiz:] === updateBlock', event, event.properties)
+  console.log('[faiz:] === updateBlock', event, task)
   await logseq.Editor.updateBlock(event.uuid, content)
   // updateBlock will remove all custom properties, so we need to add todoist-id again
-  return logseq.Editor.upsertBlockProperty(event.uuid, 'todoist-id', event.properties?.todoistId)
+  return logseq.Editor.upsertBlockProperty(event.uuid, 'todoist-id', task.id)
 }

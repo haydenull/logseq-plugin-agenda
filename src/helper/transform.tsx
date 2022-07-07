@@ -105,7 +105,10 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   const time = getEventTimeInfo(block)
   const pomodoros = getPomodoroInfo(block.content, block.format)
   const isMilestone = judgeIsMilestone(block)
-  const isJournal = Boolean(page?.journalDay)
+  const projectPage = block.refs.find(ref => ref.originalName === block.properties?.project?.[0])
+  const isJournal = projectPage
+                      ? Boolean(projectPage?.journalDay)
+                      : Boolean(page?.journalDay)
 
   let event: IEvent = time
                         ? { ...block, rawTime: time, addOns: { showTitle: '', project: 'Journal', contentWithoutTime: '', end: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task', ...time } }
@@ -173,7 +176,11 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   event.addOns.pomodoros = pomodoros || []
 
   // add project
-  event.addOns.project = isJournal ? 'Journal' : page?.originalName
+  event.addOns.project = isJournal
+                          ? 'Journal'
+                          : (projectPage?.originalName || page?.originalName)
+  // add project page
+  event.addOns.projectPage = projectPage || page
 
   return event
 }

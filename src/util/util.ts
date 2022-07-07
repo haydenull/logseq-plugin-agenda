@@ -1,4 +1,4 @@
-import { format, parse } from 'date-fns'
+import { format, formatRFC3339, parse } from 'date-fns'
 import { Dayjs } from 'dayjs'
 // import en from 'dayjs/locale/en'
 import { DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
@@ -151,4 +151,8 @@ export const notification = (msg: string) => {
   notification.onclick = () => {
     notification.close()
   }
+}
+
+export const formatDayjsToRFC3339 = (day: Dayjs, fractionDigits: 0|1|2|3 = 0) => {
+  return formatRFC3339(day.toDate(), { fractionDigits })
 }

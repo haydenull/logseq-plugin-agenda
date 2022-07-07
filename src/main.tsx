@@ -9,6 +9,7 @@ import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
 import isBetween from 'dayjs/plugin/isBetween'
+import utc from 'dayjs/plugin/utc'
 import * as echarts from 'echarts/core'
 import { GridComponent, ToolboxComponent, TooltipComponent, LegendComponent} from 'echarts/components'
 import { LineChart, GaugeChart, BarChart, TreemapChart } from 'echarts/charts'
@@ -18,17 +19,16 @@ import { getInitalSettings, initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
-import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
+import { formatDayjsToRFC3339, listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
 import { genToolbarPomodoro, togglePomodoro } from '@/helper/pomodoro'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import TaskListApp from './TaskListApp'
-import { IScheduleValue } from '@/components/ModifySchedule'
-import { genDBTaskChangeCallback, getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
+import { genDBTaskChangeCallback, getBlockUuidFromEventPath } from './util/logseq'
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
-import { pullTask, getTodoistInstance, uploadBlock, updateTask, closeTask, getTask, reopenTask } from './helper/todoist'
-import { UpdateTaskArgs } from '@doist/todoist-api-typescript'
+import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock } from './helper/todoist'
+import { AddTaskArgs, UpdateTaskArgs } from '@doist/todoist-api-typescript'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -37,6 +37,7 @@ dayjs.extend(localeData)
 dayjs.extend(difference)
 dayjs.extend(isBetween)
 dayjs.extend(updateLocale)
+dayjs.extend(utc)
 
 echarts.use([GridComponent, LineChart, BarChart, GaugeChart, TreemapChart, CanvasRenderer, UniversalTransition, ToolboxComponent, TooltipComponent, LegendComponent])
 
@@ -77,21 +78,14 @@ if (isDevelopment) {
         const block = await logseq.Editor.getBlock(uuid)
         const event = await transformBlockToEvent(block!, getInitalSettings())
 
-        let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
-        if (event.rawTime) {
-          params = {
-            ...params,
-            dueDate: dayjs(event.addOns.start).format('YYYY-MM-DD'),
-            dueDatetime: event.addOns.allDay ? undefined : dayjs(event.addOns.start).toISOString(),
-          }
-        }
         const todoistId = event.properties?.todoistId
         const task = await getTask(todoistId)
-        console.log('[faiz:] === changed task', task)
+        let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
+        if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
+        if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
         if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
         if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
         updateTask(todoistId, params)
-        // TODO: 关闭与重新打开 task
       }
       genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
     })
@@ -172,7 +166,7 @@ if (isDevelopment) {
       logseq.showMainUI()
     }
     logseq.Editor.registerBlockContextMenuItem('Agenda: Modify Schedule', editSchedule)
-    logseq.Editor.registerBlockContextMenuItem('Agenda: Start pomodoro Timer', async ({ uuid }) => {
+    logseq.Editor.registerBlockContextMenuItem('Agenda: Start Pomodoro Timer', async ({ uuid }) => {
       // logseq.Editor.insertAtEditingCursor(`{{renderer agenda, pomodoro-timer, 40, 'nostarted', 0}}`)
       logseq.App.registerUIItem('toolbar', {
         key: 'logseq-plugin-agenda-pomodoro',
@@ -183,6 +177,31 @@ if (isDevelopment) {
         renderPomodoroApp(uuid)
         logseq.showMainUI()
       }, 0)
+    })
+    logseq.Editor.registerBlockContextMenuItem('Agenda: Upload to todoist', async ({ uuid }) => {
+      const settings = getInitalSettings()
+      const { todoist } = settings
+      const block = await logseq.Editor.getBlock(uuid)
+      const event = await transformBlockToEvent(block!, settings)
+      if (!event.marker) return logseq.App.showMsg('This block is not a task', 'error')
+      if (event.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded', 'warning')
+
+      let params: AddTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
+      if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
+      if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
+      if (todoist?.project) params.projectId = todoist.project
+      if (todoist?.label) params.labelIds = [todoist.label]
+      createTask(params)
+        ?.then(async task => {
+          console.log('[faiz:] === createTask', task)
+          await updateBlock(event, task)
+          return logseq.App.showMsg('Upload task to todoist success')
+        })
+        .catch(err => {
+          logseq.App.showMsg('Upload task to todoist failed', 'error')
+          console.error('[faiz:] === Upload task to todoist failed', err)
+        })
+
     })
     logseq.Editor.registerSlashCommand('Agenda: Modify Schedule', editSchedule)
     logseq.Editor.registerSlashCommand("Agenda: Insert Today's Task", (e) => {
