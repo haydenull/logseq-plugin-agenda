@@ -6,14 +6,14 @@ import { categorizeTask } from '@/util/schedule'
 import { journalEventsAtom, projectEventsAtom } from './events'
 import { transformEventToGanttEvent } from '@/helper/transform'
 
-const MOCK_PROJECTS: IGroup[] = [
-  { id: '111', title: 'project1', events: [ { title: 'xxxxxxx', start: '2022-05-03', end: '2022-05-04', id: 'yyyy' } ], milestones: [ {start: '2022-05-07', end: '2022-05-07', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
-  { id: '222', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
-  { id: '333', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
- ]
+// const MOCK_PROJECTS: IGroup[] = [
+//   { id: '111', title: 'project1', events: [ { title: 'xxxxxxx', start: '2022-05-03', end: '2022-05-04', id: 'yyyy' } ], milestones: [ {start: '2022-05-07', end: '2022-05-07', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
+//   { id: '222', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
+//   { id: '333', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
+//  ]
 
 export const ganttDataAtom = atom<IGroup[] | null>((get) => {
-  if (import.meta.env.DEV) return MOCK_PROJECTS
+  // if (import.meta.env.DEV) return MOCK_PROJECTS
   const { projectList = [], journal } = getInitalSettings()
   const enabledCalendarList: ICustomCalendar[] = [journal! as ICustomCalendar].concat(projectList)?.filter(calendar => calendar?.enabled)
   const ganttData: IGroup[] = enabledCalendarList.map(calendar => {

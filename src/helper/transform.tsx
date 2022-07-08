@@ -73,6 +73,7 @@ export const transformEventToGanttEvent = (event: IEvent): IGanttEvent => {
     start: dayStart.format('YYYY-MM-DD'),
     end: dayEnd.format('YYYY-MM-DD'),
     raw: event,
+    completed: event.addOns.status === 'done',
     detailPopup: (<div className="text-xs">
       <div className="font-bold text-base my-2">{event.addOns.showTitle}</div>
       <div className="my-2">{`${dayStart.format('YYYY.MM.DD hh:mm a')} - ${dayEnd.format('hh:mm a')}`}</div>

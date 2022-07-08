@@ -131,7 +131,7 @@ const Calendar: React.FC<{
                 {/* ===== calendar event start ==== */}
                 {
                   group.events.map(event => {
-                    const { coordinates, size, detailPopup } = event
+                    const { coordinates, size, detailPopup, completed } = event
                     return (
                       <Popover
                         content={detailPopup}
@@ -139,7 +139,7 @@ const Calendar: React.FC<{
                       >
                         <div
                           key={event.id}
-                          className="calendar__event absolute bg-quaternary rounded cursor-pointer single_ellipsis shadow"
+                          className={`calendar__event absolute bg-quaternary rounded cursor-pointer single_ellipsis shadow ${completed ? 'completed' : ''}`}
                           style={{
                             left: coordinates.x,
                             top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,
@@ -159,7 +159,7 @@ const Calendar: React.FC<{
                 {/* ===== calendar milestone start ==== */}
                 {
                   group.milestones?.map(milestone => {
-                    const { coordinates, detailPopup } = milestone
+                    const { coordinates, detailPopup, completed } = milestone
                     return (
                       <>
                         <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
@@ -175,6 +175,7 @@ const Calendar: React.FC<{
                             style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}
                             title={milestone.title}
                           >
+                            { completed && <svg data-v-651e2bfe="" viewBox="0 0 16 16" fill="white" className="milestone__mark"><path data-v-651e2bfe="" d="M5.536 11.175L2 7.639l1.497-1.497L7 9.642l6-6.28 1.497 1.497-7.464 7.814-1.497-1.497z"></path></svg> }
                             <span className="single_ellipsis" style={{ maxWidth: calendarEventWidth - 20 }}>
                               {milestone.title}
                             </span>

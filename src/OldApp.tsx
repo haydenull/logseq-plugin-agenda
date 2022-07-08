@@ -80,6 +80,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           blockData: raw,
           calendarSchedule: schedule,
         },
+        completed: false,
         detailPopup: (<div className="text-xs">
           <div className="font-bold text-base my-2">{title}</div>
           <div className="my-2">{`${dayjsStart.format('YYYY.MM.DD hh:mm a')} - ${dayjsEnd.format('hh:mm a')}`}</div>

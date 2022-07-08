@@ -166,6 +166,9 @@
   margin: 2px 4px;
   padding: 0 4px;
 }
+.calendar__event.completed {
+  opacity: 0.5;
+}
 .calendar__milestone__line {
   border-left: 2px solid var(--ls-tertiary-background-color);
 }
@@ -183,6 +186,12 @@
   border-radius: 3px;
   background-color: var(--ls-tertiary-background-color);
   transform: rotateZ(45deg);
+}
+.calendar__milestone__text .milestone__mark {
+  position: absolute;
+  left: -8px;
+  width: 13px;
+  height: 13px;
 }
 .single_ellipsis {
   overflow: hidden;
