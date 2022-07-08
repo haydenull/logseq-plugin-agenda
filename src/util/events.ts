@@ -25,7 +25,7 @@ export const getEventTimeInfo = (block: BlockEntity): {
 
   // custom link date
   const projectTimeInfo = getProjectTaskTime(block.content)
-  if (projectTimeInfo) return { start: projectTimeInfo.start, end: projectTimeInfo.end, allDay: projectTimeInfo.allDay !== 'false', timeFrom: 'customLink' }
+  if (projectTimeInfo) return { start: dayjs(Number(projectTimeInfo.start)).format(), end: dayjs(Number(projectTimeInfo.end)).format(), allDay: projectTimeInfo.allDay !== 'false', timeFrom: 'customLink' }
 
   // scheduled date
   if (block.scheduled) {

@@ -377,8 +377,8 @@ export const scheduleStartDayMap = (events: IEvent[]) => {
 
 export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
   const url = new URL('agenda://')
-  url.searchParams.append('start', start.format())
-  url.searchParams.append('end', end.format())
+  url.searchParams.append('start', '' + start.valueOf())
+  url.searchParams.append('end', '' + end.valueOf())
   if (allDay === false) url.searchParams.append('allDay', 'false')
 
   const startText = allDay ? start.format('YYYY-MM-DD') : start.format('YYYY-MM-DD HH:mm')
