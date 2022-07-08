@@ -354,7 +354,7 @@ export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
   return false
 }
 
-export const categorizeTask = (events: IEvent[]) => {
+export const categorizeTask = (events: IEvent[] = []) => {
   return {
     waiting: events.filter(event => event?.addOns?.status === 'waiting'),
     todo: events.filter(event => event?.addOns?.status === 'todo'),
