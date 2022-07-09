@@ -118,7 +118,6 @@ export const extractBlockContentToHtml = async (block: BlockEntity, depth = 1): 
   if (!block) return block
   let { content, children } = block
   content = await fillBlockReference(content)
-  console.log('[faiz:] === content', content)
   const intent = `margin-left: ${(depth - 1) * 20}px;`
   const contentHtml = `<p style="${intent} white-space: pre-line;">${content}</p>`
   if (children && children?.length > 0) {

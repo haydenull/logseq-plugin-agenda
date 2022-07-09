@@ -52,7 +52,6 @@ const Project: React.FC<{
   const progress = totalCount === 0 ? 0 : (doneCount / totalCount)
 
   const onClickMilestone = async (milestone: IEvent) => {
-    console.log('[faiz:] === milestone', milestone)
     const { id: pageId, originalName } = milestone?.raw?.page || {}
     let pageName = originalName
     if (!pageName) {

@@ -19,7 +19,7 @@ import { getInitalSettings, initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
-import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
+import { listenEsc, log, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
 import { genToolbarPomodoro, togglePomodoro } from '@/helper/pomodoro'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import TaskListApp from './TaskListApp'
@@ -44,10 +44,10 @@ echarts.use([GridComponent, LineChart, BarChart, GaugeChart, TreemapChart, Canva
 const isDevelopment = import.meta.env.DEV
 
 if (isDevelopment) {
-  renderApp('browser')
+  renderApp()
   // renderPomodoroApp('sdfasfasfsa')
 } else {
-  console.info('=== logseq-plugin-agenda loaded ===')
+  log('=== logseq-plugin-agenda loaded ===')
   logseq.ready(() => {
 
     initializeSettings()
@@ -99,7 +99,7 @@ if (isDevelopment) {
 
     logseq.provideModel({
       show() {
-        renderApp('logseq')
+        renderApp()
         logseq.showMainUI()
       },
       showPomodoro(e) {
@@ -128,7 +128,7 @@ if (isDevelopment) {
       key: 'logseq-plugin-agenda:show',
       label: 'Show Agenda',
     }, data => {
-      renderApp('logseq')
+      renderApp()
       logseq.showMainUI()
     })
 
@@ -187,7 +187,6 @@ if (isDevelopment) {
       if (todoist?.label) params.labelIds = [todoist.label]
       createTask(params)
         ?.then(async task => {
-          console.log('[faiz:] === createTask', task)
           await updateBlock(event, task)
           return logseq.App.showMsg('Upload task to todoist success')
         })
@@ -199,7 +198,6 @@ if (isDevelopment) {
     })
     logseq.Editor.registerSlashCommand('Agenda: Modify Schedule', editSchedule)
     logseq.Editor.registerSlashCommand("Agenda: Insert Today's Task", (e) => {
-      console.log('[faiz:] === registerSlashCommand', e)
       renderModalApp({
         type: 'insertTodaySchedule',
         data: {
@@ -213,11 +211,9 @@ if (isDevelopment) {
       logseq.Editor.insertAtEditingCursor(`{{renderer agenda, task-list}}`)
     })
     logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments: args, uuid } }) => {
-      console.log('[faiz:] === onMacroRendererSlotted', slot, args, uuid)
       if (args?.[0] !== 'agenda') return
       if (args?.[1] === 'task-list') {
         const renderered = parent.document.getElementById(slot)?.childElementCount
-        console.log('[faiz:] === is task-list renderered', renderered)
         if (renderered) return
 
         const id = `agenda-task-list-${slot}`
@@ -248,13 +244,7 @@ if (isDevelopment) {
           )
         }, 0)
       } else if (args?.[1] === 'pomodoro-timer') {
-        const renderered = parent.document.getElementById(slot)?.childElementCount
-        console.log('[faiz:] === is pomodoro-timer renderered', renderered)
-
         const id = `agenda-pomodoro-timer-${slot}`
-        const duration = args?.[2] || 40
-        const status = args?.[3] || 'nostarted'
-        const count = args?.[4] || 0
         logseq.provideUI({
           key: `agenda-${slot}`,
           slot,
@@ -262,14 +252,6 @@ if (isDevelopment) {
           template: `<div id="${id}"></div>`,
           // style: {},
         })
-        // setTimeout(() => {
-        //   ReactDOM.render(
-        //     <React.StrictMode>
-        //       <PomodoroApp duration={Number(duration)} initialStatus={status} uuid={uuid} />
-        //     </React.StrictMode>,
-        //     parent.document.getElementById(id)
-        //   )
-        // }, 0)
       }
     })
 
@@ -319,7 +301,7 @@ if (isDevelopment) {
   })
 }
 
-async function renderApp(env: string) {
+async function renderApp() {
   window.currentApp = 'app'
   togglePomodoro(false)
   toggleAppTransparent(false)
@@ -327,10 +309,8 @@ async function renderApp(env: string) {
   const page = await logseq.Editor.getCurrentPage()
   const { projectList = [] } = getInitalSettings()
   if (projectList.some(project => Boolean(project.id) && project.id === page?.originalName)) defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
-  console.log('[faiz:] === defaultRoute', defaultRoute)
   ReactDOM.render(
     <React.StrictMode>
-      {/* <App env={env} /> */}
       <App defaultRoute={defaultRoute} />
     </React.StrictMode>,
     document.getElementById('root')

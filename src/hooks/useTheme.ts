@@ -8,7 +8,6 @@ export default function useTheme() {
 
   useEffect(() => {
     getCurrentTheme().then(logseqTheme => {
-      console.log('[faiz:] === getCurrentTheme', logseqTheme)
       setTheme(logseqTheme)
     })
   })

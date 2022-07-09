@@ -63,12 +63,10 @@ const ChronoView: React.FC<{}> = () => {
 
   // 由于useMemo 不支持 async，只能使用useEffect 来替代？这不合理, 被迫将 useEffect 当作监听来用
   const [data, setData] = useState<TimelineItem[]>([])
-  console.log('[faiz:] === data', data)
   useEffect(() => {
     const [start, end] = dateRange
     getJouralPageBlocksTree(start, end)
       .then(async res => {
-        console.log('[faiz:] === getJouralPageBlocksTree', res)
         const { preferredDateFormat } = await logseq.App.getUserConfigs()
         setData(await Promise.all(res.map(async (page, index) => {
           const date = start.add(index, 'day')

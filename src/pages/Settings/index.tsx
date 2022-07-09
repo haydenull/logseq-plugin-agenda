@@ -65,7 +65,6 @@ const Settings: React.FC<{
     onValuesChange({ calendarList }, settingForm.getFieldsValue(true))
   }
   const onValuesChange = (changedValues: Partial<ISettingsForm>, allValues: ISettingsForm) => {
-    console.log('[faiz:] === onValuesChange', changedValues, allValues)
     if (changedValues.todoist?.token?.length === 40) {
       const todoist = getTodoistInstance(changedValues.todoist?.token)
       setTodoistOptions(todoist)
@@ -221,7 +220,6 @@ const Settings: React.FC<{
             <Form.List name="projectList">
               {(fields, { add, remove, move }) => (<>
                 <DragDropContext onDragEnd={(e) => {
-                  console.log('[faiz:] === onDragEnd', e)
                   if (e?.destination) move(e.source.index, e.destination.index)
                 }}>
                   <Droppable droppableId="droppable-projects">
@@ -284,7 +282,6 @@ const Settings: React.FC<{
             <Form.List name="calendarList">
               {(fields, { add, remove, move }) => (<>
                 <DragDropContext onDragEnd={(e) => {
-                  console.log('[faiz:] === onDragEnd', e)
                   if (e?.destination?.index === 0 || e?.source?.index === 0) return
                   if (e?.destination) move(e.source.index, e.destination.index)
                 }}>

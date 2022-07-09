@@ -58,7 +58,6 @@ const Calendar: React.FC<{
     }
   })
   const groupHeightCount = dataWithCoordinates.reduce((acc, cur) => acc + cur.height + CALENDAR_GROUP_GAP, 0)
-  console.log('[faiz:] === dataWithCoordinates', dataWithCoordinates)
 
   useEffect(() => {
     document.getElementById(`date${uniqueId}${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center' })

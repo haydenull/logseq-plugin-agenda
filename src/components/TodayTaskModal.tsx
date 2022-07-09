@@ -55,8 +55,6 @@ const TodayTaskModal: React.FC<{
     }
   }, [value?.length, options?.length])
 
-  console.log('[faiz:] === options', options, tasks, uuid)
-
   return (
     <Modal
       visible={visible}

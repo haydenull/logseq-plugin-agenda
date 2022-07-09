@@ -40,7 +40,7 @@ import dayjs from 'dayjs'
       return Promise.all(buildEventPromiseList)
     } catch (error) {
       logseq.App.showMsg(`Parse Calendar ${enabledCalendarList[index].id} data error\n${error}`, 'error')
-      console.log('[faiz:] === Parse Calendar error', error)
+      console.error('[faiz:] === Parse Calendar error', error)
       return []
     }
   })

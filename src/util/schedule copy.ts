@@ -14,12 +14,10 @@ export const getSchedules = async () => {
   const agendaCalendars = await getAgendaCalendars()
   const agendaCalendarIds = agendaCalendars.map(calendar => calendar.id)
 
-  // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
   const settings = getInitalSettings()
-  console.log('[faiz:] === settings', settings)
   const { calendarList: calendarConfigs = [], logKey, journal, defaultDuration, projectList } = settings
   const customCalendarConfigs = calendarConfigs.concat(journal!).filter(config => config?.enabled)
 
@@ -43,7 +41,6 @@ export const getSchedules = async () => {
     } else {
       blocks = await logseq.DB.datascriptQuery(script)
     }
-    // console.log('[faiz:] === search blocks by query: ', script, blocks)
 
     const buildSchedulePromiseList = flattenDeep(blocks).map((block) => convertBlockToSchedule({ block, queryWithCalendar, agendaCalendarIds, settings }))
     return Promise.all(buildSchedulePromiseList)
@@ -122,7 +119,6 @@ message: ${res.reason.message}`
       return taskSchedules.concat(milestoneSchedules)?.flat().filter(Boolean)
     })
     const projectSchedules = await Promise.all(promiseList)
-    console.log('[faiz:] === projectSchedules', projectSchedules)
     // @ts-ignore
     calendarSchedules = flattenDeep(calendarSchedules.concat(projectSchedules))
   }
@@ -130,7 +126,6 @@ message: ${res.reason.message}`
   // Daily Logs
   if (logKey?.enabled) {
     const logs = await logseq.DB.q(`[[${logKey.id}]]`)
-    // console.log('[faiz:] === search logs', logs)
     const _logs = logs
                   ?.filter(block => {
                     if (block.headingLevel && block.format === 'markdown') {

@@ -110,7 +110,6 @@ const CalendarCom: React.FC<{
 
   useEffect(() => {
     if (calendarRef.current) {
-      console.log('[faiz:] === schedules changed and refresh calendar', schedules)
       calendarRef.current.clear()
       calendarRef.current.createSchedules(schedules)
     }
@@ -122,7 +121,6 @@ const CalendarCom: React.FC<{
     window.requestAnimationFrame(async () => {
       let calendarOptions = await getDefaultCalendarOptions()
       if (isDailyLogCalendar) calendarOptions = genDailyLogCalendarOptions(calendarOptions)
-      console.log('[faiz:] === calendarOptions', calendarOptions)
       calendarRef.current = new Calendar('#calendar', {
         ...calendarOptions,
       })
@@ -163,7 +161,6 @@ const CalendarCom: React.FC<{
         })
       })
       calendarRef.current.on('beforeUpdateSchedule', async function(event) {
-        console.log('[faiz:] === beforeUpdateSchedule', event)
         const { schedule, changes, triggerEventName, start: finalStart, end: finalEnd } = event
         if (triggerEventName === 'click') {
           // click edit button of detail popup

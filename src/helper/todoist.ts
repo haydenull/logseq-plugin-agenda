@@ -27,7 +27,8 @@ export const pullTask = async () => {
   }
   const blocks = await getTodoistBlocks()
   const events = await Promise.all(blocks?.map(block => transformBlockToEvent(block, settings)) || [])
-  console.log('[faiz:] === pullTask', tasks, events)
+  console.info('[faiz: pull totoist] === todoist active tasks:', tasks)
+  console.info('[faiz: pull totoist] === exists logseq events:', events)
 
   let needUpdateEvents: (IEvent & { todoistTask?: Task })[] = []
   let needCreateTasks: Task[] = []
@@ -49,7 +50,9 @@ export const pullTask = async () => {
   // @ts-ignore
   needUpdateEvents = [...needUpdateEvents, ...eventsNotInActiveTasks]
 
-  console.log('[faiz:] === pullTask res', needUpdateEvents, needCreateTasks, eventsNotInActiveTasks)
+  console.log('[faiz: pull todoist] === needUpdateEvents', needUpdateEvents)
+  console.log('[faiz: pull todoist] === needCreateTasks', needCreateTasks)
+  console.log('[faiz: pull todoist] === eventsNotInActiveTasks', eventsNotInActiveTasks)
 
   needCreateTasks.forEach(task => createBlock(task, preferredDateFormat))
   needUpdateEvents.forEach(event => updateBlock(event, event.todoistTask))
@@ -112,7 +115,6 @@ export const updateBlock = async (event: IEvent, task?: Task) => {
     content += `\nSCHEDULED: <${dayjs(date).format(template)}>`
   }
 
-  console.log('[faiz:] === updateBlock', event, task)
   await logseq.Editor.updateBlock(event.uuid, content)
   // updateBlock will remove all custom properties, so we need to add todoist-id again
   return logseq.Editor.upsertBlockProperty(event.uuid, 'todoist-id', task.id)

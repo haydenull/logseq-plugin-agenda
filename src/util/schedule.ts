@@ -13,7 +13,6 @@ import { IEvent } from './events';
 
 export const getCustomCalendarSchedules = async () => {
 
-  // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
@@ -41,7 +40,6 @@ export const getCustomCalendarSchedules = async () => {
     } else {
       blocks = await logseq.DB.datascriptQuery(script)
     }
-    // console.log('[faiz:] === search blocks by query: ', script, blocks)
 
     const buildSchedulePromiseList = flattenDeep(blocks).map((block) => convertBlockToSchedule({ block, queryWithCalendar, settings }))
     return Promise.all(buildSchedulePromiseList)
@@ -71,7 +69,6 @@ export const getDailyLogSchedules = async () => {
   const { logKey, defaultDuration } = getInitalSettings()
   if (!logKey?.enabled) return []
   const logs = await logseq.DB.q(`[[${logKey.id}]]`)
-  // console.log('[faiz:] === search logs', logs)
   const _logs = logs
                 ?.filter(block => {
                   if (block.headingLevel && block.format === 'markdown') {
