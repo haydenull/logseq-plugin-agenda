@@ -104,7 +104,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   const time = getEventTimeInfo(block)
   const pomodoros = getPomodoroInfo(block.content, block.format)
   const isMilestone = judgeIsMilestone(block)
-  const projectPage = block.refs.find(ref => ref.originalName === block.properties?.project?.[0])
+  const projectPage = block.refs?.find(ref => ref.originalName === block.properties?.project?.[0])
   const isJournal = projectPage
                       ? Boolean(projectPage?.journalDay)
                       : Boolean(page?.journalDay)

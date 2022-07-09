@@ -130,9 +130,9 @@ if (isDevelopment) {
         const settings = getInitalSettings()
         const { todoist } = settings
         const block = await logseq.Editor.getBlock(uuid)
+        if (!block?.marker) return logseq.App.showMsg('This block is not a task', 'error')
+        if (block?.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded,\nplease do not upload it again', 'error')
         const event = await transformBlockToEvent(block!, settings)
-        if (!event.marker) return logseq.App.showMsg('This block is not a task', 'error')
-        if (event.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded', 'warning')
 
         let params: AddTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
         if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
