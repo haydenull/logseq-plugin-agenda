@@ -1,3 +1,10 @@
+## [2.6.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.0...v2.6.1) (2022-07-09)
+
+
+### Bug Fixes
+
+* show message when upload a non-task block to todoist ([c5497ce](https://github.com/haydenull/logseq-plugin-agenda/commit/c5497cee3ddc654ae2fe9713a2064254077064be))
+
 # [2.6.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.5.0...v2.6.0) (2022-07-09)
 
 
