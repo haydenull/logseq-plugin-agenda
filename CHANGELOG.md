@@ -1,3 +1,16 @@
+# [2.6.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.5.0...v2.6.0) (2022-07-09)
+
+
+### Bug Fixes
+
+* 🐛 gantt complete style ([2dbc337](https://github.com/haydenull/logseq-plugin-agenda/commit/2dbc337182a5c265b43c9e0bc576212fb13f854c))
+* 🐛 number of dashboard project card error ([a6028bc](https://github.com/haydenull/logseq-plugin-agenda/commit/a6028bcce31f8d7378bbab874bd4f0de0c274452))
+
+
+### Features
+
+* supports todoist ([612d80d](https://github.com/haydenull/logseq-plugin-agenda/commit/612d80d26a61a437b1501dd17335d30ebacb2a45))
+
 # [2.5.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.4.2...v2.5.0) (2022-07-03)
 
 
