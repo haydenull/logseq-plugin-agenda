@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Form, Select, Input, Button, Switch, Popconfirm, InputNumber, Alert } from 'antd'
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { MinusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { useForm } from 'antd/lib/form/Form'
 import classNames from 'classnames'
 import ColorPicker from '@/components/ColorPicker'
@@ -174,7 +174,7 @@ const Settings: React.FC<{
                 }
               />
             </Form.Item>
-            <Form.Item label="Log Key" required>
+            <Form.Item label="Log Key" tooltip="Interstitial Journal">
               <div className="flex items-center justify-between">
                 <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
                   <Input style={{ width: '240px' }} />
@@ -426,8 +426,14 @@ const Settings: React.FC<{
             }
           </div>
           <div id="todoist" className={classNames(s.formBlock, { [s.show]: tab === 'todoist' })}>
-            <Form.Item label="API Token" name={['todoist', 'token']} labelCol={{ span: 8 }}>
-              <Input placeholder="Please input todoist api token" />
+          <Alert message="Restart logseq after modifying the configuration, and the synchronization icon will appear in toolbar." type="info" className="mb-6" />
+            <Form.Item
+              label="API Token"
+              name={['todoist', 'token']}
+              labelCol={{ span: 8 }}
+              tooltip={<Button type="link" onClick={() => logseq.App.openExternalLink('https://todoist.com/app/settings/integrations')}>Paste your todoist api token here</Button>}
+            >
+              <Input placeholder="Please input todoist api token"/>
             </Form.Item>
             <Form.Item label="Sync" name={['todoist', 'sync']} labelCol={{ span: 8 }}>
               <Select

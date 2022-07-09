@@ -1,12 +1,21 @@
-import { transformBlockToEvent } from './transform';
+import { transformBlockToEvent } from './transform'
 import { getInitalSettings } from '@/util/baseInfo'
 import { TodoistApi, Task, UpdateTaskArgs, AddTaskArgs } from '@doist/todoist-api-typescript'
-import { IEvent } from '@/util/events';
-import dayjs from 'dayjs';
-import { format } from 'date-fns';
+import { IEvent } from '@/util/events'
+import dayjs from 'dayjs'
+import { format } from 'date-fns'
+import { log } from '@/util/util'
+
+export const PRIORITY_MAP = {
+  4: 'A',
+  3: 'B',
+  2: 'C',
+  1: undefined,
+}
 
 let instance: TodoistApi | null = null
 export const getTodoistInstance = (token?: string) => {
+  if (instance && !token) return instance
   if (token) return instance = new TodoistApi(token)
 
   const { todoist } = getInitalSettings()
@@ -15,6 +24,7 @@ export const getTodoistInstance = (token?: string) => {
 
 
 export const pullTask = async () => {
+  log('\n=== Start synchronizing tasks from todoist ... ===\n', '#d27e24')
   if (!instance) return logseq.App.showMsg('Please check your todoist configuration', 'error')
   const settings = getInitalSettings()
   const { preferredDateFormat } = await logseq.App.getUserConfigs()
@@ -56,6 +66,10 @@ export const pullTask = async () => {
 
   needCreateTasks.forEach(task => createBlock(task, preferredDateFormat))
   needUpdateEvents.forEach(event => updateBlock(event, event.todoistTask))
+
+  logseq.App.showMsg(`Get todoist data successfully:\n${needCreateTasks.length} new tasks created\n${needUpdateEvents.length} tasks updated`)
+
+  log('\n=== Synchronizing tasks from todoist success ===\n', 'green')
 }
 export const updateTask = (id: number, params: UpdateTaskArgs) => instance?.updateTask(id, params)
 export const getTask = (id: number) => instance?.getTask(id)
@@ -77,12 +91,13 @@ export const isEventNeedUpdate = (event: IEvent, task: Task) => {
   const _completed = event.addOns.status === 'done'
   const _datetime = event.rawTime ? dayjs(event.rawTime?.start).valueOf() : undefined
   const _content = event.addOns.contentWithoutTime?.split('\n')[0]
+  const _priority = event.priority
 
-  const { completed, due, content } = task
+  const { completed, due, content, priority } = task
   let datetime = due ? (
     due?.datetime ? dayjs(due?.datetime).valueOf() : dayjs(due.date).valueOf()
   ) : undefined
-  if (_completed !== completed || _content !== content || _datetime !== datetime) return true
+  if (_completed !== completed || _content !== content || _datetime !== datetime || _priority !== PRIORITY_MAP[priority]) return true
   return false
 }
 
@@ -91,7 +106,10 @@ export const createBlock = async (task: Task, dateFormat: string) => {
   const journalName = format(dayjs().valueOf(), dateFormat)
   const page = await logseq.Editor.createPage(journalName, {}, { journal: true })
 
-  let content = `TODO ${task.content}`
+  let content = task.content
+  const logseqPriority = PRIORITY_MAP[task.priority]
+  if (logseqPriority) content = `[#${logseqPriority}] ${content}`
+  content = `TODO ${content}`
   if (date) {
     const template = task.due?.datetime ? 'YYYY-MM-DD ddd HH:mm' : 'YYYY-MM-DD ddd'
     content += `\nSCHEDULED: <${dayjs(date).format(template)}>`
@@ -108,8 +126,13 @@ export const createBlock = async (task: Task, dateFormat: string) => {
 export const updateBlock = async (event: IEvent, task?: Task) => {
   if (!task) return
 
+  let content = task.content
+  const logseqPriority = PRIORITY_MAP[task.priority]
+  if (logseqPriority) content = `[#${logseqPriority}] ${content}`
+
+  content = `${task.completed ? 'DONE' : 'TODO'} ${content}`
+
   const date = task.due?.datetime || task.due?.date
-  let content = `${task.completed ? 'DONE' : 'TODO'} ${task.content}`
   if (date) {
     const template = task.due?.datetime ? 'YYYY-MM-DD ddd HH:mm' : 'YYYY-MM-DD ddd'
     content += `\nSCHEDULED: <${dayjs(date).format(template)}>`

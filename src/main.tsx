@@ -8,6 +8,7 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
+import findKey from 'lodash/findKey'
 import isBetween from 'dayjs/plugin/isBetween'
 import utc from 'dayjs/plugin/utc'
 import * as echarts from 'echarts/core'
@@ -27,7 +28,7 @@ import { genDBTaskChangeCallback, getBlockUuidFromEventPath } from './util/logse
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
-import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock } from './helper/todoist'
+import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock, PRIORITY_MAP } from './helper/todoist'
 import { AddTaskArgs, UpdateTaskArgs } from '@doist/todoist-api-typescript'
 
 dayjs.extend(weekday)
@@ -72,25 +73,6 @@ if (isDevelopment) {
       setPluginTheme(mode)
     })
 
-    logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
-      // console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
-      const syncToTodoist = async (uuid: string) => {
-        const block = await logseq.Editor.getBlock(uuid)
-        const event = await transformBlockToEvent(block!, getInitalSettings())
-        console.info('[faiz:] === sync block to todoist', event)
-
-        const todoistId = event.properties?.todoistId
-        const task = await getTask(todoistId)
-        let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
-        if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
-        if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
-        if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
-        if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
-        updateTask(todoistId, params)
-      }
-      genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
-    })
-
     logseq.on('ui:visible:changed', (e) => {
       if (!e.visible && window.currentApp !== 'pomodoro') {
         ReactDOM.unmountComponentAtNode(document.getElementById('root') as Element)
@@ -120,9 +102,54 @@ if (isDevelopment) {
     if (todoist?.token) {
       logseq.App.registerUIItem('toolbar', {
         key: 'plugin-agenda-todoist',
-        template: '<a data-on-click="pullTodoistTasks" class="button"><i class="ti ti-sort-descending-2"></i></a>',
+        template: '<a data-on-click="pullTodoistTasks" class="button"><i class="ti ti-chevrons-down"></i></a>',
       })
       getTodoistInstance()
+
+      logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
+        // console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
+        const syncToTodoist = async (uuid: string) => {
+          const block = await logseq.Editor.getBlock(uuid)
+          const event = await transformBlockToEvent(block!, getInitalSettings())
+          console.info('[faiz:] === sync block to todoist', event)
+
+          const todoistId = event.properties?.todoistId
+          const task = await getTask(todoistId)
+          const priority = findKey(PRIORITY_MAP, v => v === event.priority)
+          let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0], priority }
+          if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
+          if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
+          if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
+          if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
+          updateTask(todoistId, params)
+        }
+        genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
+      })
+
+      logseq.Editor.registerBlockContextMenuItem('Agenda: Upload to todoist', async ({ uuid }) => {
+        const settings = getInitalSettings()
+        const { todoist } = settings
+        const block = await logseq.Editor.getBlock(uuid)
+        const event = await transformBlockToEvent(block!, settings)
+        if (!event.marker) return logseq.App.showMsg('This block is not a task', 'error')
+        if (event.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded', 'warning')
+
+        let params: AddTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
+        if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
+        if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
+        if (todoist?.project) params.projectId = todoist.project
+        if (todoist?.label) params.labelIds = [todoist.label]
+        createTask(params)
+          ?.then(async task => {
+            await updateBlock(event, task)
+            return logseq.App.showMsg('Upload task to todoist success')
+          })
+          .catch(err => {
+            logseq.App.showMsg('Upload task to todoist failed', 'error')
+            console.error('[faiz:] === Upload task to todoist failed', err)
+          })
+
+      })
     }
     logseq.App.registerCommandPalette({
       key: 'logseq-plugin-agenda:show',
@@ -171,30 +198,6 @@ if (isDevelopment) {
         renderPomodoroApp(uuid)
         logseq.showMainUI()
       }, 0)
-    })
-    logseq.Editor.registerBlockContextMenuItem('Agenda: Upload to todoist', async ({ uuid }) => {
-      const settings = getInitalSettings()
-      const { todoist } = settings
-      const block = await logseq.Editor.getBlock(uuid)
-      const event = await transformBlockToEvent(block!, settings)
-      if (!event.marker) return logseq.App.showMsg('This block is not a task', 'error')
-      if (event.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded', 'warning')
-
-      let params: AddTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
-      if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
-      if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
-      if (todoist?.project) params.projectId = todoist.project
-      if (todoist?.label) params.labelIds = [todoist.label]
-      createTask(params)
-        ?.then(async task => {
-          await updateBlock(event, task)
-          return logseq.App.showMsg('Upload task to todoist success')
-        })
-        .catch(err => {
-          logseq.App.showMsg('Upload task to todoist failed', 'error')
-          console.error('[faiz:] === Upload task to todoist failed', err)
-        })
-
     })
     logseq.Editor.registerSlashCommand('Agenda: Modify Schedule', editSchedule)
     logseq.Editor.registerSlashCommand("Agenda: Insert Today's Task", (e) => {
