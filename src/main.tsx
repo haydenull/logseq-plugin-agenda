@@ -47,7 +47,7 @@ if (isDevelopment) {
   renderApp('browser')
   // renderPomodoroApp('sdfasfasfsa')
 } else {
-  console.log('=== logseq-plugin-agenda loaded ===')
+  console.info('=== logseq-plugin-agenda loaded ===')
   logseq.ready(() => {
 
     initializeSettings()
@@ -77,6 +77,7 @@ if (isDevelopment) {
       const syncToTodoist = async (uuid: string) => {
         const block = await logseq.Editor.getBlock(uuid)
         const event = await transformBlockToEvent(block!, getInitalSettings())
+        console.info('[faiz:] === sync block to todoist', event)
 
         const todoistId = event.properties?.todoistId
         const task = await getTask(todoistId)
@@ -89,13 +90,6 @@ if (isDevelopment) {
       }
       genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
     })
-
-    // setInterval(async () => {
-    //   const editing = await logseq.Editor.checkEditing()
-    //   console.log('[faiz:] === editing', editing)
-    //   const currentBlock = await logseq.Editor.getCurrentBlock()
-    //   console.log('[faiz:] === currentBlock', currentBlock)
-    // }, 2000)
 
     logseq.on('ui:visible:changed', (e) => {
       if (!e.visible && window.currentApp !== 'pomodoro') {

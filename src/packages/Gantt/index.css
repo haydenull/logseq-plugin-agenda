@@ -127,7 +127,7 @@
   color: #ff0000;
 }
 .calendar__date.weekend {
-  color: #aaa;
+  color: var(--ls-description-text-color);
 }
 
 /* 日历内容区 */
@@ -167,7 +167,7 @@
   padding: 0 4px;
 }
 .calendar__event.completed {
-  opacity: 0.5;
+  color: var(--ls-description-text-color);
 }
 .calendar__milestone__line {
   border-left: 2px solid var(--ls-tertiary-background-color);

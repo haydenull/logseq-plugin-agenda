@@ -179,7 +179,6 @@ export const joinPrefixTaskBlockContent = (block: BlockEntity, content: string) 
 let DBChangeTimerIDMap = new Map<string, number>()
 export const genDBTaskChangeCallback = (cb: (uuid: string) => void, delay = 2000) => {
   return ({ blocks, txData, txMeta }) => {
-    console.log('[faiz:] === DBChangeCallback', blocks, txData, txMeta)
     const { marker, properties, uuid } = blocks[0]
     if (!marker || !properties?.todoistId || !uuid) return
     const timerId = DBChangeTimerIDMap.get(uuid)
@@ -187,7 +186,7 @@ export const genDBTaskChangeCallback = (cb: (uuid: string) => void, delay = 2000
     DBChangeTimerIDMap.set(uuid, window.setInterval(async () => {
       const checking = await logseq.Editor.checkEditing()
       if (checking !== uuid) {
-        // 该 block 不在编辑状态
+        // when this block is not in editting state
         const _timerId = DBChangeTimerIDMap.get(uuid)
         clearInterval(_timerId)
         cb(uuid)
