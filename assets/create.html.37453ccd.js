@@ -1,0 +1,1 @@
+const e={key:"v-a5487e94",path:"/zh/other/create.html",title:"\u65B0\u5EFA\u4E8B\u4EF6",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1654855364e3,contributors:[{name:"Hayden Chen",email:"brooklyn1984@qq.com",commits:2}]},filePathRelative:"zh/other/create.md"};export{e as data};

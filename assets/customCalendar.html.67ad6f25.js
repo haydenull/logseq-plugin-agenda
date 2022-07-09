@@ -1,0 +1,1 @@
+const t={key:"v-3185d1a6",path:"/zh/settings/customCalendar.html",title:"Custom Calendar",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:165483927e4,contributors:[{name:"Hayden Chen",email:"brooklyn1984@qq.com",commits:1}]},filePathRelative:"zh/settings/customCalendar.md"};export{t as data};

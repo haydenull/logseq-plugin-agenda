@@ -1,0 +1,1 @@
+const e={key:"v-59982851",path:"/zh/event/dailylog.html",title:"daily log \u8BB0\u5F55",lang:"zh-CN",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1647771476e3,contributors:[{name:"Haydenull",email:"brooklyn1984@qq.com",commits:1},{name:"haydenull",email:"brooklyn1984@qq.com",commits:1}]},filePathRelative:"zh/event/dailylog.md"};export{e as data};

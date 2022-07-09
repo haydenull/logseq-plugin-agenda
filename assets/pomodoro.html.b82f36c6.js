@@ -1,0 +1,1 @@
+const e={key:"v-583dfb94",path:"/introduction/pomodoro.html",title:"Pomodoro Timer",lang:"en-US",frontmatter:{},excerpt:"",headers:[{level:2,title:"Usage",slug:"usage",children:[]}],git:{updatedTime:1655805583e3,contributors:[{name:"Hayden Chen",email:"brooklyn1984@qq.com",commits:1}]},filePathRelative:"introduction/pomodoro.md"};export{e as data};

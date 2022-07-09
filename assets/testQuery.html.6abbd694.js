@@ -1,0 +1,1 @@
+const e={key:"v-629e349b",path:"/other/testQuery.html",title:"Test the Query in the DevTools",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1647778947e3,contributors:[{name:"haydenull",email:"brooklyn1984@qq.com",commits:1}]},filePathRelative:"other/testQuery.md"};export{e as data};

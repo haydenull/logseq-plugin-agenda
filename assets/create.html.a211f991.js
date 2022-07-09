@@ -1,0 +1,1 @@
+const e={key:"v-321a41f6",path:"/other/create.html",title:"Create Event",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1654855364e3,contributors:[{name:"Hayden Chen",email:"brooklyn1984@qq.com",commits:1}]},filePathRelative:"other/create.md"};export{e as data};
