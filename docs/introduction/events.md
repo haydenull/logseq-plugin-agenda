@@ -21,11 +21,11 @@ The following methods are supported to set event dates:
 
 ### With ability to specify times:
 - Logseq's built-in SCHEDULED and DEADLINE functionality
-- Agenda link: (Right mouse button block dot, select "Modify Schedule")
+- Agenda link: Right click on the block bullet, select "Modify Schedule" in the context menu
   
 ### No ability to specify times: 
 - Tasks with a date-reference: e.g. `LATER task [[Jun 10th, 2022]]`
-- A user definted start:: and end:: block property to block full days (note: properties are dates in the format 'YYYY-MM-DD'.)
+- A user defined start:: and end:: block property to block full days (note: properties are dates in the format 'YYYY-MM-DD'.)
 
 ### Example:
 ![project tasks](../../screenshots/project-tasks.png)
