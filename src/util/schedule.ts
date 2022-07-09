@@ -13,7 +13,6 @@ import { IEvent } from './events';
 
 export const getCustomCalendarSchedules = async () => {
 
-  // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
@@ -41,7 +40,6 @@ export const getCustomCalendarSchedules = async () => {
     } else {
       blocks = await logseq.DB.datascriptQuery(script)
     }
-    // console.log('[faiz:] === search blocks by query: ', script, blocks)
 
     const buildSchedulePromiseList = flattenDeep(blocks).map((block) => convertBlockToSchedule({ block, queryWithCalendar, settings }))
     return Promise.all(buildSchedulePromiseList)
@@ -71,7 +69,6 @@ export const getDailyLogSchedules = async () => {
   const { logKey, defaultDuration } = getInitalSettings()
   if (!logKey?.enabled) return []
   const logs = await logseq.DB.q(`[[${logKey.id}]]`)
-  // console.log('[faiz:] === search logs', logs)
   const _logs = logs
                 ?.filter(block => {
                   if (block.headingLevel && block.format === 'markdown') {
@@ -294,7 +291,7 @@ export async function genSchedule(params: {
   const _defaultDuration = defaultDuration ||  getInitalSettings()?.defaultDuration
   let _end = end
   if ((category === 'time' || blockData?.category === 'time') && !end && start && _defaultDuration) {
-    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).toISOString()
+    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).format()
   }
   if (blockData?.category !== 'time' && !end) {
     _end = start
@@ -354,7 +351,7 @@ export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
   return false
 }
 
-export const categorizeTask = (events: IEvent[]) => {
+export const categorizeTask = (events: IEvent[] = []) => {
   return {
     waiting: events.filter(event => event?.addOns?.status === 'waiting'),
     todo: events.filter(event => event?.addOns?.status === 'todo'),
@@ -368,7 +365,7 @@ export const categorizeTask = (events: IEvent[]) => {
 export const scheduleStartDayMap = (events: IEvent[]) => {
   const res = new Map<string, IEvent[]>()
   events.forEach(event => {
-    const key = dayjs(event.addOns.start).startOf('day').toISOString()
+    const key = dayjs(event.addOns.start).startOf('day').format()
     if (!res.has(key)) res.set(key, [])
     res.get(key)?.push(event)
   })
@@ -377,8 +374,8 @@ export const scheduleStartDayMap = (events: IEvent[]) => {
 
 export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
   const url = new URL('agenda://')
-  url.searchParams.append('start', start.toISOString())
-  url.searchParams.append('end', end.toISOString())
+  url.searchParams.append('start', '' + start.valueOf())
+  url.searchParams.append('end', '' + end.valueOf())
   if (allDay === false) url.searchParams.append('allDay', 'false')
 
   const startText = allDay ? start.format('YYYY-MM-DD') : start.format('YYYY-MM-DD HH:mm')

@@ -100,11 +100,9 @@ const index = () => {
   const events = filterEvents(fullEvents.tasks.withTime.concat(fullEvents.tasks.noTime), filter)
 
   const pomodoros = genPomoData(events, filter?.timeframe)
-  console.log('[faiz:] === pomodoros', pomodoros)
   const pomodoroByProject = genPomoByProjectData(events)
 
   const onSearch = (values: IReviewSearchForm) => {
-    console.log('[faiz:] === values', values)
     setFilter(values)
   }
 

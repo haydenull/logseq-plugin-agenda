@@ -52,7 +52,6 @@ export const initializeSettings = () => {
   if (!settings?.initialized) {
     const _settings = getInitalSettings()
     logseq.updateSettings({ ..._settings, initialized: true })
-    console.log('[faiz:] === initialize settings success', logseq.settings, _settings)
   }
 }
 

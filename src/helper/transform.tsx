@@ -22,7 +22,7 @@ export const transformTaskEventToSchedule = (block: IEvent) => {
 
   return {
     id: block.uuid,
-    calendarId: block.addOns.isJournal ? 'Journal' : block.page?.originalName,
+    calendarId: block.addOns.isJournal ? 'Journal' : block.addOns.project,
     title: block.addOns.showTitle,
     body: block.content,
     category,
@@ -45,7 +45,7 @@ export const transformMilestoneEventToSchedule = (block: IEvent) => {
   if (!calendarStyle) calendarStyle = DEFAULT_CALENDAR_STYLE
   return {
     id: block.uuid,
-    calendarId: block.addOns.isJournal ? 'Journal' : block.page?.originalName,
+    calendarId: block.addOns.isJournal ? 'Journal' : block.addOns.project,
     title: block.addOns.showTitle,
     body: block.content,
     category: 'milestone',
@@ -73,13 +73,14 @@ export const transformEventToGanttEvent = (event: IEvent): IGanttEvent => {
     start: dayStart.format('YYYY-MM-DD'),
     end: dayEnd.format('YYYY-MM-DD'),
     raw: event,
+    completed: event.addOns.status === 'done',
     detailPopup: (<div className="text-xs">
       <div className="font-bold text-base my-2">{event.addOns.showTitle}</div>
       <div className="my-2">{`${dayStart.format('YYYY.MM.DD hh:mm a')} - ${dayEnd.format('hh:mm a')}`}</div>
       <p className="whitespace-pre-line">{event.content}</p>
 
       <a onClick={async () => {
-        const { id: pageId, originalName } = event || {}
+        const { id: pageId, originalName } = event.page || {}
         let pageName = originalName
         // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
         if (!pageName) {
@@ -97,15 +98,16 @@ export const transformEventToGanttEvent = (event: IEvent): IGanttEvent => {
 // ========== event ========
 export const transformBlockToEvent = async (block: BlockEntity, settings: ISettingsForm) => {
   const { defaultDuration, journal, projectList } = settings
-  // const isAgendaCalendar = agendaCalendars.some(calendar => calendar.id === block.page?.originalName)
-
   // replace page
   const page = block?.page?.originalName ? block.page : await logseq.Editor.getPage(block.page.id)
   block.page = page!
   const time = getEventTimeInfo(block)
   const pomodoros = getPomodoroInfo(block.content, block.format)
   const isMilestone = judgeIsMilestone(block)
-  const isJournal = Boolean(page?.journalDay)
+  const projectPage = block.refs.find(ref => ref.originalName === block.properties?.project?.[0])
+  const isJournal = projectPage
+                      ? Boolean(projectPage?.journalDay)
+                      : Boolean(page?.journalDay)
 
   let event: IEvent = time
                         ? { ...block, rawTime: time, addOns: { showTitle: '', project: 'Journal', contentWithoutTime: '', end: '', status: 'todo', isOverdue: false, isJournal: false, type: 'task', ...time } }
@@ -129,7 +131,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
     if (time.allDay) {
       event.addOns.end = time.start
     } else {
-      event.addOns.end = dayjs(event.addOns.start).add(defaultDuration.value, defaultDuration.unit).toISOString()
+      event.addOns.end = dayjs(event.addOns.start).add(defaultDuration.value, defaultDuration.unit).format()
     }
   }
 
@@ -173,7 +175,11 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   event.addOns.pomodoros = pomodoros || []
 
   // add project
-  event.addOns.project = isJournal ? 'Journal' : page?.originalName
+  event.addOns.project = isJournal
+                          ? 'Journal'
+                          : (projectPage?.originalName || page?.originalName)
+  // add project page
+  event.addOns.projectPage = projectPage || page
 
   return event
 }

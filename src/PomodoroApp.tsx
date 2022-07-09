@@ -89,7 +89,6 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
       length: pomodoroLength - timer,
       interruptions: window.interruptionMap.get(startTimeRef.current!) || [],
     })
-    console.log('[faiz:] === newContent', newContent, uuid)
     if (newContent) logseq.Editor.updateBlock(uuid, newContent)
   }
 
@@ -111,7 +110,6 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   }
 
   useEffect(() => {
-    console.log('[faiz:] === state', state)
     logseq.App.registerUIItem('toolbar', {
       key: 'logseq-plugin-agenda-pomodoro',
       template: genToolbarPomodoro(uuid, state.formattedTimer, state.progress, state.type !== 'pomodoro'),

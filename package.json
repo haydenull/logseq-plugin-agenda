@@ -17,6 +17,7 @@
     "docs:build": "vuepress build docs"
   },
   "dependencies": {
+    "@doist/todoist-api-typescript": "^1.5.0",
     "@haydenull/use-pomodoro": "^1.1.4",
     "@logseq/libs": "^0.0.4",
     "antd": "^4.18.7",

@@ -16,7 +16,6 @@ const App: React.FC<{
 }> = ({ defaultRoute }) => {
 
   // TODO: 使用 only-write 减少重新渲染
-  const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
   const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
 
   const [, setFullEvents] = useAtom(fullEventsAtom)
@@ -30,7 +29,6 @@ const App: React.FC<{
   useEffect(() => {
     async function fetchSchedules() {
       const res = await getInternalEvents()
-      console.log('[faiz:] === getInternalEvents res', res)
       if (res) {
         const { fullEvents, journalEvents, projectEventsMap } = res
         setFullEvents(fullEvents)

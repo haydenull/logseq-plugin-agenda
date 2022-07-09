@@ -1,9 +1,7 @@
 import { BlockEntity } from "@logseq/libs/dist/LSPlugin"
-import { format, parse } from "date-fns"
+import { format } from "date-fns"
 import { Dayjs } from "dayjs"
-import { async } from "node-ical"
 import { getInitalSettings } from "./baseInfo"
-import { SHOW_DATE_FORMAT } from "./constants"
 import { fillBlockReference } from "./schedule"
 import { ISettingsForm } from "./type"
 import { extractDays } from "./util"
@@ -120,7 +118,6 @@ export const extractBlockContentToHtml = async (block: BlockEntity, depth = 1): 
   if (!block) return block
   let { content, children } = block
   content = await fillBlockReference(content)
-  console.log('[faiz:] === content', content)
   const intent = `margin-left: ${(depth - 1) * 20}px;`
   const contentHtml = `<p style="${intent} white-space: pre-line;">${content}</p>`
   if (children && children?.length > 0) {
@@ -176,4 +173,23 @@ export const joinPrefixTaskBlockContent = (block: BlockEntity, content: string) 
   if (priority) res = `[#${priority}] ` + res
   if (marker) res = marker + ' ' + res
   return res
+}
+
+let DBChangeTimerIDMap = new Map<string, number>()
+export const genDBTaskChangeCallback = (cb: (uuid: string) => void, delay = 2000) => {
+  return ({ blocks, txData, txMeta }) => {
+    const { marker, properties, uuid } = blocks[0]
+    if (!marker || !properties?.todoistId || !uuid) return
+    const timerId = DBChangeTimerIDMap.get(uuid)
+    if (timerId) clearInterval(timerId)
+    DBChangeTimerIDMap.set(uuid, window.setInterval(async () => {
+      const checking = await logseq.Editor.checkEditing()
+      if (checking !== uuid) {
+        // when this block is not in editting state
+        const _timerId = DBChangeTimerIDMap.get(uuid)
+        clearInterval(_timerId)
+        cb(uuid)
+      }
+    }, delay))
+  }
 }

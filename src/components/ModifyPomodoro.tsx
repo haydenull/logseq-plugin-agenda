@@ -14,7 +14,6 @@ const ModifyPomodoro: React.FC<{
 
   useEffect(() => {
     if (data) {
-      console.log('[faiz:] === modify pomodoro data', data)
       form.setFieldsValue({
         ...data,
         start: data.start ? dayjs(data.start) : dayjs(),

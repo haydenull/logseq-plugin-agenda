@@ -14,12 +14,10 @@ export const getSchedules = async () => {
   const agendaCalendars = await getAgendaCalendars()
   const agendaCalendarIds = agendaCalendars.map(calendar => calendar.id)
 
-  // console.log('[faiz:] === getSchedules start ===', logseq.settings, getInitalSettings())
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
   const settings = getInitalSettings()
-  console.log('[faiz:] === settings', settings)
   const { calendarList: calendarConfigs = [], logKey, journal, defaultDuration, projectList } = settings
   const customCalendarConfigs = calendarConfigs.concat(journal!).filter(config => config?.enabled)
 
@@ -43,7 +41,6 @@ export const getSchedules = async () => {
     } else {
       blocks = await logseq.DB.datascriptQuery(script)
     }
-    // console.log('[faiz:] === search blocks by query: ', script, blocks)
 
     const buildSchedulePromiseList = flattenDeep(blocks).map((block) => convertBlockToSchedule({ block, queryWithCalendar, agendaCalendarIds, settings }))
     return Promise.all(buildSchedulePromiseList)
@@ -109,8 +106,8 @@ message: ${res.reason.message}`
               {
                 ...schedule,
                 id: `overdue-${schedule.id}`,
-                start: dayjs().startOf('day').toISOString(),
-                end: dayjs().endOf('day').toISOString(),
+                start: dayjs().startOf('day').format(),
+                end: dayjs().endOf('day').format(),
                 isAllDay: false,
               },
             ]
@@ -122,7 +119,6 @@ message: ${res.reason.message}`
       return taskSchedules.concat(milestoneSchedules)?.flat().filter(Boolean)
     })
     const projectSchedules = await Promise.all(promiseList)
-    console.log('[faiz:] === projectSchedules', projectSchedules)
     // @ts-ignore
     calendarSchedules = flattenDeep(calendarSchedules.concat(projectSchedules))
   }
@@ -130,7 +126,6 @@ message: ${res.reason.message}`
   // Daily Logs
   if (logKey?.enabled) {
     const logs = await logseq.DB.q(`[[${logKey.id}]]`)
-    // console.log('[faiz:] === search logs', logs)
     const _logs = logs
                   ?.filter(block => {
                     if (block.headingLevel && block.format === 'markdown') {
@@ -242,8 +237,8 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, agendaC
       {
         ...schedule,
         id: `overdue-${schedule.id}`,
-        start: dayjs().startOf('day').toISOString(),
-        end: dayjs().endOf('day').toISOString(),
+        start: dayjs().startOf('day').format(),
+        end: dayjs().endOf('day').format(),
         isAllDay: false,
       },
     ]
@@ -368,7 +363,7 @@ export async function genSchedule(params: {
   const _defaultDuration = defaultDuration ||  getInitalSettings()?.defaultDuration
   let _end = end
   if ((category === 'time' || blockData?.category === 'time') && !end && start && _defaultDuration) {
-    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).toISOString()
+    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).format()
   }
   if (blockData?.category !== 'time' && !end) {
     _end = start
@@ -445,7 +440,7 @@ export const categorizeTask = (schedules: ISchedule[]) => {
 export const scheduleStartDayMap = (schedules: ISchedule[]) => {
   const res = new Map<string, ISchedule[]>()
   schedules.forEach(schedule => {
-    const key = dayjs(schedule.start as string).startOf('day').toISOString()
+    const key = dayjs(schedule.start as string).startOf('day').format()
     if (!res.has(key)) res.set(key, [])
     res.get(key)?.push(schedule)
   })
@@ -454,8 +449,8 @@ export const scheduleStartDayMap = (schedules: ISchedule[]) => {
 
 export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
   const url = new URL('agenda://')
-  url.searchParams.append('start', start.toISOString())
-  url.searchParams.append('end', end.toISOString())
+  url.searchParams.append('start', start.format())
+  url.searchParams.append('end', end.format())
   if (allDay === false) url.searchParams.append('allDay', 'false')
 
   const startText = allDay ? start.format('YYYY-MM-DD') : start.format('YYYY-MM-DD HH:mm')

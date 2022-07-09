@@ -51,7 +51,6 @@ const Task: React.FC<{
     logseq.Editor.scrollToBlockInPage(pageName, task.uuid)
   }
   const embedToToday: React.MouseEventHandler = async (e) => {
-    console.log('[faiz:] === embedToToday', task)
     e.stopPropagation()
     const scheduleId = task.uuid
     const { preferredDateFormat } = await logseq.App.getUserConfigs()

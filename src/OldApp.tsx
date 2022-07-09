@@ -80,6 +80,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           blockData: raw,
           calendarSchedule: schedule,
         },
+        completed: false,
         detailPopup: (<div className="text-xs">
           <div className="font-bold text-base my-2">{title}</div>
           <div className="my-2">{`${dayjsStart.format('YYYY.MM.DD hh:mm a')} - ${dayjsEnd.format('hh:mm a')}`}</div>
@@ -308,7 +309,6 @@ const App: React.FC<{ env: string }> = ({ env }) => {
         })
       })
       calendarRef.current.on('beforeUpdateSchedule', async function(event) {
-        console.log('[faiz:] === beforeUpdateSchedule', event)
         const { schedule, changes, triggerEventName, start: finalStart, end: finalEnd } = event
         if (triggerEventName === 'click') {
           // click edit button of detail popup
@@ -350,11 +350,9 @@ const App: React.FC<{ env: string }> = ({ env }) => {
             }
             if (changes.start && !dayjs(changes.start).isSame(dayjs(String(journalDay), 'YYYYMMDD'), 'day')) {
               // if the start day is different from the original start day, then execute move operation
-              console.log('[faiz:] === move journal schedule')
               const { preferredDateFormat } = await logseq.App.getUserConfigs()
               const journalName = format(dayjs(changes.start).valueOf(), preferredDateFormat)
               const newBlock = await moveBlockToNewPage(schedule.raw?.id, journalName)
-              console.log('[faiz:] === newBlock', newBlock, schedule, schedule?.id)
               if (newBlock) {
                 calendarRef.current?.deleteSchedule(schedule.id, schedule.calendarId)
                 calendarRef.current?.createSchedules([await genSchedule({

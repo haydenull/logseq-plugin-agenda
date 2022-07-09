@@ -11,6 +11,9 @@ import GaugeChart from '@/components/GaugeChart'
 import s from '../index.module.less'
 import { getPageData } from '@/util/logseq'
 import { useNavigate } from 'react-router-dom'
+import { useAtom } from 'jotai'
+import { journalEventsAtom, projectEventsAtom } from '@/model/events'
+import { categorizeTask } from '@/util/schedule'
 
 function getNearestMilestone(data: IGroup) {
   const { milestones = [] } = data
@@ -26,43 +29,40 @@ function getNearestMilestone(data: IGroup) {
 const Project: React.FC<{
   data: IGroup
 }> = ({ data }) => {
+
+  let [projectData] = useAtom(journalEventsAtom)
+  if (data.title !== 'Journal') {
+    const [projectDataMap] = useAtom(projectEventsAtom)
+    projectData = projectDataMap.get(data.title)!
+  }
   const [expand, setExpand] = useState(false)
   const theme = useTheme()
   const navigate = useNavigate()
 
   const milestone = getNearestMilestone(data)
 
-  const doingCount = data?.amount?.doing || 0
-  const todoCount = data?.amount?.todo || 0
-  const doneCount = data?.amount?.done || 0
-  const totalCount = doingCount + todoCount + doneCount
+  const events = projectData?.tasks?.withTime.concat(projectData?.tasks?.noTime)
+  const { todo, doing, done, waiting, canceled } = categorizeTask(events)
+  const doingCount = doing.length
+  const todoCount = todo.length
+  const doneCount = done.length
+  const waitingCount = waiting.length
+  const canceledCount = canceled.length
+  const totalCount = doingCount + todoCount + doneCount + waitingCount
   const progress = totalCount === 0 ? 0 : (doneCount / totalCount)
 
   const onClickMilestone = async (milestone: IEvent) => {
-    console.log('[faiz:] === milestone', milestone)
-    const { raw = {}, start, end, id = '', title = '' } = milestone
-    const rawData: any = raw?.blockData
-    const { id: pageId, originalName } = rawData?.page || {}
+    const { id: pageId, originalName } = milestone?.raw?.page || {}
     let pageName = originalName
-    // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
     if (!pageName) {
       const page = await getPageData({ id: pageId })
       pageName = page?.originalName
     }
-    const { uuid: blockUuid } = await logseq.Editor.getBlock(rawData.id) || { uuid: '' }
-    logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
+    logseq.Editor.scrollToBlockInPage(pageName, milestone?.raw?.uuid)
     logseq.hideMainUI()
   }
   const onClickProjectTitle = async () => {
     const pageName = data.id
-    // const pageData = await getPageData({ originalName: pageName })
-    // if (pageData?.properties?.agenda) {
-    //   logseq.App.pushState('page', { name: pageData.originalName })
-    //   logseq.hideMainUI()
-    //   navigate(`/project/${pageData.originalName}`)
-    // } else {
-    //   logseq.App.showMsg('This is not an agenda project.', 'warning')
-    // }
     navigate(`/project/${encodeURIComponent(pageName)}`)
   }
 
@@ -78,7 +78,7 @@ const Project: React.FC<{
             <div className="ml-3">
               <div className="text-lg title-text">{data.title}</div>
               <div className="mt-1 description-text">
-                {`doing: ${data?.amount?.doing || 0} todo: ${data?.amount?.todo || 0} done: ${data?.amount?.done || 0}`}
+                {`doing: ${doingCount} todo: ${todoCount} done: ${doneCount} waiting: ${waitingCount} canceled: ${canceledCount}`}
               </div>
             </div>
           </div>

@@ -25,8 +25,8 @@ const ListView: React.FC<{
   const canceledTasks: IEvent[] = [...schedulesMap.canceled, ...undatedTaskMap.canceled]
   const waitingTasks: IEvent[] = [...schedulesMap.waiting, ...undatedTaskMap.waiting]
 
-  const navToBlock = async (blockUuid: string) => {
-    logseq.Editor.scrollToBlockInPage(projectId, blockUuid)
+  const navToBlock = async (pageName:string, blockUuid: string) => {
+    logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
     logseq.hideMainUI()
   }
 
@@ -41,7 +41,7 @@ const ListView: React.FC<{
             <div className="pl-4">
               <h3>{currentTask.addOns.showTitle}</h3>
               <p className="whitespace-pre-line">{currentTask.content}</p>
-              <Button type="link" className="px-0" onClick={() => navToBlock(currentTask.uuid)}>Navigate To Block</Button>
+              <Button type="link" className="px-0" onClick={() => navToBlock(currentTask.page.originalName, currentTask.uuid)}>Navigate To Block</Button>
             </div>
           )
         }

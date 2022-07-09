@@ -8,7 +8,9 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import localeData from 'dayjs/plugin/localeData'
 import difference from 'lodash/difference'
+import findKey from 'lodash/findKey'
 import isBetween from 'dayjs/plugin/isBetween'
+import utc from 'dayjs/plugin/utc'
 import * as echarts from 'echarts/core'
 import { GridComponent, ToolboxComponent, TooltipComponent, LegendComponent} from 'echarts/components'
 import { LineChart, GaugeChart, BarChart, TreemapChart } from 'echarts/charts'
@@ -18,15 +20,16 @@ import { getInitalSettings, initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
-import { listenEsc, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
+import { listenEsc, log, managePluginTheme, setPluginTheme, toggleAppTransparent } from './util/util'
 import { genToolbarPomodoro, togglePomodoro } from '@/helper/pomodoro'
 import ModalApp, { IModalAppProps } from './ModalApp'
 import TaskListApp from './TaskListApp'
-import { IScheduleValue } from '@/components/ModifySchedule'
-import { getBlockData, getBlockUuidFromEventPath, isEnabledAgendaPage, pureTaskBlockContent } from './util/logseq'
+import { genDBTaskChangeCallback, getBlockUuidFromEventPath } from './util/logseq'
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
+import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock, PRIORITY_MAP } from './helper/todoist'
+import { AddTaskArgs, UpdateTaskArgs } from '@doist/todoist-api-typescript'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -35,22 +38,25 @@ dayjs.extend(localeData)
 dayjs.extend(difference)
 dayjs.extend(isBetween)
 dayjs.extend(updateLocale)
+dayjs.extend(utc)
 
 echarts.use([GridComponent, LineChart, BarChart, GaugeChart, TreemapChart, CanvasRenderer, UniversalTransition, ToolboxComponent, TooltipComponent, LegendComponent])
 
 const isDevelopment = import.meta.env.DEV
 
 if (isDevelopment) {
-  renderApp('browser')
+  renderApp()
   // renderPomodoroApp('sdfasfasfsa')
 } else {
-  console.log('=== logseq-plugin-agenda loaded ===')
+  log('=== logseq-plugin-agenda loaded ===')
   logseq.ready(() => {
 
     initializeSettings()
 
+    const { weekStartDay, todoist } = getInitalSettings()
+
     dayjs.updateLocale('en', {
-      weekStart: getInitalSettings().weekStartDay,
+      weekStart: weekStartDay,
     })
 
     managePluginTheme()
@@ -67,17 +73,6 @@ if (isDevelopment) {
       setPluginTheme(mode)
     })
 
-    logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
-      console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
-    })
-
-    // setInterval(async () => {
-    //   const editing = await logseq.Editor.checkEditing()
-    //   console.log('[faiz:] === editing', editing)
-    //   const currentBlock = await logseq.Editor.getCurrentBlock()
-    //   console.log('[faiz:] === currentBlock', currentBlock)
-    // }, 2000)
-
     logseq.on('ui:visible:changed', (e) => {
       if (!e.visible && window.currentApp !== 'pomodoro') {
         ReactDOM.unmountComponentAtNode(document.getElementById('root') as Element)
@@ -86,7 +81,7 @@ if (isDevelopment) {
 
     logseq.provideModel({
       show() {
-        renderApp('logseq')
+        renderApp()
         logseq.showMainUI()
       },
       showPomodoro(e) {
@@ -95,17 +90,72 @@ if (isDevelopment) {
         renderPomodoroApp(uuid)
         logseq.showMainUI()
       },
+      pullTodoistTasks() {
+        pullTask()
+      },
     })
 
     logseq.App.registerUIItem('toolbar', {
       key: 'logseq-plugin-agenda',
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
+    if (todoist?.token) {
+      logseq.App.registerUIItem('toolbar', {
+        key: 'plugin-agenda-todoist',
+        template: '<a data-on-click="pullTodoistTasks" class="button"><i class="ti ti-chevrons-down"></i></a>',
+      })
+      getTodoistInstance()
+
+      logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
+        // console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
+        const syncToTodoist = async (uuid: string) => {
+          const block = await logseq.Editor.getBlock(uuid)
+          const event = await transformBlockToEvent(block!, getInitalSettings())
+          console.info('[faiz:] === sync block to todoist', event)
+
+          const todoistId = event.properties?.todoistId
+          const task = await getTask(todoistId)
+          const priority = findKey(PRIORITY_MAP, v => v === event.priority)
+          let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0], priority }
+          if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
+          if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
+          if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
+          if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
+          updateTask(todoistId, params)
+        }
+        genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
+      })
+
+      logseq.Editor.registerBlockContextMenuItem('Agenda: Upload to todoist', async ({ uuid }) => {
+        const settings = getInitalSettings()
+        const { todoist } = settings
+        const block = await logseq.Editor.getBlock(uuid)
+        const event = await transformBlockToEvent(block!, settings)
+        if (!event.marker) return logseq.App.showMsg('This block is not a task', 'error')
+        if (event.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded', 'warning')
+
+        let params: AddTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
+        if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
+        if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
+        if (todoist?.project) params.projectId = todoist.project
+        if (todoist?.label) params.labelIds = [todoist.label]
+        createTask(params)
+          ?.then(async task => {
+            await updateBlock(event, task)
+            return logseq.App.showMsg('Upload task to todoist success')
+          })
+          .catch(err => {
+            logseq.App.showMsg('Upload task to todoist failed', 'error')
+            console.error('[faiz:] === Upload task to todoist failed', err)
+          })
+
+      })
+    }
     logseq.App.registerCommandPalette({
       key: 'logseq-plugin-agenda:show',
       label: 'Show Agenda',
     }, data => {
-      renderApp('logseq')
+      renderApp()
       logseq.showMainUI()
     })
 
@@ -137,7 +187,7 @@ if (isDevelopment) {
       logseq.showMainUI()
     }
     logseq.Editor.registerBlockContextMenuItem('Agenda: Modify Schedule', editSchedule)
-    logseq.Editor.registerBlockContextMenuItem('Agenda: Start pomodoro Timer', async ({ uuid }) => {
+    logseq.Editor.registerBlockContextMenuItem('Agenda: Start Pomodoro Timer', async ({ uuid }) => {
       // logseq.Editor.insertAtEditingCursor(`{{renderer agenda, pomodoro-timer, 40, 'nostarted', 0}}`)
       logseq.App.registerUIItem('toolbar', {
         key: 'logseq-plugin-agenda-pomodoro',
@@ -151,7 +201,6 @@ if (isDevelopment) {
     })
     logseq.Editor.registerSlashCommand('Agenda: Modify Schedule', editSchedule)
     logseq.Editor.registerSlashCommand("Agenda: Insert Today's Task", (e) => {
-      console.log('[faiz:] === registerSlashCommand', e)
       renderModalApp({
         type: 'insertTodaySchedule',
         data: {
@@ -165,11 +214,9 @@ if (isDevelopment) {
       logseq.Editor.insertAtEditingCursor(`{{renderer agenda, task-list}}`)
     })
     logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments: args, uuid } }) => {
-      console.log('[faiz:] === onMacroRendererSlotted', slot, args, uuid)
       if (args?.[0] !== 'agenda') return
       if (args?.[1] === 'task-list') {
         const renderered = parent.document.getElementById(slot)?.childElementCount
-        console.log('[faiz:] === is task-list renderered', renderered)
         if (renderered) return
 
         const id = `agenda-task-list-${slot}`
@@ -200,13 +247,7 @@ if (isDevelopment) {
           )
         }, 0)
       } else if (args?.[1] === 'pomodoro-timer') {
-        const renderered = parent.document.getElementById(slot)?.childElementCount
-        console.log('[faiz:] === is pomodoro-timer renderered', renderered)
-
         const id = `agenda-pomodoro-timer-${slot}`
-        const duration = args?.[2] || 40
-        const status = args?.[3] || 'nostarted'
-        const count = args?.[4] || 0
         logseq.provideUI({
           key: `agenda-${slot}`,
           slot,
@@ -214,14 +255,6 @@ if (isDevelopment) {
           template: `<div id="${id}"></div>`,
           // style: {},
         })
-        // setTimeout(() => {
-        //   ReactDOM.render(
-        //     <React.StrictMode>
-        //       <PomodoroApp duration={Number(duration)} initialStatus={status} uuid={uuid} />
-        //     </React.StrictMode>,
-        //     parent.document.getElementById(id)
-        //   )
-        // }, 0)
       }
     })
 
@@ -271,7 +304,7 @@ if (isDevelopment) {
   })
 }
 
-async function renderApp(env: string) {
+async function renderApp() {
   window.currentApp = 'app'
   togglePomodoro(false)
   toggleAppTransparent(false)
@@ -279,10 +312,8 @@ async function renderApp(env: string) {
   const page = await logseq.Editor.getCurrentPage()
   const { projectList = [] } = getInitalSettings()
   if (projectList.some(project => Boolean(project.id) && project.id === page?.originalName)) defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
-  console.log('[faiz:] === defaultRoute', defaultRoute)
   ReactDOM.render(
     <React.StrictMode>
-      {/* <App env={env} /> */}
       <App defaultRoute={defaultRoute} />
     </React.StrictMode>,
     document.getElementById('root')

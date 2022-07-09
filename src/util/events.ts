@@ -1,6 +1,6 @@
 import { transformBlockToEvent } from './../helper/transform';
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
-import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
+import type { BlockEntity, PageEntity } from '@logseq/libs/dist/LSPlugin'
 import dayjs from 'dayjs'
 import { getInitalSettings } from './baseInfo'
 import { pureTaskBlockContent } from './logseq'
@@ -19,42 +19,44 @@ export const getEventTimeInfo = (block: BlockEntity): {
   // start end properties date(adapt agenda calendar)
   const { start, end } = block.properties || {}
   if (start && end) {
-    if (start?.length >= 16) return { start: dayjs(start, 'YYYY-MM-DD HH:mm').toISOString(), end: dayjs(end, 'YYYY-MM-DD HH:mm').toISOString(), allDay: false, timeFrom: 'startProperty' }
-    return { start: dayjs(start, 'YYYY-MM-DD').toISOString(), end: dayjs(end, 'YYYY-MM-DD').toISOString(), allDay: true, timeFrom: 'startProperty' }
+    if (start?.length >= 16) return { start: dayjs(start, 'YYYY-MM-DD HH:mm').format(), end: dayjs(end, 'YYYY-MM-DD HH:mm').format(), allDay: false, timeFrom: 'startProperty' }
+    return { start: dayjs(start, 'YYYY-MM-DD').format(), end: dayjs(end, 'YYYY-MM-DD').format(), allDay: true, timeFrom: 'startProperty' }
   }
 
   // custom link date
   const projectTimeInfo = getProjectTaskTime(block.content)
-  if (projectTimeInfo) return { start: projectTimeInfo.start, end: projectTimeInfo.end, allDay: projectTimeInfo.allDay !== 'false', timeFrom: 'customLink' }
+  const timeStart = projectTimeInfo?.start?.length === 13 ? Number(projectTimeInfo.start) : projectTimeInfo?.start
+  const timeEnd = projectTimeInfo?.end?.length === 13 ? Number(projectTimeInfo.end) : projectTimeInfo?.end
+  if (projectTimeInfo) return { start: dayjs(timeStart).format(), end: dayjs(timeEnd).format(), allDay: projectTimeInfo.allDay !== 'false', timeFrom: 'customLink' }
 
   // scheduled date
   if (block.scheduled) {
     const dateString = block.content?.split('\n')?.find(l => l.startsWith(`SCHEDULED:`))?.trim()
     const time = / (\d{2}:\d{2})[ >]/.exec(dateString!)?.[1] || ''
-    if (time) return { start: dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm').toISOString(), allDay: false, timeFrom: 'scheduledProperty' }
-    return { start: dayjs('' + block.scheduled, 'YYYYMMDD').toISOString(), allDay: true, timeFrom: 'scheduledProperty' }
+    if (time) return { start: dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm').format(), allDay: false, timeFrom: 'scheduledProperty' }
+    return { start: dayjs('' + block.scheduled, 'YYYYMMDD').format(), allDay: true, timeFrom: 'scheduledProperty' }
   }
 
   // deadline date
   if (block.deadline) {
     const dateString = block.content?.split('\n')?.find(l => l.startsWith(`DEADLINE:`))?.trim()
     const time = / (\d{2}:\d{2})[ >]/.exec(dateString!)?.[1] || ''
-    if (time) return { start: dayjs(`${block.deadline} ${time}`, 'YYYYMMDD HH:mm').toISOString(), allDay: false, timeFrom: 'deadlineProperty' }
-    return { start: dayjs('' + block.deadline, 'YYYYMMDD').toISOString(), allDay: true, timeFrom: 'deadlineProperty' }
+    if (time) return { start: dayjs(`${block.deadline} ${time}`, 'YYYYMMDD HH:mm').format(), allDay: false, timeFrom: 'deadlineProperty' }
+    return { start: dayjs('' + block.deadline, 'YYYYMMDD').format(), allDay: true, timeFrom: 'deadlineProperty' }
   }
 
   // refs date
   const refsDatePage = block.refs?.find(page => Boolean(page?.journalDay))
-  if (refsDatePage) return { start: dayjs(refsDatePage?.journalDay + '', 'YYYYMMDD').toISOString(), allDay: true, timeFrom: 'refs' }
+  if (refsDatePage) return { start: dayjs(refsDatePage?.journalDay + '', 'YYYYMMDD').format(), allDay: true, timeFrom: 'refs' }
 
   // journal date
   const isJournal = Boolean(block?.page?.journalDay)
   if (isJournal) {
     const content = pureTaskBlockContent(block)
     const { start, end } = getTimeInfo(content)
-    if (start && end) return { start: dayjs(`${block?.page?.journalDay} ${start}`, 'YYYYMMDD HH:mm').toISOString(), end: dayjs(`${block?.page?.journalDay} ${end}`, 'YYYYMMDD HH:mm').toISOString(), allDay: false, timeFrom: 'journal' }
-    if (start && !end) return { start: dayjs(`${block?.page?.journalDay} ${start}`, 'YYYYMMDD HH:mm').toISOString(), allDay: false, timeFrom: 'journal' }
-    return { start: dayjs(block?.page?.journalDay + '', 'YYYYMMDD').toISOString(), allDay: true, timeFrom: 'journal' }
+    if (start && end) return { start: dayjs(`${block?.page?.journalDay} ${start}`, 'YYYYMMDD HH:mm').format(), end: dayjs(`${block?.page?.journalDay} ${end}`, 'YYYYMMDD HH:mm').format(), allDay: false, timeFrom: 'journal' }
+    if (start && !end) return { start: dayjs(`${block?.page?.journalDay} ${start}`, 'YYYYMMDD HH:mm').format(), allDay: false, timeFrom: 'journal' }
+    return { start: dayjs(block?.page?.journalDay + '', 'YYYYMMDD').format(), allDay: true, timeFrom: 'journal' }
   }
 
   // no date info
@@ -72,6 +74,7 @@ export type IEvent = BlockEntity & {
     showTitle: string
     contentWithoutTime: string
     project: string
+    projectPage?: PageEntity
     start?: string
     end?: string
     allDay?: boolean
@@ -131,7 +134,7 @@ export const getInternalEvents = async () => {
       {:block/page
         [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
       {:block/refs
-        [:block/journal-day :block/original-name]}])
+        [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}])
     :where
     [?block :block/marker ?marker]
     [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE" "CANCELED"} ?marker)]]
@@ -145,7 +148,6 @@ export const getInternalEvents = async () => {
       return !shouldIgnore
     })
   }
-  console.log('[faiz:] === tasks', tasks)
 
   let fullEvents: IPageEvent = genDefaultProjectEvents()
   let journalEvents: IPageEvent = genDefaultProjectEvents()
@@ -164,6 +166,7 @@ export const getInternalEvents = async () => {
       refs: task.refs?.map(_page => ({
         ..._page,
         journalDay: _page?.['journal-day'],
+        originalName: _page?.['original-name'],
       })),
     }
 
@@ -204,8 +207,8 @@ export const getInternalEvents = async () => {
       }
     } else {
       // project
-      const pageName = task.page?.originalName
-      const projectEvents = projectEventsMap.get(pageName) || genDefaultProjectEvents()
+      const projectName = event.addOns.project
+      const projectEvents = projectEventsMap.get(projectName) || genDefaultProjectEvents()
       if (isMilestone) {
         if (time) {
           projectEvents.milestones.withTime.push(event)
@@ -219,7 +222,7 @@ export const getInternalEvents = async () => {
           projectEvents.tasks.noTime.push(event)
         }
       }
-      projectEventsMap.set(pageName, projectEvents)
+      projectEventsMap.set(projectName, projectEvents)
     }
   })
 

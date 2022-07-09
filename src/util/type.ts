@@ -41,6 +41,12 @@ export type ISettingsForm = {
     longBreakInterval: number,
     commonPomodoros: number[],
   },
+  todoist?: {
+    token?: string
+    sync?: number
+    project?: number
+    label?: number
+  },
 }
 export type IQueryWithCalendar = {
   calendarConfig: ISettingsForm['calendarList'][number]

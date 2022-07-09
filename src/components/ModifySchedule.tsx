@@ -33,15 +33,12 @@ const ModifySchedule: React.FC<{
   onSave?: () => void
   onCancel?: () => void
 }> = ({ visible, initialValues, onCancel, onSave, type='create', calendar, showKeepRef }) => {
-  console.log('[faiz:] === initialValues', initialValues)
-  // const [agendaCalendars, setAgendaCalendars] = useState<ICustomCalendar[]>([])
   const [showTime, setShowTime] = useState(!initialValues?.isAllDay)
   const { defaultDuration, projectList = [], journal } = getInitalSettings()
 
   const isInitialJournal = initialValues?.calendarId === 'Journal'
   const isInitialProject = projectList.some(({ id }) => id === initialValues?.calendarId)
   let projects = (!isInitialProject && !isInitialJournal && type === 'update') ? [journal, { id: initialValues?.calendarId, ...DEFAULT_CALENDAR_STYLE }, ...projectList] : [journal, ...projectList]
-  // const oldScheduleType = logseq.settings?.projectList?.some(project => project?.id === initialValues?.calendarId) ? 'project' : 'calendar'
 
   const [form] = Form.useForm()
 
@@ -72,8 +69,8 @@ const ModifySchedule: React.FC<{
       const settings = getInitalSettings()
       const calendarConfig = projects.find(({ id }) => id === calendarId.value)
       let newScheduleType: 'journal' | 'project' = calendarConfig?.id === 'Journal' ? 'journal' : 'project'
-      console.log('[faiz:] === newScheduleType', newScheduleType)
-      console.log('[faiz:] === onClickSave', values)
+      // console.log('[faiz:] === newScheduleType', newScheduleType)
+      // console.log('[faiz:] === onClickSave', values)
       // 变更后的schedule是否是journal中的schedule
       const isJournalSchedule = newScheduleType === 'journal'
       if (dayjs(start).isAfter(dayjs(end), isAllDay ? 'day' : undefined)) return logseq.App.showMsg('Start time cannot be later than end time', 'error')
@@ -86,7 +83,6 @@ const ModifySchedule: React.FC<{
       if (newScheduleType === 'journal') {
         if (type === 'create') newTitle = isAllDay ? `TODO ${newTitle}` : `TODO ${startTime}-${endTime} ${newTitle}`
         if (type === 'update') {
-          // const pureTitle = deleteProjectTaskTime(pureTaskBlockContent(initialValues?.raw, title))
           newTitle = isAllDay ? joinPrefixTaskBlockContent(initialValues?.raw!, newTitle) : joinPrefixTaskBlockContent(initialValues?.raw!, modifyTimeInfo(newTitle, startTime, endTime))
         }
       } else if (newScheduleType === 'project') {
@@ -96,11 +92,6 @@ const ModifySchedule: React.FC<{
           newTitle = joinPrefixTaskBlockContent(initialValues?.raw!, updateProjectTaskTime(newTitle, { start, end, allDay: isAllDay }))
         }
       }
-      // else {
-      //   if (type === 'update') {
-      //     newTitle = joinPrefixTaskBlockContent(initialValues?.raw, deleteProjectTaskTime(removeTimeInfo(pureTaskBlockContent(initialValues?.raw, title))))
-      //   }
-      // }
 
       // new properties
       const newBlockPropeties = {}
