@@ -115,7 +115,7 @@ const index = () => {
     <div className="page-container flex">
       <div className={classNames('flex flex-1 flex-col overflow-hidden p-8')}>
         <h1 className="title-text">Review</h1>
-        <div className="bg-quaternary flex flex-col flex-1 rounded-2xl box-border p-6 overflow-auto">
+        <div className="bg-quaternary flex-1 rounded-2xl box-border p-6 overflow-auto">
           <SearchForm onSearch={onSearch} initialValues={filter} />
           <Table
             dataSource={events}
