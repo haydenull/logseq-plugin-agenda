@@ -1,3 +1,10 @@
+## [2.6.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.3...v2.6.4) (2022-07-10)
+
+
+### Bug Fixes
+
+* echarts height falut in review page ([1b9a429](https://github.com/haydenull/logseq-plugin-agenda/commit/1b9a429fdaf4078ba4d62f1d1996a1c91e2d558e))
+
 ## [2.6.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.2...v2.6.3) (2022-07-10)
 
 
