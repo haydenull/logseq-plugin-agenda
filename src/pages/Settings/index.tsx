@@ -4,7 +4,7 @@ import { MinusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-
 import { useForm } from 'antd/lib/form/Form'
 import classNames from 'classnames'
 import ColorPicker from '@/components/ColorPicker'
-import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME } from '@/util/constants'
+import { CALENDAR_VIEWS, DEFAULT_PROJECT, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME } from '@/util/constants'
 import Query from '@/components/Query'
 import CreateCalendarModal from '@/components/CreateCalendarModal'
 import type { ISettingsForm } from '@/util/type'
@@ -266,7 +266,7 @@ const Settings: React.FC<{
                           </Draggable>
                         ))}
                         <Form.Item>
-                          <Button type="dashed" onClick={() => add({ id: undefined, bgColor: '#b8e986', textColor: '#4a4a4a', borderColor: '#047857', enabled: true })} block icon={<PlusOutlined />}>
+                          <Button type="dashed" onClick={() => add(DEFAULT_PROJECT)} block icon={<PlusOutlined />}>
                             Add Project
                           </Button>
                         </Form.Item>

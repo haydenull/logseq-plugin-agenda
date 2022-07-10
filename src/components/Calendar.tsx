@@ -208,7 +208,7 @@ const CalendarCom: React.FC<{
             logKey?.enabled ? await moveBlockToSpecificBlock(schedule?.id!, newCalendarId!, `[[${logKey?.id}]]`) : await moveBlockToNewPage(schedule?.id!, newCalendarId!)
           } else if (scheduleType === 'project') {
             calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
-            const content = joinPrefixTaskBlockContent(event, updateProjectTaskTime(event.addOns.contentWithoutTime, { start: dayjs(start), end: dayjs(end), allDay: event.addOns.allDay }))
+            const content = joinPrefixTaskBlockContent(event, updateProjectTaskTime(event.addOns.contentWithoutTime, { start: dayjs(start), end: dayjs(end), allDay: event.addOns.allDay }))?.split('\n')?.[0]
             await logseq.Editor.updateBlock(schedule.id, content)
           }
 

@@ -30,6 +30,7 @@ import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
 import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock, PRIORITY_MAP } from './helper/todoist'
 import { AddTaskArgs, UpdateTaskArgs } from '@doist/todoist-api-typescript'
+import { DEFAULT_PROJECT } from './util/constants'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -186,6 +187,19 @@ if (isDevelopment) {
       })
       logseq.showMainUI()
     }
+    logseq.App.registerPageMenuItem('Agenda: Add this page to agenda project', ({ page }) => {
+      const originalProjectList = logseq.settings?.projectList || []
+      if (originalProjectList.find(project => project.id === page)) return logseq.App.showMsg('This Page is already in agenda project', 'warning')
+      const newProject = {
+        ...DEFAULT_PROJECT,
+        id: page,
+      }
+      // hack https://github.com/logseq/logseq/issues/4447
+      logseq.updateSettings({projectList: 1})
+      // ensure subscription list is array
+      logseq.updateSettings({ ...logseq.settings, projectList: originalProjectList.concat(newProject)})
+      logseq.App.showMsg('Successfully added')
+    })
     logseq.Editor.registerBlockContextMenuItem('Agenda: Modify Schedule', editSchedule)
     logseq.Editor.registerBlockContextMenuItem('Agenda: Start Pomodoro Timer', async ({ uuid }) => {
       // logseq.Editor.insertAtEditingCursor(`{{renderer agenda, pomodoro-timer, 40, 'nostarted', 0}}`)

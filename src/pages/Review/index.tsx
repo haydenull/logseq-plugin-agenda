@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import { useAtom } from 'jotai'
 import SearchForm, { IReviewSearchForm } from './components/SearchForm'
 import { categorizeTask } from '@/util/schedule'
-import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from '@/model/events'
+import { fullEventsAtom } from '@/model/events'
 import { getEventPomodoroLength, IEvent } from '@/util/events'
 import dayjs, { Dayjs } from 'dayjs'
 import { useState } from 'react'
@@ -11,7 +11,6 @@ import { IPomodoroInfo } from '@/helper/pomodoro'
 import { copyToClipboard, extractDays } from '@/util/util'
 import MixLineBar from './components/MixLineBar'
 import TreeMap from './components/TreeMap'
-import { getInitalSettings } from '@/util/baseInfo'
 
 
 const filterEvents = (rawEvents: IEvent[], filter: IReviewSearchForm) => {
@@ -19,7 +18,7 @@ const filterEvents = (rawEvents: IEvent[], filter: IReviewSearchForm) => {
   if (filter.project?.length) {
     const hasJournal = filter.project?.some(project => project === 'journal')
     events = events.filter(event => {
-      return (hasJournal && event.addOns.isJournal) || filter.project?.some(project => project === event.page?.['original-name'])
+      return (hasJournal && event.addOns.isJournal) || filter.project?.some(project => project === event.addOns.project)
     })
   }
 
@@ -95,7 +94,6 @@ const index = () => {
   // const [customCalendarSchedules, setCustomCalendarSchedules] = useState<any[]>([])
   const [fullEvents] = useAtom(fullEventsAtom)
 
-  const { weekStartDay } = getInitalSettings()
   const [filter, setFilter] = useState<IReviewSearchForm>({timeframe: [dayjs().weekday(0), dayjs().weekday(6)]})
   const events = filterEvents(fullEvents.tasks.withTime.concat(fullEvents.tasks.noTime), filter)
 

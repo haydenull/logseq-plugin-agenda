@@ -37,7 +37,6 @@ const Task: React.FC<{
 }> = ({ task, showTimeDot = false, type = 'allDay' }) => {
   const startDay = dayjs(task.addOns.start)
   const endDay = dayjs(task.addOns.end)
-  const timeFormatter = startDay.isSame(endDay, 'day') ? 'HH:mm' : 'HH:mm (ddd)'
   const isActive = type !== 'overdue' && dayjs().isBetween(startDay, endDay)
   const isDone = task?.addOns.status === 'done'
   const calendarConfig = task.addOns.calendarConfig

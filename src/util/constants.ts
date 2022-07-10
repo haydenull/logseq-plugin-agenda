@@ -350,3 +350,5 @@ export const YES_NO_SELECTION = [
 ]
 
 export const POMODORO_INTERRUPTION_SEPARATOR = '|`~|'
+
+export const DEFAULT_PROJECT = { id: undefined, bgColor: '#b8e986', textColor: '#4a4a4a', borderColor: '#047857', enabled: true }

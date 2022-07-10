@@ -17,7 +17,7 @@ export const transformTaskEventToSchedule = (block: IEvent) => {
   let category: ICategory = block?.addOns?.allDay ? 'allday' : 'time'
   if (block?.addOns?.isOverdue) category = 'task'
 
-  let calendarStyle: { bgColor: string; textColor: string; borderColor: string; } | undefined = block?.addOns?.isJournal ? journal : projectList.find(project => project.id === block?.page?.originalName)
+  let calendarStyle: { bgColor: string; textColor: string; borderColor: string; } | undefined = block?.addOns?.isJournal ? journal : projectList.find(project => project.id === block?.addOns?.project)
   if (!calendarStyle) calendarStyle = DEFAULT_CALENDAR_STYLE
 
   return {
@@ -41,7 +41,7 @@ export const transformTaskEventToSchedule = (block: IEvent) => {
 export const transformMilestoneEventToSchedule = (block: IEvent) => {
   const { journal, projectList = [] } = getInitalSettings()
 
-  let calendarStyle: { bgColor: string; textColor: string; borderColor: string; } | undefined = block?.addOns?.isJournal ? journal : projectList.find(project => project.id === block?.page?.originalName)
+  let calendarStyle: { bgColor: string; textColor: string; borderColor: string; } | undefined = block?.addOns?.isJournal ? journal : projectList.find(project => project.id === block?.addOns?.project)
   if (!calendarStyle) calendarStyle = DEFAULT_CALENDAR_STYLE
   return {
     id: block.uuid,
@@ -154,20 +154,6 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   // add isJournal
   if (isJournal) event.addOns.isJournal = true
 
-  // add calendar config
-  const project = projectList?.find(project => project.id === page!.originalName)
-  if (project) {
-    event.addOns.calendarConfig = project
-  } else if (isJournal) {
-    event.addOns.calendarConfig = journal
-  } else {
-    event.addOns.calendarConfig = {
-      id: page?.originalName,
-      enabled: true,
-      ...DEFAULT_CALENDAR_STYLE,
-    }
-  }
-
   // add type
   if (isMilestone) event.addOns.type = 'milestone'
 
@@ -180,6 +166,20 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
                           : (projectPage?.originalName || page?.originalName)
   // add project page
   event.addOns.projectPage = projectPage || page
+
+  // add calendar config
+  const project = projectList?.find(project => project.id === event.addOns.project)
+  if (project) {
+    event.addOns.calendarConfig = project
+  } else if (isJournal) {
+    event.addOns.calendarConfig = journal
+  } else {
+    event.addOns.calendarConfig = {
+      id: event.addOns.project,
+      enabled: true,
+      ...DEFAULT_CALENDAR_STYLE,
+    }
+  }
 
   return event
 }
