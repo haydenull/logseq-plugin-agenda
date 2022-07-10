@@ -1,3 +1,10 @@
+## [2.6.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.2...v2.6.3) (2022-07-10)
+
+
+### Bug Fixes
+
+* add alert when synchronizing a task that has been deleted by Todoist ([5667184](https://github.com/haydenull/logseq-plugin-agenda/commit/5667184523253e488f6726a86e5e94ba2eac20fe))
+
 ## [2.6.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.1...v2.6.2) (2022-07-10)
 
 
