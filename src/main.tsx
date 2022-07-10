@@ -29,7 +29,7 @@ import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
 import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock, PRIORITY_MAP } from './helper/todoist'
-import { AddTaskArgs, UpdateTaskArgs } from '@doist/todoist-api-typescript'
+import { AddTaskArgs, TodoistRequestError, UpdateTaskArgs } from '@doist/todoist-api-typescript'
 import { DEFAULT_PROJECT } from './util/constants'
 
 dayjs.extend(weekday)
@@ -100,6 +100,8 @@ if (isDevelopment) {
       key: 'logseq-plugin-agenda',
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
+
+    // ========== todoist =========
     if (todoist?.token) {
       logseq.App.registerUIItem('toolbar', {
         key: 'plugin-agenda-todoist',
@@ -115,14 +117,20 @@ if (isDevelopment) {
           console.info('[faiz:] === sync block to todoist', event)
 
           const todoistId = event.properties?.todoistId
-          const task = await getTask(todoistId)
-          const priority = findKey(PRIORITY_MAP, v => v === event.priority)
-          let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0], priority }
-          if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
-          if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
-          if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
-          if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
-          updateTask(todoistId, params)
+          try {
+            const task = await getTask(todoistId)
+            const priority = findKey(PRIORITY_MAP, v => v === event.priority)
+            let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0], priority }
+            if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
+            if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
+            if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
+            if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
+            updateTask(todoistId, params)
+          } catch (error) {
+            if ((error as TodoistRequestError).httpStatusCode === 404) {
+              return logseq.App.showMsg(`Sync Error\nmessage: ${(error as TodoistRequestError)?.responseData}\nPlease check whether the task has been deleted or whether the todoist-id is correct`, 'error')
+            }
+          }
         }
         genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
       })
@@ -152,6 +160,8 @@ if (isDevelopment) {
 
       })
     }
+    // ========== todoist ==============
+
     logseq.App.registerCommandPalette({
       key: 'logseq-plugin-agenda:show',
       label: 'Show Agenda',
