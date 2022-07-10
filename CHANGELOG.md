@@ -1,3 +1,11 @@
+## [2.6.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.1...v2.6.2) (2022-07-10)
+
+
+### Bug Fixes
+
+* Error in project judgment on review page ([b6cbcd8](https://github.com/haydenull/logseq-plugin-agenda/commit/b6cbcd8d2808195f425dfa19cc043b15a2eaff85))
+* modify date error when drag project event on calendar ([1331a04](https://github.com/haydenull/logseq-plugin-agenda/commit/1331a042ae9c4fe4691c63381e96aa645b64958b))
+
 ## [2.6.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.0...v2.6.1) (2022-07-09)
 
 
