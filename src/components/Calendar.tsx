@@ -7,7 +7,7 @@ import { deleteProjectTaskTime, updateProjectTaskTime } from '@/util/schedule'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import Sidebar from '@/components/Sidebar'
 import dayjs from 'dayjs'
-import { moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
+import { joinPrefixTaskBlockContent, moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
 import { Button, Modal, Radio, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { ICustomCalendar } from '@/util/type'
@@ -208,7 +208,7 @@ const CalendarCom: React.FC<{
             logKey?.enabled ? await moveBlockToSpecificBlock(schedule?.id!, newCalendarId!, `[[${logKey?.id}]]`) : await moveBlockToNewPage(schedule?.id!, newCalendarId!)
           } else if (scheduleType === 'project') {
             calendarRef.current?.updateSchedule(schedule.id, schedule.calendarId, changes)
-            const content = updateProjectTaskTime(event.addOns.contentWithoutTime, { start: dayjs(start), end: dayjs(end), allDay: event.addOns.allDay })
+            const content = joinPrefixTaskBlockContent(event, updateProjectTaskTime(event.addOns.contentWithoutTime, { start: dayjs(start), end: dayjs(end), allDay: event.addOns.allDay }))
             await logseq.Editor.updateBlock(schedule.id, content)
           }
 
