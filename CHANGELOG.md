@@ -1,3 +1,10 @@
+## [2.6.5](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.4...v2.6.5) (2022-07-12)
+
+
+### Bug Fixes
+
+* 🐛 Fixed the date was incorrectly overwriten ([0911134](https://github.com/haydenull/logseq-plugin-agenda/commit/0911134c7db3d2cab79a08ae63557c0c6f9b665d))
+
 ## [2.6.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.3...v2.6.4) (2022-07-10)
 
 
