@@ -8,14 +8,14 @@ export const DEFAULT_LOG_KEY = 'Daily Log'
 
 // export const TIME_REG = /(?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]/
 export const TIME_REG = /^((?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])(-(?:[0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])*/
-export const MARKDOWN_PROJECT_TIME_REG = />\[.+\]\(#(agenda:\/\/[^\n\r ]+)\)/
-// export const MARKDOWN_PROJECT_TIME_REG = />\[[\d -]+\]\(#(agenda:\/\/[^\n\r ]+)\)/
-export const ORG_PROJECT_TIME_REG = />\[\[#(agenda:\/\/[^\n\r ]+)\]\[.+\]\]/
-// export const ORG_PROJECT_TIME_REG = />\[\[#(agenda:\/\/[^\n\r ]+)\]\[[\d -]+\]\]/
-export const MARKDOWN_POMODORO_REG = />\[.+\]\(#(agenda-pomo:\/\/[^\n\r ]+)\)/
-// export const MARKDOWN_POMODORO_REG = />\[[🍅 0-9min]+\]\(#(agenda-pomo:\/\/[^\n\r ]+)\)/
-export const ORG_POMODORO_REG = />\[\[#(agenda-pomo:\/\/[^\n\r ]+)\]\[.+\]\]/
-// export const ORG_POMODORO_REG = />\[\[#(agenda-pomo:\/\/[^\n\r ]+)\]\[[🍅 0-9min]+\]\]/
+// export const MARKDOWN_PROJECT_TIME_REG = />\[.+\]\(#(agenda:\/\/[^\n\r ]+)\)/
+export const MARKDOWN_PROJECT_TIME_REG = />\[[\d -]+\]\(#(agenda:\/\/[^\n\r ]+)\)/
+// export const ORG_PROJECT_TIME_REG = />\[\[#(agenda:\/\/[^\n\r ]+)\]\[.+\]\]/
+export const ORG_PROJECT_TIME_REG = />\[\[#(agenda:\/\/[^\n\r ]+)\]\[[\d -]+\]\]/
+// export const MARKDOWN_POMODORO_REG = />\[.+\]\(#(agenda-pomo:\/\/[^\n\r ]+)\)/
+export const MARKDOWN_POMODORO_REG = />\[[🍅 0-9min]+\]\(#(agenda-pomo:\/\/[^\n\r ]+)\)/
+// export const ORG_POMODORO_REG = />\[\[#(agenda-pomo:\/\/[^\n\r ]+)\]\[.+\]\]/
+export const ORG_POMODORO_REG = />\[\[#(agenda-pomo:\/\/[^\n\r ]+)\]\[[🍅 0-9min]+\]\]/
 // >[🍅](#agenda-pomo://?t=p-20220614123213-10,h-2023829809-4)
 
 export const CALENDAR_VIEWS = [
