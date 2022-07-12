@@ -282,6 +282,8 @@ if (isDevelopment) {
       }
     })
 
+    // fix: https://github.com/haydenull/logseq-plugin-agenda/issues/87
+    logseq.setMainUIInlineStyle({ zIndex: 1000 })
     logseq.provideStyle(LOGSEQ_PROVIDE_COMMON_STYLE)
 
     if (top) {
