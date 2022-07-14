@@ -1,3 +1,10 @@
+## [2.6.6](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.5...v2.6.6) (2022-07-14)
+
+
+### Bug Fixes
+
+* 🐛 Parsing time task error and Error setting now in calenda ([d0782fb](https://github.com/haydenull/logseq-plugin-agenda/commit/d0782fb884ab6a04422606b3074ed0713df5d2ea))
+
 ## [2.6.5](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.4...v2.6.5) (2022-07-12)
 
 

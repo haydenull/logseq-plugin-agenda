@@ -1,6 +1,6 @@
 {
   "name": "logseq-plugin-agenda",
-  "version": "2.6.5",
+  "version": "2.6.6",
   "main": "dist/index.html",
   "logseq": {
     "id": "logseq-plugin-agenda",
