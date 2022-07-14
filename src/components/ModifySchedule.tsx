@@ -48,7 +48,7 @@ const ModifySchedule: React.FC<{
     }
     if (changedValues.start !== undefined) {
       form.setFieldsValue({
-        end: changedValues.start.add(defaultDuration.value, defaultDuration.unit),
+        end: changedValues.start?.clone().add(defaultDuration.value, defaultDuration.unit),
       })
     }
     // if (changedValues.calendarId?.value === 'journal') {
