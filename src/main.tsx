@@ -165,6 +165,9 @@ if (isDevelopment) {
     logseq.App.registerCommandPalette({
       key: 'logseq-plugin-agenda:show',
       label: 'Show Agenda',
+      keybinding: {
+        binding: "ctrl+shift+a",
+      },
     }, data => {
       renderApp()
       logseq.showMainUI()
