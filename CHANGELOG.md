@@ -1,3 +1,10 @@
+## [2.6.7](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.6...v2.6.7) (2022-07-23)
+
+
+### Bug Fixes
+
+* calendar theme error after change theme ([3eb0044](https://github.com/haydenull/logseq-plugin-agenda/commit/3eb00444c09c6fe9681c4e2ddfd409617eb17125))
+
 ## [2.6.6](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.5...v2.6.6) (2022-07-14)
 
 
