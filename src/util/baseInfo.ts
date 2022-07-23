@@ -56,7 +56,8 @@ export const initializeSettings = () => {
 }
 
 export const getDefaultCalendarOptions = async () => {
-  const logseqTheme = import.meta.env.DEV ? 'light' : await logseq.App.getStateFromStore<'dark' | 'light'>('ui/theme')
+  const theme = await getCurrentTheme()
+  const _theme = theme === 'dark' ? 'dark' : 'light'
   let defaultView = logseq.settings?.defaultView || 'month'
   if (logseq.settings?.defaultView === '2week') defaultView = 'month'
   return {
@@ -66,7 +67,7 @@ export const getDefaultCalendarOptions = async () => {
     useDetailPopup: true,
     isReadOnly: false,
     disableClick: true,
-    theme: CALENDAR_THEME[logseqTheme],
+    theme: CALENDAR_THEME[_theme],
     usageStatistics: false,
     week: {
       startDayOfWeek: logseq.settings?.weekStartDay || 0,
