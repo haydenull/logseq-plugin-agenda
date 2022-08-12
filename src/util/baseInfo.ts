@@ -107,6 +107,7 @@ export const getDefaultCalendarOptions = async () => {
 export const genDailyLogCalendarOptions = (defaultOptions) => {
   return {
     ...defaultOptions,
+    isReadOnly: true,
     defaultView: 'week',
     taskView: ['time'],
   }
