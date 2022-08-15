@@ -114,13 +114,16 @@ if (isDevelopment) {
         const syncToTodoist = async (uuid: string) => {
           const block = await logseq.Editor.getBlock(uuid)
           const event = await transformBlockToEvent(block!, getInitalSettings())
-          console.info('[faiz:] === sync block to todoist', event)
 
           const todoistId = event.properties?.todoistId
           try {
             const task = await getTask(todoistId)
             const priority = findKey(PRIORITY_MAP, v => v === event.priority)
-            let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0], priority }
+            let params: UpdateTaskArgs = {
+              content: event.addOns.contentWithoutTime?.split('\n')?.[0],
+              description: block?.properties?.todoistDesc,
+              priority,
+            }
             if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
             if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
             if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
@@ -143,7 +146,10 @@ if (isDevelopment) {
         if (block?.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded,\nplease do not upload it again', 'error')
         const event = await transformBlockToEvent(block!, settings)
 
-        let params: AddTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
+        let params: AddTaskArgs = {
+          content: event.addOns.contentWithoutTime?.split('\n')?.[0],
+          description: block?.properties?.todoistDesc,
+        }
         if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
         if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
         if (todoist?.project) params.projectId = todoist.project
