@@ -72,8 +72,14 @@ const Settings: React.FC<{
     setSettings(allValues)
     // hack https://github.com/logseq/logseq/issues/4447
     logseq.updateSettings({calendarList: 1, subscriptionList: 1, projectList: 1})
-    // ensure subscription list is array
-    logseq.updateSettings({subscriptionList: [], projectList: [], ...allValues})
+    logseq.updateSettings({
+      // ensure subscription list is array
+      subscriptionList: [],
+      projectList: [],
+      ...allValues,
+      // supports delete ignore tag
+      ignoreTag: allValues.ignoreTag || null,
+    })
 
     if (typeof changedValues.weekStartDay === 'number') {
       dayjs.updateLocale('en', {
@@ -158,6 +164,7 @@ const Settings: React.FC<{
             <Form.Item label="Ignore Tag" name="ignoreTag">
               <Select
                 showSearch
+                allowClear
                 placeholder="Project ID (Page Name)"
                 optionFilterProp="label"
                 style={{ width: '300px' }}
