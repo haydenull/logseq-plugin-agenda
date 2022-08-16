@@ -103,9 +103,16 @@ export const isEventNeedUpdate = (event: IEvent, task: Task) => {
 }
 
 export const createBlock = async (task: Task, dateFormat: string) => {
+  const { todoist } = getInitalSettings()
   const date = task.due?.datetime || task.due?.date
-  const journalName = format(dayjs().valueOf(), dateFormat)
-  const page = await logseq.Editor.createPage(journalName, {}, { journal: true })
+
+  let page
+  if (todoist?.position) {
+    page = await logseq.Editor.getPage(todoist.position)
+  } else {
+    const journalName = format(dayjs().valueOf(), dateFormat)
+    page = await logseq.Editor.createPage(journalName, {}, { journal: true })
+  }
 
   let content = task.content
   const logseqPriority = PRIORITY_MAP[task.priority]

@@ -126,6 +126,7 @@ if (isDevelopment) {
             }
             if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
             if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
+            if (!event.rawTime) params.dueString = 'no due date'
             if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
             if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
             updateTask(todoistId, params)
