@@ -15,11 +15,12 @@ const index: React.FC<{}> = () => {
     <div className="page-container p-8 flex flex-col">
       <h1 className="title-text">Gantt</h1>
       <div className={classNames(s.contentWrapper)}>
-        {
+        {/* {
           projectData.map(project => {
             return (<GanttCom project={project} />)
           })
-        }
+        } */}
+        <GanttCom projects={projectData} />
       </div>
     </div>
   )
