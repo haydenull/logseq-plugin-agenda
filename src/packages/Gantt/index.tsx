@@ -1,7 +1,7 @@
 import { Button, Select } from 'antd'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Calendar from './components/Calendar'
 import Group from './components/Group'
 import { MODES, VIEWS } from './constants'
@@ -113,7 +113,12 @@ const Gantt: React.FC<{
   //   },
   // ])
 
-  const _data = mode === 'simple' ? transformDataToSimpleMode(data) : transformDataToAdvancedMode(data)
+  const [ganttData, setGanttData] = useState<IGroup[]>([])
+
+  useEffect(() => {
+    const _data = mode === 'simple' ? transformDataToSimpleMode(data) : transformDataToAdvancedMode(data)
+    setGanttData(_data)
+  }, [data, mode])
 
   return (
     <div className={classNames(`w-full h-full relative gantt text view-${view}`, { dark: theme === 'dark' }, { light: theme !== 'dark' })} {...props}>
@@ -138,7 +143,7 @@ const Gantt: React.FC<{
           showSidebar && (
             <div className="side-bar bg-quaternary sticky left-0 z-10 h-fit">
               {
-                _data.map((group, index) => (
+                ganttData.map((group, index) => (
                   <Group
                     key={group.id}
                     mode={mode}
@@ -153,7 +158,7 @@ const Gantt: React.FC<{
             </div>
           )
         }
-        <Calendar data={_data} ref={calendarRef} mode={mode} view={view} uniqueId={uniqueId} />
+        <Calendar data={ganttData} ref={calendarRef} mode={mode} view={view} uniqueId={uniqueId} />
       </div>
     </div>
   )
