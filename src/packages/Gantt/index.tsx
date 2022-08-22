@@ -114,6 +114,15 @@ const Gantt: React.FC<{
   // ])
 
   const [ganttData, setGanttData] = useState<IGroup[]>([])
+  const [foldedGroups, setFoldedGroups] = useState<string[]>([])
+
+  const onFoldChange = (groupId: string, folded: boolean) => {
+    if (folded) {
+      setFoldedGroups([...foldedGroups, groupId])
+    } else {
+      setFoldedGroups(foldedGroups.filter(id => id !== groupId))
+    }
+  }
 
   useEffect(() => {
     const _data = mode === 'simple' ? transformDataToSimpleMode(data) : transformDataToAdvancedMode(data)
@@ -152,13 +161,15 @@ const Gantt: React.FC<{
                     milestones={group?.milestones}
                     levelCount={group.levelCount}
                     uniqueId={uniqueId}
+                    foldedGroups={foldedGroups}
+                    onFoldChange={onFoldChange}
                   />
                 ))
               }
             </div>
           )
         }
-        <Calendar data={ganttData} ref={calendarRef} mode={mode} view={view} uniqueId={uniqueId} />
+        <Calendar data={ganttData} ref={calendarRef} mode={mode} view={view} uniqueId={uniqueId} foldedGroups={foldedGroups} />
       </div>
     </div>
   )

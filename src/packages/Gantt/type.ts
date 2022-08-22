@@ -11,7 +11,6 @@ export type IEvent = {
 
 export type IGroup = {
   id: string
-  fold?: boolean
   title: string
   raw?: any
   events: IEvent[]
