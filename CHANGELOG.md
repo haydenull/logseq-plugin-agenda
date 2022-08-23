@@ -1,3 +1,21 @@
+# [2.7.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.7...v2.7.0) (2022-08-23)
+
+
+### Bug Fixes
+
+* daily log adapted to logseq 0.8.0 New data structure ([1d25bf9](https://github.com/haydenull/logseq-plugin-agenda/commit/1d25bf97c6f7d7569e5fb3f80a67fdbb87aaced3))
+* page name fault when Add this page to agenda project ([b96eaf0](https://github.com/haydenull/logseq-plugin-agenda/commit/b96eaf04715d8f883f57ea1921ded6788771d7a6))
+* subscription event end date fault ([315dfc8](https://github.com/haydenull/logseq-plugin-agenda/commit/315dfc8211a970838934f83643f7e60fad841d8e))
+
+
+### Features
+
+* color picker supports opacity ([5813c1e](https://github.com/haydenull/logseq-plugin-agenda/commit/5813c1e1cf6702cd011da66e1376da840b86bd13))
+* Combine multiple projects into one gantt ([84d8385](https://github.com/haydenull/logseq-plugin-agenda/commit/84d838529dea0dee133041661ce87a38c774210f))
+* Support setting the position of the block corresponding to todoist ([d9ab085](https://github.com/haydenull/logseq-plugin-agenda/commit/d9ab085dd1121032dffcbdf9bed51273cf631b7f))
+* supports delete ignore tag ([f961696](https://github.com/haydenull/logseq-plugin-agenda/commit/f961696fa24946bd0f5b15f07a9faccf9d9b887b))
+* supports todoist description ([a13fb53](https://github.com/haydenull/logseq-plugin-agenda/commit/a13fb531f73bfd915652a54e1c6889486da6090f))
+
 ## [2.6.7](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.6...v2.6.7) (2022-07-23)
 
 
