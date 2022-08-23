@@ -69,19 +69,25 @@ export const getDailyLogSchedules = async () => {
   const { logKey, defaultDuration } = getInitalSettings()
   if (!logKey?.enabled) return []
   const logs = await logseq.DB.q(`[[${logKey.id}]]`)
-  const _logs = logs
-                ?.filter(block => {
-                  if (block.headingLevel && block.format === 'markdown') {
-                    block.content = block.content.replace(new RegExp(`^#{${block.headingLevel}} `), '')
-                  }
-                  return block.content?.trim() === `[[${logKey.id}]]`
-                })
-                ?.map(block => Array.isArray(block.parent) ? block.parent : [])
-                ?.flat()
-                ?.filter(block => {
-                  const _content = block.content?.trim()
-                  return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
-                }) || []
+  // logseq 0.8.0 modified the structure of the query return data
+  // const _logs = logs
+  //               ?.filter(block => {
+  //                 if (block.headingLevel && block.format === 'markdown') {
+  //                   block.content = block.content.replace(new RegExp(`^#{${block.headingLevel}} `), '')
+  //                 }
+  //                 return block.content?.trim() === `[[${logKey.id}]]`
+  //               })
+  //               ?.map(block => Array.isArray(block.parent) ? block.parent : [])
+  //               ?.flat()
+  //               ?.filter(block => {
+  //                 const _content = block.content?.trim()
+  //                 return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
+  //               }) || []
+  const _logs = logs?.filter(block => {
+    // Interstitial Journal requries filter task
+    if (block?.marker || !block?.page?.journalDay) return false
+    return TIME_REG.test(block?.content)
+  }) || []
   const _logSchedulePromises = _logs?.map(async block => {
     const date = block?.page?.journalDay
     const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))

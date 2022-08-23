@@ -46,6 +46,7 @@ export type ISettingsForm = {
     sync?: number
     project?: number
     label?: number
+    position?: string
   },
 }
 export type IQueryWithCalendar = {

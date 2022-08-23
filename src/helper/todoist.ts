@@ -60,9 +60,9 @@ export const pullTask = async () => {
   // @ts-ignore
   needUpdateEvents = [...needUpdateEvents, ...eventsNotInActiveTasks]
 
-  console.log('[faiz: pull todoist] === needUpdateEvents', needUpdateEvents)
-  console.log('[faiz: pull todoist] === needCreateTasks', needCreateTasks)
-  console.log('[faiz: pull todoist] === eventsNotInActiveTasks', eventsNotInActiveTasks)
+  // console.log('[faiz: pull todoist] === needUpdateEvents', needUpdateEvents)
+  // console.log('[faiz: pull todoist] === needCreateTasks', needCreateTasks)
+  // console.log('[faiz: pull todoist] === eventsNotInActiveTasks', eventsNotInActiveTasks)
 
   needCreateTasks.forEach(task => createBlock(task, preferredDateFormat))
   needUpdateEvents.forEach(event => updateBlock(event, event.todoistTask))
@@ -91,20 +91,28 @@ export const isEventNeedUpdate = (event: IEvent, task: Task) => {
   const _completed = event.addOns.status === 'done'
   const _datetime = event.rawTime ? dayjs(event.rawTime?.start).valueOf() : undefined
   const _content = event.addOns.contentWithoutTime?.split('\n')[0]
+  const _description = event.properties?.todoistDesc || ''
   const _priority = event.priority
 
-  const { completed, due, content, priority } = task
+  const { completed, due, content, priority, description = '' } = task
   let datetime = due ? (
     due?.datetime ? dayjs(due?.datetime).valueOf() : dayjs(due.date).valueOf()
   ) : undefined
-  if (_completed !== completed || _content !== content || _datetime !== datetime || _priority !== PRIORITY_MAP[priority]) return true
+  if (_completed !== completed || _content !== content || _description !== description || _datetime !== datetime || _priority !== PRIORITY_MAP[priority]) return true
   return false
 }
 
 export const createBlock = async (task: Task, dateFormat: string) => {
+  const { todoist } = getInitalSettings()
   const date = task.due?.datetime || task.due?.date
-  const journalName = format(dayjs().valueOf(), dateFormat)
-  const page = await logseq.Editor.createPage(journalName, {}, { journal: true })
+
+  let page
+  if (todoist?.position) {
+    page = await logseq.Editor.getPage(todoist.position)
+  } else {
+    const journalName = format(dayjs().valueOf(), dateFormat)
+    page = await logseq.Editor.createPage(journalName, {}, { journal: true })
+  }
 
   let content = task.content
   const logseqPriority = PRIORITY_MAP[task.priority]
@@ -114,12 +122,14 @@ export const createBlock = async (task: Task, dateFormat: string) => {
     const template = task.due?.datetime ? 'YYYY-MM-DD ddd HH:mm' : 'YYYY-MM-DD ddd'
     content += `\nSCHEDULED: <${dayjs(date).format(template)}>`
   }
+  const description = task?.description?.split('\n')[0] || ''
 
   return logseq.Editor.insertBlock(page!.originalName, content, {
     isPageBlock: true,
     sibling: true,
     properties: {
       'todoist-id': task.id,
+      'todoist-desc': description,
     },
   })
 }
@@ -138,7 +148,10 @@ export const updateBlock = async (event: IEvent, task?: Task) => {
     content += `\nSCHEDULED: <${dayjs(date).format(template)}>`
   }
 
+  const description = task?.description?.split('\n')[0] || ''
+
   await logseq.Editor.updateBlock(event.uuid, content)
   // updateBlock will remove all custom properties, so we need to add todoist-id again
+  await logseq.Editor.upsertBlockProperty(event.uuid, 'todoist-desc', description)
   return logseq.Editor.upsertBlockProperty(event.uuid, 'todoist-id', task.id)
 }

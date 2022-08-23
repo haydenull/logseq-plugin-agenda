@@ -9,7 +9,9 @@ const ColorPicker: React.FC<{
   const [pickerVisible, setPickerVisible] = useState(false)
 
   const onChangeColor = (color: any) => {
-    onChange?.(color.hex)
+    const rgba = color.rgb
+    const _color = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
+    onChange?.(_color)
   }
 
   return (

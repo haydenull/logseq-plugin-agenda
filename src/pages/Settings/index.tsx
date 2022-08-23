@@ -72,8 +72,14 @@ const Settings: React.FC<{
     setSettings(allValues)
     // hack https://github.com/logseq/logseq/issues/4447
     logseq.updateSettings({calendarList: 1, subscriptionList: 1, projectList: 1})
-    // ensure subscription list is array
-    logseq.updateSettings({subscriptionList: [], projectList: [], ...allValues})
+    logseq.updateSettings({
+      // ensure subscription list is array
+      subscriptionList: [],
+      projectList: [],
+      ...allValues,
+      // supports delete ignore tag
+      ignoreTag: allValues.ignoreTag || null,
+    })
 
     if (typeof changedValues.weekStartDay === 'number') {
       dayjs.updateLocale('en', {
@@ -158,6 +164,7 @@ const Settings: React.FC<{
             <Form.Item label="Ignore Tag" name="ignoreTag">
               <Select
                 showSearch
+                allowClear
                 placeholder="Project ID (Page Name)"
                 optionFilterProp="label"
                 style={{ width: '300px' }}
@@ -177,7 +184,13 @@ const Settings: React.FC<{
             <Form.Item label="Log Key" tooltip="Interstitial Journal">
               <div className="flex items-center justify-between">
                 <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
-                  <Input style={{ width: '240px' }} />
+                  <Select
+                    style={{ width: '240px' }}
+                    options={pageOptions}
+                    showSearch
+                    optionFilterProp="label"
+                    filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+                  />
                 </Form.Item>
                 <Form.Item name={['logKey', 'bgColor']} noStyle rules={[{ required: true }]}>
                   <ColorPicker text="background" />
@@ -460,6 +473,16 @@ const Settings: React.FC<{
             </Form.Item>
             <Form.Item label="Todoist label for new logseq events" name={['todoist', 'label']} labelCol={{ span: 8 }}>
               <Select placeholder="Please select todoist label" options={todoistLabelOptions} />
+            </Form.Item>
+            <Form.Item label="Logseq block position" name={['todoist', 'position']} labelCol={{ span: 8 }}>
+              <Select
+                placeholder="Please select position page"
+                options={pageOptions}
+                allowClear
+                showSearch
+                optionFilterProp="label"
+                filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+              />
             </Form.Item>
           </div>
         </Form>

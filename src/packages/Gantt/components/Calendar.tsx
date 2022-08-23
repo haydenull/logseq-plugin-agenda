@@ -11,16 +11,22 @@ const Calendar: React.FC<{
   view?: IView
   weekStartDay?: number
   uniqueId?: string
-}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '' }, ref) => {
+  foldedGroups?: string[]
+}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '', foldedGroups }, ref) => {
   const current = dayjs()
-  const { start: rangeStart, end: rangeEnd } = getDateRange(data)
+  const expandGroupData = data.map(group => {
+    const isFolded = foldedGroups?.includes(group.id)
+    if (isFolded) return {...group, events: [], milestones: [], levelCount: 0}
+    return group
+  })
+  const { start: rangeStart, end: rangeEnd } = getDateRange(expandGroupData)
   const start = rangeStart.subtract(1, 'day')
   const end = rangeEnd.add(9, 'day')
   const calendarEventWidth = CALENDAR_EVENT_WIDTH[view]
 
   const dateMarks = extractDays(start, end)
 
-  const dataWithGroupCoordinate = getDataWithGroupCoordinates(data, mode)
+  const dataWithGroupCoordinate = getDataWithGroupCoordinates(expandGroupData, mode)
 
   const dataWithCoordinates = dataWithGroupCoordinate.map((group, groupIndex) => {
     const { events, milestones = [] } = group
@@ -117,6 +123,7 @@ const Calendar: React.FC<{
         {
           dataWithCoordinates.map(group => {
             return (
+              // 每个 group 都生成自己的back有点浪费，其实是可以合并成一个的
               <div className="calendar__group w-fit" key={group.id}>
                 <div className="flex">
                   {

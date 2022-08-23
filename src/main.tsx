@@ -114,15 +114,19 @@ if (isDevelopment) {
         const syncToTodoist = async (uuid: string) => {
           const block = await logseq.Editor.getBlock(uuid)
           const event = await transformBlockToEvent(block!, getInitalSettings())
-          console.info('[faiz:] === sync block to todoist', event)
 
           const todoistId = event.properties?.todoistId
           try {
             const task = await getTask(todoistId)
             const priority = findKey(PRIORITY_MAP, v => v === event.priority)
-            let params: UpdateTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0], priority }
+            let params: UpdateTaskArgs = {
+              content: event.addOns.contentWithoutTime?.split('\n')?.[0],
+              description: block?.properties?.todoistDesc,
+              priority,
+            }
             if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
             if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
+            if (!event.rawTime) params.dueString = 'no due date'
             if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
             if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
             updateTask(todoistId, params)
@@ -143,7 +147,10 @@ if (isDevelopment) {
         if (block?.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded,\nplease do not upload it again', 'error')
         const event = await transformBlockToEvent(block!, settings)
 
-        let params: AddTaskArgs = { content: event.addOns.contentWithoutTime?.split('\n')?.[0] }
+        let params: AddTaskArgs = {
+          content: event.addOns.contentWithoutTime?.split('\n')?.[0],
+          description: block?.properties?.todoistDesc,
+        }
         if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
         if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
         if (todoist?.project) params.projectId = todoist.project
@@ -200,12 +207,15 @@ if (isDevelopment) {
       })
       logseq.showMainUI()
     }
-    logseq.App.registerPageMenuItem('Agenda: Add this page to agenda project', ({ page }) => {
+    logseq.App.registerPageMenuItem('Agenda: Add this page to agenda project', async ({ page }) => {
+      const pageData = await logseq.Editor.getPage(page)
+      if (!pageData) return logseq.UI.showMsg('Page not found', 'error')
       const originalProjectList = logseq.settings?.projectList || []
-      if (originalProjectList.find(project => project.id === page)) return logseq.App.showMsg('This Page is already in agenda project', 'warning')
+      const pageName = pageData.originalName
+      if (originalProjectList.find(project => project.id === pageName)) return logseq.UI.showMsg('This Page is already in agenda project', 'warning')
       const newProject = {
         ...DEFAULT_PROJECT,
-        id: page,
+        id: pageName,
       }
       // hack https://github.com/logseq/logseq/issues/4447
       logseq.updateSettings({projectList: 1})
