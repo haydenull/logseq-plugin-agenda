@@ -15,11 +15,7 @@ const index: React.FC<{}> = () => {
     <div className="page-container p-8 flex flex-col">
       <h1 className="title-text">Timeline</h1>
       <div className={classNames(s.contentWrapper)}>
-        {
-          projectData.map(project => {
-            return (<Timeline project={project} />)
-          })
-        }
+        <Timeline projects={projectData} />
       </div>
     </div>
   )

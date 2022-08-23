@@ -14,7 +14,11 @@ const Calendar: React.FC<{
   foldedGroups?: string[]
 }> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '', foldedGroups }, ref) => {
   const current = dayjs()
-  const expandGroupData = Array.isArray(foldedGroups) ? data.filter(group => !foldedGroups?.includes(group.id)) : data
+  const expandGroupData = data.map(group => {
+    const isFolded = foldedGroups?.includes(group.id)
+    if (isFolded) return {...group, events: [], milestones: [], levelCount: 0}
+    return group
+  })
   const { start: rangeStart, end: rangeEnd } = getDateRange(expandGroupData)
   const start = rangeStart.subtract(1, 'day')
   const end = rangeEnd.add(9, 'day')

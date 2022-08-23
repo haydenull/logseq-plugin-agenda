@@ -156,6 +156,7 @@ const Gantt: React.FC<{
                   <Group
                     key={group.id}
                     mode={mode}
+                    groupId={group.id}
                     groupName={group.title}
                     events={group?.events}
                     milestones={group?.milestones}

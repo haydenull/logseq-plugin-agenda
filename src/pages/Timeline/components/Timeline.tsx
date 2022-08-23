@@ -10,17 +10,13 @@ import useTheme from '@/hooks/useTheme'
 import { genRandomString } from '@/util/util'
 
 const Timeline: React.FC<{
-  project: IGroup
-}> = ({ project }) => {
+  projects: IGroup[]
+}> = ({ projects }) => {
   const [expand, setExpand] = useState(true)
   const theme = useTheme()
 
   return (
     <div className={classNames(s.timelineWrapper, {[s.expand]: expand}, 'rounded-2xl mb-9 h-auto p-6 shadow')}>
-      <h3 className="title-text flex items-center cursor-pointer" onClick={() => setExpand(_expand => !_expand)}>
-        {project.title}
-        {expand ? <IoIosArrowUp className="ml-2" /> : <IoIosArrowDown className="ml-2" />}
-      </h3>
       <AnimatePresence>
         {expand && (
           <motion.div
@@ -31,9 +27,8 @@ const Timeline: React.FC<{
             transition={{ ease: 'easeInOut', duration: 0.2 }}
           >
             <Gantt
-              data={[project]}
+              data={projects}
               weekStartDay={logseq.settings?.weekStartDay || 0}
-              showSidebar={false}
               theme={theme}
               uniqueId={genRandomString()}
             />
