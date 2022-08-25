@@ -153,6 +153,8 @@ export const getInternalEvents = async () => {
   let journalEvents: IPageEvent = genDefaultProjectEvents()
   const projectEventsMap = new Map<string, IPageEvent>()
 
+  const closedProjects = settings?.projectList?.filter(p => p?.enabled !== true)
+
   const promiseList = (tasks as BlockEntity[]).map(async task => {
 
     task = {
@@ -174,6 +176,9 @@ export const getInternalEvents = async () => {
     const isMilestone = event.addOns.type === 'milestone'
     const time = event.rawTime
     const isJournal = event.addOns.isJournal
+
+    if (isJournal && !settings?.journal?.enabled) return
+    if (closedProjects?.some(p => p?.id === event?.addOns.project)) return
 
     if (isMilestone) {
       if (time) {

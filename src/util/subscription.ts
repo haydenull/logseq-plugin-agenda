@@ -27,12 +27,18 @@ import dayjs from 'dayjs'
       const buildEventPromiseList: Promise<ISchedule>[] = events.map(async event => {
         const { dtstart, dtend, summary, description } = event
         const hasTime = dtstart.type === 'date-time'
+
+        let end = dtend?.value
+        if (!hasTime) {
+          const _end = dayjs(dtend.value).subtract(1, 'day').endOf('day')
+          if (_end.isSameOrAfter(dayjs(dtstart?.value), 'day')) end = _end.format()
+        }
+
         return await genSchedule({
           blockData: { id: new Date().valueOf(), content: `${summary?.value || 'no summary'}\n${description?.value || ''}`, subscription: true },
           category: hasTime ? 'time' : 'allday',
           start: dtstart.value,
-          end: dtend?.value,
-          // end: dtend ? (hasTime ? dtend?.value : dayjs(dtend.value).subtract(1, 'day').endOf('day').format()) : undefined,
+          end,
           calendarConfig: enabledCalendarList[index],
           defaultDuration,
           isAllDay: !hasTime,
