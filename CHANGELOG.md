@@ -1,3 +1,10 @@
+## [2.7.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.7.0...v2.7.1) (2022-08-25)
+
+
+### Bug Fixes
+
+* google subscription calendar end date error & Support for closing specified projects ([6bd70ad](https://github.com/haydenull/logseq-plugin-agenda/commit/6bd70ad6c51186c424c65dc4417690032b1eae56))
+
 # [2.7.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.6.7...v2.7.0) (2022-08-23)
 
 
