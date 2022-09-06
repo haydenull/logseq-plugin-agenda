@@ -71,7 +71,7 @@ const Settings: React.FC<{
     }
     setSettings(allValues)
     // hack https://github.com/logseq/logseq/issues/4447
-    logseq.updateSettings({calendarList: 1, subscriptionList: 1, projectList: 1})
+    logseq.updateSettings({ calendarList: 1, subscriptionList: 1, projectList: 1 })
     logseq.updateSettings({
       // ensure subscription list is array
       subscriptionList: [],
@@ -352,7 +352,7 @@ const Settings: React.FC<{
             <Form.List name="subscriptionList">
               {(fields, { add, remove }) => (<>
                 {fields.map((field, index) => (
-                  <Form.Item label={index === 0 ? 'Subscription' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}>
+                  <Form.Item label={index === 0 ? 'Subscription' : ''} {...(index === 0 ? {} : { wrapperCol: { offset: 4 } })}>
                     <div className="flex items-center justify-between">
                       <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
                         <Input placeholder="Calendar ID" style={{ width: '160px' }} />
@@ -431,7 +431,7 @@ const Settings: React.FC<{
                   name={['pomodoro', 'commonPomodoros', i]}
                   label={i === 0 ? 'Common Pomodoro' : ''}
                   labelCol={{ span: 5 }}
-                  {...(i === 0 ? {} : { wrapperCol: {offset: 5} })}
+                  {...(i === 0 ? {} : { wrapperCol: { offset: 5 } })}
                 >
                   <InputNumber min={1} addonAfter="min" />
                 </Form.Item>
@@ -439,14 +439,14 @@ const Settings: React.FC<{
             }
           </div>
           <div id="todoist" className={classNames(s.formBlock, { [s.show]: tab === 'todoist' })}>
-          <Alert message="Restart logseq after modifying the configuration, and the synchronization icon will appear in toolbar." type="info" className="mb-6" />
+            <Alert message="Restart logseq after modifying the configuration, and the synchronization icon will appear in toolbar." type="info" className="mb-6" />
             <Form.Item
               label="API Token"
               name={['todoist', 'token']}
               labelCol={{ span: 8 }}
               tooltip={<Button type="link" onClick={() => logseq.App.openExternalLink('https://todoist.com/app/settings/integrations')}>Paste your todoist api token here</Button>}
             >
-              <Input placeholder="Please input todoist api token"/>
+              <Input placeholder="Please input todoist api token" />
             </Form.Item>
             <Form.Item label="Sync" name={['todoist', 'sync']} labelCol={{ span: 8 }}>
               <Select
@@ -454,8 +454,32 @@ const Settings: React.FC<{
                 options={[
                   { label: 'All Todoist Projects', value: 0 },
                   { label: 'A Specific Todoist Project', value: 1 },
+                  { label: 'A Specific Todoist Filter', value: 2 },
                 ]}
               />
+            </Form.Item>
+            <Form.Item noStyle shouldUpdate={(prev, cur) => prev.todoist?.sync !== cur.todoist?.sync}>
+              {({ getFieldValue }) => {
+                const sync = getFieldValue(['todoist', 'sync']);
+                return (
+                  <Form.Item
+                    hidden={sync !== 2}
+                    label="Todoist filter"
+                    name={['todoist', 'filter']}
+                    labelCol={{ span: 8 }}
+                    tooltip={<Button type="link" onClick={() => logseq.App.openExternalLink('https://todoist.com/help/articles/205248842')}>Define a filter for sync</Button>}
+                    required={sync == 2}
+                    rules={[
+                      {
+                        required: sync == 2,
+                        message: 'Please enter a filter string',
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Please input a todoist filter string" />
+                  </Form.Item>
+                )
+              }}
             </Form.Item>
             <Form.Item noStyle shouldUpdate={(prev, cur) => prev.todoist?.sync !== cur.todoist?.sync}>
               {({ getFieldValue }) => {
@@ -466,13 +490,25 @@ const Settings: React.FC<{
                     name={['todoist', 'project']}
                     labelCol={{ span: 8 }}
                   >
-                    <Select placeholder="Please select a todoist project" options={todoistProjectOptions} />
+                    <Select
+                      placeholder="Please select a todoist project"
+                      options={todoistProjectOptions}
+                      showSearch
+                      allowClear
+                      filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+                    />
                   </Form.Item>
                 )
               }}
             </Form.Item>
             <Form.Item label="Todoist label for new logseq events" name={['todoist', 'label']} labelCol={{ span: 8 }}>
-              <Select placeholder="Please select todoist label" options={todoistLabelOptions} />
+              <Select
+                placeholder="Please select todoist label"
+                options={todoistLabelOptions}
+                showSearch
+                allowClear
+                filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+              />
             </Form.Item>
             <Form.Item label="Logseq block position" name={['todoist', 'position']} labelCol={{ span: 8 }}>
               <Select
@@ -487,11 +523,11 @@ const Settings: React.FC<{
           </div>
         </Form>
       </div>
-        <CreateCalendarModal
-          visible={createCalendarModalVisible}
-          onSave={onCreateCalendarModalOk}
-          onCancel={() => setCreateCalendarModalVisible(false)}
-        />
+      <CreateCalendarModal
+        visible={createCalendarModalVisible}
+        onSave={onCreateCalendarModalOk}
+        onCancel={() => setCreateCalendarModalVisible(false)}
+      />
     </div>
   )
 }

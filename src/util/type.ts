@@ -45,6 +45,7 @@ export type ISettingsForm = {
     token?: string
     sync?: number
     project?: number
+    filter?: string
     label?: number
     position?: string
   },
