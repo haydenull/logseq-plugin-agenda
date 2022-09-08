@@ -31,11 +31,14 @@ export const pullTask = async () => {
   const { todoist } = settings
   let tasks: Task[] = []
 
-  if (todoist?.sync === 1 && todoist.project) {
+  if (todoist?.sync === 1) {
+    if (!todoist.project) {
+      logseq.App.showMsg("Missing project, cannot sync using the project sync option", 'error');
+    }
     tasks = await instance.getTasks({ projectId: todoist.project });
   } else if (todoist?.sync === 2 && todoist.filter) {
     if (!todoist.filter) {
-      console.error("Missing filter, cannot sync using the filter sync option");
+      logseq.App.showMsg("Missing filter, cannot sync using the filter sync option", 'error');
     }
     tasks = await instance.getTasks({ filter: todoist.filter });
   } else {
