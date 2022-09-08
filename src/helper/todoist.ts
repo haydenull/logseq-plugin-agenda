@@ -30,11 +30,21 @@ export const pullTask = async () => {
   const { preferredDateFormat } = await logseq.App.getUserConfigs()
   const { todoist } = settings
   let tasks: Task[] = []
-  if (todoist?.sync === 1 && todoist.project) {
-    tasks = await instance.getTasks({ projectId: todoist.project })
+
+  if (todoist?.sync === 1) {
+    if (!todoist.project) {
+      logseq.UI.showMsg("Missing project, cannot sync using the project sync option", 'error');
+    }
+    tasks = await instance.getTasks({ projectId: todoist.project });
+  } else if (todoist?.sync === 2 && todoist.filter) {
+    if (!todoist.filter) {
+      logseq.UI.showMsg("Missing filter, cannot sync using the filter sync option", 'error');
+    }
+    tasks = await instance.getTasks({ filter: todoist.filter });
   } else {
     tasks = await instance.getTasks()
   }
+
   const blocks = await getTodoistBlocks()
   const events = await Promise.all(blocks?.map(block => transformBlockToEvent(block, settings)) || [])
   console.info('[faiz: pull totoist] === todoist active tasks:', tasks)

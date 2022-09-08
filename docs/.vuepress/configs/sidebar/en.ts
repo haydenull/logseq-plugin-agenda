@@ -29,6 +29,7 @@ export const en: SidebarConfig = {
         '/settings/subscription.md',
         '/settings/calendarView.md',
         '/settings/pomodoro.md',
+        '/settings/todoist.md'
       ],
     },
     // {

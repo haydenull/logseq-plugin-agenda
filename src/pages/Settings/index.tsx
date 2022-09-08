@@ -454,8 +454,32 @@ const Settings: React.FC<{
                 options={[
                   { label: 'All Todoist Projects', value: 0 },
                   { label: 'A Specific Todoist Project', value: 1 },
+                  { label: 'A Specific Todoist Filter', value: 2 },
                 ]}
               />
+            </Form.Item>
+            <Form.Item noStyle shouldUpdate={(prev, cur) => prev.todoist?.sync !== cur.todoist?.sync}>
+              {({ getFieldValue }) => {
+                const sync = getFieldValue(['todoist', 'sync']);
+                return (
+                  <Form.Item
+                    hidden={sync !== 2}
+                    label="Todoist filter"
+                    name={['todoist', 'filter']}
+                    labelCol={{ span: 8 }}
+                    tooltip={<Button type="link" onClick={() => logseq.App.openExternalLink('https://todoist.com/help/articles/205248842')}>Define a filter for sync</Button>}
+                    required={sync == 2}
+                    rules={[
+                      {
+                        required: sync == 2,
+                        message: 'Please enter a filter string',
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Please input a todoist filter string" />
+                  </Form.Item>
+                )
+              }}
             </Form.Item>
             <Form.Item noStyle shouldUpdate={(prev, cur) => prev.todoist?.sync !== cur.todoist?.sync}>
               {({ getFieldValue }) => {
@@ -466,13 +490,25 @@ const Settings: React.FC<{
                     name={['todoist', 'project']}
                     labelCol={{ span: 8 }}
                   >
-                    <Select placeholder="Please select a todoist project" options={todoistProjectOptions} />
+                    <Select
+                      placeholder="Please select a todoist project"
+                      options={todoistProjectOptions}
+                      showSearch
+                      allowClear
+                      filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+                    />
                   </Form.Item>
                 )
               }}
             </Form.Item>
             <Form.Item label="Todoist label for new logseq events" name={['todoist', 'label']} labelCol={{ span: 8 }}>
-              <Select placeholder="Please select todoist label" options={todoistLabelOptions} />
+              <Select
+                placeholder="Please select todoist label"
+                options={todoistLabelOptions}
+                showSearch
+                allowClear
+                filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+              />
             </Form.Item>
             <Form.Item label="Logseq block position" name={['todoist', 'position']} labelCol={{ span: 8 }}>
               <Select
