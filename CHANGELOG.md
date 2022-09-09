@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.7.1...v2.8.0) (2022-09-09)
+
+
+### Features
+
+* subscription url supports file protocol ([806f40c](https://github.com/haydenull/logseq-plugin-agenda/commit/806f40cd6f77743bb605fcf9674135ec1b531ad2))
+
 ## [2.7.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.7.0...v2.7.1) (2022-08-25)
 
 
