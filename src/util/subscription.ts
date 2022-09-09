@@ -28,9 +28,17 @@ import dayjs from 'dayjs'
         const { dtstart, dtend, summary, description } = event
         const hasTime = dtstart.type === 'date-time'
 
-        let end = dtend?.value
+        // Adapted to apple holiday calendar dtend is empty
+        let end = dtend?.value || dtstart.value
         if (!hasTime) {
-          const _end = dayjs(dtend.value).subtract(1, 'day').endOf('day')
+          /**
+           * Full day events are available in three formats
+           * dtstart 2022-09-09
+           * dtend undefined  (apple holiday calendar: https://calendars.icloud.com/holidays/cn_zh.ics)
+           * dtend 2022-09-10  (google calendar)
+           * dtend 2022-09-09 (https://www.shuyz.com/githubfiles/china-holiday-calender/master/holidayCal.ics)
+           */
+          const _end = dayjs(end).subtract(1, 'day').endOf('day')
           if (_end.isSameOrAfter(dayjs(dtstart?.value), 'day')) end = _end.format()
         }
 
