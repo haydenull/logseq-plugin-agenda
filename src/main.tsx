@@ -147,14 +147,18 @@ if (isDevelopment) {
         if (block?.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded,\nplease do not upload it again', 'error')
         const event = await transformBlockToEvent(block!, settings)
 
+        const priority = findKey(PRIORITY_MAP, v => v === event.priority)
+
         let params: AddTaskArgs = {
           content: event.addOns.contentWithoutTime?.split('\n')?.[0],
           description: block?.properties?.todoistDesc,
+          priority,
         }
         if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
         if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
         if (todoist?.project) params.projectId = todoist.project
         if (todoist?.label) params.labelIds = [todoist.label]
+
         createTask(params)
           ?.then(async task => {
             await updateBlock(event, task)
