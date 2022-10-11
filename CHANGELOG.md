@@ -1,3 +1,15 @@
+# [2.9.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.8.0...v2.9.0) (2022-10-11)
+
+
+### Bug Fixes
+
+* 🐛 Adapted to apple holiday calendar dtend is empty ([858757d](https://github.com/haydenull/logseq-plugin-agenda/commit/858757d74f3dac4536dbd722a6dbe23c16113ecc))
+
+
+### Features
+
+* Uploading tasks from logseq to todoist with priority information ([5f72b91](https://github.com/haydenull/logseq-plugin-agenda/commit/5f72b913b0e5854243981bb160d2cbd49aa43e11))
+
 # [2.8.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.7.1...v2.8.0) (2022-09-09)
 
 
