@@ -210,10 +210,10 @@ const ModifySchedule: React.FC<{
           <Input />
         </Form.Item>
         <Form.Item name="start" label="Start" rules={[{ required: true }]}>
-          <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} format={ showTime ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD' } />
+          <DatePicker showTime={showTime ? { format: 'HH:mm', minuteStep: 5 } : false} format={ showTime ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD' } />
         </Form.Item>
         <Form.Item name="end" label="End" rules={[{ required: true }]}>
-          <DatePicker showTime={showTime ? { format: 'HH:mm' } : false} format={ showTime ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD' } />
+          <DatePicker showTime={showTime ? { format: 'HH:mm', minuteStep: 5 } : false} format={ showTime ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD' } />
         </Form.Item>
         <Form.Item name="isAllDay" label="All Day" rules={[{ required: true }]}>
           <Radio.Group>
