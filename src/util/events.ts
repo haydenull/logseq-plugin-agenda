@@ -159,7 +159,7 @@ export const getInternalEvents = async () => {
 
     task = {
       ...task,
-      uuid: task.uuid?.['$uuid$'],
+      uuid: typeof task.uuid === 'string' ? task.uuid : task.uuid?.['$uuid$'],
       page: {
         ...task.page,
         originalName: task.page?.['original-name'],

@@ -116,7 +116,7 @@ const Settings: React.FC<{
     logseq.Editor.getAllPages().then(res => {
       setPageOptions(
         res?.filter(item => !item?.['journal?'])
-          .map(item => ({
+          ?.map(item => ({
             value: item.originalName,
             label: item.originalName,
           }))

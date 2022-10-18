@@ -252,9 +252,10 @@ export async function genSchedule(params: {
 }) {
 
   const { id, blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
+  const uuid = typeof blockData?.uuid === 'string' ? blockData?.uuid : blockData?.uuid?.['$uuid$']
   if (!blockData?.id) {
     // 单个耗时在5-7秒，整体耗时8秒
-    const block = await getBlockData({ uuid: blockData.uuid?.$uuid$ }, true)
+    const block = await getBlockData({ uuid }, true)
     if (block) blockData.id = block.id
   }
 
@@ -303,7 +304,7 @@ export async function genSchedule(params: {
     _end = start
   }
 
-  const uuid = typeof blockData?.uuid === 'string' ? blockData?.uuid : blockData?.uuid?.['$uuid$']
+  // const uuid = typeof blockData?.uuid === 'string' ? blockData?.uuid : blockData?.uuid?.['$uuid$']
   blockData.uuid = uuid
   return {
     id: id || uuid,

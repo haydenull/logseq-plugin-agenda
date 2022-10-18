@@ -34,15 +34,13 @@ const SearchForm: React.FC<{
 
   useEffect(() => {
     logseq.Editor.getAllPages().then(res => {
-      setPageOptions(
-        [{value: 'journal', label: 'Journal'}].concat(
-          res?.filter(item => !item?.['journal?'])
-            .map(item => ({
-              value: item.originalName,
-              label: item.originalName,
-            }))
-        )
-      )
+      const allPages = res
+        ?.filter(item => !item?.['journal?'])
+        ?.map(item => ({
+          value: item.originalName,
+          label: item.originalName,
+        }))
+      setPageOptions([{value: 'journal', label: 'Journal'}].concat(allPages || []))
     })
   }, [])
 
