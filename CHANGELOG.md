@@ -1,3 +1,15 @@
+## [2.9.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.9.0...v2.9.1) (2022-10-18)
+
+
+### Bug Fixes
+
+* 🐛 uuid not found ([5ac7336](https://github.com/haydenull/logseq-plugin-agenda/commit/5ac73363b94a75b4313672a971127a0519c77f7a))
+
+
+### Performance Improvements
+
+* ⚡️ Optimize time selection ([d3b5ace](https://github.com/haydenull/logseq-plugin-agenda/commit/d3b5ace4ba5377ff4a8e4039ce145e211adfa628))
+
 # [2.9.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.8.0...v2.9.0) (2022-10-11)
 
 
