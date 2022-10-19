@@ -124,6 +124,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   }
   event.addOns.contentWithoutTime = showTitle
   if (pomodoros) showTitle = removePomodoroInfo(showTitle, block.format)
+  if (isMilestone) showTitle = showTitle?.replace('#milestone', '')?.trim()
   event.addOns.showTitle = await fillBlockReference(showTitle?.split('\n')?.[0]?.trim())
 
   // add end time

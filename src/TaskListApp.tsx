@@ -45,7 +45,7 @@ const App: React.FC<{
     <main>
       {
         overdueTasks?.length === 0 && allDayTasks?.length === 0 && timeTasks?.length === 0 && (
-          <div>Empty task list</div>
+          <div>Agenda: No Task Today</div>
         )
       }
       {

@@ -75,13 +75,13 @@ const Task: React.FC<{
         style={{
           // color: isActive ? 'var(--ls-link-text-color)' : 'var(--ls-icon-color)', fontSize: '0.8em',
           color: type === 'overdue' ? '#ed4245' : 'var(--ls-icon-color)', fontSize: '0.8em',
-          width: '50px',
+          width: '44px',
         }}
       >
         <div className="w-full">{start}</div>
         { end && (<div className="w-full" style={{ opacity: 0.6 }}>{end}</div>) }
       </div>
-      <div style={{ width: '4px', backgroundColor: calendarConfig?.bgColor, borderRadius: '2px', margin: '0 6px' }}></div>
+      <div style={{ width: '3px', backgroundColor: calendarConfig?.bgColor, borderRadius: '2px', margin: '0 6px' }}></div>
       <div style={{ width: 'calc(100% - 90px)', paddingBottom: '24px', position: 'relative' }}>
         <div style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: 0.6 }}>{calendarConfig?.id}</div>
         <div className="agenda-sidebar-task__title" style={{ marginBottom: '-0.2em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', position: 'absolute', bottom: 0, width: 'calc(100% - 30px)' }} title={task.addOns.showTitle}>{task.addOns.showTitle}</div>

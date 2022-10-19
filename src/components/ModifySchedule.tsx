@@ -73,8 +73,8 @@ const ModifySchedule: React.FC<{
       // console.log('[faiz:] === onClickSave', values)
       // 变更后的schedule是否是journal中的schedule
       const isJournalSchedule = newScheduleType === 'journal'
-      if (dayjs(start).isAfter(dayjs(end), isAllDay ? 'day' : undefined)) return logseq.App.showMsg('Start time cannot be later than end time', 'error')
-      if (isJournalSchedule && !dayjs(start).isSame(dayjs(end), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
+      if (dayjs(start).isAfter(dayjs(end), isAllDay ? 'day' : undefined)) return logseq.UI.showMsg('Start time cannot be later than end time', 'error')
+      if (isJournalSchedule && !dayjs(start).isSame(dayjs(end), 'day')) return logseq.UI.showMsg('Journal schedule cannot span multiple days', 'error')
 
       // new block content
       // let newTitle = title
@@ -92,6 +92,7 @@ const ModifySchedule: React.FC<{
           newTitle = joinPrefixTaskBlockContent(initialValues?.raw!, updateProjectTaskTime(newTitle, { start, end, allDay: isAllDay }))
         }
       }
+      if (initialValues?.raw?.addOns.type === 'milestone') newTitle += ' #milestone'
 
       // new properties
       const newBlockPropeties = {}

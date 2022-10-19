@@ -31,13 +31,13 @@ const subscription: React.FC<{
         style={{
           color: 'var(--ls-icon-color)',
           fontSize: '0.8em',
-          width: '50px',
+          width: '44px',
         }}
       >
         <div className="w-full">{start}</div>
         { end && (<div className="w-full" style={{ opacity: 0.6 }}>{end}</div>) }
       </div>
-      <div style={{ width: '4px', backgroundColor: subscription.bgColor, borderRadius: '2px', margin: '0 6px' }}></div>
+      <div style={{ width: '3px', backgroundColor: subscription.bgColor, borderRadius: '2px', margin: '0 6px' }}></div>
       <div style={{ width: 'calc(100% - 90px)', paddingBottom: '24px', position: 'relative' }}>
         <div style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: 0.6 }}>{subscription?.calendarId}</div>
         <div
