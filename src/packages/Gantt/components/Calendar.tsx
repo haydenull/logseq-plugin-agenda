@@ -151,7 +151,6 @@ const Calendar: React.FC<{
                             top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,
                             width: size.width + 'px',
                             height: size.height + 'px',
-                            zIndex: 1,
                           }}
                           title={event.title}
                         >
@@ -168,7 +167,7 @@ const Calendar: React.FC<{
                     const { coordinates, detailPopup, completed } = milestone
                     return (
                       <>
-                        <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
+                        <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: 0, height: groupHeightCount + 'px' }}>
                           {/* <span className="absolute ml-3">{milestone.title}</span> */}
                         </div>
                         <Popover
@@ -181,7 +180,7 @@ const Calendar: React.FC<{
                             style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}
                             title={milestone.title}
                           >
-                            { completed && <svg data-v-651e2bfe="" viewBox="0 0 16 16" fill="white" className="milestone__mark"><path data-v-651e2bfe="" d="M5.536 11.175L2 7.639l1.497-1.497L7 9.642l6-6.28 1.497 1.497-7.464 7.814-1.497-1.497z"></path></svg> }
+                            { completed && <svg data-v-651e2bfe="" viewBox="0 0 16 16" fill="var(--ls-primary-background-color)" className="milestone__mark"><path data-v-651e2bfe="" d="M5.536 11.175L2 7.639l1.497-1.497L7 9.642l6-6.28 1.497 1.497-7.464 7.814-1.497-1.497z"></path></svg> }
                             <span className="single_ellipsis" style={{ maxWidth: calendarEventWidth - 20 }}>
                               {milestone.title}
                             </span>

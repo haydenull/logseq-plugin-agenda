@@ -76,7 +76,7 @@ export const transformEventToGanttEvent = (event: IEvent): IGanttEvent => {
     completed: event.addOns.status === 'done',
     detailPopup: (<div className="text-xs">
       <div className="font-bold text-base my-2">{event.addOns.showTitle}</div>
-      <div className="my-2">{`${dayStart.format('YYYY.MM.DD hh:mm a')} - ${dayEnd.format('hh:mm a')}`}</div>
+      <div className="my-2">{`${dayStart.format('YYYY.MM.DD')} - ${dayEnd.format('YYYY.MM.DD')}`}</div>
       <p className="whitespace-pre-line">{event.content}</p>
 
       <a onClick={async () => {

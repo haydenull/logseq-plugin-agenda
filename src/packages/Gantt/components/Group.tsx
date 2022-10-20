@@ -22,7 +22,7 @@ const Group: React.FC<{
 
   return (
     <div className="group rounded-sm">
-      <div className="group__title font-medium sticky bg-quaternary title-text single_ellipsis" title={groupName}>
+      <div className="group__title sticky bg-quaternary title-text single_ellipsis" title={groupName}>
         {isFold ? <IoIosArrowDown onClick={() => onFold?.(false)} className="ml-2" /> : <IoIosArrowUp onClick={() => onFold(true)} className="ml-2" />}
         {groupName}
       </div>
@@ -44,7 +44,7 @@ const Group: React.FC<{
               mode === 'simple'
               ? (milestones?.length > 0 ? <div className="group__event cursor-pointer flex justify-between items-center">{/* Milestones */}</div> : null)
               : milestones?.map((milestone, index) => (
-                <div className="group__event cursor-pointer single_ellipsis" onClick={() => scrollToDate(dayjs(milestone.start), uniqueId)}>
+                <div className="group__event cursor-pointer single_ellipsis milestone" onClick={() => scrollToDate(dayjs(milestone.start), uniqueId)}>
                   {milestone?.title}
                 </div>
               ))

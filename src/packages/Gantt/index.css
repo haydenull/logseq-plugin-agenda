@@ -9,9 +9,13 @@
   --ls-text-color: #5f636c;
   --ls-description-text-color: #a7a7a7;
   --ls-tint-text-color: #e3e3e3;
+
+  --ls-calendar-weekday-background-color: #f5f7f9;
+  --ls-calendar-weekend-background-color: #f3f5f9;
+  --ls-calendar-weekend-background-pattern: #e1e2e6;
 }
 .gantt.dark {
-  --ls-primary-background-color: #212528;
+  --ls-primary-background-color: #282c32;
   --ls-secondary-background-color: #282c31;
   --ls-tertiary-background-color: #fcb714;
   --ls-quaternary-background-color: #32373d;
@@ -21,6 +25,10 @@
   --ls-text-color: #aaadb3;
   --ls-description-text-color: #7d7f83;
   --ls-tint-text-color: #47484a;
+
+  --ls-calendar-weekday-background-color: #212528;
+  --ls-calendar-weekend-background-color: #1d2124;
+  --ls-calendar-weekend-background-pattern: #2e2f30;
 }
 .bg-primary {
   background-color: var(--ls-primary-background-color);
@@ -75,10 +83,10 @@
 }
 
 .group {
-  margin-bottom: 36px;  /* CALENDAR_GROUP_GAP */
+  margin-bottom: 0;  /* CALENDAR_GROUP_GAP */
   border-right: 1px solid var(--ls-tint-text-color);
   /* 内阴影边框 */
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); */
   /* @apply shadow; */
 }
 .group__title {
@@ -96,6 +104,18 @@
 .group__event {
   height: 40px;  /* CALENDAR_GROUP_EVENT_HEIGHT */
   line-height: 40px;
+  display: flex;
+  align-items: center;
+}
+.group__event.milestone::before{
+  display: block;
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--ls-tertiary-background-color);
+  border-radius: 3px;
+  transform: rotate(45deg);
+  margin: 0 8px 0 2px;
 }
 
 
@@ -138,7 +158,7 @@
   width: 108px;  /* CALENDAR_EVENT_WIDTH */
   height: 100%;
   /* background-color: #f8f8f8; */
-  background-color: var(--ls-primary-background-color);
+  background-color: var(--ls-calendar-weekday-background-color);
 
   border-right: 1px solid var(--ls-tint-text-color);
 }
@@ -149,8 +169,8 @@
   width: 20px;  /* CALENDAR_EVENT_WIDTH */
 }
 .calendar__content__back.weekend {
-  /* background-color: #f4f3f3; */
-  background-color: var(--ls-secondary-background-color);
+  background-color: var(--ls-calendar-weekend-background-color);
+  background-image: repeating-linear-gradient(120deg, var(--ls-calendar-weekend-background-pattern), var(--ls-calendar-weekend-background-pattern) 1px, transparent 0, transparent 12px);
 }
 .calendar__content__back.today {
   background-color: var(--ls-quinary-background-color);
@@ -158,7 +178,7 @@
 .calendar__group {
   /* border-bottom: 1px solid #e9dceb;
   border-top: 1px solid #e9dceb; */
-  margin-bottom: 36px;   /* CALENDAR_GROUP_GAP */
+  margin-bottom: 0;   /* CALENDAR_GROUP_GAP */
   box-sizing: content-box;
 }
 .calendar__event {

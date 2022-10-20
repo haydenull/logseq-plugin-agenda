@@ -1,5 +1,5 @@
 /** 日历 group 间隙 */
-export const CALENDAR_GROUP_GAP = 36
+export const CALENDAR_GROUP_GAP = 0
 
 /** 日历事件的高度 */
 export const CALENDAR_EVENT_HEIGHT = 40
