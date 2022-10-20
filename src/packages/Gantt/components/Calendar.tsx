@@ -4,6 +4,7 @@ import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, tr
 import { IGroup, IMode, IView } from '../type'
 import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT } from '../constants'
 import { Popover } from 'antd'
+import Group from './Group'
 
 const Calendar: React.FC<{
   data: IGroup[]
@@ -12,7 +13,8 @@ const Calendar: React.FC<{
   weekStartDay?: number
   uniqueId?: string
   foldedGroups?: string[]
-}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '', foldedGroups }, ref) => {
+  onFoldChange?: (groupId: string, fold: boolean) => void
+}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '', foldedGroups, onFoldChange }, ref) => {
   const current = dayjs()
   const expandGroupData = data.map(group => {
     const isFolded = foldedGroups?.includes(group.id)
@@ -42,7 +44,7 @@ const Calendar: React.FC<{
         return {
           ...event,
           coordinates: {
-            x: getXCoordinate(start, dayjs(event.start), calendarEventWidth),
+            x: getXCoordinate(start, dayjs(event.start), calendarEventWidth) + 160,
             y: group.coordinate.y + yIndex * CALENDAR_EVENT_HEIGHT,
           },
           size: {
@@ -56,7 +58,7 @@ const Calendar: React.FC<{
         return {
           ...milestone,
           coordinates: {
-            x: getXCoordinate(start, dayjs(milestone.start), calendarEventWidth),
+            x: getXCoordinate(start, dayjs(milestone.start), calendarEventWidth) + 160,
             y: group.coordinate.y + eventHeightCount + yIndex * CALENDAR_EVENT_HEIGHT,
           },
         }
@@ -76,9 +78,9 @@ const Calendar: React.FC<{
   })), []
 
   return (
-    <div className="calendar h-fit w-fit">
+    <div className="calendar h-full w-full overflow-auto">
       {/* ========= calendar header start ========= */}
-      <div className="w-fit whitespace-nowrap bg-quaternary sticky top-0 z-20 text">
+      <div className="w-fit whitespace-nowrap bg-quaternary sticky top-0 z-20 text" style={{ marginLeft: '160px' }}>
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
@@ -91,7 +93,7 @@ const Calendar: React.FC<{
           })
         }
       </div>
-      <div className="calendar__header w-fit whitespace-nowrap bg-quaternary sticky z-20" style={{ top: '25px' }}>
+      <div className="calendar__header w-fit whitespace-nowrap bg-quaternary sticky z-20" style={{ top: '25px', marginLeft: '160px' }}>
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
@@ -110,8 +112,27 @@ const Calendar: React.FC<{
       {/* ========= calendar header end ========= */}
 
       {/* ========== calendar content start ========= */}
-      <div className="calendar__content relative" style={{ height: groupHeightCount + 'px' }}>
-        {/* <div className="h-full absolute flex">
+      <div className="calendar__content relative flex" style={{ height: 'calc(100% - 50px)' }}>
+        <div className="side-bar bg-quaternary sticky left-0 z-10 h-fit">
+          {
+            data.map((group, index) => (
+              <Group
+                key={group.id}
+                mode={mode}
+                groupId={group.id}
+                groupName={group.title}
+                events={group?.events}
+                milestones={group?.milestones}
+                levelCount={group.levelCount}
+                uniqueId={uniqueId}
+                foldedGroups={foldedGroups}
+                onFoldChange={onFoldChange}
+              />
+            ))
+          }
+        </div>
+        {/* ====== back ===== */}
+        <div className="flex h-full sticky top-0" style={{ left: '160px' }}>
           {
             dateMarks.map((mark, index) => {
               const _isWeekend = isWeekend(mark)
@@ -119,21 +140,11 @@ const Calendar: React.FC<{
               return (<div className={`calendar__content__back ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`}></div>)
             })
           }
-        </div> */}
+        </div>
         {
           dataWithCoordinates.map(group => {
             return (
-              // 每个 group 都生成自己的back有点浪费，其实是可以合并成一个的
               <div className="calendar__group w-fit" key={group.id}>
-                <div className="flex">
-                  {
-                    dateMarks.map((mark, index) => {
-                      const _isWeekend = isWeekend(mark)
-                      const isToday = mark.isSame(current, 'day')
-                      return (<div className={`calendar__content__back ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} style={{ height: group.height + 'px' }}></div>)
-                    })
-                  }
-                </div>
                 {/* ===== calendar event start ==== */}
                 {
                   group.events.map(event => {
