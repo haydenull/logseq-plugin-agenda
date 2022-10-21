@@ -59,31 +59,7 @@ const Gantt: React.FC<{
           </div>
         )
       }
-      <div className="flex h-full overflow-auto relative scroll-style">
-        {
-          showSidebar && (<></>
-            // <div className="side-bar bg-quaternary sticky left-0 z-10 h-fit">
-            //   {
-            //     ganttData.map((group, index) => (
-            //       <Group
-            //         key={group.id}
-            //         mode={mode}
-            //         groupId={group.id}
-            //         groupName={group.title}
-            //         events={group?.events}
-            //         milestones={group?.milestones}
-            //         levelCount={group.levelCount}
-            //         uniqueId={uniqueId}
-            //         foldedGroups={foldedGroups}
-            //         onFoldChange={onFoldChange}
-            //       />
-            //     ))
-            //   }
-            // </div>
-          )
-        }
-        <Calendar data={ganttData} ref={calendarRef} mode={mode} view={view} uniqueId={uniqueId} foldedGroups={foldedGroups} onFoldChange={onFoldChange} />
-      </div>
+      <Calendar data={ganttData} ref={calendarRef} mode={mode} view={view} uniqueId={uniqueId} foldedGroups={foldedGroups} showSidebar={showSidebar} onFoldChange={onFoldChange} />
     </div>
   )
 }

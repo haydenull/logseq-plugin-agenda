@@ -80,11 +80,11 @@
   /* width: 160px; */
   /* margin-top: 50px; */
   max-width: 160px;
+  border-right: 1px solid var(--ls-tint-text-color);
 }
 
 .group {
   margin-bottom: 0;  /* CALENDAR_GROUP_GAP */
-  border-right: 1px solid var(--ls-tint-text-color);
   /* 内阴影边框 */
   /* box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); */
   /* @apply shadow; */

@@ -13,8 +13,9 @@ const Calendar: React.FC<{
   weekStartDay?: number
   uniqueId?: string
   foldedGroups?: string[]
+  showSidebar?: boolean
   onFoldChange?: (groupId: string, fold: boolean) => void
-}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '', foldedGroups, onFoldChange }, ref) => {
+}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '', foldedGroups, showSidebar, onFoldChange }, ref) => {
   const current = dayjs()
   const expandGroupData = data.map(group => {
     const isFolded = foldedGroups?.includes(group.id)
@@ -112,27 +113,30 @@ const Calendar: React.FC<{
       {/* ========= calendar header end ========= */}
 
       {/* ========== calendar content start ========= */}
-      <div className="calendar__content relative flex" style={{ height: 'calc(100% - 50px)' }}>
-        <div className="side-bar bg-quaternary sticky left-0 z-10 h-fit">
-          {
-            data.map((group, index) => (
-              <Group
-                key={group.id}
-                mode={mode}
-                groupId={group.id}
-                groupName={group.title}
-                events={group?.events}
-                milestones={group?.milestones}
-                levelCount={group.levelCount}
-                uniqueId={uniqueId}
-                foldedGroups={foldedGroups}
-                onFoldChange={onFoldChange}
-              />
-            ))
-          }
-        </div>
+      <div className="calendar__content relative flex w-fit" style={{ height: 'calc(100% - 50px)' }}>
+        {/* ====== sidebar ===== */}
+        {showSidebar && (
+          <div className="side-bar bg-quaternary sticky left-0 z-10 h-fit min-h-full">
+            {
+              data.map((group, index) => (
+                <Group
+                  key={group.id}
+                  mode={mode}
+                  groupId={group.id}
+                  groupName={group.title}
+                  events={group?.events}
+                  milestones={group?.milestones}
+                  levelCount={group.levelCount}
+                  uniqueId={uniqueId}
+                  foldedGroups={foldedGroups}
+                  onFoldChange={onFoldChange}
+                />
+              ))
+            }
+          </div>
+        )}
         {/* ====== back ===== */}
-        <div className="flex h-full sticky top-0" style={{ left: '160px' }}>
+        <div className="flex w-fit sticky top-0 min-h-full" style={{ left: '160px', height: groupHeightCount + 'px' }}>
           {
             dateMarks.map((mark, index) => {
               const _isWeekend = isWeekend(mark)
@@ -178,7 +182,7 @@ const Calendar: React.FC<{
                     const { coordinates, detailPopup, completed } = milestone
                     return (
                       <>
-                        <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: 0, height: groupHeightCount + 'px' }}>
+                        <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute min-h-full" style={{ left: coordinates.x + calendarEventWidth / 2, top: 0, height: groupHeightCount + 'px' }}>
                           {/* <span className="absolute ml-3">{milestone.title}</span> */}
                         </div>
                         <Popover

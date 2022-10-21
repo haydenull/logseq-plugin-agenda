@@ -21,7 +21,7 @@ const Group: React.FC<{
 
 
   return (
-    <div className="group rounded-sm">
+    <div className="group rounded-sm min-h-full">
       <div className="group__title sticky bg-quaternary title-text single_ellipsis" title={groupName}>
         {isFold ? <IoIosArrowDown onClick={() => onFold?.(false)} className="ml-2" /> : <IoIosArrowUp onClick={() => onFold(true)} className="ml-2" />}
         {groupName}
