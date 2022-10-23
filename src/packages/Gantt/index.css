@@ -58,10 +58,16 @@
   color: var(--ls-tint-text-color);
 }
 .scroll-style::-webkit-scrollbar {
-  background-color: var(--ls-primary-background-color);
+  background-color: transparent;
+}
+.scroll-style::-webkit-scrollbar-corner {
+  background-color: transparent;
 }
 .scroll-style::-webkit-scrollbar-thumb {
   background-color: var(--ls-tint-text-color);
+  border: 3px solid transparent;
+  border-radius: 9px;
+  background-clip: content-box;
 }
 
 /* 左上角空白占位 */
@@ -95,20 +101,23 @@
   text-align: bottom;
   top: 50px;
   font-size: 16px;
+  padding-right: 16px;
+  display: block;
 }
 .group__content {
   display: flex;
   flex-direction: column;
-  padding-left: 1rem;
+  padding: 0 1rem;
 }
 .group__event {
   height: 40px;  /* CALENDAR_GROUP_EVENT_HEIGHT */
   line-height: 40px;
   display: flex;
   align-items: center;
+  display: block;
 }
 .group__event.milestone::before{
-  display: block;
+  display: inline-block;
   content: '';
   width: 12px;
   height: 12px;

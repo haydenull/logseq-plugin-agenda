@@ -79,7 +79,7 @@ const Calendar: React.FC<{
   })), []
 
   return (
-    <div className="calendar h-full w-full overflow-auto">
+    <div className="calendar h-full w-full overflow-auto scroll-style">
       {/* ========= calendar header start ========= */}
       <div className="w-fit whitespace-nowrap bg-quaternary sticky top-0 z-20 text" style={{ marginLeft: '160px' }}>
         {
