@@ -65,7 +65,7 @@
 }
 .scroll-style::-webkit-scrollbar-thumb {
   background-color: var(--ls-tint-text-color);
-  border: 3px solid transparent;
+  border: 5px solid transparent;
   border-radius: 9px;
   background-clip: content-box;
 }

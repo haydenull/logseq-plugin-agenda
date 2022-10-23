@@ -35,7 +35,7 @@ const index: React.FC<{}> = () => {
                 <Gantt projectId={_projectId} mode="advanced" />
               </Tabs.TabPane>
               <Tabs.TabPane tab="Timeline" key="timeline">
-                <Gantt projectId={_projectId} mode="simple" />
+                <Gantt projectId={_projectId} mode="simple" showSidebar={false} />
               </Tabs.TabPane>
             </Tabs>
           )

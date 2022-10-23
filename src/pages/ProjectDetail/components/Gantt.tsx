@@ -14,7 +14,8 @@ import { genRandomString } from '@/util/util'
 const Timeline: React.FC<{
   projectId: string
   mode: IMode
-}> = ({ projectId, mode }) => {
+  showSidebar?: boolean
+}> = ({ projectId, mode, showSidebar = true }) => {
   const [ganttData] = useAtom(ganttDataAtom)
   const project = ganttData?.find(item => item.id === projectId)
   const theme = useTheme()
@@ -26,6 +27,7 @@ const Timeline: React.FC<{
       theme={theme}
       defaultMode={mode}
       uniqueId={genRandomString()}
+      showSidebar={showSidebar}
     />
   ) : null
 }

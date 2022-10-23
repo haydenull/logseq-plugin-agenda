@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'rea
 import dayjs from 'dayjs'
 import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, transformDataToSimpleMode, getDateRange, scrollToDate } from '../util'
 import { IGroup, IMode, IView } from '../type'
-import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT } from '../constants'
+import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT, SIDEBAR_WIDTH } from '../constants'
 import { Popover } from 'antd'
 import Group from './Group'
 
@@ -16,6 +16,7 @@ const Calendar: React.FC<{
   showSidebar?: boolean
   onFoldChange?: (groupId: string, fold: boolean) => void
 }> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '', foldedGroups, showSidebar, onFoldChange }, ref) => {
+  const sidebarWidth = showSidebar ? SIDEBAR_WIDTH : 0
   const current = dayjs()
   const expandGroupData = data.map(group => {
     const isFolded = foldedGroups?.includes(group.id)
@@ -45,7 +46,7 @@ const Calendar: React.FC<{
         return {
           ...event,
           coordinates: {
-            x: getXCoordinate(start, dayjs(event.start), calendarEventWidth) + 160,
+            x: getXCoordinate(start, dayjs(event.start), calendarEventWidth) + sidebarWidth,
             y: group.coordinate.y + yIndex * CALENDAR_EVENT_HEIGHT,
           },
           size: {
@@ -59,7 +60,7 @@ const Calendar: React.FC<{
         return {
           ...milestone,
           coordinates: {
-            x: getXCoordinate(start, dayjs(milestone.start), calendarEventWidth) + 160,
+            x: getXCoordinate(start, dayjs(milestone.start), calendarEventWidth) + sidebarWidth,
             y: group.coordinate.y + eventHeightCount + yIndex * CALENDAR_EVENT_HEIGHT,
           },
         }
@@ -81,7 +82,7 @@ const Calendar: React.FC<{
   return (
     <div className="calendar h-full w-full overflow-auto scroll-style">
       {/* ========= calendar header start ========= */}
-      <div className="w-fit whitespace-nowrap bg-quaternary sticky top-0 z-20 text" style={{ marginLeft: '160px' }}>
+      <div className="w-fit whitespace-nowrap bg-quaternary sticky top-0 z-20 text" style={{ marginLeft: sidebarWidth + 'px' }}>
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
@@ -94,7 +95,8 @@ const Calendar: React.FC<{
           })
         }
       </div>
-      <div className="calendar__header w-fit whitespace-nowrap bg-quaternary sticky z-20" style={{ top: '25px', marginLeft: '160px' }}>
+      <div className="calendar__header w-fit whitespace-nowrap bg-quaternary sticky z-20" style={{ top: '25px' }}>
+        <div className="inline-block" style={{ width: sidebarWidth + 'px' }}></div>
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
@@ -136,7 +138,7 @@ const Calendar: React.FC<{
           </div>
         )}
         {/* ====== back ===== */}
-        <div className="flex w-fit sticky top-0 min-h-full" style={{ left: '160px', height: groupHeightCount + 'px' }}>
+        <div className="flex w-fit sticky top-0 min-h-full" style={{ left: sidebarWidth + 'px', height: groupHeightCount + 'px' }}>
           {
             dateMarks.map((mark, index) => {
               const _isWeekend = isWeekend(mark)
