@@ -5,13 +5,29 @@ import { atom } from 'jotai'
 import { categorizeTask } from '@/util/schedule'
 import { journalEventsAtom, projectEventsAtom } from './events'
 import { transformEventToGanttEvent } from '@/helper/transform'
+import dayjs from 'dayjs'
 
 export const ganttDataAtom = atom<IGroup[] | null>((get) => {
   const { projectList = [], journal } = getInitalSettings()
   const enabledCalendarList: ICustomCalendar[] = [journal! as ICustomCalendar].concat(projectList)?.filter(calendar => calendar?.enabled)
   const ganttData: IGroup[] = enabledCalendarList.map(calendar => {
     const calendarId = calendar.id
-    const events = calendar.id === 'Journal' ? get(journalEventsAtom) : get(projectEventsAtom).get(calendarId)
+    let events = get(projectEventsAtom).get(calendarId)
+    if (calendar.id === 'Journal') {
+      const journalProject = get(journalEventsAtom)
+      const begin = dayjs().subtract(1, 'week')
+      const end = dayjs().add(1, 'year')
+      events = {
+        tasks: {
+          withTime: journalProject.tasks?.withTime?.filter(val => dayjs(val.addOns.start).isBetween(begin, end)),
+          noTime: [],
+        },
+        milestones: {
+          withTime: journalProject.milestones?.withTime?.filter(val => dayjs(val.addOns.start).isBetween(begin, end)),
+          noTime: [],
+        },
+      }
+    }
     const calendarConfig = calendar.id === 'Journal' ? journal : projectList.find(calendar => calendar.id === calendarId)
     if (!events) {
       return {

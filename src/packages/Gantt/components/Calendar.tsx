@@ -85,7 +85,7 @@ const Calendar: React.FC<{
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
-            const isShowMonth = date === '01' || mark.isSame(start, 'day') || mark.isSame(end, 'day')
+            const isShowMonth = date === '01' || mark.isSame(start, 'day')
             return (<div className="inline" key={'month' + mark.valueOf()}>
               <span className="inline-block text-center sticky bg-quaternary overflow-visible box-content" style={{ width: `${calendarEventWidth}px`, left: 0, lineHeight: '25px', paddingRight: '100px', marginRight: '-100px' }}>
                 {isShowMonth ? mark.format('MMMM YYYY') : ''}
