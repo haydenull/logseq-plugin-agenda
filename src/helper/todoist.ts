@@ -4,7 +4,8 @@ import { TodoistApi, Task, UpdateTaskArgs, AddTaskArgs } from '@doist/todoist-ap
 import { IEvent } from '@/util/events'
 import dayjs from 'dayjs'
 import { format } from 'date-fns'
-import { log } from '@/util/util'
+import { genLinkText, log } from '@/util/util'
+import { MARKDOWN_TODOISTLINK_REG, ORG_TODOISTLINK_REG } from '@/util/constants'
 
 export const PRIORITY_MAP = {
   4: 'A',
@@ -46,7 +47,18 @@ export const pullTask = async () => {
   }
 
   const blocks = await getTodoistBlocks()
-  const events = await Promise.all(blocks?.map(block => transformBlockToEvent(block, settings)) || [])
+  let events = await Promise.all(blocks?.map(block => transformBlockToEvent(block, settings)) || [])
+  events = events.map(event => {
+    let todoistId = event.properties?.todoistId
+    const todoistIdLink = event.properties?.todoistId
+    const reg = event.format === 'markdown' ? MARKDOWN_TODOISTLINK_REG : ORG_TODOISTLINK_REG
+    const url = todoistIdLink?.match?.(reg)?.[1]
+    if (url) todoistId = new URL(url).searchParams.get('id')
+    return {
+      ...event,
+      todoistId: Number(todoistId),
+    }
+  })
   console.info('[faiz: pull totoist] === todoist active tasks:', tasks)
   console.info('[faiz: pull totoist] === exists logseq events:', events)
 
@@ -54,14 +66,14 @@ export const pullTask = async () => {
   let needCreateTasks: Task[] = []
 
   tasks.forEach(task => {
-    const correspondEvent = events.find(event => event.properties?.todoistId === task.id)
+    const correspondEvent = events.find(event => event.todoistId === task.id)
     if (!correspondEvent) return needCreateTasks.push(task)
     if (isEventNeedUpdate(correspondEvent, task)) return needUpdateEvents.push({ ...correspondEvent, todoistTask: task })
   })
   const eventsNotInActiveTasksPromise = events
     .filter(event => event.addOns.status !== 'done')
-    .filter(event => !tasks.find(task => task.id === event.properties?.todoistId))
-    .map(async event => ({ ...event, todoistTask: await instance?.getTask(event.properties?.todoistId) }))
+    .filter(event => !tasks.find(task => task.id === event?.todoistId))
+    .map(async event => ({ ...event, todoistTask: await instance?.getTask(event?.todoistId) }))
   const eventsNotInActiveTasksRes = await Promise.allSettled(eventsNotInActiveTasksPromise)
   const eventsNotInActiveTasks = eventsNotInActiveTasksRes.map(res => {
     if (res.status === 'rejected') return null
@@ -115,6 +127,7 @@ export const isEventNeedUpdate = (event: IEvent, task: Task) => {
 export const createBlock = async (task: Task, dateFormat: string) => {
   const { todoist } = getInitalSettings()
   const date = task.due?.datetime || task.due?.date
+  const { preferredFormat } = await logseq.App.getUserConfigs()
 
   let page
   if (todoist?.position) {
@@ -134,23 +147,25 @@ export const createBlock = async (task: Task, dateFormat: string) => {
   }
   const description = task?.description?.split('\n')[0] || ''
 
+  const todoistLink = genLinkText(task.id + '', task.url, preferredFormat)
   return logseq.Editor.insertBlock(page!.originalName, content, {
     isPageBlock: true,
     sibling: true,
-    properties: {
-      'todoist-id': task.id,
+    properties: description ? {
+      'todoist-id': todoistLink,
       'todoist-desc': description,
-    },
+    } : { 'todoist-id': todoistLink },
   })
 }
 export const updateBlock = async (event: IEvent, task?: Task) => {
   if (!task) return
 
+  const { preferredFormat } = await logseq.App.getUserConfigs()
+
   let content = task.content
   const logseqPriority = PRIORITY_MAP[task.priority]
   if (logseqPriority) content = `[#${logseqPriority}] ${content}`
 
-  // TODO: 保留 logseq block 自定义属性, 只更新 todoist 相关属性
   content = `${task.completed ? 'DONE' : 'TODO'} ${content}`
 
   const date = task.due?.datetime || task.due?.date
@@ -163,6 +178,24 @@ export const updateBlock = async (event: IEvent, task?: Task) => {
 
   await logseq.Editor.updateBlock(event.uuid, content)
   // updateBlock will remove all custom properties, so we need to add todoist-id again
-  await logseq.Editor.upsertBlockProperty(event.uuid, 'todoist-desc', description)
-  return logseq.Editor.upsertBlockProperty(event.uuid, 'todoist-id', task.id)
+  if (description) await logseq.Editor.upsertBlockProperty(event.uuid, 'todoist-desc', description)
+  await logseq.Editor.upsertBlockProperty(event.uuid, 'todoist-id', genLinkText(task.id + '', task.url, preferredFormat))
+
+  const { content: rawContent, propertiesTextValues: blockProperties } = event
+  if (blockProperties) {
+    const rawContentArr = rawContent?.split('\n')?.filter(Boolean)?.slice(1)
+    Object.keys(blockProperties)
+      ?.filter(key => !['todoistId', 'todoistDesc'].includes(key))
+      ?.forEach(key => {
+        let rawKey = key
+        // 当 key 不在 rawContent 中时, 说明其是从中划线转义为驼峰的
+        if (!rawContentArr?.find(str => str?.startsWith(`${key}::`))) {
+          // 驼峰转中划线
+          rawKey = key.replace(/([A-Z])/g, "-$1").toLowerCase()
+        }
+        logseq.Editor.upsertBlockProperty(event.uuid, rawKey, blockProperties[key])
+      })
+  }
 }
+
+export const genLinkUrl = (id: number) => `https://todoist.com/showTask?id=${id}`

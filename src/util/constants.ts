@@ -18,6 +18,11 @@ export const MARKDOWN_POMODORO_REG = />\[[🍅 0-9min]+\]\(#(agenda-pomo:\/\/[^\
 export const ORG_POMODORO_REG = />\[\[#(agenda-pomo:\/\/[^\n\r ]+)\]\[[🍅 0-9min]+\]\]/
 // >[🍅](#agenda-pomo://?t=p-20220614123213-10,h-2023829809-4)
 
+// [6292169917](https://todoist.com/showTask?id=6292169917)
+export const MARKDOWN_TODOISTLINK_REG = /\[\w+\]\(([\w:\/\.\?=]+)\)/
+// [[https://todoist.com/showTask?id=6292169917][6292169917]]
+export const ORG_TODOISTLINK_REG = /\[\[([\w:\/\.\?=]+)\]\[\w+\]\]/
+
 export const CALENDAR_VIEWS = [
   { value: 'day', label: 'Daily' },
   { value: 'week', label: 'Weekly' },
