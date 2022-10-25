@@ -1,3 +1,5 @@
 import MarkdownIt from 'markdown-it'
 
-export const md = new MarkdownIt()
+export const md = new MarkdownIt({
+  // breaks: true,
+})

@@ -9,6 +9,7 @@ import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 import { deleteProjectTaskTime, fillBlockReference, isOverdue, judgeIsMilestone, removeTimeInfo } from '@/util/schedule'
 import { format } from 'date-fns'
 import { getPomodoroInfo, removePomodoroInfo } from './pomodoro'
+import { md } from './md'
 
 /** ========== calendar schedules ========== */
 export const transformTaskEventToSchedule = (block: IEvent) => {
@@ -77,7 +78,7 @@ export const transformEventToGanttEvent = (event: IEvent): IGanttEvent => {
     detailPopup: (<div className="text-xs">
       <div className="font-bold text-base my-2">{event.addOns.showTitle}</div>
       <div className="my-2">{`${dayStart.format('YYYY.MM.DD')} - ${dayEnd.format('YYYY.MM.DD')}`}</div>
-      <p className="whitespace-pre-line">{event.content}</p>
+      <div className="whitespace-pre-line" dangerouslySetInnerHTML={{ __html: md.render(event.content) }}></div>
 
       <a onClick={async () => {
         const { id: pageId, originalName } = event.page || {}
