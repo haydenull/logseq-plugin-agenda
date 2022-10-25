@@ -131,7 +131,7 @@ const ModifySchedule: React.FC<{
         // else {
         //   block = await createBlockToSpecificBlock(newCalendarId, SCHEDULE_PARENT_BLOCK, newTitle, newBlockPropeties)
         // }
-        if (!block) return logseq.App.showMsg('Create block failed', 'error')
+        if (!block) return logseq.UI.showMsg('Create block failed', 'error')
         const _block = await logseq.Editor.getBlock(block.uuid)
         const event = await transformBlockToEvent(_block!, settings)
         const schedule = event?.addOns?.type === 'milestone' ? transformMilestoneEventToSchedule(event) : transformTaskEventToSchedule(event)

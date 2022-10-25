@@ -96,13 +96,14 @@
   /* @apply shadow; */
 }
 .group__title {
-  height: 30px;
-  line-height: 40px;
-  text-align: bottom;
+  height: 40px; /* SIDEBAR_GROUP_TITLE_HEIGHT */
   top: 50px;
   font-size: 16px;
   padding-right: 16px;
-  display: block;
+}
+.group__title svg {
+  font-size: 12px;
+  margin-right: 3px;
 }
 .group__content {
   display: flex;
@@ -183,6 +184,17 @@
 }
 .calendar__content__back.today {
   background-color: var(--ls-quinary-background-color);
+}
+.calendar__content__back.today::before {
+  content: 'Today';
+  display: block;
+  position: sticky;
+  top: 50px;
+  width: 100%;
+  height: 24px;
+  text-align: center;
+  background-color: var(--ls-tertiary-background-color);
+  color: var(--ls-primary-background-color);
 }
 .calendar__group {
   /* border-bottom: 1px solid #e9dceb;

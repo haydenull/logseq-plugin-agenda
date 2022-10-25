@@ -327,7 +327,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           })
         } else if (changes) {
           // drag on calendar view
-          if (schedule.calendarId === 'journal' && !dayjs(finalStart).isSame(dayjs(finalEnd), 'day')) return logseq.App.showMsg('Journal schedule cannot span multiple days', 'error')
+          if (schedule.calendarId === 'journal' && !dayjs(finalStart).isSame(dayjs(finalEnd), 'day')) return logseq.UI.showMsg('Journal schedule cannot span multiple days', 'error')
           let properties = {}
           let scheduleChanges = {}
           Object.keys(changes).forEach(key => {
@@ -377,7 +377,7 @@ const App: React.FC<{ env: string }> = ({ env }) => {
           content: <div className="whitespace-pre-line">{schedule.raw?.content}</div>,
           onOk: async () => {
             const block = await logseq.Editor.getBlock(schedule.raw?.id)
-            if (!block) return logseq.App.showMsg('Block not found', 'error')
+            if (!block) return logseq.UI.showMsg('Block not found', 'error')
             logseq.Editor.removeBlock(block?.uuid)
             calendarRef.current?.deleteSchedule(schedule.id, schedule.calendarId)
           },

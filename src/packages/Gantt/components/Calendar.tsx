@@ -159,6 +159,7 @@ const Calendar: React.FC<{
                       <Popover
                         content={detailPopup}
                         trigger="click"
+                        overlayInnerStyle={{ borderRadius: '4px', maxWidth: '500px' }}
                       >
                         <div
                           key={event.id}
@@ -190,6 +191,7 @@ const Calendar: React.FC<{
                         <Popover
                           content={detailPopup}
                           trigger="click"
+                          overlayInnerStyle={{ borderRadius: '4px', maxWidth: '500px' }}
                         >
                           <div
                             key={'milestone-text' + milestone.id}
@@ -208,6 +210,7 @@ const Calendar: React.FC<{
                   })
                 }
                 {/* ===== calendar milestone end ==== */}
+                <div ></div>
               </div>
             )
           })

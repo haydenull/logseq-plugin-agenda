@@ -5,7 +5,7 @@ export const CALENDAR_GROUP_GAP = 0
 export const CALENDAR_EVENT_HEIGHT = 40
 
 /** 侧边栏 group 标题高度  */
-export const SIDEBAR_GROUP_TITLE_HEIGHT = 30
+export const SIDEBAR_GROUP_TITLE_HEIGHT = 40
 export const SIDEBAR_WIDTH = 160
 
 /** 日历事件的宽度 */

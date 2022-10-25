@@ -121,7 +121,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   }, [state.formattedTimer, state.type, state.paused, uuid])
   useEffect(() => {
     if (!uuid) return
-    if (!state.paused) return logseq.App.showMsg('Pomodoro is running, please stop it first.', 'error')
+    if (!state.paused) return logseq.UI.showMsg('Pomodoro is running, please stop it first.', 'error') as unknown as undefined
     logseq.Editor.getBlock(uuid).then(async block => {
       if (!block) return
       const event = await transformBlockToEvent(block!, getInitalSettings())

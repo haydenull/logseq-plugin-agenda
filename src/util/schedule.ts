@@ -57,7 +57,7 @@ export const getCustomCalendarSchedules = async () => {
 calendar: ${calendarConfig.id}
 query: ${query.script}
 message: ${res.reason.message}`
-      logseq.App.showMsg(msg, 'error')
+      logseq.UI.showMsg(msg, 'error')
     }
   })
   calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleResFulfilled))

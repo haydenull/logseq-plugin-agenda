@@ -87,7 +87,7 @@ if (isDevelopment) {
       },
       showPomodoro(e) {
         const uuid = e.dataset.uuid
-        if (!uuid) return logseq.App.showMsg('uuid is required')
+        if (!uuid) return logseq.UI.showMsg('uuid is required')
         renderPomodoroApp(uuid)
         logseq.showMainUI()
       },
@@ -132,19 +132,20 @@ if (isDevelopment) {
             updateTask(todoistId, params)
           } catch (error) {
             if ((error as TodoistRequestError).httpStatusCode === 404) {
-              return logseq.App.showMsg(`Sync Error\nmessage: ${(error as TodoistRequestError)?.responseData}\nPlease check whether the task has been deleted or whether the todoist-id is correct`, 'error')
+              return logseq.UI.showMsg(`Sync Error\nmessage: ${(error as TodoistRequestError)?.responseData}\nPlease check whether the task has been deleted or whether the todoist-id is correct`, 'error')
             }
           }
         }
         genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
       })
 
+      // @ts-ignore The requirement to return a void can be ignored
       logseq.Editor.registerBlockContextMenuItem('Agenda: Upload to todoist', async ({ uuid }) => {
         const settings = getInitalSettings()
         const { todoist } = settings
         const block = await logseq.Editor.getBlock(uuid)
-        if (!block?.marker) return logseq.App.showMsg('This block is not a task', 'error')
-        if (block?.properties?.todoistId) return logseq.App.showMsg('This task has already been uploaded,\nplease do not upload it again', 'error')
+        if (!block?.marker) return logseq.UI.showMsg('This block is not a task', 'error')
+        if (block?.properties?.todoistId) return logseq.UI.showMsg('This task has already been uploaded,\nplease do not upload it again', 'error')
         const event = await transformBlockToEvent(block!, settings)
 
         const priority = findKey(PRIORITY_MAP, v => v === event.priority)
@@ -162,10 +163,10 @@ if (isDevelopment) {
         createTask(params)
           ?.then(async task => {
             await updateBlock(event, task)
-            return logseq.App.showMsg('Upload task to todoist success')
+            return logseq.UI.showMsg('Upload task to todoist success')
           })
           .catch(err => {
-            logseq.App.showMsg('Upload task to todoist failed', 'error')
+            logseq.UI.showMsg('Upload task to todoist failed', 'error')
             console.error('[faiz:] === Upload task to todoist failed', err)
           })
 
@@ -225,16 +226,16 @@ if (isDevelopment) {
       logseq.updateSettings({projectList: 1})
       // ensure subscription list is array
       logseq.updateSettings({ ...logseq.settings, projectList: originalProjectList.concat(newProject)})
-      logseq.App.showMsg('Successfully added')
+      logseq.UI.showMsg('Successfully added')
     })
     logseq.Editor.registerBlockContextMenuItem('Agenda: Modify Schedule', editSchedule)
+    // @ts-ignore The requirement to return a void can be ignored
     logseq.Editor.registerBlockContextMenuItem('Agenda: Start Pomodoro Timer', async ({ uuid }) => {
-      // logseq.Editor.insertAtEditingCursor(`{{renderer agenda, pomodoro-timer, 40, 'nostarted', 0}}`)
       logseq.App.registerUIItem('toolbar', {
         key: 'logseq-plugin-agenda-pomodoro',
         template: genToolbarPomodoro(uuid, '--:--', 0),
       })
-      if (window?.currentPomodoro?.uuid !== uuid && window?.currentPomodoro?.state?.paused === false) return logseq.App.showMsg('Another block is running pomodoro timer, please finish it first', 'error')
+      if (window?.currentPomodoro?.uuid !== uuid && window?.currentPomodoro?.state?.paused === false) return logseq.UI.showMsg('Another block is running pomodoro timer, please finish it first', 'error')
       setTimeout(() => {
         renderPomodoroApp(uuid)
         logseq.showMainUI()

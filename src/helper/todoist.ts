@@ -25,7 +25,7 @@ export const getTodoistInstance = (token?: string) => {
 
 export const pullTask = async () => {
   log('\n=== Start synchronizing tasks from todoist ... ===\n', '#d27e24')
-  if (!instance) return logseq.App.showMsg('Please check your todoist configuration', 'error')
+  if (!instance) return logseq.UI.showMsg('Please check your todoist configuration', 'error')
   const settings = getInitalSettings()
   const { preferredDateFormat } = await logseq.App.getUserConfigs()
   const { todoist } = settings
@@ -77,7 +77,7 @@ export const pullTask = async () => {
   needCreateTasks.forEach(task => createBlock(task, preferredDateFormat))
   needUpdateEvents.forEach(event => updateBlock(event, event.todoistTask))
 
-  logseq.App.showMsg(`Get todoist data successfully:\n${needCreateTasks.length} new tasks created\n${needUpdateEvents.length} tasks updated`)
+  logseq.UI.showMsg(`Get todoist data successfully:\n${needCreateTasks.length} new tasks created\n${needUpdateEvents.length} tasks updated`)
 
   log('\n=== Synchronizing tasks from todoist success ===\n', 'green')
 }
@@ -150,6 +150,7 @@ export const updateBlock = async (event: IEvent, task?: Task) => {
   const logseqPriority = PRIORITY_MAP[task.priority]
   if (logseqPriority) content = `[#${logseqPriority}] ${content}`
 
+  // TODO: 保留 logseq block 自定义属性, 只更新 todoist 相关属性
   content = `${task.completed ? 'DONE' : 'TODO'} ${content}`
 
   const date = task.due?.datetime || task.due?.date
