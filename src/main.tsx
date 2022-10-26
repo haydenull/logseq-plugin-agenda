@@ -28,7 +28,7 @@ import { genDBTaskChangeCallback, getBlockUuidFromEventPath } from './util/logse
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from './constants/style'
 import { transformBlockToEvent } from './helper/transform'
 import PomodoroApp from './PomodoroApp'
-import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock, PRIORITY_MAP } from './helper/todoist'
+import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock, PRIORITY_MAP, transformEventToTodoistEvent } from './helper/todoist'
 import { AddTaskArgs, TodoistRequestError, UpdateTaskArgs } from '@doist/todoist-api-typescript'
 import { DEFAULT_PROJECT } from './util/constants'
 
@@ -115,7 +115,7 @@ if (isDevelopment) {
           const block = await logseq.Editor.getBlock(uuid)
           const event = await transformBlockToEvent(block!, getInitalSettings())
 
-          const todoistId = event.properties?.todoistId
+          const todoistId = transformEventToTodoistEvent(event)?.todoistId
           try {
             const task = await getTask(todoistId)
             const priority = findKey(PRIORITY_MAP, v => v === event.priority)

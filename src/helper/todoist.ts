@@ -48,17 +48,7 @@ export const pullTask = async () => {
 
   const blocks = await getTodoistBlocks()
   let events = await Promise.all(blocks?.map(block => transformBlockToEvent(block, settings)) || [])
-  events = events.map(event => {
-    let todoistId = event.properties?.todoistId
-    const todoistIdLink = event.properties?.todoistId
-    const reg = event.format === 'markdown' ? MARKDOWN_TODOISTLINK_REG : ORG_TODOISTLINK_REG
-    const url = todoistIdLink?.match?.(reg)?.[1]
-    if (url) todoistId = new URL(url).searchParams.get('id')
-    return {
-      ...event,
-      todoistId: Number(todoistId),
-    }
-  })
+  events = events.map(transformEventToTodoistEvent)
   console.info('[faiz: pull totoist] === todoist active tasks:', tasks)
   console.info('[faiz: pull totoist] === exists logseq events:', events)
 
@@ -199,3 +189,18 @@ export const updateBlock = async (event: IEvent, task?: Task) => {
 }
 
 export const genLinkUrl = (id: number) => `https://todoist.com/showTask?id=${id}`
+
+/**
+ * parse todoist id
+ */
+export const transformEventToTodoistEvent = (event: IEvent) => {
+  let todoistId = event.properties?.todoistId
+  const todoistIdLink = event.properties?.todoistId
+  const reg = event.format === 'markdown' ? MARKDOWN_TODOISTLINK_REG : ORG_TODOISTLINK_REG
+  const url = todoistIdLink?.match?.(reg)?.[1]
+  if (url) todoistId = new URL(url).searchParams.get('id')
+  return {
+    ...event,
+    todoistId: Number(todoistId),
+  }
+}
