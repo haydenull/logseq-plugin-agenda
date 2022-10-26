@@ -1,3 +1,13 @@
+# [2.10.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.9.1...v2.10.0) (2022-10-26)
+
+
+### Features
+
+* ✨ add markdown parser ([d089a4f](https://github.com/haydenull/logseq-plugin-agenda/commit/d089a4fbbff501d5e6c2d347c16ad8cb581b8c34))
+* ✨ Optimize gantt style ([9cd91bf](https://github.com/haydenull/logseq-plugin-agenda/commit/9cd91bf153cf1b04cd1423c92efe8d8b66000c78))
+* ✨ Optimize milestone style ([a5a1d16](https://github.com/haydenull/logseq-plugin-agenda/commit/a5a1d165d03241fea38632265764d63a9968a8e4))
+* ✨ Use link instead of todoist id ([bb8688c](https://github.com/haydenull/logseq-plugin-agenda/commit/bb8688c59891a734f8d329a184f384b893e36b28))
+
 ## [2.9.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.9.0...v2.9.1) (2022-10-18)
 
 
