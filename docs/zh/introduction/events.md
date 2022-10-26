@@ -8,8 +8,13 @@
 
 以日记的日期作为任务的日期, 任务以时间开头时, 将其视为任务的具体时间.
 
+::: tip
+可以使用 project 属性, 设置任务所属项目
+:::
+
 示例:
 ![journal tasks](../../../screenshots/journal-tasks.png)
+![project-task-from-journal](../../../screenshots/project-task-from-journal.png)
 
 
 
@@ -24,3 +29,12 @@
 
 示例:
 ![project tasks](../../../screenshots/project-tasks.png)
+
+
+## 里程碑: 一类特殊的事件
+
+当事件带有 milestone 标签时, 将会在日历和甘特图中单独显示
+
+### Example:
+![milestone block](../../../screenshots/milestone-block.png)
+![milestone calendar](../../../screenshots/milestone-calendar.png)

@@ -29,6 +29,7 @@ export const zh: SidebarConfig = {
         '/zh/settings/subscription.md',
         '/zh/settings/calendarView.md',
         '/zh/settings/pomodoro.md',
+        '/zh/settings/todoist.md',
       ],
     },
     // {

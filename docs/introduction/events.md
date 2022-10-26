@@ -10,12 +10,16 @@ Also note that if you want events to show up in your project dashboard, you have
 
 Enter the task on the journal page for that date. If the task starts at a certain time, specify the time at the start of the block. You can also specify the end time, or alternatively the plugin will use your default time for events when displaying the event in your calendar.
 
+::: tip
+You can also use the project property to associate a task to a specified project
+:::
+
+
 ### Example:
 ![journal tasks](../../screenshots/journal-tasks.png)
+![project-task-from-journal](../../screenshots/project-task-from-journal.png)
 
 ## All non-journal pages
-
-including pages that are not specified as 'Projects' in the plugin.
 
 The following methods are supported to set event dates:
 
@@ -32,7 +36,7 @@ The following methods are supported to set event dates:
 
 ## Milestone: A special kind of event
 
-When an event contains a milestone tag, it is displayed separately on the calendar.
+When an event contains a milestone tag, it is displayed separately on the calendar and Gantt.
 
 ### Example:
 ![milestone block](../../screenshots/milestone-block.png)

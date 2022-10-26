@@ -28,7 +28,7 @@ The sync options are as follows:
 ## Todoist filter
 
 ::: tip
-Only available if you have set your sync option to `A Specific Todoist Filter `.
+Only available if you have set your sync option to `A Specific Todoist Filter`.
 :::
 
 This filter will be a search statement using the same syntax used in [Todoist Filters](https://todoist.com/help/articles/introduction-to-filters).
