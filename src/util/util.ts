@@ -156,3 +156,7 @@ export const notification = (msg: string) => {
 export const formatDayjsToRFC3339 = (day: Dayjs, fractionDigits: 0|1|2|3 = 0) => {
   return formatRFC3339(day.toDate(), { fractionDigits })
 }
+
+export const genLinkText = (text: string, url: string, format: 'markdown' | 'org' = 'markdown') => {
+  return format === 'org' ? `[${url}][${text}]]` : `[${text}](${url})`
+}

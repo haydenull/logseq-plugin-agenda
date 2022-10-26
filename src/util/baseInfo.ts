@@ -1,4 +1,5 @@
-import { getCurrentTheme } from '@/util/logseq';
+import { md } from '@/helper/md'
+import { getCurrentTheme } from '@/util/logseq'
 import { ISchedule } from 'tui-calendar'
 import { CALENDAR_THEME, DEFAULT_SETTINGS } from './constants'
 import { ISettingsForm } from './type'
@@ -90,11 +91,13 @@ export const getDefaultCalendarOptions = async () => {
         return time.hour + ':00'
       },
       popupDetailBody: (schedule: ISchedule) => {
-        const calendar = `<br/><b>Calendar: ${schedule.calendarId}</b>`
+        const calendar = `<b>Project: ${schedule.calendarId}</b>`
         const navBtn = schedule.raw?.subscription ? '' : '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
+        // ${schedule.body?.split('\n').join('<br/>')}
+        // TODO: 如果是 org 则不转义
         return `
           <div class="calendar-popup-detail-content">
-            ${schedule.body?.split('\n').join('<br/>')}
+            ${md.render(schedule.body || '')}
           </div>
           ${calendar}
           ${navBtn}

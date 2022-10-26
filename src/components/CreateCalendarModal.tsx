@@ -11,7 +11,7 @@ const CreateCalendarModal: React.FC<{
   const createAgendaPage = async (name) => {
     const page = await getPageData({ originalName: name })
     if (page) {
-      logseq.App.showMsg('The page with the same name already exists\nPlease add properties to the page manually\nagenda:: true', 'error')
+      logseq.UI.showMsg('The page with the same name already exists\nPlease add properties to the page manually\nagenda:: true', 'error')
       return { success: true }
     }
 

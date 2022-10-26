@@ -2,8 +2,9 @@ import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'rea
 import dayjs from 'dayjs'
 import { extractDays, getXCoordinate, isWeekend, getDataWithGroupCoordinates, transformDataToSimpleMode, getDateRange, scrollToDate } from '../util'
 import { IGroup, IMode, IView } from '../type'
-import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT } from '../constants'
+import { CALENDAR_EVENT_HEIGHT, CALENDAR_EVENT_WIDTH, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT, SIDEBAR_WIDTH } from '../constants'
 import { Popover } from 'antd'
+import Group from './Group'
 
 const Calendar: React.FC<{
   data: IGroup[]
@@ -12,7 +13,10 @@ const Calendar: React.FC<{
   weekStartDay?: number
   uniqueId?: string
   foldedGroups?: string[]
-}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '', foldedGroups }, ref) => {
+  showSidebar?: boolean
+  onFoldChange?: (groupId: string, fold: boolean) => void
+}> = ({ data, mode = 'simple', view = 'day', weekStartDay = 0, uniqueId = '', foldedGroups, showSidebar, onFoldChange }, ref) => {
+  const sidebarWidth = showSidebar ? SIDEBAR_WIDTH : 0
   const current = dayjs()
   const expandGroupData = data.map(group => {
     const isFolded = foldedGroups?.includes(group.id)
@@ -42,7 +46,7 @@ const Calendar: React.FC<{
         return {
           ...event,
           coordinates: {
-            x: getXCoordinate(start, dayjs(event.start), calendarEventWidth),
+            x: getXCoordinate(start, dayjs(event.start), calendarEventWidth) + sidebarWidth,
             y: group.coordinate.y + yIndex * CALENDAR_EVENT_HEIGHT,
           },
           size: {
@@ -56,7 +60,7 @@ const Calendar: React.FC<{
         return {
           ...milestone,
           coordinates: {
-            x: getXCoordinate(start, dayjs(milestone.start), calendarEventWidth),
+            x: getXCoordinate(start, dayjs(milestone.start), calendarEventWidth) + sidebarWidth,
             y: group.coordinate.y + eventHeightCount + yIndex * CALENDAR_EVENT_HEIGHT,
           },
         }
@@ -76,13 +80,13 @@ const Calendar: React.FC<{
   })), []
 
   return (
-    <div className="calendar h-fit w-fit">
+    <div className="calendar h-full w-full overflow-auto scroll-style">
       {/* ========= calendar header start ========= */}
-      <div className="w-fit whitespace-nowrap bg-quaternary sticky top-0 z-20 text">
+      <div className="w-fit whitespace-nowrap bg-quaternary sticky top-0 z-20 text" style={{ marginLeft: sidebarWidth + 'px' }}>
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
-            const isShowMonth = date === '01' || mark.isSame(start, 'day') || mark.isSame(end, 'day')
+            const isShowMonth = date === '01' || mark.isSame(start, 'day')
             return (<div className="inline" key={'month' + mark.valueOf()}>
               <span className="inline-block text-center sticky bg-quaternary overflow-visible box-content" style={{ width: `${calendarEventWidth}px`, left: 0, lineHeight: '25px', paddingRight: '100px', marginRight: '-100px' }}>
                 {isShowMonth ? mark.format('MMMM YYYY') : ''}
@@ -92,6 +96,7 @@ const Calendar: React.FC<{
         }
       </div>
       <div className="calendar__header w-fit whitespace-nowrap bg-quaternary sticky z-20" style={{ top: '25px' }}>
+        <div className="inline-block" style={{ width: sidebarWidth + 'px' }}></div>
         {
           dateMarks.map((mark) => {
             const date = mark.format('DD')
@@ -110,8 +115,30 @@ const Calendar: React.FC<{
       {/* ========= calendar header end ========= */}
 
       {/* ========== calendar content start ========= */}
-      <div className="calendar__content relative" style={{ height: groupHeightCount + 'px' }}>
-        {/* <div className="h-full absolute flex">
+      <div className="calendar__content relative flex w-fit" style={{ height: 'calc(100% - 50px)' }}>
+        {/* ====== sidebar ===== */}
+        {showSidebar && (
+          <div className="side-bar bg-quaternary sticky left-0 z-10 h-fit min-h-full">
+            {
+              data.map((group, index) => (
+                <Group
+                  key={group.id}
+                  mode={mode}
+                  groupId={group.id}
+                  groupName={group.title}
+                  events={group?.events}
+                  milestones={group?.milestones}
+                  levelCount={group.levelCount}
+                  uniqueId={uniqueId}
+                  foldedGroups={foldedGroups}
+                  onFoldChange={onFoldChange}
+                />
+              ))
+            }
+          </div>
+        )}
+        {/* ====== back ===== */}
+        <div className="flex w-fit sticky top-0 min-h-full" style={{ left: sidebarWidth + 'px', height: groupHeightCount + 'px' }}>
           {
             dateMarks.map((mark, index) => {
               const _isWeekend = isWeekend(mark)
@@ -119,21 +146,11 @@ const Calendar: React.FC<{
               return (<div className={`calendar__content__back ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`}></div>)
             })
           }
-        </div> */}
+        </div>
         {
           dataWithCoordinates.map(group => {
             return (
-              // 每个 group 都生成自己的back有点浪费，其实是可以合并成一个的
               <div className="calendar__group w-fit" key={group.id}>
-                <div className="flex">
-                  {
-                    dateMarks.map((mark, index) => {
-                      const _isWeekend = isWeekend(mark)
-                      const isToday = mark.isSame(current, 'day')
-                      return (<div className={`calendar__content__back ${_isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}`} style={{ height: group.height + 'px' }}></div>)
-                    })
-                  }
-                </div>
                 {/* ===== calendar event start ==== */}
                 {
                   group.events.map(event => {
@@ -142,6 +159,7 @@ const Calendar: React.FC<{
                       <Popover
                         content={detailPopup}
                         trigger="click"
+                        overlayInnerStyle={{ borderRadius: '4px', maxWidth: '500px' }}
                       >
                         <div
                           key={event.id}
@@ -151,7 +169,6 @@ const Calendar: React.FC<{
                             top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,
                             width: size.width + 'px',
                             height: size.height + 'px',
-                            zIndex: 1,
                           }}
                           title={event.title}
                         >
@@ -168,12 +185,13 @@ const Calendar: React.FC<{
                     const { coordinates, detailPopup, completed } = milestone
                     return (
                       <>
-                        <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute" style={{ left: coordinates.x + calendarEventWidth / 2, top: group.coordinate.y, height: group.height + 16 }}>
+                        <div key={'milestone-line' + milestone.id} className="calendar__milestone__line absolute min-h-full" style={{ left: coordinates.x + calendarEventWidth / 2, top: 0, height: groupHeightCount + 'px' }}>
                           {/* <span className="absolute ml-3">{milestone.title}</span> */}
                         </div>
                         <Popover
                           content={detailPopup}
                           trigger="click"
+                          overlayInnerStyle={{ borderRadius: '4px', maxWidth: '500px' }}
                         >
                           <div
                             key={'milestone-text' + milestone.id}
@@ -181,7 +199,7 @@ const Calendar: React.FC<{
                             style={{ left: coordinates.x + 2 + calendarEventWidth / 2, top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT }}
                             title={milestone.title}
                           >
-                            { completed && <svg data-v-651e2bfe="" viewBox="0 0 16 16" fill="white" className="milestone__mark"><path data-v-651e2bfe="" d="M5.536 11.175L2 7.639l1.497-1.497L7 9.642l6-6.28 1.497 1.497-7.464 7.814-1.497-1.497z"></path></svg> }
+                            { completed && <svg data-v-651e2bfe="" viewBox="0 0 16 16" fill="var(--ls-primary-background-color)" className="milestone__mark"><path data-v-651e2bfe="" d="M5.536 11.175L2 7.639l1.497-1.497L7 9.642l6-6.28 1.497 1.497-7.464 7.814-1.497-1.497z"></path></svg> }
                             <span className="single_ellipsis" style={{ maxWidth: calendarEventWidth - 20 }}>
                               {milestone.title}
                             </span>
@@ -192,6 +210,7 @@ const Calendar: React.FC<{
                   })
                 }
                 {/* ===== calendar milestone end ==== */}
+                <div ></div>
               </div>
             )
           })

@@ -5,20 +5,29 @@ import { atom } from 'jotai'
 import { categorizeTask } from '@/util/schedule'
 import { journalEventsAtom, projectEventsAtom } from './events'
 import { transformEventToGanttEvent } from '@/helper/transform'
-
-// const MOCK_PROJECTS: IGroup[] = [
-//   { id: '111', title: 'project1', events: [ { title: 'xxxxxxx', start: '2022-05-03', end: '2022-05-04', id: 'yyyy' } ], milestones: [ {start: '2022-05-07', end: '2022-05-07', title: 'milesttttsfasfsadfasffdasf', 'id': 'xxx'} ], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
-//   { id: '222', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
-//   { id: '333', title: 'project1', events: [], milestones: [], style: { bgColor: '#fff', borderColor: '#fff', color: '#000' } },
-//  ]
+import dayjs from 'dayjs'
 
 export const ganttDataAtom = atom<IGroup[] | null>((get) => {
-  // if (import.meta.env.DEV) return MOCK_PROJECTS
   const { projectList = [], journal } = getInitalSettings()
   const enabledCalendarList: ICustomCalendar[] = [journal! as ICustomCalendar].concat(projectList)?.filter(calendar => calendar?.enabled)
   const ganttData: IGroup[] = enabledCalendarList.map(calendar => {
     const calendarId = calendar.id
-    const events = calendar.id === 'Journal' ? get(journalEventsAtom) : get(projectEventsAtom).get(calendarId)
+    let events = get(projectEventsAtom).get(calendarId)
+    if (calendar.id === 'Journal') {
+      const journalProject = get(journalEventsAtom)
+      const begin = dayjs().subtract(1, 'week')
+      const end = dayjs().add(1, 'year')
+      events = {
+        tasks: {
+          withTime: journalProject.tasks?.withTime?.filter(val => dayjs(val.addOns.start).isBetween(begin, end)),
+          noTime: [],
+        },
+        milestones: {
+          withTime: journalProject.milestones?.withTime?.filter(val => dayjs(val.addOns.start).isBetween(begin, end)),
+          noTime: [],
+        },
+      }
+    }
     const calendarConfig = calendar.id === 'Journal' ? journal : projectList.find(calendar => calendar.id === calendarId)
     if (!events) {
       return {

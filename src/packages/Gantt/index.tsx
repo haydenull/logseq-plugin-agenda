@@ -24,94 +24,6 @@ const Gantt: React.FC<{
   const calendarRef = useRef<{ scrollToToday: () => void }>()
   const [view, setView] = useState<IView>(defaultView)
   const [mode, setMode] = useState<IMode>(defaultMode)
-  // const [data, setData] = useState<IGroup[]>([
-  //   {
-  //     id: '1',
-  //     title: 'Group 1',
-  //     events: [
-  //       {
-  //         id: '1',
-  //         title: 'Event 1',
-  //         start: '2022-03-30',
-  //         end: '2022-03-31',
-  //         raw: {},
-  //       },
-  //       {
-  //         id: '2',
-  //         title: 'Event 2',
-  //         start: '2022-03-31',
-  //         end: '2022-04-02',
-  //         raw: {},
-  //       },
-  //       {
-  //         id: '3',
-  //         title: 'Event 3',
-  //         start: '2022-04-06',
-  //         end: '2022-04-08',
-  //         raw: {},
-  //       },
-  //     ],
-  //     milestones: [
-  //       {
-  //         id: '11',
-  //         title: 'Milestone 1',
-  //         start: '2022-04-06',
-  //         end: '2022-04-06',
-  //         raw: {},
-  //       },
-  //       {
-  //         id: '12',
-  //         title: 'Milestone 2',
-  //         start: '2022-04-09',
-  //         end: '2022-04-09',
-  //         raw: {},
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: '2-1',
-  //     title: 'Group 2',
-  //     events: [
-  //       {
-  //         id: '2-1',
-  //         title: 'Event 2-1',
-  //         start: '2022-03-30',
-  //         end: '2022-03-31',
-  //         raw: {},
-  //       },
-  //       {
-  //         id: '2-2',
-  //         title: 'Event 2-2',
-  //         start: '2022-04-02',
-  //         end: '2022-04-02',
-  //         raw: {},
-  //       },
-  //       {
-  //         id: '2-3',
-  //         title: 'Event 2-3',
-  //         start: '2022-04-06',
-  //         end: '2022-04-08',
-  //         raw: {},
-  //       },
-  //     ],
-  //     milestones: [
-  //       {
-  //         id: '2-11',
-  //         title: 'Milestone 2-1',
-  //         start: '2022-04-06',
-  //         end: '2022-04-06',
-  //         raw: {},
-  //       },
-  //       {
-  //         id: '2-12',
-  //         title: 'Milestone 2-12',
-  //         start: '2022-04-08',
-  //         end: '2022-04-08',
-  //         raw: {},
-  //       },
-  //     ],
-  //   },
-  // ])
 
   const [ganttData, setGanttData] = useState<IGroup[]>([])
   const [foldedGroups, setFoldedGroups] = useState<string[]>([])
@@ -147,31 +59,7 @@ const Gantt: React.FC<{
           </div>
         )
       }
-      <div className="flex h-full overflow-auto relative scroll-style">
-        {
-          showSidebar && (
-            <div className="side-bar bg-quaternary sticky left-0 z-10 h-fit">
-              {
-                ganttData.map((group, index) => (
-                  <Group
-                    key={group.id}
-                    mode={mode}
-                    groupId={group.id}
-                    groupName={group.title}
-                    events={group?.events}
-                    milestones={group?.milestones}
-                    levelCount={group.levelCount}
-                    uniqueId={uniqueId}
-                    foldedGroups={foldedGroups}
-                    onFoldChange={onFoldChange}
-                  />
-                ))
-              }
-            </div>
-          )
-        }
-        <Calendar data={ganttData} ref={calendarRef} mode={mode} view={view} uniqueId={uniqueId} foldedGroups={foldedGroups} />
-      </div>
+      <Calendar data={ganttData} ref={calendarRef} mode={mode} view={view} uniqueId={uniqueId} foldedGroups={foldedGroups} showSidebar={showSidebar} onFoldChange={onFoldChange} />
     </div>
   )
 }

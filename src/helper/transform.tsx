@@ -1,7 +1,7 @@
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
 import { getInitalSettings } from '@/util/baseInfo'
-import { ICategory, ICustomCalendar, ISettingsForm } from '@/util/type'
-import { genDefaultProjectEvents, getEventTimeInfo, IEvent, IPageEvent } from '@/util/events'
+import { ICategory, ISettingsForm } from '@/util/type'
+import { getEventTimeInfo, IEvent } from '@/util/events'
 import type { IEvent as IGanttEvent, IGroup } from '@/packages/Gantt/type'
 import dayjs from 'dayjs'
 import { getPageData, pureTaskBlockContent } from '@/util/logseq'
@@ -9,6 +9,7 @@ import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
 import { deleteProjectTaskTime, fillBlockReference, isOverdue, judgeIsMilestone, removeTimeInfo } from '@/util/schedule'
 import { format } from 'date-fns'
 import { getPomodoroInfo, removePomodoroInfo } from './pomodoro'
+import { md } from './md'
 
 /** ========== calendar schedules ========== */
 export const transformTaskEventToSchedule = (block: IEvent) => {
@@ -76,8 +77,8 @@ export const transformEventToGanttEvent = (event: IEvent): IGanttEvent => {
     completed: event.addOns.status === 'done',
     detailPopup: (<div className="text-xs">
       <div className="font-bold text-base my-2">{event.addOns.showTitle}</div>
-      <div className="my-2">{`${dayStart.format('YYYY.MM.DD hh:mm a')} - ${dayEnd.format('hh:mm a')}`}</div>
-      <p className="whitespace-pre-line">{event.content}</p>
+      <div className="my-2">{`${dayStart.format('YYYY.MM.DD')} - ${dayEnd.format('YYYY.MM.DD')}`}</div>
+      <div className="whitespace-pre-line" dangerouslySetInnerHTML={{ __html: md.render(event.content) }}></div>
 
       <a onClick={async () => {
         const { id: pageId, originalName } = event.page || {}
@@ -124,6 +125,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
   }
   event.addOns.contentWithoutTime = showTitle
   if (pomodoros) showTitle = removePomodoroInfo(showTitle, block.format)
+  if (isMilestone) showTitle = showTitle?.replace('#milestone', '')?.trim()
   event.addOns.showTitle = await fillBlockReference(showTitle?.split('\n')?.[0]?.trim())
 
   // add end time

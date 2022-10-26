@@ -9,7 +9,7 @@ import { extractDays } from "./util"
 export const updateBlock = async (blockId: number | string, content: string | false, properties?: Record<string, any>) => {
   const block = await logseq.Editor.getBlock(blockId)
   if (!block) {
-    logseq.App.showMsg('Block not found', 'error')
+    logseq.UI.showMsg('Block not found', 'error')
     return Promise.reject(new Error('Block not found'))
   }
   if (content) {
@@ -22,16 +22,16 @@ export const updateBlock = async (blockId: number | string, content: string | fa
 
 export const moveBlockToNewPage = async (blockUuid: string, pageName: string) => {
   // const block = await getBlockData({ id: blockId })
-  // if (!block) return logseq.App.showMsg('moveBlockToNewPage: Block not found', 'error')
+  // if (!block) return logseq.UI.showMsg('moveBlockToNewPage: Block not found', 'error')
   const page = await logseq.Editor.createPage(pageName)
-  if (!page) return logseq.App.showMsg('Create page failed', 'error')
+  if (!page) return logseq.UI.showMsg('Create page failed', 'error')
   await logseq.Editor.moveBlock(blockUuid, page.uuid)
   return await getBlockData({ uuid: blockUuid })
 }
 export const moveBlockToSpecificBlock = async (srcBlockId: number | string, targetPageName: string, targetBlockContent: string) => {
   const query = typeof srcBlockId === 'number' ? { id: srcBlockId } : { uuid: srcBlockId }
   const srcBlock = await getBlockData(query)
-  if (!srcBlock) return logseq.App.showMsg('moveBlockToSpecificBlock: Block not found', 'error')
+  if (!srcBlock) return logseq.UI.showMsg('moveBlockToSpecificBlock: Block not found', 'error')
   let targetPage = await getPageData({ originalName: targetPageName })
   if (!targetPage) targetPage = await logseq.Editor.createPage(targetPageName)
   let targetBlock = await getSpecificBlockByContent(targetPageName, targetBlockContent)

@@ -9,9 +9,13 @@
   --ls-text-color: #5f636c;
   --ls-description-text-color: #a7a7a7;
   --ls-tint-text-color: #e3e3e3;
+
+  --ls-calendar-weekday-background-color: #f5f7f9;
+  --ls-calendar-weekend-background-color: #f3f5f9;
+  --ls-calendar-weekend-background-pattern: #e1e2e6;
 }
 .gantt.dark {
-  --ls-primary-background-color: #212528;
+  --ls-primary-background-color: #282c32;
   --ls-secondary-background-color: #282c31;
   --ls-tertiary-background-color: #fcb714;
   --ls-quaternary-background-color: #32373d;
@@ -21,6 +25,10 @@
   --ls-text-color: #aaadb3;
   --ls-description-text-color: #7d7f83;
   --ls-tint-text-color: #47484a;
+
+  --ls-calendar-weekday-background-color: #212528;
+  --ls-calendar-weekend-background-color: #1d2124;
+  --ls-calendar-weekend-background-pattern: #2e2f30;
 }
 .bg-primary {
   background-color: var(--ls-primary-background-color);
@@ -50,10 +58,16 @@
   color: var(--ls-tint-text-color);
 }
 .scroll-style::-webkit-scrollbar {
-  background-color: var(--ls-primary-background-color);
+  background-color: transparent;
+}
+.scroll-style::-webkit-scrollbar-corner {
+  background-color: transparent;
 }
 .scroll-style::-webkit-scrollbar-thumb {
   background-color: var(--ls-tint-text-color);
+  border: 5px solid transparent;
+  border-radius: 9px;
+  background-clip: content-box;
 }
 
 /* 左上角空白占位 */
@@ -70,32 +84,48 @@
   /* https://www.jianshu.com/p/e6ad2c2cb7c3 */
   flex: 0 0 160px;
   /* width: 160px; */
-  margin-top: 50px;
+  /* margin-top: 50px; */
   max-width: 160px;
+  border-right: 1px solid var(--ls-tint-text-color);
 }
 
 .group {
-  margin-bottom: 36px;  /* CALENDAR_GROUP_GAP */
-  border-right: 1px solid var(--ls-tint-text-color);
+  margin-bottom: 0;  /* CALENDAR_GROUP_GAP */
   /* 内阴影边框 */
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); */
   /* @apply shadow; */
 }
 .group__title {
-  height: 30px;
-  line-height: 40px;
-  text-align: bottom;
+  height: 40px; /* SIDEBAR_GROUP_TITLE_HEIGHT */
   top: 50px;
   font-size: 16px;
+  padding-right: 16px;
+}
+.group__title svg {
+  font-size: 12px;
+  margin-right: 3px;
 }
 .group__content {
   display: flex;
   flex-direction: column;
-  padding-left: 1rem;
+  padding: 0 1rem;
 }
 .group__event {
   height: 40px;  /* CALENDAR_GROUP_EVENT_HEIGHT */
   line-height: 40px;
+  display: flex;
+  align-items: center;
+  display: block;
+}
+.group__event.milestone::before{
+  display: inline-block;
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--ls-tertiary-background-color);
+  border-radius: 3px;
+  transform: rotate(45deg);
+  margin: 0 8px 0 2px;
 }
 
 
@@ -138,7 +168,7 @@
   width: 108px;  /* CALENDAR_EVENT_WIDTH */
   height: 100%;
   /* background-color: #f8f8f8; */
-  background-color: var(--ls-primary-background-color);
+  background-color: var(--ls-calendar-weekday-background-color);
 
   border-right: 1px solid var(--ls-tint-text-color);
 }
@@ -149,16 +179,27 @@
   width: 20px;  /* CALENDAR_EVENT_WIDTH */
 }
 .calendar__content__back.weekend {
-  /* background-color: #f4f3f3; */
-  background-color: var(--ls-secondary-background-color);
+  background-color: var(--ls-calendar-weekend-background-color);
+  background-image: repeating-linear-gradient(120deg, var(--ls-calendar-weekend-background-pattern), var(--ls-calendar-weekend-background-pattern) 1px, transparent 0, transparent 12px);
 }
 .calendar__content__back.today {
   background-color: var(--ls-quinary-background-color);
 }
+.calendar__content__back.today::before {
+  content: 'Today';
+  display: block;
+  position: sticky;
+  top: 50px;
+  width: 100%;
+  height: 24px;
+  text-align: center;
+  background-color: var(--ls-tertiary-background-color);
+  color: var(--ls-primary-background-color);
+}
 .calendar__group {
   /* border-bottom: 1px solid #e9dceb;
   border-top: 1px solid #e9dceb; */
-  margin-bottom: 36px;   /* CALENDAR_GROUP_GAP */
+  margin-bottom: 0;   /* CALENDAR_GROUP_GAP */
   box-sizing: content-box;
 }
 .calendar__event {
