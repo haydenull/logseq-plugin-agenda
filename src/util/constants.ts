@@ -1,3 +1,4 @@
+import { theme as antdTheme } from 'antd'
 import { ISettingsForm } from './type'
 
 export const SHOW_DATE_FORMAT = 'yyyy-MM-dd'
@@ -29,6 +30,26 @@ export const CALENDAR_VIEWS = [
   { value: '2week', label: '2 Weeks' },
   { value: 'month', label: 'Monthly' },
 ]
+
+export const ANTD_THEME_CONFIG = {
+  green: {
+    token: {
+      colorPrimary: '#047857',
+    },
+  },
+  purple: {
+    token: {
+      colorPrimary: '#5146a0',
+    },
+  },
+  dark: {
+    token: {
+      colorPrimary: '#fcb714',
+      colorBgBase: '#212528',
+    },
+    algorithm: antdTheme.darkAlgorithm,
+  },
+}
 
 export const THEME = [
   { value: 'light', label: 'Light' },

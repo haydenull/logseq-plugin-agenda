@@ -298,7 +298,7 @@ export async function genSchedule(params: {
   const _defaultDuration = defaultDuration ||  getInitalSettings()?.defaultDuration
   let _end = end
   if ((category === 'time' || blockData?.category === 'time') && !end && start && _defaultDuration) {
-    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit).format()
+    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit as dayjs.ManipulateType).format()
   }
   if (blockData?.category !== 'time' && !end) {
     _end = start

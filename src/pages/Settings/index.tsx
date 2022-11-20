@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Form, Select, Input, Button, Switch, Popconfirm, InputNumber, Alert } from 'antd'
 import { MinusCircleOutlined, PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-import { useForm } from 'antd/lib/form/Form'
 import classNames from 'classnames'
 import ColorPicker from '@/components/ColorPicker'
 import { CALENDAR_VIEWS, DEFAULT_PROJECT, DEFAULT_SETTINGS, DURATION_UNITS, LIGHT_THEME_TYPE, THEME } from '@/util/constants'
@@ -40,7 +39,7 @@ const Settings: React.FC<{
   // onOk: (values: ISettingsForm) => void
   [key: string]: any
 }> = ({ ...props }) => {
-  const [settingForm] = useForm<ISettingsForm>()
+  const [settingForm] = Form.useForm<ISettingsForm>()
   const [tab, setTab] = useState(TABS[0].value)
   const [pageOptions, setPageOptions] = useState<any>([])
   const [todoistProjectOptions, setTodoistProjectOptions] = useState<any>([])

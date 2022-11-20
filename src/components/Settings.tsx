@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Modal, Form, Select, Input, Button, Switch, Popconfirm, InputNumber } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { useForm } from 'antd/lib/form/Form'
 import ColorPicker from './ColorPicker'
 import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, THEME } from '../util/constants'
 import Query from './Query'
@@ -16,7 +15,7 @@ const Settings: React.FC<{
   onOk: (values: ISettingsForm) => void
   [key: string]: any
 }> = ({ visible, onCancel, onOk, ...props }) => {
-  const [settingForm] = useForm<ISettingsForm>()
+  const [settingForm] = Form.useForm<ISettingsForm>()
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
 

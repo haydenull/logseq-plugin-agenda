@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import Sider from '@/components/Sider'
 import { MENUS } from '@/constants/elements'
 import { useAtom } from 'jotai'
-import { projectSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
+import { subscriptionSchedulesAtom } from '@/model/schedule'
 import { getInitalSettings } from '@/util/baseInfo'
 import { getSubCalendarSchedules } from '@/util/subscription'
-import { DEFAULT_SETTINGS } from '@/util/constants'
+import { ANTD_THEME_CONFIG, DEFAULT_SETTINGS } from '@/util/constants'
 import ProjectDetail from '@/pages/ProjectDetail'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from './model/events'
 import { getInternalEvents } from './util/events'
+import { ConfigProvider } from 'antd'
+import useTheme from './hooks/useTheme'
 
 const App: React.FC<{
   defaultRoute?: string
@@ -21,6 +23,8 @@ const App: React.FC<{
   const [, setFullEvents] = useAtom(fullEventsAtom)
   const [, setJournalEvents] = useAtom(journalEventsAtom)
   const [, setProjectEvents] = useAtom(projectEventsAtom)
+
+  const theme = useTheme() || 'green'
 
   const { homePage = DEFAULT_SETTINGS.homePage, logKey } = getInitalSettings()
   const homePageElement = MENUS.find(item => item.value === homePage)?.element
@@ -43,20 +47,24 @@ const App: React.FC<{
   }, [])
 
   return (
-    <main className="w-screen h-screen flex" prefix="custom">
-      <MemoryRouter>
-        <Sider defaultRoute={defaultRoute} menus={menus} />
-        <Routes>
-          <Route path="/" element={homePageElement} />
-          {
-            menus.map(item => (
-              <Route path={item.path} element={item.element} key={item.value} />
-            ))
-          }
-          <Route path="/project/:projectId" element={<ProjectDetail />} />
-        </Routes>
-      </MemoryRouter>
-    </main>
+    <ConfigProvider
+      theme={ANTD_THEME_CONFIG[theme]}
+    >
+      <main className="w-screen h-screen flex" prefix="custom">
+        <MemoryRouter>
+          <Sider defaultRoute={defaultRoute} menus={menus} />
+          <Routes>
+            <Route path="/" element={homePageElement} />
+            {
+              menus.map(item => (
+                <Route path={item.path} element={item.element} key={item.value} />
+              ))
+            }
+            <Route path="/project/:projectId" element={<ProjectDetail />} />
+          </Routes>
+        </MemoryRouter>
+      </main>
+    </ConfigProvider>
   )
 }
 
