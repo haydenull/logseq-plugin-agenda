@@ -70,14 +70,15 @@ const Calendar: React.FC<{
   const groupHeightCount = dataWithCoordinates.reduce((acc, cur) => acc + cur.height + CALENDAR_GROUP_GAP, 0)
 
   useEffect(() => {
-    document.getElementById(`date${uniqueId}${dayjs().format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center' })
+    // fix: scrollToDate can't effect
+    setTimeout(() => scrollToDate(dayjs(), uniqueId), 0)
   }, [])
 
   useImperativeHandle(ref, () => ({
     scrollToToday() {
       scrollToDate(dayjs(), uniqueId)
     },
-  })), []
+  }))
 
   return (
     <div className="calendar h-full w-full overflow-auto scroll-style">
@@ -163,7 +164,7 @@ const Calendar: React.FC<{
                       >
                         <div
                           key={event.id}
-                          className={`calendar__event absolute bg-quaternary rounded cursor-pointer single_ellipsis shadow ${completed ? 'completed' : ''}`}
+                          className={`calendar__event absolute bg-quaternary rounded cursor-pointer shadow ${completed ? 'completed' : ''}`}
                           style={{
                             left: coordinates.x,
                             top: coordinates.y + SIDEBAR_GROUP_TITLE_HEIGHT,
@@ -172,7 +173,7 @@ const Calendar: React.FC<{
                           }}
                           title={event.title}
                         >
-                          {event.title}
+                          <div className="sticky max-w-full w-fit single_ellipsis" style={{ left: sidebarWidth + 8 + 'px' }}>{event.title}</div>
                         </div>
                       </Popover>
                     )

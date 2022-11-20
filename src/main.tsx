@@ -16,6 +16,7 @@ import { GridComponent, ToolboxComponent, TooltipComponent, LegendComponent} fro
 import { LineChart, GaugeChart, BarChart, TreemapChart } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
+import 'antd/dist/reset.css'
 import { getInitalSettings, initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'

@@ -124,6 +124,7 @@ const index = () => {
                 <Button
                   size="small"
                   type="link"
+                  style={{ color: 'var(--ls-tertiary-background-color)' }}
                   onClick={() => {
                     copyToClipboard(events.map(event => event.addOns.showTitle).join('\n'))
                     message.success(`🥳 ${events.length} pieces of data have been copied to clipboard!`)

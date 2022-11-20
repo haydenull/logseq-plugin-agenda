@@ -39,15 +39,14 @@ export const setPluginTheme = (theme: 'dark' | 'light') => {
   if (theme === 'dark') {
     html?.classList.add('dark')
     html?.classList.remove(lightTheme)
-    insertCss('./antd.dark.min.css')
+    // insertCss('./antd.dark.min.css')
   } else {
     html?.classList.remove('dark', prevLightTheme)
     html?.classList.add(lightTheme)
-    insertCss('./antd.min.css')
+    // insertCss('./antd.min.css')
   }
 }
 export const managePluginTheme = async () => {
-  if (import.meta.env.DEV) return setPluginTheme('light')
   const { theme } = logseq.settings as ISettingsForm & {disabled: boolean}
   if (theme === 'dark') return setPluginTheme('dark')
   if (theme === 'light') return setPluginTheme('light')

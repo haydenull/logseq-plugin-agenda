@@ -133,7 +133,7 @@ export const transformBlockToEvent = async (block: BlockEntity, settings: ISetti
     if (time.allDay) {
       event.addOns.end = time.start
     } else {
-      event.addOns.end = dayjs(event.addOns.start).add(defaultDuration.value, defaultDuration.unit).format()
+      event.addOns.end = dayjs(event.addOns.start).add(defaultDuration.value, defaultDuration.unit as dayjs.ManipulateType).format()
     }
   }
 

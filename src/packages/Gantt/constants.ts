@@ -6,6 +6,7 @@ export const CALENDAR_EVENT_HEIGHT = 40
 
 /** 侧边栏 group 标题高度  */
 export const SIDEBAR_GROUP_TITLE_HEIGHT = 40
+/** 侧边栏宽度 */
 export const SIDEBAR_WIDTH = 160
 
 /** 日历事件的宽度 */

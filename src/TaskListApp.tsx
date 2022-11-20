@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAtom } from 'jotai'
-import { projectSchedulesAtom, subscriptionSchedulesAtom, todaySubscriptionSchedulesAtom } from '@/model/schedule'
+import { projectSchedulesAtom, todaySubscriptionSchedulesAtom } from '@/model/schedule'
 import { categorizeSubscriptions, categorizeTasks } from '@/util/schedule'
 import SidebarTask from './components/SidebarTask'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'

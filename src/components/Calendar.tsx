@@ -8,7 +8,7 @@ import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import Sidebar from '@/components/Sidebar'
 import dayjs from 'dayjs'
 import { joinPrefixTaskBlockContent, moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
-import { Button, Modal, Radio, Tooltip } from 'antd'
+import { Button, Modal, Segmented, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { ICustomCalendar } from '@/util/type'
 import { IEvent } from '@/util/events'
@@ -254,13 +254,11 @@ const CalendarCom: React.FC<{
       </div>
 
         <div>
-          <Radio.Group
+          <Segmented
             options={CALENDAR_VIEWS}
             value={currentView}
             defaultValue={logseq.settings?.defaultView || 'month'}
-            onChange={e => onViewChange(e.target.value)}
-            optionType="button"
-            buttonStyle="solid"
+            onChange={value => onViewChange(value as string)}
           />
         </div>
       </div>
