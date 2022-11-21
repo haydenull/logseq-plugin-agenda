@@ -1,3 +1,16 @@
+# [2.11.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.10.0...v2.11.0) (2022-11-21)
+
+
+### Bug Fixes
+
+* vuepress version not found ([fafebe2](https://github.com/haydenull/logseq-plugin-agenda/commit/fafebe255a4d9afa076ae926689314de8e2fd9de))
+
+
+### Features
+
+* ✨ Add sticky to Gantt Chart event text ([df49f71](https://github.com/haydenull/logseq-plugin-agenda/commit/df49f715e0a9fa02fc22bcc21917d56b28c3c9e0))
+* upgrade antd to 5.0 ([d64246c](https://github.com/haydenull/logseq-plugin-agenda/commit/d64246c48a7b5ee61dbed49bcf0ff708d69a906a))
+
 # [2.10.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.9.1...v2.10.0) (2022-10-26)
 
 
