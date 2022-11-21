@@ -2,6 +2,7 @@
   "name": "logseq-plugin-agenda",
   "version": "2.10.0",
   "main": "dist/index.html",
+  "private": true,
   "logseq": {
     "id": "logseq-plugin-agenda",
     "icon": "logo.png"
@@ -17,6 +18,7 @@
     "docs:build": "vuepress build docs"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.8.0",
     "@doist/todoist-api-typescript": "^1.5.0",
     "@haydenull/use-pomodoro": "^1.1.4",
     "@logseq/libs": "^0.0.9",
