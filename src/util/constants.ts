@@ -382,3 +382,8 @@ export const YES_NO_SELECTION = [
 export const POMODORO_INTERRUPTION_SEPARATOR = '|`~|'
 
 export const DEFAULT_PROJECT = { id: undefined, bgColor: '#b8e986', textColor: '#4a4a4a', borderColor: '#047857', enabled: true }
+
+
+const CALENDAR_DONN_TASK_BASE_STYLE = 'opacity: 0.6; background-image: var(--ls-checked-img); background-size: 18px; background-repeat: no-repeat; padding-left: 20px;'
+export const CALENDAR_DONN_TASK_ALLDAY_STYLE = CALENDAR_DONN_TASK_BASE_STYLE + 'background-position: 2px center;'
+export const CALENDAR_DONN_TASK_TIME_STYLE = CALENDAR_DONN_TASK_BASE_STYLE + 'background-position: 8px center;'

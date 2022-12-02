@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@ant-design/icons': ^4.8.0
-  '@doist/todoist-api-typescript': ^1.5.0
+  '@doist/todoist-api-typescript': ^2.1.2
   '@haydenull/use-pomodoro': ^1.1.4
   '@logseq/libs': ^0.0.9
   '@semantic-release/changelog': ^6.0.1
@@ -51,7 +51,7 @@ specifiers:
 
 dependencies:
   '@ant-design/icons': 4.8.0_biqbaboplfbrettd7655fr4n2y
-  '@doist/todoist-api-typescript': 1.7.0
+  '@doist/todoist-api-typescript': 2.1.2
   '@haydenull/use-pomodoro': 1.1.4_react@18.2.0
   '@logseq/libs': 0.0.9
   antd: 5.0.0_biqbaboplfbrettd7655fr4n2y
@@ -457,15 +457,15 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /@doist/todoist-api-typescript/1.7.0:
-    resolution: {integrity: sha512-Pe7EGpwhLuxZEhxDmqwXZqc9DAESWl/l1VjFYSdGlNfcUI1KSPSW9Hs7le78EIqAxHFVxjgpcKkDkV9h+EaUlA==}
+  /@doist/todoist-api-typescript/2.1.2:
+    resolution: {integrity: sha512-6aCY8FVERMBQ+hDcADGjz76f8fZwRww3gIg05/KkcGhwqq2nfzQAPJ0d3T2F67yWTRCAmxMSupERqFJbCRXDXA==}
     dependencies:
       axios: 0.27.2
-      axios-case-converter: 0.9.0_axios@0.27.2
+      axios-case-converter: 0.11.1_axios@0.27.2
       axios-retry: 3.3.1
       runtypes: 6.6.0
       ts-custom-error: 3.3.1
-      uuid: 8.3.2
+      uuid: 9.0.0
     transitivePeerDependencies:
       - debug
     dev: false
@@ -1834,10 +1834,10 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-  /axios-case-converter/0.9.0_axios@0.27.2:
-    resolution: {integrity: sha512-G6tOanR1cdIrBtRyiPvR+xXyWCCZacSw8LtT8bmImvpye+XiyoOlLluz0N61IfetznNQ9BeMi5yA0rIyYDr8mQ==}
+  /axios-case-converter/0.11.1_axios@0.27.2:
+    resolution: {integrity: sha512-i5hrkBg7SE9jsm2Q+ClznR5DsKcYXChH6Cc3Rhx2p4gdIfJwvvO5/ATcAg/vN2UVzGE2B1eR1O4VuEGkICdJdQ==}
     peerDependencies:
-      axios: '>=0.23.0 <1.0.0'
+      axios: '>=0.23.0 <2.0.0'
     dependencies:
       axios: 0.27.2
       camel-case: 4.1.2
@@ -5926,6 +5926,11 @@ packages:
 
   /uuid/8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    hasBin: true
+    dev: false
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
     hasBin: true
     dev: false
 

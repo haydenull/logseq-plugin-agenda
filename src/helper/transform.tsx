@@ -10,6 +10,7 @@ import { deleteProjectTaskTime, fillBlockReference, isOverdue, judgeIsMilestone,
 import { format } from 'date-fns'
 import { getPomodoroInfo, removePomodoroInfo } from './pomodoro'
 import { md } from './md'
+import { CALENDAR_DONN_TASK_ALLDAY_STYLE, CALENDAR_DONN_TASK_TIME_STYLE } from '@/util/constants'
 
 /** ========== calendar schedules ========== */
 export const transformTaskEventToSchedule = (block: IEvent) => {
@@ -20,6 +21,8 @@ export const transformTaskEventToSchedule = (block: IEvent) => {
 
   let calendarStyle: { bgColor: string; textColor: string; borderColor: string; } | undefined = block?.addOns?.isJournal ? journal : projectList.find(project => project.id === block?.addOns?.project)
   if (!calendarStyle) calendarStyle = DEFAULT_CALENDAR_STYLE
+
+  const doneStyle = block.addOns.allDay ? CALENDAR_DONN_TASK_ALLDAY_STYLE : CALENDAR_DONN_TASK_TIME_STYLE
 
   return {
     id: block.uuid,
@@ -35,7 +38,7 @@ export const transformTaskEventToSchedule = (block: IEvent) => {
     bgColor: calendarStyle?.bgColor,
     borderColor: calendarStyle?.borderColor,
     isAllDay: !block?.addOns?.isOverdue && block.addOns.allDay,
-    customStyle: block.addOns.status === 'done' ? 'opacity: 0.6;' : '',
+    customStyle: ['done', 'canceled'].includes(block.addOns.status) ? doneStyle : '',
     isReadOnly: false,
   }
 }
@@ -44,6 +47,9 @@ export const transformMilestoneEventToSchedule = (block: IEvent) => {
 
   let calendarStyle: { bgColor: string; textColor: string; borderColor: string; } | undefined = block?.addOns?.isJournal ? journal : projectList.find(project => project.id === block?.addOns?.project)
   if (!calendarStyle) calendarStyle = DEFAULT_CALENDAR_STYLE
+
+  const doneStyle = block.addOns.allDay ? CALENDAR_DONN_TASK_ALLDAY_STYLE : CALENDAR_DONN_TASK_TIME_STYLE
+
   return {
     id: block.uuid,
     calendarId: block.addOns.isJournal ? 'Journal' : block.addOns.project,
@@ -58,7 +64,7 @@ export const transformMilestoneEventToSchedule = (block: IEvent) => {
     bgColor: calendarStyle?.bgColor,
     borderColor: calendarStyle?.borderColor,
     isAllDay: false,
-    customStyle: block.addOns.status === 'done' ? 'opacity: 0.6;' : '',
+    customStyle: ['done', 'canceled'].includes(block.addOns.status) ? doneStyle : '',
     isReadOnly: false,
   }
 }
