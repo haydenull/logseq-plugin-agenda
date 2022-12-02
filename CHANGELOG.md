@@ -1,3 +1,18 @@
+# [2.12.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.11.0...v2.12.0) (2022-12-02)
+
+
+### Bug Fixes
+
+* 🐛 Fix the navigate button style of calendar ([c65a363](https://github.com/haydenull/logseq-plugin-agenda/commit/c65a363856f31f09c672f55604657c6f8f2e00a6))
+
+
+### Features
+
+* ✨ Optimize settings page style ([b9e3e17](https://github.com/haydenull/logseq-plugin-agenda/commit/b9e3e17574bee4ed70d3921d55dd4b613cf4eca8))
+* ✨ Optimize the style of completed tasks in the calendar ([4945430](https://github.com/haydenull/logseq-plugin-agenda/commit/494543075b9a48f5ac9a9619983cab987fc7f647))
+* ✨ Scroll bar style optimization ([2666e68](https://github.com/haydenull/logseq-plugin-agenda/commit/2666e6839cb1b004bbe369cbe0cb9e98375e8fc7))
+* ✨ The default value is set to allday when editing date ([fe32c2f](https://github.com/haydenull/logseq-plugin-agenda/commit/fe32c2f5e9116d6598cbf44e7b8d8da54bccbc7c))
+
 # [2.11.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.10.0...v2.11.0) (2022-11-21)
 
 
