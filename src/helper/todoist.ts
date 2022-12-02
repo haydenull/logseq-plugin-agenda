@@ -83,10 +83,10 @@ export const pullTask = async () => {
 
   log('\n=== Synchronizing tasks from todoist success ===\n', 'green')
 }
-export const updateTask = (id: number, params: UpdateTaskArgs) => instance?.updateTask(id, params)
-export const getTask = (id: number) => instance?.getTask(id)
-export const closeTask = (id: number) => instance?.closeTask(id)
-export const reopenTask = (id: number) => instance?.reopenTask(id)
+export const updateTask = (id: string, params: UpdateTaskArgs) => instance?.updateTask(id, params)
+export const getTask = (id: string) => instance?.getTask(id)
+export const closeTask = (id: string) => instance?.closeTask(id)
+export const reopenTask = (id: string) => instance?.reopenTask(id)
 export const createTask = (args: AddTaskArgs) => instance?.addTask(args)
 
 export const destroy = () => {
@@ -106,7 +106,7 @@ export const isEventNeedUpdate = (event: IEvent, task: Task) => {
   const _description = event.properties?.todoistDesc || ''
   const _priority = event.priority
 
-  const { completed, due, content, priority, description = '' } = task
+  const { isCompleted: completed, due, content, priority, description = '' } = task
   let datetime = due ? (
     due?.datetime ? dayjs(due?.datetime).valueOf() : dayjs(due.date).valueOf()
   ) : undefined
@@ -156,7 +156,7 @@ export const updateBlock = async (event: IEvent, task?: Task) => {
   const logseqPriority = PRIORITY_MAP[task.priority]
   if (logseqPriority) content = `[#${logseqPriority}] ${content}`
 
-  content = `${task.completed ? 'DONE' : 'TODO'} ${content}`
+  content = `${task.isCompleted ? 'DONE' : 'TODO'} ${content}`
 
   const date = task.due?.datetime || task.due?.date
   if (date) {
@@ -201,6 +201,6 @@ export const transformEventToTodoistEvent = (event: IEvent) => {
   if (url) todoistId = new URL(url).searchParams.get('id')
   return {
     ...event,
-    todoistId: Number(todoistId),
+    todoistId: String(todoistId),
   }
 }

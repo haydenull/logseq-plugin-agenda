@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.8.0",
-    "@doist/todoist-api-typescript": "^1.5.0",
+    "@doist/todoist-api-typescript": "^2.1.2",
     "@haydenull/use-pomodoro": "^1.1.4",
     "@logseq/libs": "^0.0.9",
     "antd": "^5.0.0",

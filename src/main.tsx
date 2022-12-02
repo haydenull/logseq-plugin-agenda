@@ -128,12 +128,12 @@ if (isDevelopment) {
             if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
             if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
             if (!event.rawTime) params.dueString = 'no due date'
-            if (event.addOns.status === 'done' && task?.completed === false) return closeTask(todoistId)
-            if (event.addOns.status !== 'done' && task?.completed === true) return reopenTask(todoistId)
+            if (event.addOns.status === 'done' && task?.isCompleted === false) return closeTask(todoistId)
+            if (event.addOns.status !== 'done' && task?.isCompleted === true) return reopenTask(todoistId)
             updateTask(todoistId, params)
           } catch (error) {
             if ((error as TodoistRequestError).httpStatusCode === 404) {
-              return logseq.UI.showMsg(`Sync Error\nmessage: ${(error as TodoistRequestError)?.responseData}\nPlease check whether the task has been deleted or whether the todoist-id is correct`, 'error')
+              return logseq.UI.showMsg(`Todoist Sync Error\nmessage: ${(error as TodoistRequestError)?.responseData}\nPlease check whether the task has been deleted or whether the todoist-id is correct`, 'error')
             }
           }
         }
@@ -159,7 +159,7 @@ if (isDevelopment) {
         if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
         if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
         if (todoist?.project) params.projectId = todoist.project
-        if (todoist?.label) params.labelIds = [todoist.label]
+        if (todoist?.label) params.labels = [todoist.label]
 
         createTask(params)
           ?.then(async task => {
