@@ -51,15 +51,6 @@ const ModifySchedule: React.FC<{
         end: changedValues.start?.clone().add(defaultDuration.value, defaultDuration.unit),
       })
     }
-    // if (changedValues.calendarId?.value === 'journal') {
-    //   const start = allValues.start
-    //   const end = allValues.end
-    //   if (!start.isSame(end, 'day')) {
-    //     form.setFieldsValue({
-    //       end: start.add(1, 'hour'),
-    //     })
-    //   }
-    // }
   }
   const onClickSave = () => {
     form.validateFields().then(async values => {
@@ -191,6 +182,7 @@ const ModifySchedule: React.FC<{
       visible={visible}
       onOk={onClickSave}
       onCancel={onClickCancel}
+      bodyStyle={{ paddingTop: '20px' }}
     >
       <Form
         form={form}

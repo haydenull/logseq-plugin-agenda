@@ -156,7 +156,7 @@ const CalendarCom: React.FC<{
           values: {
             start: dayjs(event.start),
             end: dayjs(event.end),
-            isAllDay: event.triggerEventName === 'dblclick',
+            isAllDay: true,
           }
         })
       })
