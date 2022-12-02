@@ -5,8 +5,8 @@ import { endOfDay, formatISO, parse } from 'date-fns'
 import dayjs, { Dayjs } from 'dayjs'
 import { getInitalSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
-import { DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, MARKDOWN_PROJECT_TIME_REG, ORG_PROJECT_TIME_REG, TIME_REG } from './constants'
-import { getBlockData, getPageData, pureTaskBlockContent } from './logseq'
+import { CALENDAR_DONN_TASK_ALLDAY_STYLE, CALENDAR_DONN_TASK_TIME_STYLE, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, MARKDOWN_PROJECT_TIME_REG, ORG_PROJECT_TIME_REG, TIME_REG } from './constants'
+import { getBlockData, getPageData } from './logseq'
 import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { parseUrlParams } from './util'
 import { IEvent } from './events';
@@ -286,7 +286,7 @@ export async function genSchedule(params: {
                   ?.replace(projectTimeReg, '')
                   ?.replace(' #milestone', '')
                   ?.trim?.()
-  const isDone = blockData.marker === 'DONE'
+  const isDone = ['DONE', 'CANCELED'].includes(blockData.marker)
 
   function supportEdit() {
     if (blockData.page?.properties?.agenda === true) return true
@@ -306,6 +306,7 @@ export async function genSchedule(params: {
 
   // const uuid = typeof blockData?.uuid === 'string' ? blockData?.uuid : blockData?.uuid?.['$uuid$']
   blockData.uuid = uuid
+  const doneStyle = isAllDay ? CALENDAR_DONN_TASK_ALLDAY_STYLE : CALENDAR_DONN_TASK_TIME_STYLE
   return {
     id: id || uuid,
     calendarId: calendarConfig.id,
@@ -321,7 +322,7 @@ export async function genSchedule(params: {
     bgColor: calendarConfig?.bgColor,
     borderColor: calendarConfig?.borderColor,
     isAllDay,
-    customStyle: isDone ? 'opacity: 0.6;' : '',
+    customStyle: isDone ? doneStyle : '',
     isReadOnly: !isSupportEdit,
   }
 }
