@@ -10,6 +10,9 @@ import { getPageData } from './util/logseq'
 import dayjs from 'dayjs'
 import { notification } from './util/util'
 import InerruptionModal from './components/InerruptionModal'
+import useTheme from './hooks/useTheme'
+import { ConfigProvider } from 'antd'
+import { ANTD_THEME_CONFIG } from './util/constants'
 
 const OperationButton = ({ label, onClick, classNames = '' }: {label: string, onClick: () => void, classNames?: string}) => (
   <button
@@ -32,11 +35,8 @@ export type IPomodoroAppProps = {
   uuid: string
 }
 const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
-  // const [time, setTime] = useState(duration)
+  const theme = useTheme() || 'green'
 
-  // const start = () => {
-  //   logseq.Editor.updateBlock(uuid, `test {{renderer agenda, pomodoro-timer, 40, 'timing', 0}}`)
-  // }
   const pomodoroConfig: PomodoroConfig = useMemo(() => {
     const { pomodoro: pomodoroConfig } = getInitalSettings()
     return {
@@ -141,7 +141,9 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   }, [isWorking, state.progress, uuid])
 
   return (
-    <>
+    <ConfigProvider
+      theme={ANTD_THEME_CONFIG[theme]}
+    >
       <div className="fixed top-0 left-0 w-screen h-screen" onClick={() => logseq.hideMainUI()}></div>
       <div className="fixed right-10 shadow-md px-4 py-6 rounded-md bg-quaternary flex" style={{ top: '48px', minWidth: '300px' }}>
         <div className="flex-1">
@@ -185,7 +187,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
         visible={showInterruptionModal}
         onCancel={() => setShowInterruptionModal(false)}
       />
-    </>
+    </ConfigProvider>
   )
 }
 

@@ -57,14 +57,14 @@ const PomodoroModal: React.FC<{
           {
             title: 'Interruption',
             dataIndex: 'interruptions',
-            render: (value, record, index) => value?.length || 0,
+            render: (value) => value?.length || 0,
           },
           {
             title: 'Action',
             dataIndex: 'operation',
-            render: (value, record, index) => {
+            render: (value, record) => {
               return (
-                <Button type="link" onClick={() => setModifyPomodoro({ visible: true, data: record })}>Edit</Button>
+                <a onClick={() => setModifyPomodoro({ visible: true, data: record })}>Edit</a>
               )
             }
           }

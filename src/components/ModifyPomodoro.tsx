@@ -44,7 +44,7 @@ const ModifyPomodoro: React.FC<{
         })
       }}
     >
-      <Form form={form}>
+      <Form form={form} labelCol={{ span: 6 }}>
         <Form.Item name="isFull" label="Is Full" rules={[{ required: true }]}>
           <Radio.Group>
             <Radio value={true}>Full Tomato</Radio>
