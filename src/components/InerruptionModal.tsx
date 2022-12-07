@@ -1,5 +1,5 @@
 import { IInterruption } from '@/helper/pomodoro'
-import { Form, Input, Modal, Radio } from 'antd'
+import { Form, Input, Modal, Radio, Tooltip } from 'antd'
 import dayjs from 'dayjs'
 import React, { useState } from 'react'
 
@@ -34,8 +34,8 @@ const InerruptionModal: React.FC<{
             optionType="button"
             buttonStyle="solid"
             options={[
-              { label: 'Internal', value: 1 },
-              { label: 'External', value: 2 },
+              { label: <Tooltip title="Internal interruptions are distractions that come from within, such as checking social media or looking at your phone.">Internal</Tooltip>, value: 1 },
+              { label: <Tooltip title="External interruptions are distractions that come from outside, such as someone calling you or a notification on your computer.">External</Tooltip>, value: 2 },
             ]}
           />
         </Form.Item>
