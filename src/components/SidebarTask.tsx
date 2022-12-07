@@ -65,7 +65,7 @@ const Task: React.FC<{
   }
 
   return (
-    <div className="agenda-sidebar-task flex cursor-pointer" style={{ margin: '10px 0', opacity: isDone ? 0.4 : 0.9 }} onClick={() => navToBlock(task)}>
+    <div className="agenda-sidebar-task flex cursor-pointer" style={{ opacity: isDone ? 0.4 : 0.9 }} onClick={() => navToBlock(task)}>
       <div
         className="flex flex-col justify-between text-right"
         style={{

@@ -6,8 +6,13 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
   .agenda-sidebar-task__add {
     display: none;
   }
+  .agenda-sidebar-task {
+    padding: 5px 0;
+    border-radius: 4px;
+  }
   .agenda-sidebar-task:hover {
     opacity: 1;
+    background: var(--ls-tertiary-background-color);
   }
   .agenda-sidebar-task:hover .agenda-sidebar-task__add {
     display: flex;

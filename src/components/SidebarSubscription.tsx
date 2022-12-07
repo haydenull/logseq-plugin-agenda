@@ -25,7 +25,7 @@ const subscription: React.FC<{
   const { start, end } = getTime(subscription)
 
   return (
-    <div className="agenda-sidebar-task flex cursor-pointer" style={{ margin: '10px 0', opacity: 0.9 }}>
+    <div className="agenda-sidebar-task flex cursor-pointer" style={{ opacity: 0.9 }}>
       <div
         className="flex flex-col justify-between text-right"
         style={{
