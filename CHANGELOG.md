@@ -1,3 +1,22 @@
+# [2.13.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.12.0...v2.13.0) (2022-12-07)
+
+
+### Bug Fixes
+
+* 🐛 Add strikethrough to completed tasks ([8311175](https://github.com/haydenull/logseq-plugin-agenda/commit/831117525bf8755e6e8a1291086a81d621f1548e))
+* 🐛 ical parsing error when VALUE DATE is missing ([4203f35](https://github.com/haydenull/logseq-plugin-agenda/commit/4203f359c5ff31bfb1f9b076b498dadedf0af886))
+
+
+### Features
+
+* ✨ Adapt popups such as pomodoro to match the theme color ([a96aa01](https://github.com/haydenull/logseq-plugin-agenda/commit/a96aa017b5b495f3f2c70d7fb99e9a03d1aa6125))
+* ✨ Calendar popup supports jumping to the project page ([cf37300](https://github.com/haydenull/logseq-plugin-agenda/commit/cf37300d349db41a2515f8ce49eb6036397d9159))
+* ✨ Optimize calendar sidebar interaction ([c030a8c](https://github.com/haydenull/logseq-plugin-agenda/commit/c030a8cd388b6709d77d67c68aa8deffefeaa22b))
+* ✨ Optimize sidebar hover styles ([e853c88](https://github.com/haydenull/logseq-plugin-agenda/commit/e853c882b18c23a8c5de761090b548be19ec7f33))
+* ✨ Optimize the experience of setting colors ([e51075a](https://github.com/haydenull/logseq-plugin-agenda/commit/e51075aa03b956588f96e763677ceed39c6ef2ed))
+* ✨ Quickly open pomodoro from the sidebar ([09426ac](https://github.com/haydenull/logseq-plugin-agenda/commit/09426acd7a862e27654bbf8bb517b847caf3c7e5))
+* ✨ Review page supports jumping to block ([836f6d2](https://github.com/haydenull/logseq-plugin-agenda/commit/836f6d243412de264f2d3da0e158b579fd68d6ed))
+
 # [2.12.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.11.0...v2.12.0) (2022-12-02)
 
 
