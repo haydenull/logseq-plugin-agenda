@@ -26,7 +26,7 @@ export const transformTaskEventToSchedule = (block: IEvent) => {
 
   return {
     id: block.uuid,
-    calendarId: block.addOns.isJournal ? 'Journal' : block.addOns.project,
+    calendarId: block.addOns.project,
     title: block.addOns.showTitle,
     body: block.content,
     category,

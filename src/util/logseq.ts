@@ -193,3 +193,27 @@ export const genDBTaskChangeCallback = (cb: (uuid: string) => void, delay = 2000
     }, delay))
   }
 }
+
+export const navToBlock = async (block: BlockEntity) => {
+  const { id: pageId, originalName } = block?.page || {}
+  let pageName = originalName
+  // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
+  if (!pageName) {
+    const page = await logseq.Editor.getPage(pageId)
+    pageName = page?.originalName
+  }
+  const { uuid: blockUuid } = await logseq.Editor.getBlock(block.id) || { uuid: '' }
+  logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
+  logseq.hideMainUI()
+}
+export const navToPage = async (block: BlockEntity) => {
+  const { id: pageId, originalName } = block?.page || {}
+  let pageName = originalName
+  // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
+  if (!pageName) {
+    const page = await logseq.Editor.getPage(pageId)
+    pageName = page?.originalName
+  }
+  logseq.App.pushState('page', { name: pageName })
+  logseq.hideMainUI()
+}

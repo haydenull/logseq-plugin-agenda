@@ -7,7 +7,7 @@ import { deleteProjectTaskTime, updateProjectTaskTime } from '@/util/schedule'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import Sidebar from '@/components/Sidebar'
 import dayjs from 'dayjs'
-import { joinPrefixTaskBlockContent, moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
+import { joinPrefixTaskBlockContent, moveBlockToNewPage, moveBlockToSpecificBlock, navToBlock, navToPage } from '@/util/logseq'
 import { Button, Modal, Segmented, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { ICustomCalendar } from '@/util/type'
@@ -142,28 +142,11 @@ const CalendarCom: React.FC<{
       calendarRef.current.on('clickSchedule', function(info) {
         document.querySelector('#faiz-nav-detail')?.addEventListener('click', async (e) => {
           const rawData = info.schedule.raw || {}
-          const { id: pageId, originalName } = rawData?.page || {}
-          let pageName = originalName
-          // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
-          if (!pageName) {
-            const page = await logseq.Editor.getPage(pageId)
-            pageName = page?.originalName
-          }
-          const { uuid: blockUuid } = await logseq.Editor.getBlock(rawData.id) || { uuid: '' }
-          logseq.Editor.scrollToBlockInPage(pageName, blockUuid)
-          logseq.hideMainUI()
+          navToBlock(rawData)
         }, { once: true })
         document.querySelector('#faiz-nav-detail-project')?.addEventListener('click', async (e) => {
           const rawData = info.schedule.raw || {}
-          const { id: pageId, originalName } = rawData?.page || {}
-          let pageName = originalName
-          // datascriptQuery 查询出的 block, 没有详细的 page 属性, 需要手动查询
-          if (!pageName) {
-            const page = await logseq.Editor.getPage(pageId)
-            pageName = page?.originalName
-          }
-          logseq.App.pushState('page', { name: pageName })
-          logseq.hideMainUI()
+          navToPage(rawData)
         }, { once: true })
       })
       calendarRef.current.on('beforeCreateSchedule', function(event) {
