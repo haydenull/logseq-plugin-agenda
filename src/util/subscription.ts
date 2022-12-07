@@ -1,10 +1,11 @@
 import type { ISchedule } from 'tui-calendar'
 import axios from 'axios'
-import { formatISO, parseISO } from 'date-fns'
 import ical from 'ical.js'
 import { genSchedule } from './schedule'
 import { ISettingsForm } from './type'
 import dayjs from 'dayjs'
+
+// ical.design.strict = false
 
 /**
  * get ical data
@@ -22,7 +23,7 @@ import dayjs from 'dayjs'
       return []
     }
     try {
-      const data = ical.parse(res.value.data)
+      const data = fixUpJcal(ical.parse(res.value.data))
       const { events } = parseVCalendar(data)
       const buildEventPromiseList: Promise<ISchedule>[] = events.map(async event => {
         const { dtstart, dtend, summary, description } = event
@@ -97,4 +98,18 @@ export const parseVCalendar = (data: any) => {
     events,
   }
 
+}
+
+// https://github.com/kewisch/ical.js/issues/186
+function fixUpJcal(jCal) {
+  jCal[1].forEach(function (property) {
+      if (property[0] === 'dtstart' || property[0] === 'dtend' || property[0] === 'exdate' || property[0] === 'rdate') {
+          if (!property[1].value && property[2] === 'date-time' && /T::$/.test(property[3])) {
+              property[2] = 'date';
+              property[3] = property[3].replace(/T::$/, '');
+          }
+      }
+  });
+  jCal[2].forEach(fixUpJcal);
+  return jCal;
 }

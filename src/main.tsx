@@ -232,15 +232,7 @@ if (isDevelopment) {
     logseq.Editor.registerBlockContextMenuItem('Agenda: Modify Schedule', editSchedule)
     // @ts-ignore The requirement to return a void can be ignored
     logseq.Editor.registerBlockContextMenuItem('Agenda: Start Pomodoro Timer', async ({ uuid }) => {
-      logseq.App.registerUIItem('toolbar', {
-        key: 'logseq-plugin-agenda-pomodoro',
-        template: genToolbarPomodoro(uuid, '--:--', 0),
-      })
-      if (window?.currentPomodoro?.uuid !== uuid && window?.currentPomodoro?.state?.paused === false) return logseq.UI.showMsg('Another block is running pomodoro timer, please finish it first', 'error')
-      setTimeout(() => {
-        renderPomodoroApp(uuid)
-        logseq.showMainUI()
-      }, 0)
+      startPomodoro(uuid)
     })
     logseq.Editor.registerSlashCommand('Agenda: Modify Schedule', editSchedule)
     logseq.Editor.registerSlashCommand("Agenda: Insert Today's Task", (e) => {
@@ -390,4 +382,16 @@ function renderPomodoroApp(uuid: string) {
     </React.StrictMode>,
     document.getElementById('pomodoro-root')
   )
+}
+
+export function startPomodoro (uuid: string) {
+  if (window?.currentPomodoro?.uuid !== uuid && window?.currentPomodoro?.state?.paused === false) return logseq.UI.showMsg('Another block is running pomodoro timer, please finish it first', 'error')
+  logseq.App.registerUIItem('toolbar', {
+    key: 'logseq-plugin-agenda-pomodoro',
+    template: genToolbarPomodoro(uuid, '--:--', 0),
+  })
+  setTimeout(() => {
+    renderPomodoroApp(uuid)
+    logseq.showMainUI()
+  }, 0)
 }

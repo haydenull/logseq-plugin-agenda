@@ -11,6 +11,7 @@ import { IPomodoroInfo } from '@/helper/pomodoro'
 import { copyToClipboard, extractDays } from '@/util/util'
 import MixLineBar from './components/MixLineBar'
 import TreeMap from './components/TreeMap'
+import { navToBlock, navToPage } from '@/util/logseq'
 
 
 const filterEvents = (rawEvents: IEvent[], filter: IReviewSearchForm) => {
@@ -117,7 +118,7 @@ const index = () => {
         <h1 className="title-text">Review</h1>
         <div className="bg-quaternary flex-1 rounded-2xl box-border p-6 overflow-auto">
           <SearchForm onSearch={onSearch} initialValues={filter} />
-          <Table
+          <Table<IEvent>
             dataSource={events}
             title={() => (
               <div className="flex justify-end">
@@ -136,13 +137,14 @@ const index = () => {
               {
                 title: 'Title',
                 dataIndex: ['addOns', 'showTitle'],
-                width: '240px',
                 ellipsis: true,
+                render: (title, record) => <a onClick={() => navToBlock(record)}>{title}</a>,
               },
               {
                 title: 'Project',
-                dataIndex: ['page', 'original-name'],
-                render: (value, record) => record.addOns.isJournal ? 'Journal' : value,
+                dataIndex: ['addOns', 'project'],
+                ellipsis: true,
+                render: (title, record) => <a onClick={() => navToPage(record)}>{title}</a>,
               },
               {
                 title: 'Date',

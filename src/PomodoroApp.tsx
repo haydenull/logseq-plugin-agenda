@@ -1,22 +1,28 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { PomodoroConfig, usePomodoro } from '@haydenull/use-pomodoro'
 import { RiExternalLinkLine } from 'react-icons/ri'
-import { FaPowerOff, FaHeartBroken } from 'react-icons/fa'
+import { MdOutlineRunningWithErrors } from 'react-icons/md'
+import { AiOutlinePoweroff, AiOutlineQuestionCircle } from 'react-icons/ai'
 import { transformBlockToEvent } from './helper/transform'
 import { getInitalSettings } from './util/baseInfo'
 import { IEvent } from './util/events'
 import { genToolbarPomodoro, secondsToTime, updatePomodoroInfo } from '@/helper/pomodoro'
-import { getPageData } from './util/logseq'
+import { getPageData, navToBlock } from './util/logseq'
 import dayjs from 'dayjs'
 import { notification } from './util/util'
 import InerruptionModal from './components/InerruptionModal'
+import useTheme from './hooks/useTheme'
+import { ConfigProvider, Tooltip } from 'antd'
+import { ANTD_THEME_CONFIG } from './util/constants'
 
-const OperationButton = ({ label, onClick, classNames = '' }: {label: string, onClick: () => void, classNames?: string}) => (
+const OperationButton = ({ label, onClick, classNames = '', tooltip }: {label: string; onClick: () => void; classNames?: string; tooltip?: string}) => (
   <button
     onClick={onClick}
     className={`border-transparent font-medium shadow-sm px-3 py-2 text-sm leading-4 rounded-md bg-red-600 hover:bg-red-500 text-white uppercase cursor-pointer ${classNames}`}
   >
-    {label}
+    <Tooltip title={tooltip}>
+      <div className="flex items-center">{label}{tooltip ? <AiOutlineQuestionCircle className="ml-1" /> : ''}</div>
+    </Tooltip>
   </button>
 )
 const SetTimeButton = ({ label, onClick, classNames = '' }: {label: string, onClick: () => void, classNames?: string}) => (
@@ -32,11 +38,8 @@ export type IPomodoroAppProps = {
   uuid: string
 }
 const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
-  // const [time, setTime] = useState(duration)
+  const theme = useTheme() || 'green'
 
-  // const start = () => {
-  //   logseq.Editor.updateBlock(uuid, `test {{renderer agenda, pomodoro-timer, 40, 'timing', 0}}`)
-  // }
   const pomodoroConfig: PomodoroConfig = useMemo(() => {
     const { pomodoro: pomodoroConfig } = getInitalSettings()
     return {
@@ -53,6 +56,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   const { state, start, stop, reset, goPomodoro, goShortBreak, goLongBreak, changeConfig } = usePomodoro(pomodoroConfig)
   const { pomodoro } = getInitalSettings()
   const [event, setEvent] = useState<IEvent>()
+  const [position, setPosition] = useState({ right: '40px', top: '48px' })
   const isWorking = state.type === 'pomodoro'
   const startTimeRef = useRef<number>()
   const [showInterruptionModal, setShowInterruptionModal] = useState(false)
@@ -62,16 +66,6 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
       ...state.config,
       pomodoro: time * 60,
     })
-  }
-  const navToBlock = async () => {
-    if (!event) return
-    const { id: pageId, originalName } = event?.page || {}
-    let pageName = originalName
-    if (!pageName) {
-      const page = await getPageData({ id: pageId })
-      pageName = page?.originalName
-    }
-    logseq.Editor.scrollToBlockInPage(pageName, event.uuid)
   }
   const startPomodoro = () => {
     start()
@@ -99,8 +93,8 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
       return progress === 0
         ? <OperationButton label="start" onClick={startPomodoro} />
         : [
-          <OperationButton key="stop" label="stop" onClick={reset} />,
-          <OperationButton key="finish" label="finish" onClick={finishPomodoro} classNames="ml-2" />,
+          <OperationButton key="stop" label="stop" onClick={reset} tooltip="Give up this pomodoro and do not record the time" />,
+          <OperationButton key="finish" label="finish" onClick={finishPomodoro} classNames="ml-2" tooltip="Complete this pomodoro and record the time" />,
         ]
     } else {
       return progress === 0
@@ -140,14 +134,24 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
     }
   }, [isWorking, state.progress, uuid])
 
+  useEffect(() => {
+    if (logseq.isMainUIVisible) {
+      const rightSidebarElement = parent.document.getElementById('right-sidebar')
+      const width = rightSidebarElement?.getBoundingClientRect()?.width || 0
+      setPosition(_position => ({ ..._position, right: width + 40 + 'px' }))
+    }
+  }, [logseq.isMainUIVisible])
+
   return (
-    <>
+    <ConfigProvider
+      theme={ANTD_THEME_CONFIG[theme]}
+    >
       <div className="fixed top-0 left-0 w-screen h-screen" onClick={() => logseq.hideMainUI()}></div>
-      <div className="fixed right-10 shadow-md px-4 py-6 rounded-md bg-quaternary flex" style={{ top: '48px', minWidth: '300px' }}>
+      <div className="fixed right-10 shadow-xl px-4 py-6 rounded-md bg-quaternary flex transition-all" style={{ top: '48px', right: position.right, minWidth: '300px' }}>
         <div className="flex-1">
-          <div className="singlge-line-ellipsis cursor-pointer description-text flex items-center" style={{ maxWidth: '220px' }} onClick={navToBlock} title={event?.addOns.showTitle}>{event?.addOns.showTitle}<RiExternalLinkLine /></div>
+          <div className="singlge-line-ellipsis cursor-pointer description-text flex items-center" style={{ maxWidth: '220px' }} onClick={() => event && navToBlock(event)} title={event?.addOns.showTitle}>{event?.addOns.showTitle}<RiExternalLinkLine /></div>
           <div>
-            <p className="text-center text-4xl mt-6 mb-6">{ state.formattedTimer }</p>
+            <p className="text-center text-4xl mt-6 mb-6 title-text">{ state.formattedTimer }</p>
             <div className="flex flex-row justify-center">
               {renderButtons()}
             </div>
@@ -161,21 +165,25 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
           }
         </div>
 
-        <div className="absolute right-5 top-1 opacity-60">
-          <FaHeartBroken className="cursor-pointer" onClick={() => setShowInterruptionModal(true)} />
-          <FaPowerOff
-            className="ml-2 cursor-pointer"
-            onClick={() => {
-              logseq.hideMainUI()
-              window?.unmountPomodoroApp()
-              window.currentPomodoro = {}
-              window.interruptionMap.delete(startTimeRef.current!)
-              logseq.App.registerUIItem('toolbar', {
-                key: 'logseq-plugin-agenda-pomodoro',
-                template: `<div class="agenda-toolbar-pompdoro hide"></div>`,
-              })
-            }}
-          />
+        <div className="absolute right-5 top-1 opacity-60 text">
+          <Tooltip title="Record interruption">
+            <MdOutlineRunningWithErrors className="cursor-pointer" onClick={() => setShowInterruptionModal(true)} />
+          </Tooltip>
+          <Tooltip title="Exit pomodoro">
+            <AiOutlinePoweroff
+              className="ml-2 cursor-pointer"
+              onClick={() => {
+                logseq.hideMainUI()
+                window?.unmountPomodoroApp()
+                window.currentPomodoro = {}
+                window.interruptionMap.delete(startTimeRef.current!)
+                logseq.App.registerUIItem('toolbar', {
+                  key: 'logseq-plugin-agenda-pomodoro',
+                  template: `<div class="agenda-toolbar-pompdoro hide"></div>`,
+                })
+              }}
+            />
+          </Tooltip>
         </div>
 
       </div>
@@ -185,7 +193,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
         visible={showInterruptionModal}
         onCancel={() => setShowInterruptionModal(false)}
       />
-    </>
+    </ConfigProvider>
   )
 }
 

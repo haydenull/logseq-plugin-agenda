@@ -1,9 +1,11 @@
 import { RiAddCircleLine } from 'react-icons/ri'
+import { GiTomato } from 'react-icons/gi'
 import dayjs from 'dayjs'
-import { getPageData, moveBlockToNewPage, moveBlockToSpecificBlock } from '@/util/logseq'
+import { getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, navToBlock } from '@/util/logseq'
 import { format } from 'date-fns'
 import { ISettingsForm } from '@/util/type'
 import { IEvent } from '@/util/events'
+import { startPomodoro } from '@/main'
 
 function getTime(task: IEvent, overdue = false) {
   const startStr = task?.addOns.start
@@ -40,16 +42,6 @@ const Task: React.FC<{
   const calendarConfig = task.addOns.calendarConfig
 
   const { start, end } = getTime(task, type === 'overdue')
-
-  const navToBlock = async () => {
-    const { id: pageId, originalName } = task?.page || {}
-    let pageName = originalName
-    if (!pageName) {
-      const page = await getPageData({ id: pageId })
-      pageName = page?.originalName
-    }
-    logseq.Editor.scrollToBlockInPage(pageName, task.uuid)
-  }
   const embedToToday: React.MouseEventHandler = async (e) => {
     e.stopPropagation()
     const scheduleId = task.uuid
@@ -67,9 +59,13 @@ const Task: React.FC<{
     logseq.Editor.scrollToBlockInPage(todayPage, newBlock?.uuid!)
     logseq.UI.showMsg('Embed task to today success', 'success')
   }
+  const onClickStartPomodoro: React.MouseEventHandler = (e) => {
+    e.stopPropagation()
+    startPomodoro(task.uuid)
+  }
 
   return (
-    <div className="agenda-sidebar-task flex cursor-pointer" style={{ margin: '10px 0', opacity: isDone ? 0.4 : 0.9 }} onClick={navToBlock}>
+    <div className="agenda-sidebar-task flex cursor-pointer" style={{ opacity: isDone ? 0.4 : 0.9 }} onClick={() => navToBlock(task)}>
       <div
         className="flex flex-col justify-between text-right"
         style={{
@@ -95,6 +91,9 @@ const Task: React.FC<{
       {/* <div onClick={embedToToday} className="agenda-sidebar-task__add flex" style={{ alignItems: 'center', paddingLeft: '8px' }}>
         <RiAddCircleLine style={{ color: 'var(--ls-icon-color)', fontSize: '0.9em', opacity: '0.7', marginTop: '0.2em' }} />
       </div> */}
+      <div onClick={onClickStartPomodoro} className="agenda-sidebar-task__add flex" style={{ alignItems: 'center', paddingLeft: '8px' }}>
+        <GiTomato style={{ color: 'var(--ls-icon-color)', fontSize: '0.9em', opacity: '0.7', marginTop: '0.2em' }} />
+      </div>
     </div>
   )
 }

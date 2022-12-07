@@ -91,7 +91,7 @@ export const getDefaultCalendarOptions = async () => {
         return time.hour + ':00'
       },
       popupDetailBody: (schedule: ISchedule) => {
-        const calendar = `<b>Project: ${schedule.calendarId}</b>`
+        const calendar = `<b style="font-weight: 600;">Project: ${schedule.isReadOnly ? schedule.calendarId : `<a id="faiz-nav-detail-project" href="javascript:void(0);">${schedule.calendarId}</a>`}</b>`
         const navBtn = schedule.raw?.subscription ? '' : '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
         // ${schedule.body?.split('\n').join('<br/>')}
         // TODO: 如果是 org 则不转义

@@ -13,6 +13,7 @@ import { subscriptionSchedulesAtom } from '@/model/schedule'
 import { settingsAtom } from '@/model/settings'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+import { set, get, cloneDeep } from 'lodash'
 
 import Tabs from './components/Tabs'
 import s from './index.module.less'
@@ -21,6 +22,7 @@ import { managePluginTheme } from '@/util/util'
 import dayjs from 'dayjs'
 import { getTodoistInstance } from '@/helper/todoist'
 import { TodoistApi } from '@doist/todoist-api-typescript'
+import { autoTextColor } from '@/helper/autoTextColor'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
@@ -64,20 +66,45 @@ const Settings: React.FC<{
     onValuesChange({ calendarList }, settingForm.getFieldsValue(true))
   }
   const onValuesChange = (changedValues: Partial<ISettingsForm>, allValues: ISettingsForm) => {
+    let _allValues = cloneDeep(allValues);
+
+    // Automatically changes the color of text and border when the background color changes
+    ['logKey', 'journal'].forEach(key => {
+      const bgColor = get(changedValues, [key, 'bgColor'])
+      if (bgColor) {
+        const textColor = autoTextColor(bgColor)
+        settingForm.setFieldValue([key, 'textColor'], textColor)
+        settingForm.setFieldValue([key, 'borderColor'], bgColor)
+        set(_allValues, [key, 'textColor'], textColor)
+        set(_allValues, [key, 'borderColor'], bgColor)
+      }
+    });
+    ['projectList', 'calendarList', 'subscriptionList'].forEach(key => {
+      const index = get(changedValues, [key])?.findIndex(Boolean)
+      const bgColor = get(changedValues, [key, index, 'bgColor'])
+      if (bgColor) {
+        const textColor = autoTextColor(bgColor)
+        settingForm.setFieldValue([key, index, 'textColor'], textColor)
+        settingForm.setFieldValue([key, index, 'borderColor'], bgColor)
+        set(_allValues, [key, index, 'textColor'], textColor)
+        set(_allValues, [key, index, 'borderColor'], bgColor)
+      }
+    });
+
     if (changedValues.todoist?.token?.length === 40) {
       const todoist = getTodoistInstance(changedValues.todoist?.token)
       setTodoistOptions(todoist)
     }
-    setSettings(allValues)
+    setSettings(_allValues)
     // hack https://github.com/logseq/logseq/issues/4447
     logseq.updateSettings({calendarList: 1, subscriptionList: 1, projectList: 1})
     logseq.updateSettings({
       // ensure subscription list is array
       subscriptionList: [],
       projectList: [],
-      ...allValues,
+      ..._allValues,
       // supports delete ignore tag
-      ignoreTag: allValues.ignoreTag || null,
+      ignoreTag: _allValues.ignoreTag || null,
     })
 
     if (typeof changedValues.weekStartDay === 'number') {
