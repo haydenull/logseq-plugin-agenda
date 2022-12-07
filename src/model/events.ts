@@ -36,6 +36,12 @@ export const projectCalendarSchedulesAtom = atom((get) => {
     schedules: full.filter(({ calendarId }) => calendarId === project.id),
   }))
 })
+export const calendarSchedulesCalendarIdsAtom = atom<string[]>(get => {
+  const full = get(fullCalendarSchedulesAtom)
+  const calendarIdSet = new Set<string>()
+  full.forEach(({ calendarId }) => calendarIdSet.add(calendarId as string))
+  return Array.from(calendarIdSet)
+})
 
 
 // ========================= dashboard =========================

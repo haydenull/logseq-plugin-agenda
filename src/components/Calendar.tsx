@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { format, isSameDay, parse } from 'date-fns'
 import { getDefaultCalendarOptions, getInitalSettings, genDailyLogCalendarOptions } from '@/util/baseInfo'
-import { CALENDAR_VIEWS, SHOW_DATE_FORMAT } from '@/util/constants'
+import { CALENDAR_VIEWS, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from '@/util/constants'
 import { deleteProjectTaskTime, updateProjectTaskTime } from '@/util/schedule'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
 import Sidebar from '@/components/Sidebar'
@@ -12,6 +12,8 @@ import { Button, Modal, Segmented, Tooltip } from 'antd'
 import { LeftOutlined, RightOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { ICustomCalendar } from '@/util/type'
 import { IEvent } from '@/util/events'
+import { useAtom } from 'jotai'
+import { calendarSchedulesCalendarIdsAtom } from '@/model/events'
 
 // import { schedulesAtom } from '@/model/schedule'
 
@@ -22,6 +24,7 @@ const CalendarCom: React.FC<{
 }> = ({ schedules, isProjectCalendar = true, isDailyLogCalendar = false }) => {
   // const [schedules] = useAtom(schedulesAtom)
 
+  const [fullCalendarIds] = useAtom(calendarSchedulesCalendarIdsAtom)
   const { subscriptionList, logKey, projectList = [], journal } = getInitalSettings()
 
   const [showDate, setShowDate] = useState<string>()
@@ -76,10 +79,12 @@ const CalendarCom: React.FC<{
     changeShowDate()
   }
   const onShowCalendarChange = (showCalendarList: string[]) => {
-    const enabledCalendarIds = enabledCalendarList.concat(enabledSubscriptionList)?.map(calendar => calendar.id)
+    const subscriptionIds = enabledSubscriptionList?.map(calendar => calendar.id)
+    const enabledCalendarIds = enabledCalendarList?.map(calendar => calendar.id).concat(subscriptionIds)
 
-    enabledCalendarIds.forEach(calendarId => {
-      if (showCalendarList.includes(calendarId)) {
+    fullCalendarIds.concat(subscriptionIds).forEach(calendarId => {
+      const judgeCalendarId = enabledCalendarIds.includes(calendarId) ? calendarId : 'Other Projects'
+      if (showCalendarList.includes(judgeCalendarId)) {
         calendarRef.current?.toggleSchedules(calendarId, false)
       } else {
         calendarRef.current?.toggleSchedules(calendarId, true)
@@ -269,7 +274,10 @@ const CalendarCom: React.FC<{
         <div className={`transition-all overflow-hidden bg-quaternary title-text mr-2 ${isFold ? 'w-0 mr-0' : 'w-40'}`}>
           <Sidebar
             onShowCalendarChange={onShowCalendarChange}
-            calendarList={enabledCalendarList}
+            calendarList={enabledCalendarList.concat({
+              ...(DEFAULT_SETTINGS.logKey as ICustomCalendar),
+              id: 'Other Projects',
+            })}
             subscriptionList={enabledSubscriptionList}
             />
         </div>

@@ -49,7 +49,8 @@ const Sidebar: React.FC<{
                 <Checkbox
                   className="mb-1 cursor-pointer flex items-center"
                   key={calendar.id}
-                  color={calendar.bgColor}
+                  markColor={calendar.textColor}
+                  bgColor={calendar.bgColor}
                   checked={checkedCalendarList?.includes(calendar.id)}
                   onChange={(checked) => onCheck(calendar.id, checked)}
                 >
@@ -68,7 +69,8 @@ const Sidebar: React.FC<{
                   <Checkbox
                     className="mb-1 cursor-pointer flex items-center"
                     key={subscription.id}
-                    color={subscription.bgColor}
+                    cmarkColor={subscription.textColor}
+                    bgColor={subscription.bgColor}
                     checked={checkedCalendarList?.includes(subscription.id)}
                     onChange={(checked) => onCheck(subscription.id, checked)}
                   >
@@ -86,7 +88,8 @@ const Sidebar: React.FC<{
       <Divider className="my-2" />
       <div style={{ padding: '0 10px' }}>
         <Checkbox
-          color="#047857"
+          markColor="#fff"
+          bgColor="#047857"
           checked={checkedCalendarList?.length === calendarList.length + subscriptionList?.length}
           onChange={(checked) => onCheckAll(checked)}
         >
