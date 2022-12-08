@@ -139,6 +139,7 @@ export const genDefaultQuery = (pageName: string) => {
         `,
         scheduleStart: 'scheduled',
         dateFormatter: 'yyyyMMdd',
+        queryType: 'advanced',
       },
       // deadline tasks
       {
@@ -156,6 +157,7 @@ export const genDefaultQuery = (pageName: string) => {
         `,
         scheduleStart: 'deadline',
         dateFormatter: 'yyyyMMdd',
+        queryType: 'advanced',
       },
       // milestone
       {
@@ -171,6 +173,7 @@ export const genDefaultQuery = (pageName: string) => {
         scheduleStart: 'scheduled',
         dateFormatter: 'yyyyMMdd',
         isMilestone: true,
+        queryType: 'advanced',
       }
     ],
   }
