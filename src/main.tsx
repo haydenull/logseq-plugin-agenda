@@ -361,7 +361,7 @@ async function renderApp() {
 }
 
 // function renderModalApp({ type, initialValues }: { type: 'create' | 'update', initialValues?: IScheduleValue }) {
-function renderModalApp(params: IModalAppProps) {
+export function renderModalApp(params: IModalAppProps) {
   window.currentApp = 'modal'
   togglePomodoro(false)
   const {type, data} = params

@@ -2,6 +2,8 @@ lockfileVersion: 5.4
 
 specifiers:
   '@ant-design/icons': ^4.8.0
+  '@any-touch/core': ^2.2.0
+  '@any-touch/pan': ^2.2.0
   '@doist/todoist-api-typescript': ^2.1.2
   '@haydenull/use-pomodoro': ^1.1.4
   '@logseq/libs': ^0.0.14
@@ -54,6 +56,8 @@ specifiers:
 
 dependencies:
   '@ant-design/icons': 4.8.0_biqbaboplfbrettd7655fr4n2y
+  '@any-touch/core': 2.2.0
+  '@any-touch/pan': 2.2.0
   '@doist/todoist-api-typescript': 2.1.2
   '@haydenull/use-pomodoro': 1.1.4_react@18.2.0
   '@logseq/libs': 0.0.14
@@ -174,6 +178,38 @@ packages:
       lodash: 4.17.21
       react: 18.2.0
       resize-observer-polyfill: 1.5.1
+    dev: false
+
+  /@any-touch/compute/2.2.0:
+    resolution: {integrity: sha512-hrw74b/cVT8SmiKFLValmllajw+bBvTa5iUwIXFVVIJM9T3tO15zZC2QbjVz8Uwi6XjH932RDUILGMs2TNvyQg==}
+    dependencies:
+      '@any-touch/shared': 2.2.0
+      '@any-touch/vector': 2.2.0
+      tslib: 2.4.1
+    dev: false
+
+  /@any-touch/core/2.2.0:
+    resolution: {integrity: sha512-xMHAA5aLCatFto+4fQWyE4YAsyN/LsXS4mnYuVpqFYoNz8dl5FsB/TIyb9JrqMKLYMxxcZ9joqR8gDprH1lwBw==}
+    dependencies:
+      '@any-touch/shared': 2.2.0
+      any-event: 2.2.0
+    dev: false
+
+  /@any-touch/pan/2.2.0:
+    resolution: {integrity: sha512-uMkCHbTm5qWji/FvhumP9n1ZCkPU7hy864g+ZhoWZ0OWAmn7s/TKRo4UqPBfqEPUMV6obGZvatrrgBLWT6J57w==}
+    dependencies:
+      '@any-touch/compute': 2.2.0
+      '@any-touch/shared': 2.2.0
+    dev: false
+
+  /@any-touch/shared/2.2.0:
+    resolution: {integrity: sha512-2n1zWaATi/3osr/dkIUq5O7aSffKUsTM4DsIbPMW1VEO77v/rX2HkLoxt2Djzj5eCGh7An55Vw8NeA33kTTSRA==}
+    dev: false
+
+  /@any-touch/vector/2.2.0:
+    resolution: {integrity: sha512-t7pGYegIDCJl+swwsohZHZKmF71ZMt+hjwVEyhaEP6nQhcx6S7zulxnRxNp1t8s+c/JdK02Q89HnzQ4Ukg4+IA==}
+    dependencies:
+      '@any-touch/shared': 2.2.0
     dev: false
 
   /@babel/code-frame/7.18.6:
@@ -1805,6 +1841,12 @@ packages:
       react-dom: 18.2.0_react@18.2.0
       scroll-into-view-if-needed: 2.2.29
       shallowequal: 1.1.0
+    dev: false
+
+  /any-event/2.2.0:
+    resolution: {integrity: sha512-PB4sEiVUjL+5mLmwlAGYdI5/1ouckapxS6+RPIvrGXv9XTMav7M3k3rR/f9fwAR+e2608CTR3FOR5HrOEYTtKA==}
+    dependencies:
+      tslib: 2.4.1
     dev: false
 
   /anymatch/3.1.2:

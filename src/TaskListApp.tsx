@@ -6,6 +6,7 @@ import SidebarTask from './components/SidebarTask'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'
 import { getInternalEvents } from './util/events'
 import SidebarSubscription from './components/SidebarSubscription'
+import { renderModalApp } from './main'
 
 const App: React.FC<{
   containerId: string
@@ -43,6 +44,10 @@ const App: React.FC<{
 
   return (
     <main>
+      <button onClick={() => {
+        renderModalApp({ type: 'addDailyLog' })
+        logseq.showMainUI()
+      }}>Add Daily Log</button>
       {
         overdueTasks?.length === 0 && allDayTasks?.length === 0 && timeTasks?.length === 0 && (
           <div>Agenda: No Task Today</div>

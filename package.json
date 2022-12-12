@@ -19,6 +19,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.8.0",
+    "@any-touch/core": "^2.2.0",
+    "@any-touch/pan": "^2.2.0",
     "@doist/todoist-api-typescript": "^2.1.2",
     "@haydenull/use-pomodoro": "^1.1.4",
     "@logseq/libs": "^0.0.14",

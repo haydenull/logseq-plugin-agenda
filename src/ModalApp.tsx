@@ -9,6 +9,7 @@ import PomodoroModal from './components/PomodoroModal'
 import { ConfigProvider } from 'antd'
 import { ANTD_THEME_CONFIG } from './util/constants'
 import useTheme from './hooks/useTheme'
+import AddDailyLogModal from './components/AddDailyLogModal'
 
 type IEditSchedule = {
   type: 'editSchedule'
@@ -28,7 +29,11 @@ type IPomodoroModal = {
   type: 'pomodoro'
   data: IEvent
 }
-export type IModalAppProps = IEditSchedule | IInsertTodaySchedule | IPomodoroModal
+type IAddDailyLogModal = {
+  type: 'addDailyLog'
+  data?: any
+}
+export type IModalAppProps = IEditSchedule | IInsertTodaySchedule | IPomodoroModal | IAddDailyLogModal
 const ModalApp: React.FC<IModalAppProps> = (props) => {
   const theme = useTheme() || 'green'
 
@@ -87,6 +92,14 @@ const ModalApp: React.FC<IModalAppProps> = (props) => {
               visible
               data={props.data}
               onOk={onSave}
+              onCancel={onCancel}
+            />
+          )
+        }
+        {
+          type === 'addDailyLog' && (
+            <AddDailyLogModal
+              visible
               onCancel={onCancel}
             />
           )
