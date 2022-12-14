@@ -1,13 +1,32 @@
-.container {
-  position: relative;
-  width: 100%;
-  height: 30px;
-  background-color: bisque;
-}
-.indicator {
-  position: absolute;
-  box-sizing: border-box;
-  height: 100%;
-  border: red;
-  background: rgba(0, 0, 0, .5);
+.rulerContainer {
+  width: 120px;
+  .mark {
+    div {
+      border-bottom: 1px solid var(--ls-description-text-color);
+      @apply relative;
+      span {
+        @apply absolute;
+        bottom: -8px;
+        left: -38px;
+      }
+    }
+    div:first-child {
+      border-color: transparent;
+    }
+    div:last-child {
+      border-color: transparent;
+    }
+  }
+  .indicator {
+    border: 3px solid var(--ls-tertiary-background-color);
+    background-color: var(--ls-secondary-background-color);
+    color: var(--ls-tertiary-background-color);
+    // span {
+    //   @apply absolute;
+    //   right: -36px;
+    // }
+    // span:last-child {
+    //   bottom: 0;
+    // }
+  }
 }

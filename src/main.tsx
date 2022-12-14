@@ -47,8 +47,9 @@ echarts.use([GridComponent, LineChart, BarChart, GaugeChart, TreemapChart, Canva
 const isDevelopment = import.meta.env.DEV
 
 if (isDevelopment) {
-  renderApp()
+  // renderApp()
   // renderPomodoroApp('sdfasfasfsa')
+  renderModalApp({ type: 'addDailyLog' })
 } else {
   log('=== logseq-plugin-agenda loaded ===')
   logseq.ready(() => {
