@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import classNames from 'classnames'
+import React, { useEffect, useRef, useState } from 'react'
 import { SketchPicker } from 'react-color'
 
+const safeHeight = 350
 const presetColors = [
   '#ad1357', '#d81b60', '#d50001', '#e67c73',
   '#f4511e', '#ef6c00', '#f09300', '#f6bf25',
@@ -16,7 +18,9 @@ const ColorPicker: React.FC<{
   value?: string
   onChange?: (color: string) => void
 }> = ({ value, onChange, text }) => {
+  const containerRef = useRef<HTMLDivElement>(null)
   const [pickerVisible, setPickerVisible] = useState(false)
+  const [position, setPosition] = useState<'top' | 'bottom'>('top')
 
   const onChangeColor = (color: any) => {
     const rgba = color.rgb
@@ -24,16 +28,27 @@ const ColorPicker: React.FC<{
     onChange?.(_color)
   }
 
+  useEffect(() => {
+    if (pickerVisible && containerRef) {
+      const rect = containerRef.current?.getBoundingClientRect()
+      if ((rect?.top || 0) < safeHeight) {
+        setPosition('bottom')
+      } else {
+        setPosition('top')
+      }
+    }
+  }, [pickerVisible])
+
   return (
-    <div>
+    <div ref={containerRef}>
       <div className="flex items-center cursor-pointer" onClick={() => setPickerVisible(true)}>
         {text + ': '}
         <span style={{ backgroundColor: value, boxShadow: 'inset 0px 0px 1px var(--ls-title-text-color)' }} className="rounded w-4 h-4 ml-1"></span>
       </div>
       {pickerVisible && (
         <>
-          <div className="bg-transparent fixed top-0 left-0 w-screen h-screen" onClick={() => setPickerVisible(false)}></div>
-          <div className="fixed z-10 mt-2">
+          <div className="bg-transparent fixed top-0 left-0 w-screen h-screen" style={{ zIndex: 9 }} onClick={() => setPickerVisible(false)}></div>
+          <div className={classNames('fixed z-10 mt-2')} style={{ transform: position === 'top' ? 'translateY(-380px)' : 'translateY(0)' }}>
             <SketchPicker color={value} onChange={onChangeColor} disableAlpha presetColors={presetColors} />
           </div>
         </>
