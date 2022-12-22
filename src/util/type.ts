@@ -5,6 +5,7 @@ export type ICustomCalendar = {
   borderColor: string
   enabled: boolean
 }
+export type ILogTag = Omit<ICustomCalendar, 'enabled'>
 export type ISettingsFormQuery = Partial<{
   script: string
   scheduleStart: string
@@ -28,6 +29,7 @@ export type ISettingsForm = {
     value: number
   },
   logKey?: ICustomCalendar
+  dailyLogTagList?: ILogTag[]
   journal: ICustomCalendar & { query: ISettingsFormQuery[] }
   projectList?: ICustomCalendar[]
   calendarList: Array<ICustomCalendar & { query: ISettingsFormQuery[] }>

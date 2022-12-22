@@ -26,12 +26,13 @@ import { autoTextColor } from '@/helper/autoTextColor'
 
 const TABS = [
   { value: 'basis', label: 'Basis' },
+  { value: 'calendarView', label: 'Calendar View' },
   { value: 'projects', label: 'Project' },
   { value: 'customCalendar', label: 'Custom Calendar' },
   { value: 'subscription', label: 'Subscription' },
-  { value: 'calendarView', label: 'Calendar View' },
   { value: 'pomodoro', label: 'Pomodoro' },
   { value: 'todoist', label: 'Todoist' },
+  { value: 'dailyLog', label: 'Daily Log' },
 ]
 
 
@@ -79,7 +80,7 @@ const Settings: React.FC<{
         set(_allValues, [key, 'borderColor'], bgColor)
       }
     });
-    ['projectList', 'calendarList', 'subscriptionList'].forEach(key => {
+    ['projectList', 'calendarList', 'subscriptionList', 'dailyLogTagList'].forEach(key => {
       const index = get(changedValues, [key])?.findIndex(Boolean)
       const bgColor = get(changedValues, [key, index, 'bgColor'])
       if (bgColor) {
@@ -207,35 +208,34 @@ const Settings: React.FC<{
                 }
               />
             </Form.Item>
-            <Form.Item label="Log Key" tooltip="Interstitial Journal">
-              <div className="flex items-center justify-between">
-                <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
-                  <Select
-                    style={{ width: '240px' }}
-                    options={pageOptions}
-                    showSearch
-                    optionFilterProp="label"
-                    filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
-                  />
+          </div>
+          <div id="calendar" className={classNames(s.formBlock, { [s.show]: tab === 'calendarView' })}>
+            <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
+              <Select options={CALENDAR_VIEWS} />
+            </Form.Item>
+            <Form.Item label="Week Start Day" name="weekStartDay" rules={[{ required: true }]}>
+              <Select>
+                <Select.Option value={0}>Sunday</Select.Option>
+                <Select.Option value={1}>Monday</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Time Grid">
+              <div className="flex items-center">
+                <Form.Item noStyle name="weekHourStart">
+                  <InputNumber min={0} max={24} />
                 </Form.Item>
-                <Form.Item name={['logKey', 'bgColor']} noStyle rules={[{ required: true }]}>
-                  <ColorPicker text="background" />
-                </Form.Item>
-                <Form.Item name={['logKey', 'textColor']} noStyle rules={[{ required: true }]}>
-                  <ColorPicker text="text" />
-                </Form.Item>
-                <Form.Item name={['logKey', 'borderColor']} noStyle rules={[{ required: true }]}>
-                  <ColorPicker text="border" />
-                </Form.Item>
-                <Form.Item name={['logKey', 'enabled']} noStyle valuePropName="checked">
-                  <Switch />
+                <span className="px-2">-</span>
+                <Form.Item noStyle name="weekHourEnd">
+                  <InputNumber min={0} max={24} />
                 </Form.Item>
               </div>
             </Form.Item>
-            <Form.Item label="Journal" required>
+          </div>
+          <div id="projects" className={classNames(s.formBlock, { [s.show]: tab === 'projects' })}>
+            <Form.Item required>
               <div className="flex items-center justify-between">
                 <Form.Item noStyle name={['journal', 'id']} rules={[{ required: true }]}>
-                  <Input style={{ width: '240px' }} disabled />
+                  <Input style={{ width: '300px' }} disabled />
                 </Form.Item>
                 <Form.Item name={['journal', 'bgColor']} noStyle rules={[{ required: true }]}>
                   <ColorPicker text="background" />
@@ -252,10 +252,9 @@ const Settings: React.FC<{
                 <Form.Item name={['journal', 'enabled']} noStyle valuePropName="checked">
                   <Switch />
                 </Form.Item>
+                <MinusCircleOutlined className="invisible" />
               </div>
             </Form.Item>
-          </div>
-          <div id="projects" className={classNames(s.formBlock, { [s.show]: tab === 'projects' })}>
             <Form.List name="projectList">
               {(fields, { add, remove, move }) => (<>
                 <DragDropContext onDragEnd={(e) => {
@@ -317,7 +316,7 @@ const Settings: React.FC<{
             </Form.List>
           </div>
           <div id="customCalendar" className={classNames(s.formBlock, { [s.show]: tab === 'customCalendar' })}>
-            <Alert message="Do not use this setting unless you need to write your own Query to get the calendar." type="warning" className="mb-6" />
+            <Alert message="Do not use this setting unless you need to write your own Query to get the calendar." type="warning" className="mb-6" showIcon />
             <Form.List name="calendarList">
               {(fields, { add, remove, move }) => (<>
                 <DragDropContext onDragEnd={(e) => {
@@ -378,13 +377,13 @@ const Settings: React.FC<{
             <Form.List name="subscriptionList">
               {(fields, { add, remove }) => (<>
                 {fields.map((field, index) => (
-                  <Form.Item label={index === 0 ? 'Subscription' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}>
+                  <Form.Item>
                     <div className="flex items-center justify-between">
                       <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
                         <Input placeholder="Calendar ID" style={{ width: '160px' }} />
                       </Form.Item>
                       <Form.Item name={[field.name, 'url']} noStyle rules={[{ required: true }]}>
-                        <Input placeholder="Url" style={{ width: '100px' }} />
+                        <Input placeholder="Url" style={{ width: '180px' }} />
                       </Form.Item>
                       <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
                         <ColorPicker text="background" />
@@ -402,7 +401,7 @@ const Settings: React.FC<{
                     </div>
                   </Form.Item>
                 ))}
-                <Form.Item wrapperCol={{ offset: 4 }}>
+                <Form.Item>
                   <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                     Add Subscription
                   </Button>
@@ -410,27 +409,67 @@ const Settings: React.FC<{
               </>)}
             </Form.List>
           </div>
-          <div id="calendar" className={classNames(s.formBlock, { [s.show]: tab === 'calendarView' })}>
-            <Form.Item label="Default View" name="defaultView" rules={[{ required: true }]}>
-              <Select options={CALENDAR_VIEWS} />
-            </Form.Item>
-            <Form.Item label="Week Start Day" name="weekStartDay" rules={[{ required: true }]}>
-              <Select>
-                <Select.Option value={0}>Sunday</Select.Option>
-                <Select.Option value={1}>Monday</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Time Grid">
-              <div className="flex items-center">
-                <Form.Item noStyle name="weekHourStart">
-                  <InputNumber min={0} max={24} />
+          <div id="dailyLog" className={classNames(s.formBlock, { [s.show]: tab === 'dailyLog' })}>
+            <Form.Item label="Log Key" tooltip="Interstitial Journal">
+              <div className="flex items-center justify-between">
+                <Form.Item noStyle name={['logKey', 'id']} rules={[{ required: true }]}>
+                  <Select
+                    style={{ width: '240px' }}
+                    options={pageOptions}
+                    showSearch
+                    optionFilterProp="label"
+                    filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+                  />
                 </Form.Item>
-                <span className="px-2">-</span>
-                <Form.Item noStyle name="weekHourEnd">
-                  <InputNumber min={0} max={24} />
+                <Form.Item name={['logKey', 'bgColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="background" />
+                </Form.Item>
+                <Form.Item name={['logKey', 'textColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="text" />
+                </Form.Item>
+                <Form.Item name={['logKey', 'borderColor']} noStyle rules={[{ required: true }]}>
+                  <ColorPicker text="border" />
+                </Form.Item>
+                <Form.Item name={['logKey', 'enabled']} noStyle valuePropName="checked">
+                  <Switch />
                 </Form.Item>
               </div>
             </Form.Item>
+            <Form.List name="dailyLogTagList">
+              {(fields, { add, remove }) => (<>
+                {fields.map((field, index) => (
+                  <Form.Item label={index === 0 ? 'Tag' : ''} {...(index === 0 ? {} : { wrapperCol: {offset: 4} })}>
+                    <div className="flex items-center justify-between">
+                      <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
+                        <Select
+                          style={{ width: '240px' }}
+                          options={pageOptions}
+                          showSearch
+                          optionFilterProp="label"
+                          placeholder="Tag name"
+                          filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+                        />
+                      </Form.Item>
+                      <Form.Item name={[field.name, 'bgColor']} noStyle rules={[{ required: true }]}>
+                        <ColorPicker text="background" />
+                      </Form.Item>
+                      <Form.Item name={[field.name, 'textColor']} noStyle rules={[{ required: true }]}>
+                        <ColorPicker text="text" />
+                      </Form.Item>
+                      <Form.Item name={[field.name, 'borderColor']} noStyle rules={[{ required: true }]}>
+                        <ColorPicker text="border" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(field.name)} />
+                    </div>
+                  </Form.Item>
+                ))}
+                <Form.Item wrapperCol={{ offset: 4 }}>
+                  <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                    Add Tag
+                  </Button>
+                </Form.Item>
+              </>)}
+            </Form.List>
           </div>
           <div id="pomodoro" className={classNames(s.formBlock, { [s.show]: tab === 'pomodoro' })}>
             <Form.Item label="Pomodoro Length" name={['pomodoro', 'pomodoro']} rules={[{ required: true }]} labelCol={{ span: 5 }}>
@@ -465,7 +504,7 @@ const Settings: React.FC<{
             }
           </div>
           <div id="todoist" className={classNames(s.formBlock, { [s.show]: tab === 'todoist' })}>
-          <Alert message="Restart logseq after modifying the configuration, and the synchronization icon will appear in toolbar." type="info" className="mb-6" />
+            <Alert message="Restart logseq after modifying the configuration, and the synchronization icon will appear in toolbar." type="info" className="mb-6" showIcon />
             <Form.Item
               label="API Token"
               name={['todoist', 'token']}

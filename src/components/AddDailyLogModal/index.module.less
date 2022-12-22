@@ -7,7 +7,7 @@
       span {
         @apply absolute;
         bottom: -8px;
-        left: -38px;
+        left: -42px;
       }
     }
     div:first-child {
@@ -28,5 +28,23 @@
     // span:last-child {
     //   bottom: 0;
     // }
+  }
+}
+
+.tagContainer {
+  max-width: 149px;
+  .tag {
+    @apply h-7 text-base px-2 py-1 mb-2 rounded-sm flex flex-row items-center justify-between cursor-pointer;
+    .tagMarker {
+      @apply hidden rounded-sm w-5 h-5 items-center justify-center text-sm ml-1;
+    }
+  }
+  .tagActive {
+    &.tag {
+      @apply pr-1;
+    }
+    .tagMarker {
+      @apply flex;
+    }
   }
 }

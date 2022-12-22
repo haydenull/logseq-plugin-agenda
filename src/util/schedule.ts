@@ -85,8 +85,8 @@ export const getDailyLogSchedules = async () => {
   //               }) || []
   const _logs = logs?.filter(block => {
     // Interstitial Journal requries filter task
-    if (block?.marker || !block?.page?.journalDay) return false
-    return TIME_REG.test(block?.content)
+    if (!block?.page?.journalDay) return false
+    return TIME_REG.test(block?.content.replace(new RegExp(`^${block.marker} `), ''))
   }) || []
   const _logSchedulePromises = _logs?.map(async block => {
     const date = block?.page?.journalDay
