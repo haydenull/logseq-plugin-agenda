@@ -11,9 +11,10 @@ import difference from 'lodash/difference'
 import findKey from 'lodash/findKey'
 import isBetween from 'dayjs/plugin/isBetween'
 import utc from 'dayjs/plugin/utc'
+import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import * as echarts from 'echarts/core'
 import { GridComponent, ToolboxComponent, TooltipComponent, LegendComponent} from 'echarts/components'
-import { LineChart, GaugeChart, BarChart, TreemapChart } from 'echarts/charts'
+import { LineChart, GaugeChart, BarChart, TreemapChart, PieChart } from 'echarts/charts'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import 'antd/dist/reset.css'
@@ -41,8 +42,9 @@ dayjs.extend(difference)
 dayjs.extend(isBetween)
 dayjs.extend(updateLocale)
 dayjs.extend(utc)
+dayjs.extend(quarterOfYear)
 
-echarts.use([GridComponent, LineChart, BarChart, GaugeChart, TreemapChart, CanvasRenderer, UniversalTransition, ToolboxComponent, TooltipComponent, LegendComponent])
+echarts.use([GridComponent, LineChart, BarChart, GaugeChart, TreemapChart, PieChart, CanvasRenderer, UniversalTransition, ToolboxComponent, TooltipComponent, LegendComponent])
 
 const isDevelopment = import.meta.env.DEV
 

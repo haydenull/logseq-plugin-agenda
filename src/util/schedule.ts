@@ -93,6 +93,7 @@ export const getDailyLogSchedules = async () => {
     const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
     const hasTime = _startTime || _endTime
     if (!hasTime) return undefined
+    block.category = hasTime ? 'time' : 'allday'
     return await genSchedule({
       blockData: block,
       category: hasTime ? 'time' : 'allday',
@@ -249,7 +250,7 @@ export async function genSchedule(params: {
   isAllDay?: boolean
   isReadOnly?: boolean
   defaultDuration?: ISettingsForm['defaultDuration']
-}) {
+}): Promise<ISchedule> {
 
   const { id, blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
   const uuid = typeof blockData?.uuid === 'string' ? blockData?.uuid : blockData?.uuid?.['$uuid$']
