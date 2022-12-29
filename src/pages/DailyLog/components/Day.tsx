@@ -9,18 +9,16 @@ import * as echarts from 'echarts/core'
 import type { ECharts } from 'echarts/lib/echarts'
 import { copyToClipboard } from '@/util/util'
 
-const today = dayjs()
-
-
 const Day: React.FC<{
   schedules: ISchedule[]
+  tagList?: Array<ILogTag & { pageId: number }>
   type?: 'date' | 'week' | 'month' | 'quarter' | 'year'
-}> = ({ schedules, type = 'date' }) => {
+}> = ({ schedules, tagList = [], type = 'date' }) => {
+  const today = dayjs()
   const pieChartRef = useRef<ECharts>()
   const pieChartElementRef = useRef<HTMLDivElement>(null)
   const barChartRef = useRef<ECharts>()
   const barChartElementRef = useRef<HTMLDivElement>(null)
-  const [tagList, setTagList] = useState<Array<ILogTag & { pageId: number }>>()
 
   const [date, setDate] = useState(today)
   const dateDiff = date.endOf(type).diff(date.startOf(type), 'day') + 1
@@ -75,6 +73,9 @@ const Day: React.FC<{
       title: {
         text: 'Time Length',
         left: 'center',
+      },
+      tooltip: {
+        trigger: 'item'
       },
       label: {
         alignTo: 'edge',
@@ -150,9 +151,8 @@ ${JSON.stringify(pieOption)}
 - \`\`\`echarts
 ${JSON.stringify(barOption)}
   \`\`\`
-${tagListWithTimeLength?.filter(item => item.timeLength)?.map(item => (`- [[${item.id}]] ${item.timeLength}min`))}`
+${tagListWithTimeLength?.filter(item => item.timeLength)?.map(item => (`- [[${item.id}]] ${item.timeLength}min`))?.join('\n')}`
 
-    console.log('[faiz:] === text', text)
     copyToClipboard(text)
     message.success('🥳 Copy to clipboard successfully!')
   }
@@ -165,6 +165,9 @@ ${tagListWithTimeLength?.filter(item => item.timeLength)?.map(item => (`- [[${it
         title: {
           text: 'Time Length',
           left: 'center',
+        },
+        tooltip: {
+          trigger: 'item'
         },
         label: {
           alignTo: 'edge',
@@ -265,19 +268,6 @@ ${tagListWithTimeLength?.filter(item => item.timeLength)?.map(item => (`- [[${it
       }
     }
   }, [tagListWithTimeLength, prevPeriodTagListWithTimeLength])
-
-
-  useEffect(() => {
-    async function getTagList() {
-      const { dailyLogTagList } = getInitalSettings()
-      const tagPromiseList = dailyLogTagList?.map(tag => getPageData({ originalName: tag.id }))
-      const tagPageList = await Promise.all(tagPromiseList || [])
-      setTagList(() => {
-        return dailyLogTagList?.map(tag => ({ ...tag, pageId: tagPageList.find(page => page.originalName === tag.id)?.id })) as unknown as Array<ILogTag & { pageId: number }>
-      })
-    }
-    getTagList()
-  }, [])
 
   return (
     <div className="w-full h-full overflow-auto pb-4">
