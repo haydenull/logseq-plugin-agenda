@@ -86,6 +86,9 @@ if (isDevelopment) {
         renderApp()
         logseq.showMainUI()
       },
+      hide() {
+        logseq.hideMainUI()
+      },
       showPomodoro(e) {
         const uuid = e.dataset.uuid
         if (!uuid) return logseq.UI.showMsg('uuid is required')
