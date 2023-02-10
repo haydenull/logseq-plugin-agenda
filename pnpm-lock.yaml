@@ -4,7 +4,7 @@ specifiers:
   '@ant-design/icons': ^4.8.0
   '@doist/todoist-api-typescript': ^2.1.2
   '@haydenull/use-pomodoro': ^1.1.4
-  '@logseq/libs': ^0.0.9
+  '@logseq/libs': ^0.0.14
   '@semantic-release/changelog': ^6.0.1
   '@semantic-release/exec': ^6.0.3
   '@semantic-release/git': ^10.0.1
@@ -53,7 +53,7 @@ dependencies:
   '@ant-design/icons': 4.8.0_biqbaboplfbrettd7655fr4n2y
   '@doist/todoist-api-typescript': 2.1.2
   '@haydenull/use-pomodoro': 1.1.4_react@18.2.0
-  '@logseq/libs': 0.0.9
+  '@logseq/libs': 0.0.14
   antd: 5.0.0_biqbaboplfbrettd7655fr4n2y
   axios: 0.26.1
   classnames: 2.3.2
@@ -613,8 +613,8 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
 
-  /@logseq/libs/0.0.9:
-    resolution: {integrity: sha512-cNqjZxJ2+JB/C+BjtQhUMQV2/223cqpx3+WnFS9RFDUUAhNq0jvT8pukqeYyDaPu7vV1lJRWtn76/8f/ThYuYg==}
+  /@logseq/libs/0.0.14:
+    resolution: {integrity: sha512-QcNeVxb4LIvV4Tid0ABZXV7fxYdZHynzLlukSk6Ydkuus+hBzLcjfK15nzybIRbiV7ANqSgTooDZkV/E4WP57Q==}
     dependencies:
       csstype: 3.1.0
       debug: 4.3.4
