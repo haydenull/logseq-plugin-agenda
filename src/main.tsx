@@ -182,7 +182,7 @@ if (isDevelopment) {
       key: 'logseq-plugin-agenda:show',
       label: 'Show Agenda',
       keybinding: {
-        binding: "ctrl+shift+a",
+        binding: "ctrl+shift+s",
       },
     }, data => {
       renderApp()
