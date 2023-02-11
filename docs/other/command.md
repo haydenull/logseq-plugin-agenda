@@ -20,3 +20,4 @@ Supports commands:
 ## Keyboard shortcuts
 
 - `Esc`: close plugin
+- `ctrl + shift + s`: open plugin
