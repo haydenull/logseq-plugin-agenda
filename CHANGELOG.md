@@ -1,3 +1,10 @@
+## [2.13.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.13.0...v2.13.1) (2023-02-11)
+
+
+### Bug Fixes
+
+* Use ctrl+shift+s to show agenda, fix conflict with logseq shortcut ([daa0400](https://github.com/haydenull/logseq-plugin-agenda/commit/daa0400139442b92b9bcc9f2366dd91ffaeb91ab))
+
 # [2.13.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.12.0...v2.13.0) (2022-12-07)
 
 
