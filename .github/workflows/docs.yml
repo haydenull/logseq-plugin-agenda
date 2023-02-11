@@ -21,27 +21,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           # 选择要使用的 node 版本
-          node-version: 16
+          node-version: 18
 
-      # 缓存 node_modules
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        id: yarn-cache
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
         with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          version: 7
+          run_install: false
 
-      # 如果缓存没有命中，安装依赖
       - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --frozen-lockfile
+        run: pnpm install
 
       # 运行构建脚本
       - name: Build VuePress site
-        run: yarn docs:build
+        run: pnpm docs:build
 
       # 查看 workflow 的文档来获取更多信息
       # @see https://github.com/crazy-max/ghaction-github-pages

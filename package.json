@@ -54,7 +54,9 @@
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "@vitejs/plugin-react": "^1.0.7",
-    "@vuepress/plugin-search": "^2.0.0-beta.36",
+    "@vuepress/client": "2.0.0-beta.60",
+    "@vuepress/plugin-search": "2.0.0-beta.60",
+    "@vuepress/theme-default": "2.0.0-beta.60",
     "autoprefixer": "^10.4.2",
     "c8": "^7.11.2",
     "jsdom": "^19.0.0",
@@ -65,7 +67,8 @@
     "vite": "^2.7.2",
     "vite-plugin-importer": "^0.2.5",
     "vitest": "^0.9.4",
-    "vuepress": "2.0.0-beta.53",
-    "vuepress-plugin-copy-code2": "^2.0.0-beta.27"
+    "vue": "^3.2.47",
+    "vuepress": "2.0.0-beta.60",
+    "vuepress-plugin-copy-code2": "2.0.0-beta.173"
   }
 }

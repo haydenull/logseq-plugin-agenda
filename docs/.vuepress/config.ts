@@ -1,10 +1,11 @@
-import { defineUserConfig } from '@vuepress/cli'
-import type { DefaultThemeOptions } from '@vuepress/theme-default'
-import { copyCode } from 'vuepress-plugin-copy-code2'
+import { defineUserConfig } from 'vuepress'
+import { copyCodePlugin } from 'vuepress-plugin-copy-code2'
+import { searchPlugin } from '@vuepress/plugin-search'
+import { defaultTheme } from '@vuepress/theme-default'
 
 import { sidebar } from './configs'
 
-export default defineUserConfig<DefaultThemeOptions>({
+export default defineUserConfig({
   head:[
     ['link', { rel: 'icon', href: './images/favicon.ico' }],
     ['script', {
@@ -36,7 +37,7 @@ export default defineUserConfig<DefaultThemeOptions>({
       description: 'logseq 日历插件'
     }
   },
-  themeConfig: {
+  theme: defaultTheme({
     logo: '/images/logo.png',
     repo: 'haydenull/logseq-plugin-agenda',
     docsDir: 'docs',
@@ -54,23 +55,20 @@ export default defineUserConfig<DefaultThemeOptions>({
     },
     // selectLanguageText: 'xxxx',
     // selectLanguageAriaLabel: 'yyyy',
-  },
+  }),
   plugins: [
-    [
-      '@vuepress/plugin-search',
-      {
-        locales: {
-          '/': {
-            placeholder: 'Search',
-          },
-          '/zh/': {
-            placeholder: '搜索',
-          },
+    searchPlugin({
+      locales: {
+        '/': {
+          placeholder: 'Search',
         },
-        // hotKeys: ['ctrl', 'k']
+        '/zh/': {
+          placeholder: '搜索',
+        },
       },
-    ],
-    copyCode({}),
+      hotKeys: ['ctrl' + 'k', 'meta' + 'k']
+    }),
+    copyCodePlugin({}),
   ],
   // configureWebpack: {
   //   resolve: {
