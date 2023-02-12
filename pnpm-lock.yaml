@@ -26,7 +26,7 @@ specifiers:
   c8: ^7.11.2
   classnames: ^2.3.1
   date-fns: ^2.28.0
-  dayjs: ^1.10.7
+  dayjs: ^1.11.7
   echarts: ^5.3.2
   framer-motion: ^6.3.3
   ical.js: ^1.5.0
@@ -61,11 +61,11 @@ dependencies:
   '@doist/todoist-api-typescript': 2.1.2
   '@haydenull/use-pomodoro': 1.1.4_react@18.2.0
   '@logseq/libs': 0.0.14
-  antd: 5.0.0_biqbaboplfbrettd7655fr4n2y
+  antd: 5.0.6_3pf3ktbrffvgnzxoo2eotyjcpi
   axios: 0.26.1
   classnames: 2.3.2
   date-fns: 2.29.3
-  dayjs: 1.11.6
+  dayjs: 1.11.7
   echarts: 5.4.0
   framer-motion: 6.5.1_biqbaboplfbrettd7655fr4n2y
   ical.js: 1.5.0
@@ -1845,7 +1845,7 @@ packages:
       antd-token-previewer: 1.1.0-22_3pf3ktbrffvgnzxoo2eotyjcpi
       classnames: 2.3.2
       copy-to-clipboard: 3.3.3
-      dayjs: 1.11.6
+      dayjs: 1.11.7
       lodash: 4.17.21
       rc-cascader: 3.7.0_biqbaboplfbrettd7655fr4n2y
       rc-checkbox: 2.3.2_biqbaboplfbrettd7655fr4n2y
@@ -1862,7 +1862,7 @@ packages:
       rc-motion: 2.6.2_biqbaboplfbrettd7655fr4n2y
       rc-notification: 5.0.0-alpha.9_biqbaboplfbrettd7655fr4n2y
       rc-pagination: 3.2.0_biqbaboplfbrettd7655fr4n2y
-      rc-picker: 3.1.2_jt55l4nsvnvec7ryjteeuu42gu
+      rc-picker: 3.1.2_42wj3zduwzb6phokkqsgy2rgci
       rc-progress: 3.4.1_biqbaboplfbrettd7655fr4n2y
       rc-rate: 2.9.2_biqbaboplfbrettd7655fr4n2y
       rc-resize-observer: 1.2.0_biqbaboplfbrettd7655fr4n2y
@@ -2452,13 +2452,8 @@ packages:
     engines: {node: '>=0.11'}
     dev: false
 
-  /dayjs/1.11.6:
-    resolution: {integrity: sha512-zZbY5giJAinCG+7AGaw0wIhNZ6J8AhWuSXKvuc1KAyMiRsvGQWqh4L+MomvhdAYjN+lqvVCMq1I41e3YHvXkyQ==}
-    dev: false
-
   /dayjs/1.11.7:
     resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
-    dev: true
 
   /debug/3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
@@ -4919,7 +4914,7 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /rc-picker/3.1.2_jt55l4nsvnvec7ryjteeuu42gu:
+  /rc-picker/3.1.2_42wj3zduwzb6phokkqsgy2rgci:
     resolution: {integrity: sha512-PHf4E91JANMBVjovqhRcZw0fDZYWlDW9APhMD8VxBSs2QeKbnf+vE5BdA3YmHq227woSptbkm9rfhR4dgSn4+g==}
     engines: {node: '>=8.x'}
     peerDependencies:
@@ -4939,7 +4934,7 @@ packages:
       '@babel/runtime': 7.20.1
       classnames: 2.3.2
       date-fns: 2.29.3
-      dayjs: 1.11.6
+      dayjs: 1.11.7
       rc-trigger: 5.3.3_biqbaboplfbrettd7655fr4n2y
       rc-util: 5.25.3_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
