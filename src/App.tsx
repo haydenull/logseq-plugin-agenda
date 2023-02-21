@@ -28,7 +28,7 @@ const App: React.FC<{
 
   const { homePage = DEFAULT_SETTINGS.homePage, logKey } = getInitalSettings()
   const homePageElement = MENUS.find(item => item.value === homePage)?.element
-  const menus = logKey?.enabled ? MENUS : MENUS.filter(item => item.value !== 'dailyLogCalendar')
+  const menus = logKey?.enabled ? MENUS : MENUS.filter(item => item.value !== 'dailyLog')
 
   useEffect(() => {
     async function fetchSchedules() {

@@ -1,0 +1,50 @@
+.rulerContainer {
+  width: 120px;
+  .mark {
+    div {
+      border-bottom: 1px solid var(--ls-description-text-color);
+      @apply relative;
+      span {
+        @apply absolute;
+        bottom: -8px;
+        left: -42px;
+      }
+    }
+    div:first-child {
+      border-color: transparent;
+    }
+    div:last-child {
+      border-color: transparent;
+    }
+  }
+  .indicator {
+    border: 3px solid var(--ls-tertiary-background-color);
+    background-color: var(--ls-secondary-background-color);
+    color: var(--ls-tertiary-background-color);
+    // span {
+    //   @apply absolute;
+    //   right: -36px;
+    // }
+    // span:last-child {
+    //   bottom: 0;
+    // }
+  }
+}
+
+.tagContainer {
+  max-width: 149px;
+  .tag {
+    @apply h-7 text-base px-2 py-1 mb-2 rounded-sm flex flex-row items-center justify-between cursor-pointer;
+    .tagMarker {
+      @apply hidden rounded-sm w-5 h-5 items-center justify-center text-sm ml-1;
+    }
+  }
+  .tagActive {
+    &.tag {
+      @apply pr-1;
+    }
+    .tagMarker {
+      @apply flex;
+    }
+  }
+}
