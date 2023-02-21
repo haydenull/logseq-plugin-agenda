@@ -1,3 +1,10 @@
+# [2.14.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.13.1...v2.14.0) (2023-02-21)
+
+
+### Features
+
+* enhance daily log ([#175](https://github.com/haydenull/logseq-plugin-agenda/issues/175)) ([982cfe5](https://github.com/haydenull/logseq-plugin-agenda/commit/982cfe5afbde7bce66b678e3116db4ab32401197))
+
 ## [2.13.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.13.0...v2.13.1) (2023-02-11)
 
 
