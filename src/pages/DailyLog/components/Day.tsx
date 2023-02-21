@@ -7,7 +7,7 @@ import { getBlockData, getPageData } from '@/util/logseq'
 import { ILogTag } from '@/util/type'
 import * as echarts from 'echarts/core'
 import type { ECharts } from 'echarts/lib/echarts'
-import { copyToClipboard } from '@/util/util'
+import { convertMinutesToHours, copyToClipboard } from '@/util/util'
 
 const Day: React.FC<{
   schedules: ISchedule[]
@@ -53,6 +53,7 @@ const Day: React.FC<{
     }
   })
   const totalTimeLength = tagListWithTimeLength?.reduce((prev, cur) => prev + cur.timeLength, 0)
+  const averageTime = (totalTimeLength || 0) / recordDays
   const prevPeriodTagListWithTimeLength = tagList?.map(tag => {
     const tagSchedules = prevPeriodvalidateSchedules.filter(schedule => (schedule.raw as any).refs?.find(ref => ref.id === tag.pageId))
     return {
@@ -145,14 +146,20 @@ const Day: React.FC<{
         },
       ],
     }
-    const text = `- \`\`\`echarts
-${JSON.stringify(pieOption)}
-  \`\`\`
-- \`\`\`echarts
-${JSON.stringify(barOption)}
-  \`\`\`
-${tagListWithTimeLength?.filter(item => item.timeLength)?.map(item => (`- [[${item.id}]] ${item.timeLength}min`))?.join('\n')}`
-
+//     const text = `- \`\`\`echarts
+// ${JSON.stringify(pieOption)}
+//   \`\`\`
+// - \`\`\`echarts
+// ${JSON.stringify(barOption)}
+//   \`\`\`
+// ${tagListWithTimeLength?.filter(item => item.timeLength)?.map(item => (`- [[${item.id}]] ${item.timeLength}min`))?.join('\n')}`
+    let text = `${tagListWithTimeLength?.filter(item => item.timeLength)?.map(item => (`- [[${item.id}]] ${convertMinutesToHours(item.timeLength)}`))?.join('\n')}`
+    if (type !== 'date') {
+      text = `- Average: ${convertMinutesToHours(averageTime)}
+- Record Days: ${recordDays}
+${text}`
+    }
+    text = `- Total: ${convertMinutesToHours(totalTimeLength)}\n${text}`
     copyToClipboard(text)
     message.success('🥳 Copy to clipboard successfully!')
   }
@@ -287,12 +294,12 @@ ${tagListWithTimeLength?.filter(item => item.timeLength)?.map(item => (`- [[${it
       <div ref={barChartElementRef} style={{ height: 300 }}></div>
 
       <Descriptions title="Record" bordered>
-        <Descriptions.Item label="Total" span={3}>{ totalTimeLength } min</Descriptions.Item>
-        { type !== 'date' && <Descriptions.Item label="Average" span={3}>{ Math.round((totalTimeLength || 0) / dateDiff) } min</Descriptions.Item> }
+        <Descriptions.Item label="Total" span={3}>{convertMinutesToHours(totalTimeLength)}</Descriptions.Item>
+        { type !== 'date' && <Descriptions.Item label="Average" span={3}>{convertMinutesToHours(averageTime)}</Descriptions.Item> }
         { type !== 'date' && <Descriptions.Item label="Record Days" span={3}>{ recordDays }</Descriptions.Item> }
         {
           tagListWithTimeLength?.map(item => (
-            item.timeLength ? <Descriptions.Item label={item.id}>{item.timeLength} min</Descriptions.Item> : null
+            item.timeLength ? <Descriptions.Item label={item.id}>{convertMinutesToHours(item.timeLength)}</Descriptions.Item> : null
           ))
         }
       </Descriptions>

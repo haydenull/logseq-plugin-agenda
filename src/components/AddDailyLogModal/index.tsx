@@ -26,10 +26,6 @@ import format from 'date-fns/format'
 //   },
 // ]
 
-/** 时间轴开始时刻 */
-const START_TIME = 0
-/** 时间轴展示的时间范围 */
-const TOTAL_HOURS_COUNT = 24
 /** 时间轴一个小时对应的高度 */
 const HOUR_HEIGHT = 50
 /** 时间轴单位刻度对应的时长 */
@@ -40,9 +36,9 @@ const SCALE_INTERVAL = HOUR_HEIGHT / (60 / SCALE_INTERVAL_TIME_LENGTH)
 const getNearestAvaliableScalePosition = (truelyPosition: number) => {
   return Math.round(truelyPosition / SCALE_INTERVAL) * SCALE_INTERVAL
 }
-const getTimeFromPosition = (position: number) => {
+const getTimeFromPosition = (position: number, rulerStartTime) => {
   const timeLength = (position / SCALE_INTERVAL) * SCALE_INTERVAL_TIME_LENGTH
-  const hour = Math.floor(timeLength / 60) + START_TIME
+  const hour = Math.floor(timeLength / 60) + rulerStartTime
   const minute = timeLength % 60
   return `${hour < 10 ? '0' + hour : hour}:${minute < 10 ? '0' + minute : minute}`
 }
@@ -52,25 +48,39 @@ const AddDailyLogModal: React.FC<{
   visible: boolean
   onCancel: () => void
 }> = ({ visible, onCancel }) => {
-  const { dailyLogTagList = [], logKey } = getInitalSettings()
+  const { dailyLogTagList = [], logKey, weekHourStart = 0, weekHourEnd = 24 } = getInitalSettings()
+
+  /** 时间轴开始时刻 */
+  const rulerStartTime = weekHourStart
+  /** 时间轴展示的时间范围 */
+  const totalHoursCount = weekHourEnd - weekHourStart
 
   const [panInfo, setPanInfo] = useState({ y: 0, distance: 0 })
   const [tag, setTag] = useState<string>()
   const [form] = Form.useForm()
 
-  const startTime = getTimeFromPosition(panInfo.y)
-  const endTime = getTimeFromPosition(panInfo.y + panInfo.distance)
+  const startTime = getTimeFromPosition(panInfo.y, rulerStartTime)
+  const endTime = getTimeFromPosition(panInfo.y + panInfo.distance, rulerStartTime)
 
   const onClickAdd = async () => {
     const { preferredDateFormat } = await logseq.App.getUserConfigs()
     const { date, content } = await form.getFieldsValue()
-    const text = `${startTime}-${endTime} ${content} #${tag}`
+    const text = `${startTime}-${endTime} ${content}${tag ? ' #' + tag : ''}`
 
     const journalName = format(date.valueOf(), preferredDateFormat)
     await createBlockToSpecificBlock(journalName, `[[${logKey?.id}]]`, text, {})
     onCancel()
   }
 
+  useEffect(() => {
+    logseq.Editor.getCurrentPage().then(page => {
+      console.log('[faiz:] === currentPage', page)
+      if (page?.['journal?']) {
+        const day = dayjs(`${page?.journalDay}`, 'YYYYMMDD')
+        form.setFieldsValue({ date: day })
+      }
+    })
+  }, [])
   useEffect(() => {
     const el = document.querySelector('#time-ruler')
     if (!el) return
@@ -110,7 +120,7 @@ const AddDailyLogModal: React.FC<{
       <div className="flex flex-col h-full">
         <Form labelCol={{ span: 5 }} form={form}>
           <Form.Item name="date" label="Date" initialValue={dayjs()}>
-            <DatePicker className="w-full" style={{ marginBottom: '12px' }} />
+            <DatePicker className="w-full" style={{ marginBottom: '12px' }} format="YYYY-MM-DD ddd" />
           </Form.Item>
           <Form.Item name="content" label="Content">
             <Input />
@@ -121,13 +131,14 @@ const AddDailyLogModal: React.FC<{
           <div
             id="time-ruler"
             className={classNames(s.rulerContainer, 'bg-primary relative rounded cursor-pointer select-none ml-11 description-text')}
-            style={{ minHeight: HOUR_HEIGHT * TOTAL_HOURS_COUNT + 'px' }}
+            style={{ minHeight: HOUR_HEIGHT * totalHoursCount + 'px' }}
           >
             <div className={classNames(s.mark, 'flex flex-col justify-between h-full')}>
               {
-                [...new Array(TOTAL_HOURS_COUNT + 1).keys()].map((_, index) => {
-                  const isHeadOrTail = index === 0 || index === TOTAL_HOURS_COUNT
-                  const showText = index < 10 ? '0' + index : index
+                [...new Array(totalHoursCount + 1).keys()].map((_, index) => {
+                  const isHeadOrTail = index === 0 || index === totalHoursCount
+                  const _showText = index + rulerStartTime
+                  const showText = _showText < 10 ? '0' + _showText : _showText
                   return <div key={index}><span>{isHeadOrTail ? '' : showText + ':00' }</span></div>
                 })
               }

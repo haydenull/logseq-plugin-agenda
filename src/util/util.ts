@@ -159,3 +159,10 @@ export const formatDayjsToRFC3339 = (day: Dayjs, fractionDigits: 0|1|2|3 = 0) =>
 export const genLinkText = (text: string, url: string, format: 'markdown' | 'org' = 'markdown') => {
   return format === 'org' ? `[${url}][${text}]]` : `[${text}](${url})`
 }
+
+// convert minutes to hours
+export const convertMinutesToHours = (minutes: number) => {
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+  return `${hours}h ${mins}m`
+}
