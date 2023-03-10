@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useAtom } from 'jotai'
 import { projectSchedulesAtom, todaySubscriptionSchedulesAtom } from '@/model/schedule'
 import { categorizeSubscriptions, categorizeTasks } from '@/util/schedule'
-import SidebarTask from './components/SidebarTask'
+import SidebarTask from '../components/SidebarTask'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'
-import { getInternalEvents } from './util/events'
-import SidebarSubscription from './components/SidebarSubscription'
-import { renderModalApp } from './main'
+import { getInternalEvents } from '../util/events'
+import SidebarSubscription from '../components/SidebarSubscription'
+import { renderModalApp } from '../main'
 
 const App: React.FC<{
   containerId: string
