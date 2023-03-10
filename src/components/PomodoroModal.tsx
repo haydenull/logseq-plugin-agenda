@@ -1,5 +1,5 @@
 import { IPomodoroInfo, updatePomodoroInfo } from '@/helper/pomodoro'
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 import { IEvent } from '@/util/events'
 import { Button, Descriptions, Modal, Table, Tag } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
@@ -17,7 +17,7 @@ const PomodoroModal: React.FC<{
   const [modifyPomodoro, setModifyPomodoro] = useState<{ visible: boolean, data?: IPomodoroInfo }>({ visible: false })
 
   const addNewPomodoro = () => {
-    const { pomodoro } = getInitalSettings()
+    const { pomodoro } = getInitialSettings()
     setPomodoroData([...pompdoroData, {
       start: dayjs().valueOf(),
       length: pomodoro.pomodoro * 60,

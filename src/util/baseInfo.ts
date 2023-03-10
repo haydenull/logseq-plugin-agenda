@@ -4,8 +4,8 @@ import { ISchedule } from 'tui-calendar'
 import { CALENDAR_THEME, DEFAULT_SETTINGS } from './constants'
 import { ISettingsForm } from './type'
 
-export const getInitalSettings = (params = { filterInvalideProject: true }): ISettingsForm => {
-  const { filterInvalideProject } = params
+export const getInitialSettings = (params = { filterInvalidedProject: true }): ISettingsForm => {
+  const { filterInvalidedProject } = params
   let logKey = DEFAULT_SETTINGS.logKey
   const settingLogKey = logseq.settings?.logKey
   if (settingLogKey) {
@@ -43,7 +43,7 @@ export const getInitalSettings = (params = { filterInvalideProject: true }): ISe
     ...logseq.settings,
     // calendarList,
     logKey,
-    projectList: filterInvalideProject ? projectList?.filter(project => Boolean(project.id)) : projectList,
+    projectList: filterInvalidedProject ? projectList?.filter(project => Boolean(project.id)) : projectList,
   }
 }
 
@@ -51,7 +51,7 @@ export const initializeSettings = () => {
   const settings = logseq.settings
   // settings未初始化时手动初始化
   if (!settings?.initialized) {
-    const _settings = getInitalSettings()
+    const _settings = getInitialSettings()
     logseq.updateSettings({ ..._settings, initialized: true })
   }
 }

@@ -4,7 +4,7 @@ import Sider from '@/components/Sider'
 import { MENUS } from '@/constants/elements'
 import { useAtom } from 'jotai'
 import { subscriptionSchedulesAtom } from '@/model/schedule'
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import { ANTD_THEME_CONFIG, DEFAULT_SETTINGS } from '@/util/constants'
 import ProjectDetail from '@/pages/ProjectDetail'
@@ -26,7 +26,7 @@ const App: React.FC<{
 
   const theme = useTheme() || 'green'
 
-  const { homePage = DEFAULT_SETTINGS.homePage, logKey } = getInitalSettings()
+  const { homePage = DEFAULT_SETTINGS.homePage, logKey } = getInitialSettings()
   const homePageElement = MENUS.find(item => item.value === homePage)?.element
   const menus = logKey?.enabled ? MENUS : MENUS.filter(item => item.value !== 'dailyLog')
 
@@ -40,7 +40,7 @@ const App: React.FC<{
         setProjectEvents(projectEventsMap)
       }
 
-      const { subscriptionList } = getInitalSettings()
+      const { subscriptionList } = getInitialSettings()
       setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
     }
     fetchSchedules()

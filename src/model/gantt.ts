@@ -1,5 +1,5 @@
 import type { IEvent as IGanttEvent, IGroup } from '@/packages/Gantt/type'
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 import { ICustomCalendar } from '@/util/type'
 import { atom } from 'jotai'
 import { categorizeTask } from '@/util/schedule'
@@ -8,7 +8,7 @@ import { transformEventToGanttEvent } from '@/helper/transform'
 import dayjs from 'dayjs'
 
 export const ganttDataAtom = atom<IGroup[] | null>((get) => {
-  const { projectList = [], journal } = getInitalSettings()
+  const { projectList = [], journal } = getInitialSettings()
   const enabledCalendarList: ICustomCalendar[] = [journal! as ICustomCalendar].concat(projectList)?.filter(calendar => calendar?.enabled)
   const ganttData: IGroup[] = enabledCalendarList.map(calendar => {
     const calendarId = calendar.id

@@ -18,7 +18,7 @@ import { LineChart, GaugeChart, BarChart, TreemapChart, PieChart } from 'echarts
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import 'antd/dist/reset.css'
-import { getInitalSettings, initializeSettings } from './util/baseInfo'
+import { getInitialSettings, initializeSettings } from './util/baseInfo'
 import App from './App'
 import 'tui-calendar/dist/tui-calendar.css'
 import './style/index.less'
@@ -33,6 +33,7 @@ import PomodoroApp from './PomodoroApp'
 import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock, PRIORITY_MAP, transformEventToTodoistEvent } from './helper/todoist'
 import { AddTaskArgs, TodoistRequestError, UpdateTaskArgs } from '@doist/todoist-api-typescript'
 import { DEFAULT_PROJECT } from './util/constants'
+import initializeDayjs from './register/dayjs'
 
 dayjs.extend(weekday)
 dayjs.extend(isSameOrBefore)
@@ -58,11 +59,12 @@ if (isDevelopment) {
 
     initializeSettings()
 
-    const { weekStartDay, todoist } = getInitalSettings()
+    const { weekStartDay, todoist } = getInitialSettings()
 
-    dayjs.updateLocale('en', {
-      weekStart: weekStartDay,
-    })
+    // dayjs.updateLocale('en', {
+    //   weekStart: weekStartDay,
+    // })
+    initializeDayjs(weekStartDay)
 
     managePluginTheme()
 
@@ -117,10 +119,10 @@ if (isDevelopment) {
       getTodoistInstance()
 
       logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
-        // console.log('[faiz:] === mian DB.onChanged', blocks, txData, txMeta)
+        // console.log('[faiz:] === main DB.onChanged', blocks, txData, txMeta)
         const syncToTodoist = async (uuid: string) => {
           const block = await logseq.Editor.getBlock(uuid)
-          const event = await transformBlockToEvent(block!, getInitalSettings())
+          const event = await transformBlockToEvent(block!, getInitialSettings())
 
           const todoistId = transformEventToTodoistEvent(event)?.todoistId
           try {
@@ -148,7 +150,7 @@ if (isDevelopment) {
 
       // @ts-ignore The requirement to return a void can be ignored
       logseq.Editor.registerBlockContextMenuItem('Agenda: Upload to todoist', async ({ uuid }) => {
-        const settings = getInitalSettings()
+        const settings = getInitialSettings()
         const { todoist } = settings
         const block = await logseq.Editor.getBlock(uuid)
         if (!block?.marker) return logseq.UI.showMsg('This block is not a task', 'error')
@@ -199,7 +201,7 @@ if (isDevelopment) {
       let block = await logseq.Editor.getBlock(e.uuid)
       const blockRefs = await Promise.all(block!.refs?.map(ref => logseq.Editor.getPage(ref.id)))
       block!.refs = blockRefs
-      const event = await transformBlockToEvent(block!, getInitalSettings())
+      const event = await transformBlockToEvent(block!, getInitialSettings())
       renderModalApp({
         type: 'editSchedule',
         data: {
@@ -257,8 +259,8 @@ if (isDevelopment) {
     logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments: args, uuid } }) => {
       if (args?.[0] !== 'agenda') return
       if (args?.[1] === 'task-list') {
-        const renderered = parent.document.getElementById(slot)?.childElementCount
-        if (renderered) return
+        const rendered = parent.document.getElementById(slot)?.childElementCount
+        if (rendered) return
 
         const id = `agenda-task-list-${slot}`
         logseq.provideUI({
@@ -315,7 +317,7 @@ if (isDevelopment) {
           if (!uuid) return
           const block = await logseq.Editor.getBlock(uuid)
           const page = await logseq.Editor.getPage(block!.page?.id)
-          const event = await transformBlockToEvent(block!, getInitalSettings())
+          const event = await transformBlockToEvent(block!, getInitialSettings())
           if (modalType === 'agenda') {
             renderModalApp({
               type: 'editSchedule',
@@ -353,7 +355,7 @@ async function renderApp() {
   toggleAppTransparent(false)
   let defaultRoute = ''
   const page = await logseq.Editor.getCurrentPage()
-  const { projectList = [] } = getInitalSettings()
+  const { projectList = [] } = getInitialSettings()
   if (projectList.some(project => Boolean(project.id) && project.id === page?.originalName)) defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
   ReactDOM.render(
     <React.StrictMode>

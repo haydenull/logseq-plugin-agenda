@@ -7,7 +7,7 @@ import s from './index.module.less'
 import TagSelector from './TagSelector'
 import dayjs from 'dayjs'
 import type { Dayjs } from 'dayjs'
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 import { createBlockToSpecificBlock } from '@/util/logseq'
 import format from 'date-fns/format'
 
@@ -48,7 +48,7 @@ const AddDailyLogModal: React.FC<{
   visible: boolean
   onCancel: () => void
 }> = ({ visible, onCancel }) => {
-  const { dailyLogTagList = [], logKey, weekHourStart = 0, weekHourEnd = 24 } = getInitalSettings()
+  const { dailyLogTagList = [], logKey, weekHourStart = 0, weekHourEnd = 24 } = getInitialSettings()
 
   /** 时间轴开始时刻 */
   const rulerStartTime = weekHourStart

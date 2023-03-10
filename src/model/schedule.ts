@@ -2,7 +2,7 @@ import { atom } from 'jotai'
 import type { ISchedule } from 'tui-calendar'
 import { genScheduleWithCalendarMap } from '@/util/schedule'
 import dayjs from 'dayjs'
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 
 export const projectSchedulesAtom = atom<ISchedule[]>([]) // include overdue schedules
 export const subscriptionSchedulesAtom = atom<ISchedule[]>([])

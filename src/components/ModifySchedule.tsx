@@ -8,7 +8,7 @@ import { deleteProjectTaskTime, genProjectTaskTime, genSchedule, getAgendaCalend
 import { createBlockToSpecificBlock, getPageData, joinPrefixTaskBlockContent, moveBlockToNewPage, moveBlockToSpecificBlock, pureTaskBlockContent, updateBlock } from '@/util/logseq'
 import { format } from 'date-fns'
 import { MARKDOWN_POMODORO_REG, ORG_POMODORO_REG, SCHEDULE_PARENT_BLOCK } from '@/util/constants'
-import { getInitalSettings, initializeSettings } from '@/util/baseInfo'
+import { getInitialSettings, initializeSettings } from '@/util/baseInfo'
 import { IEvent } from '@/util/events'
 import { transformBlockToEvent, transformMilestoneEventToSchedule, transformTaskEventToSchedule } from '@/helper/transform'
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
@@ -34,7 +34,7 @@ const ModifySchedule: React.FC<{
   onCancel?: () => void
 }> = ({ visible, initialValues, onCancel, onSave, type='create', calendar, showKeepRef }) => {
   const [showTime, setShowTime] = useState(!initialValues?.isAllDay)
-  const { defaultDuration, projectList = [], journal } = getInitalSettings()
+  const { defaultDuration, projectList = [], journal } = getInitialSettings()
 
   const isInitialJournal = initialValues?.calendarId === 'Journal'
   const isInitialProject = projectList.some(({ id }) => id === initialValues?.calendarId)
@@ -57,7 +57,7 @@ const ModifySchedule: React.FC<{
       const { title, start, end, isAllDay, calendarId } = values
       const startTime = dayjs(start).format('HH:mm')
       const endTime = dayjs(end).format('HH:mm')
-      const settings = getInitalSettings()
+      const settings = getInitialSettings()
       const calendarConfig = projects.find(({ id }) => id === calendarId.value)
       let newScheduleType: 'journal' | 'project' = calendarConfig?.id === 'Journal' ? 'journal' : 'project'
       // console.log('[faiz:] === newScheduleType', newScheduleType)

@@ -2,7 +2,7 @@ import { transformBlockToEvent } from './../helper/transform';
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
 import type { BlockEntity, PageEntity } from '@logseq/libs/dist/LSPlugin'
 import dayjs from 'dayjs'
-import { getInitalSettings } from './baseInfo'
+import { getInitialSettings } from './baseInfo'
 import { pureTaskBlockContent } from './logseq'
 import { deleteProjectTaskTime, fillBlockReference, getAgendaCalendars, getProjectTaskTime, getTimeInfo, isOverdue, removeTimeInfo } from './schedule'
 import { ICustomCalendar } from './type'
@@ -140,7 +140,7 @@ export const getInternalEvents = async () => {
     [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE" "CANCELED"} ?marker)]]
   `)
   if (!tasks || tasks?.length === 0) return null
-  const settings = getInitalSettings()
+  const settings = getInitialSettings()
   tasks = tasks.flat()
   if (settings.ignoreTag) {
     tasks = tasks.filter(task => {

@@ -6,7 +6,7 @@ import { Tabs } from 'antd'
 import Day from './components/Day'
 import s from './index.module.less'
 import { ILogTag } from '@/util/type'
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 import { getPageData } from '@/util/logseq'
 
 const index = () => {
@@ -15,7 +15,7 @@ const index = () => {
 
   useEffect(() => {
     async function init() {
-      const { dailyLogTagList } = getInitalSettings()
+      const { dailyLogTagList } = getInitialSettings()
       const tagPromiseList = dailyLogTagList?.map(tag => getPageData({ originalName: tag.id }))
       const tagPageList = await Promise.all(tagPromiseList || [])
       const tagList = dailyLogTagList?.map(tag => ({ ...tag, pageId: tagPageList?.find(page => page.originalName === tag.id)?.id })) as unknown as Array<ILogTag & { pageId: number }>

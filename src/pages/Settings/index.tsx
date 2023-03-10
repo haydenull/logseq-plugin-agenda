@@ -7,7 +7,7 @@ import { CALENDAR_VIEWS, DEFAULT_PROJECT, DEFAULT_SETTINGS, DURATION_UNITS, LIGH
 import Query from '@/components/Query'
 import CreateCalendarModal from '@/components/CreateCalendarModal'
 import type { ISettingsForm } from '@/util/type'
-import { getInitalSettings, genAgendaQuery, genDefaultQuery } from '@/util/baseInfo'
+import { getInitialSettings, genAgendaQuery, genDefaultQuery } from '@/util/baseInfo'
 import { useAtom } from 'jotai'
 import { subscriptionSchedulesAtom } from '@/model/schedule'
 import { settingsAtom } from '@/model/settings'
@@ -49,7 +49,7 @@ const Settings: React.FC<{
   const [todoistLabelOptions, setTodoistLabelOptions] = useState<any>([])
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
-  const initialValues = getInitalSettings({ filterInvalideProject: false })
+  const initialValues = getInitialSettings({ filterInvalidedProject: false })
   const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
   const [, setSettings] = useAtom(settingsAtom)
 
@@ -123,7 +123,7 @@ const Settings: React.FC<{
         // setProjectSchedules(await getSchedules())
       }
       if (changedValues?.subscriptionList) {
-        const { subscriptionList } = await getInitalSettings()
+        const { subscriptionList } = await getInitialSettings()
         setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
       }
     }, 500)

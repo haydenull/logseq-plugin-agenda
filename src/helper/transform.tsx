@@ -1,5 +1,5 @@
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 import { ICategory, ISettingsForm } from '@/util/type'
 import { getEventTimeInfo, IEvent } from '@/util/events'
 import type { IEvent as IGanttEvent, IGroup } from '@/packages/Gantt/type'
@@ -14,7 +14,7 @@ import { CALENDAR_DONN_TASK_ALLDAY_STYLE, CALENDAR_DONN_TASK_TIME_STYLE } from '
 
 /** ========== calendar schedules ========== */
 export const transformTaskEventToSchedule = (block: IEvent) => {
-  const { journal, projectList = [] } = getInitalSettings()
+  const { journal, projectList = [] } = getInitialSettings()
 
   let category: ICategory = block?.addOns?.allDay ? 'allday' : 'time'
   if (block?.addOns?.isOverdue) category = 'task'
@@ -43,7 +43,7 @@ export const transformTaskEventToSchedule = (block: IEvent) => {
   }
 }
 export const transformMilestoneEventToSchedule = (block: IEvent) => {
-  const { journal, projectList = [] } = getInitalSettings()
+  const { journal, projectList = [] } = getInitialSettings()
 
   let calendarStyle: { bgColor: string; textColor: string; borderColor: string; } | undefined = block?.addOns?.isJournal ? journal : projectList.find(project => project.id === block?.addOns?.project)
   if (!calendarStyle) calendarStyle = DEFAULT_CALENDAR_STYLE
