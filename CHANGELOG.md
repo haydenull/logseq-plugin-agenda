@@ -1,3 +1,10 @@
+# [2.15.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.14.0...v2.15.0) (2023-03-26)
+
+
+### Features
+
+* Support for quickly creating tasks using natural language ([#188](https://github.com/haydenull/logseq-plugin-agenda/issues/188)) ([239f707](https://github.com/haydenull/logseq-plugin-agenda/commit/239f7074e405a5ebe53f161e6d2e59c9c12a75f7))
+
 # [2.14.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.13.1...v2.14.0) (2023-02-21)
 
 
