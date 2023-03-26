@@ -18,32 +18,13 @@ export const getInitialSettings = (params = { filterInvalidedProject: true }): I
       }
     }
   }
-  // let calendarList = logseq.settings?.calendarList || DEFAULT_SETTINGS.calendarList
-  // const journalCalendar = calendarList.find(calendar => calendar.id.toLowerCase() === 'journal')
-  // const excludeCalendar = `[?page :block/name ?pname]
-  // [?block :block/page ?page]
-  // (not [(contains? #{${calendarList.slice(1)?.map(calendar => `"${calendar.id}"`).join(' ')}} ?pname)])`
-  // calendarList = [
-  //   {
-  //     ...journalCalendar,
-  //     query: journalCalendar.query.map(query => {
-  //       const scriptArr = query.script.split('\n')
-  //       console.log('[faiz:] === scriptArr', scriptArr, scriptArr.slice(-1))
-  //       return {
-  //         ...query,
-  //         script: scriptArr.slice(0, -1).concat(excludeCalendar).concat(scriptArr.slice(-1)).join('\n'),
-  //       }
-  //     })
-  //   },
-  //   ...calendarList.slice(1),
-  // ]
   const projectList = logseq.settings?.projectList || DEFAULT_SETTINGS.projectList
   return {
     ...DEFAULT_SETTINGS,
     ...logseq.settings,
     // calendarList,
     logKey,
-    projectList: filterInvalidedProject ? projectList?.filter(project => Boolean(project.id)) : projectList,
+    projectList: filterInvalidedProject ? projectList?.filter((project) => Boolean(project.id)) : projectList,
   }
 }
 
@@ -86,13 +67,19 @@ export const getDefaultCalendarOptions = async () => {
     template: {
       taskTitle: () => '<span class="tui-full-calendar-left-content">Overdue</span>',
       task: (schedule: ISchedule) => '🔥' + schedule.title,
-      timegridDisplayPrimayTime: function(time) {
+      timegridDisplayPrimayTime: function (time) {
         if (time.hour < 10) return '0' + time.hour + ':00'
         return time.hour + ':00'
       },
       popupDetailBody: (schedule: ISchedule) => {
-        const calendar = `<b style="font-weight: 600;">Project: ${schedule.isReadOnly ? schedule.calendarId : `<a id="faiz-nav-detail-project" href="javascript:void(0);">${schedule.calendarId}</a>`}</b>`
-        const navBtn = schedule.raw?.subscription ? '' : '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
+        const calendar = `<b style="font-weight: 600;">Project: ${
+          schedule.isReadOnly
+            ? schedule.calendarId
+            : `<a id="faiz-nav-detail-project" href="javascript:void(0);">${schedule.calendarId}</a>`
+        }</b>`
+        const navBtn = schedule.raw?.subscription
+          ? ''
+          : '<br/><a id="faiz-nav-detail" href="javascript:void(0);">Navigate To Block</a>'
         // ${schedule.body?.split('\n').join('<br/>')}
         // TODO: 如果是 org 则不转义
         return `
@@ -174,7 +161,7 @@ export const genDefaultQuery = (pageName: string) => {
         dateFormatter: 'yyyyMMdd',
         isMilestone: true,
         queryType: 'advanced',
-      }
+      },
     ],
   }
 }
@@ -208,6 +195,6 @@ export const genAgendaQuery = (pageName: string) => {
         queryType: 'simple',
         isMilestone: true,
       },
-    ]
+    ],
   }
 }

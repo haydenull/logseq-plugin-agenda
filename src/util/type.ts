@@ -1,3 +1,6 @@
+import { Language } from '@/constants/language'
+import { ValuesType } from 'utility-types'
+
 export type ICustomCalendar = {
   id: string
   bgColor: string
@@ -17,6 +20,7 @@ export type ISettingsFormQuery = Partial<{
 export type ISettingsForm = {
   theme?: 'light' | 'dark' | 'auto'
   lightThemeType?: 'green' | 'purple'
+  language: ValuesType<typeof Language>
   homePage?: string
   defaultView: string
   weekStartDay: 0 | 1
@@ -27,7 +31,7 @@ export type ISettingsForm = {
   defaultDuration: {
     unit: string
     value: number
-  },
+  }
   logKey?: ICustomCalendar
   dailyLogTagList?: ILogTag[]
   journal: ICustomCalendar & { query: ISettingsFormQuery[] }
@@ -35,14 +39,14 @@ export type ISettingsForm = {
   calendarList: Array<ICustomCalendar & { query: ISettingsFormQuery[] }>
   subscriptionList?: Array<ICustomCalendar & { url: string }>
   pomodoro: {
-    pomodoro: number,
-    shortBreak: number,
-    longBreak: number,
-    autoStartBreaks: boolean,
-    autoStartPomodoros: boolean,
-    longBreakInterval: number,
-    commonPomodoros: number[],
-  },
+    pomodoro: number
+    shortBreak: number
+    longBreak: number
+    autoStartBreaks: boolean
+    autoStartPomodoros: boolean
+    longBreakInterval: number
+    commonPomodoros: number[]
+  }
   todoist?: {
     token?: string
     sync?: number
@@ -50,7 +54,11 @@ export type ISettingsForm = {
     filter?: string
     label?: string
     position?: string
-  },
+  }
+  openai?: {
+    apiKey?: string
+    apiBaseUrl?: string
+  }
 }
 export type IQueryWithCalendar = {
   calendarConfig: ISettingsForm['calendarList'][number]

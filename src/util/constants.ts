@@ -1,3 +1,4 @@
+import { Language } from '@/constants/language'
 import { theme as antdTheme } from 'antd'
 import { ISettingsForm } from './type'
 
@@ -64,6 +65,7 @@ export const LIGHT_THEME_TYPE = [
 export const DEFAULT_SETTINGS: ISettingsForm = {
   theme: 'auto',
   lightThemeType: 'green',
+  language: Language.English,
   homePage: 'dashboard',
   defaultView: 'month',
   weekStartDay: 0,
@@ -212,7 +214,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
         dateFormatter: 'yyyyMMdd',
         isMilestone: true,
         queryType: 'advanced',
-      }
+      },
     ],
   },
   projectList: [],
@@ -225,8 +227,11 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
     autoStartBreaks: false,
     autoStartPomodoros: false,
     longBreakInterval: 4,
-    commonPomodoros: [10, 15, 20, 25, 40]
-  }
+    commonPomodoros: [10, 15, 20, 25, 40],
+  },
+  openai: {
+    apiBaseUrl: 'https://api.openai.com',
+  },
 }
 
 export const DAILY_LOG_CONFIG = {
@@ -361,7 +366,7 @@ export const CALENDAR_THEME = {
   },
 }
 
-export const DEFAULT_BLOCK_DEADLINE_DATE_FORMAT = "yyyyMMdd"
+export const DEFAULT_BLOCK_DEADLINE_DATE_FORMAT = 'yyyyMMdd'
 
 export const DURATION_UNITS = [
   // { value: 'w', label: 'week' },
@@ -381,8 +386,13 @@ export const YES_NO_SELECTION = [
 
 export const POMODORO_INTERRUPTION_SEPARATOR = '|`~|'
 
-export const DEFAULT_PROJECT = { id: undefined, bgColor: '#b8e986', textColor: '#4a4a4a', borderColor: '#047857', enabled: true }
-
+export const DEFAULT_PROJECT = {
+  id: undefined,
+  bgColor: '#b8e986',
+  textColor: '#4a4a4a',
+  borderColor: '#047857',
+  enabled: true,
+}
 
 // const CALENDAR_DONN_TASK_BASE_STYLE = 'opacity: 0.6; background-image: var(--ls-checked-img); background-size: 18px; background-repeat: no-repeat; padding-left: 20px;'
 // export const CALENDAR_DONN_TASK_ALLDAY_STYLE = CALENDAR_DONN_TASK_BASE_STYLE + 'background-position: 2px center;'
