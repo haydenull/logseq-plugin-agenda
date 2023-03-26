@@ -1,5 +1,5 @@
 import { ISchedule } from 'tui-calendar';
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 import { atom } from 'jotai'
 import { genDefaultProjectEvents, IEvent, IPageEvent } from '../util/events'
 import { transformMilestoneEventToSchedule, transformTaskEventToSchedule } from '@/helper/transform'
@@ -21,7 +21,7 @@ export const fullCalendarSchedulesAtom = atom<Array<ISchedule & { raw: IEvent }>
   return tasks.concat(milestones)
 })
 export const journalCalendarSchedulesAtom = atom((get) => {
-  const { journal } = getInitalSettings()
+  const { journal } = getInitialSettings()
   const full = get(fullCalendarSchedulesAtom)
   return {
     calendarConfig: journal,
@@ -29,7 +29,7 @@ export const journalCalendarSchedulesAtom = atom((get) => {
   }
 })
 export const projectCalendarSchedulesAtom = atom((get) => {
-  const { projectList= [] } = getInitalSettings()
+  const { projectList= [] } = getInitialSettings()
   const full = get(fullCalendarSchedulesAtom)
   return projectList?.map(project => ({
     calendarConfig: project,

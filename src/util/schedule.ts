@@ -3,7 +3,7 @@ import { ISchedule } from 'tui-calendar'
 import { flattenDeep, get, has } from 'lodash'
 import { endOfDay, formatISO, parse } from 'date-fns'
 import dayjs, { Dayjs } from 'dayjs'
-import { getInitalSettings } from './baseInfo'
+import { getInitialSettings } from './baseInfo'
 import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
 import { CALENDAR_DONN_TASK_ALLDAY_STYLE, CALENDAR_DONN_TASK_TIME_STYLE, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, MARKDOWN_PROJECT_TIME_REG, ORG_PROJECT_TIME_REG, TIME_REG } from './constants'
 import { getBlockData, getPageData } from './logseq'
@@ -16,7 +16,7 @@ export const getCustomCalendarSchedules = async () => {
   let calendarSchedules:ISchedule[] = []
 
   // get calendar configs
-  const settings = getInitalSettings()
+  const settings = getInitialSettings()
   const { calendarList: calendarConfigs = [] } = settings
   const customCalendarConfigs = calendarConfigs.filter(config => config?.enabled)
 
@@ -66,7 +66,7 @@ message: ${res.reason.message}`
 }
 
 export const getDailyLogSchedules = async () => {
-  const { logKey, defaultDuration } = getInitalSettings()
+  const { logKey, defaultDuration } = getInitialSettings()
   if (!logKey?.enabled) return []
   const logs = await logseq.DB.q(`[[${logKey.id}]]`)
   // logseq 0.8.0 modified the structure of the query return data
@@ -296,7 +296,7 @@ export async function genSchedule(params: {
   }
   const isSupportEdit = isReadOnly === undefined ? supportEdit() : !isReadOnly
 
-  const _defaultDuration = defaultDuration ||  getInitalSettings()?.defaultDuration
+  const _defaultDuration = defaultDuration ||  getInitialSettings()?.defaultDuration
   let _end = end
   if ((category === 'time' || blockData?.category === 'time') && !end && start && _defaultDuration) {
     _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit as dayjs.ManipulateType).format()

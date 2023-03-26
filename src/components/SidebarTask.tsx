@@ -5,7 +5,7 @@ import { getPageData, moveBlockToNewPage, moveBlockToSpecificBlock, navToBlock }
 import { format } from 'date-fns'
 import { ISettingsForm } from '@/util/type'
 import { IEvent } from '@/util/events'
-import { startPomodoro } from '@/main'
+import { startPomodoro } from '@/register/pomodoro'
 
 function getTime(task: IEvent, overdue = false) {
   const startStr = task?.addOns.start

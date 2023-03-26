@@ -1,5 +1,5 @@
 import { transformBlockToEvent } from './transform'
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 import { TodoistApi, Task, UpdateTaskArgs, AddTaskArgs } from '@doist/todoist-api-typescript'
 import { IEvent } from '@/util/events'
 import dayjs from 'dayjs'
@@ -19,7 +19,7 @@ export const getTodoistInstance = (token?: string) => {
   if (instance && !token) return instance
   if (token) return instance = new TodoistApi(token)
 
-  const { todoist } = getInitalSettings()
+  const { todoist } = getInitialSettings()
   if (todoist?.token) return instance = new TodoistApi(todoist.token)
 }
 
@@ -27,7 +27,7 @@ export const getTodoistInstance = (token?: string) => {
 export const pullTask = async () => {
   log('\n=== Start synchronizing tasks from todoist ... ===\n', '#d27e24')
   if (!instance) return logseq.UI.showMsg('Please check your todoist configuration', 'error')
-  const settings = getInitalSettings()
+  const settings = getInitialSettings()
   const { preferredDateFormat } = await logseq.App.getUserConfigs()
   const { todoist } = settings
   let tasks: Task[] = []
@@ -115,7 +115,7 @@ export const isEventNeedUpdate = (event: IEvent, task: Task) => {
 }
 
 export const createBlock = async (task: Task, dateFormat: string) => {
-  const { todoist } = getInitalSettings()
+  const { todoist } = getInitialSettings()
   const date = task.due?.datetime || task.due?.date
   const { preferredFormat } = await logseq.App.getUserConfigs()
 

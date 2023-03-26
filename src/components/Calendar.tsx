@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Calendar, { ISchedule } from 'tui-calendar'
 import { format, isSameDay, parse } from 'date-fns'
-import { getDefaultCalendarOptions, getInitalSettings, genDailyLogCalendarOptions } from '@/util/baseInfo'
+import { getDefaultCalendarOptions, getInitialSettings, genDailyLogCalendarOptions } from '@/util/baseInfo'
 import { CALENDAR_VIEWS, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from '@/util/constants'
 import { deleteProjectTaskTime, updateProjectTaskTime } from '@/util/schedule'
 import ModifySchedule, { IScheduleValue } from '@/components/ModifySchedule'
@@ -25,7 +25,7 @@ const CalendarCom: React.FC<{
   // const [schedules] = useAtom(schedulesAtom)
 
   const [fullCalendarIds] = useAtom(calendarSchedulesCalendarIdsAtom)
-  const { subscriptionList, logKey, projectList = [], journal } = getInitalSettings()
+  const { subscriptionList, logKey, projectList = [], journal } = getInitialSettings()
 
   const [showDate, setShowDate] = useState<string>()
   const [isFold, setIsFold] = useState(true)

@@ -1,4 +1,4 @@
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 import { Button, Checkbox, DatePicker, Form, Select } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import React, { useEffect, useState } from 'react'
@@ -22,7 +22,7 @@ const SearchForm: React.FC<{
   onSearch: (params: IReviewSearchForm) => void,
 }> = ({ onSearch, initialValues }) => {
   const [form] = Form.useForm()
-  const { projectList = [], weekStartDay } = getInitalSettings()
+  const { projectList = [], weekStartDay } = getInitialSettings()
   const [pageOptions, setPageOptions] = useState<any>([])
   // const pageOptions = [{value: 'journal', label: 'Journal'}].concat(projectList.map(p => ({ value: p.id, label: p.id })))
 

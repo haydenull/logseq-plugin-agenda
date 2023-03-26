@@ -6,7 +6,7 @@ import { CALENDAR_VIEWS, DEFAULT_SETTINGS, DURATION_UNITS, THEME } from '../util
 import Query from './Query'
 import CreateCalendarModal from './CreateCalendarModal'
 import type { ISettingsForm } from '../util/type'
-import { getInitalSettings, genAgendaQuery, genDefaultQuery } from '../util/baseInfo'
+import { getInitialSettings, genAgendaQuery, genDefaultQuery } from '../util/baseInfo'
 
 
 const Settings: React.FC<{
@@ -19,7 +19,7 @@ const Settings: React.FC<{
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
 
-  const initialValues = getInitalSettings()
+  const initialValues = getInitialSettings()
 
   const onClickSettingSave = () => {
     settingForm.validateFields().then(values => {

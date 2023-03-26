@@ -3,17 +3,17 @@ import { PomodoroConfig, usePomodoro } from '@haydenull/use-pomodoro'
 import { RiExternalLinkLine } from 'react-icons/ri'
 import { MdOutlineRunningWithErrors } from 'react-icons/md'
 import { AiOutlinePoweroff, AiOutlineQuestionCircle } from 'react-icons/ai'
-import { transformBlockToEvent } from './helper/transform'
-import { getInitalSettings } from './util/baseInfo'
-import { IEvent } from './util/events'
+import { transformBlockToEvent } from '../helper/transform'
+import { getInitialSettings } from '../util/baseInfo'
+import { IEvent } from '../util/events'
 import { genToolbarPomodoro, secondsToTime, updatePomodoroInfo } from '@/helper/pomodoro'
-import { getPageData, navToBlock } from './util/logseq'
+import { getPageData, navToBlock } from '../util/logseq'
 import dayjs from 'dayjs'
-import { notification } from './util/util'
-import InerruptionModal from './components/InerruptionModal'
-import useTheme from './hooks/useTheme'
+import { notification } from '../util/util'
+import InerruptionModal from '../components/InerruptionModal'
+import useTheme from '../hooks/useTheme'
 import { ConfigProvider, Tooltip } from 'antd'
-import { ANTD_THEME_CONFIG } from './util/constants'
+import { ANTD_THEME_CONFIG } from '../util/constants'
 
 const OperationButton = ({ label, onClick, classNames = '', tooltip }: {label: string; onClick: () => void; classNames?: string; tooltip?: string}) => (
   <button
@@ -41,7 +41,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   const theme = useTheme() || 'green'
 
   const pomodoroConfig: PomodoroConfig = useMemo(() => {
-    const { pomodoro: pomodoroConfig } = getInitalSettings()
+    const { pomodoro: pomodoroConfig } = getInitialSettings()
     return {
       ...pomodoroConfig,
       pomodoro: pomodoroConfig.pomodoro * 60,
@@ -54,7 +54,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
     }
   }, [uuid])
   const { state, start, stop, reset, goPomodoro, goShortBreak, goLongBreak, changeConfig } = usePomodoro(pomodoroConfig)
-  const { pomodoro } = getInitalSettings()
+  const { pomodoro } = getInitialSettings()
   const [event, setEvent] = useState<IEvent>()
   const [position, setPosition] = useState({ right: '40px', top: '48px' })
   const isWorking = state.type === 'pomodoro'
@@ -118,7 +118,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
     if (!state.paused) return logseq.UI.showMsg('Pomodoro is running, please stop it first.', 'error') as unknown as undefined
     logseq.Editor.getBlock(uuid).then(async block => {
       if (!block) return
-      const event = await transformBlockToEvent(block!, getInitalSettings())
+      const event = await transformBlockToEvent(block!, getInitialSettings())
       setEvent(event)
     })
   }, [uuid])

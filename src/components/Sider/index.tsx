@@ -7,14 +7,14 @@ import SiderTabs from '@/components/SiderTabs'
 import { MENUS } from '@/constants/elements'
 import s from './index.module.less'
 import { DEFAULT_SETTINGS } from '@/util/constants'
-import { getInitalSettings } from '@/util/baseInfo'
+import { getInitialSettings } from '@/util/baseInfo'
 
 const index: React.FC<{
   defaultRoute?: string
   menus: typeof MENUS,
 }> = ({ defaultRoute, menus }) => {
   const navigate = useNavigate()
-  const { homePage = DEFAULT_SETTINGS.homePage } = getInitalSettings()
+  const { homePage = DEFAULT_SETTINGS.homePage } = getInitialSettings()
 
   const onRouteChange = (value: string) => {
     const { path } = menus.find(item => item.value === value) || { path: '/' }

@@ -1,7 +1,7 @@
 import { BlockEntity } from "@logseq/libs/dist/LSPlugin"
 import { format } from "date-fns"
 import { Dayjs } from "dayjs"
-import { getInitalSettings } from "./baseInfo"
+import { getInitialSettings } from "./baseInfo"
 import { fillBlockReference } from "./schedule"
 import { ISettingsForm } from "./type"
 import { extractDays } from "./util"
@@ -128,7 +128,7 @@ export const extractBlockContentToHtml = async (block: BlockEntity, depth = 1): 
 }
 
 export const isEnabledAgendaPage = (pageName: string) => {
-  const { calendarList } = getInitalSettings()
+  const { calendarList } = getInitialSettings()
   return calendarList?.filter(calendar => calendar.enabled).some(calendar => calendar.id === pageName)
 }
 
