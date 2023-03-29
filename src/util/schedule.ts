@@ -419,12 +419,25 @@ export const updateProjectTaskTime = (blockContent: string, timeInfo: { start: D
   return newContent?.split('\n').map((txt, index) => index === 0 ? txt + ' ' + time : txt).join('\n')
 }
 
-export function categorizeTasks (tasks: IEvent[]) {
+export function categorizeTasks(tasks: IEvent[]) {
   let overdueTasks: IEvent[] = []
   let allDayTasks: IEvent[] = []
   let timeTasks: IEvent[] = []
-  tasks.forEach(task => {
+
+  const overdueCutoff = getInitialSettings().overdueCutoffDays
+  const shouldIgnoreOverdue = (task: IEvent) => {
+    if (!task.addOns.end || !overdueCutoff) {
+      return false
+    }
+    const diff = dayjs().diff(task.addOns.end, 'day', true)
+    return diff > overdueCutoff
+  }
+
+  tasks.forEach((task) => {
     if (task.addOns.isOverdue) {
+      if (shouldIgnoreOverdue(task)) {
+        return;
+      }
       overdueTasks.push(task)
     } else if (task.addOns.allDay) {
       allDayTasks.push(task)

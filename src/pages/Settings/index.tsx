@@ -118,6 +118,7 @@ const Settings: React.FC<{
       ..._allValues,
       // supports delete ignore tag
       ignoreTag: _allValues.ignoreTag || null,
+      overdueCutoffDays: _allValues.overdueCutoffDays || null,
     })
 
     if (typeof changedValues.weekStartDay === 'number') {
@@ -192,7 +193,7 @@ const Settings: React.FC<{
         </div>
         <Form
           initialValues={initialValues}
-          labelCol={{ span: 4 }}
+          labelCol={{ span: 5 }}
           preserve={true}
           form={settingForm}
           style={{ maxWidth: '800px', width: '80%' }}
@@ -223,6 +224,18 @@ const Settings: React.FC<{
                 filterOption={(input, option) =>
                   (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())
                 }
+              />
+            </Form.Item>
+            <Form.Item label="Ignore Overdue Tasks" name="overdueCutoffDays">
+              <Select
+                options={[
+                  { value: null, label: 'Never' },
+                  { value: 7, label: 'After 1 Week' },
+                  { value: 14, label: 'After 2 Weeks' },
+                  { value: 30, label: 'After 1 Month' },
+                  { value: 90, label: 'After 3 Months' },
+                  { value: 365, label: 'After 1 Year' },
+                ]}
               />
             </Form.Item>
             <Form.Item label="Default Duration" name={['defaultDuration', 'value']}>
@@ -514,7 +527,7 @@ const Settings: React.FC<{
               {(fields, { add, remove }) => (
                 <>
                   {fields.map((field, index) => (
-                    <Form.Item label={index === 0 ? 'Tag' : ''} {...(index === 0 ? {} : { wrapperCol: { offset: 4 } })}>
+                    <Form.Item label={index === 0 ? 'Tag' : ''} {...(index === 0 ? {} : { wrapperCol: { offset: 5 } })}>
                       <div className="flex items-center justify-between">
                         <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
                           <Select
