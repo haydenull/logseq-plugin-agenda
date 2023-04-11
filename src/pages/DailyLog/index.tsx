@@ -16,9 +16,10 @@ const index = () => {
   useEffect(() => {
     async function init() {
       const { dailyLogTagList } = getInitialSettings()
-      const tagPromiseList = dailyLogTagList?.map(tag => getPageData({ originalName: tag.id }))
+      const _dailyLogTagList = dailyLogTagList?.filter(Boolean)
+      const tagPromiseList = _dailyLogTagList?.map(tag => getPageData({ originalName: tag.id }))
       const tagPageList = await Promise.all(tagPromiseList || [])
-      const tagList = dailyLogTagList?.map(tag => ({ ...tag, pageId: tagPageList?.find(page => page.originalName === tag.id)?.id })) as unknown as Array<ILogTag & { pageId: number }>
+      const tagList = _dailyLogTagList?.map(tag => ({ ...tag, pageId: tagPageList?.find(page => page.originalName === tag.id)?.id })) as unknown as Array<ILogTag & { pageId: number }>
       setTagList(tagList)
       const res  = await getDailyLogSchedules()
       setDailyLogSchedules(res.map(schedule => {

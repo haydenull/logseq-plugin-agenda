@@ -110,6 +110,7 @@ const Settings: React.FC<{
       calendarList: 1,
       subscriptionList: 1,
       projectList: 1,
+      dailyLogTagList: 1,
     })
     logseq.updateSettings({
       // ensure subscription list is array
