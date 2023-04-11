@@ -1,3 +1,10 @@
+## [2.15.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.0...v2.15.1) (2023-04-11)
+
+
+### Bug Fixes
+
+* :bug: when there is an issue of no data when the Daily log has empty tags ([#193](https://github.com/haydenull/logseq-plugin-agenda/issues/193)) ([03d68b6](https://github.com/haydenull/logseq-plugin-agenda/commit/03d68b6ed3eff21de1c01d19f86309f5d637b403)), closes [#192](https://github.com/haydenull/logseq-plugin-agenda/issues/192)
+
 # [2.15.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.14.0...v2.15.0) (2023-03-26)
 
 
