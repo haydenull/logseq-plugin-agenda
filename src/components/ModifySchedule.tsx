@@ -107,7 +107,6 @@ const ModifySchedule: React.FC<{
         return logseq.UI.showMsg('Journal schedule cannot span multiple days', 'error')
 
       // new block content
-      // let newTitle = title
       const pomoReg = initialValues?.raw?.format === 'markdown' ? MARKDOWN_POMODORO_REG : ORG_POMODORO_REG
       let newTitle =
         type === 'update' && initialValues?.raw?.addOns.pomodoros?.length
@@ -133,17 +132,19 @@ const ModifySchedule: React.FC<{
       if (initialValues?.raw?.addOns.type === 'milestone') newTitle += ' #milestone'
 
       // new properties
-      const newBlockPropeties = {}
+      const newBlockProperties = initialValues?.raw?.properties
+      console.log('[faiz:] === initialValues', initialValues)
+      console.log('[faiz:] === newBlockProperties', newBlockProperties)
 
       const { preferredDateFormat } = await logseq.App.getUserConfigs()
-      // oldCalendarId: journal shcedule is journal page, other is calendar id
+      // oldCalendarId: journal schedule is journal page, other is calendar id
       let oldCalendarId = initialValues?.calendarId
       if (isJournalSchedule) {
         const oldStart = initialValues?.start
         if (oldStart) oldCalendarId = format(oldStart?.valueOf(), preferredDateFormat)
       }
 
-      // newCalendarId: journal shcedule is journal page, other is calendar id
+      // newCalendarId: journal schedule is journal page, other is calendar id
       let newCalendarId = calendarId.value
       if (isJournalSchedule) {
         const journalName = format(start.valueOf(), preferredDateFormat)
@@ -157,18 +158,15 @@ const ModifySchedule: React.FC<{
         let block
         if (isJournalSchedule) {
           block = logKey?.enabled
-            ? await createBlockToSpecificBlock(newCalendarId!, `[[${logKey?.id}]]`, newTitle, newBlockPropeties)
+            ? await createBlockToSpecificBlock(newCalendarId!, `[[${logKey?.id}]]`, newTitle, newBlockProperties)
             : await logseq.Editor.insertBlock(newCalendarId!, newTitle, {
                 isPageBlock: true,
                 sibling: true,
-                properties: newBlockPropeties,
+                properties: newBlockProperties,
               })
         } else if (newScheduleType === 'project') {
           block = await createBlockToSpecificBlock(newCalendarId!, SCHEDULE_PARENT_BLOCK, newTitle)
         }
-        // else {
-        //   block = await createBlockToSpecificBlock(newCalendarId, SCHEDULE_PARENT_BLOCK, newTitle, newBlockPropeties)
-        // }
         if (!block) return logseq.UI.showMsg('Create block failed', 'error')
         const _block = await logseq.Editor.getBlock(block.uuid)
         const event = await transformBlockToEvent(_block!, settings)
@@ -181,10 +179,6 @@ const ModifySchedule: React.FC<{
         // move schedule: move block to new page
         let newBlock
         const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
-        // if (showKeepRef && values?.keepRef) {
-        //   // const block = await logseq.Editor.getBlock(initialValues?.id)
-        //   await logseq.Editor.insertBlock(initialValues?.id, `((${initialValues?.id}))${isJournalSchedule ? '' : ` #[[${newCalendarId}]]`}`, { before: false, sibling: true })
-        // }
         if (isJournalSchedule) {
           newBlock = logKey?.enabled
             ? await moveBlockToSpecificBlock(initialValues?.id!, newCalendarId!, `[[${logKey?.id}]]`)
@@ -192,16 +186,8 @@ const ModifySchedule: React.FC<{
         } else if (newScheduleType === 'project') {
           newBlock = await moveBlockToSpecificBlock(initialValues?.id!, newCalendarId!, SCHEDULE_PARENT_BLOCK)
         }
-        // else {
-        //   newBlock = await moveBlockToSpecificBlock(initialValues.id, newCalendarId, SCHEDULE_PARENT_BLOCK)
-        // }
         // 移动完成后需要设置 content
-        await updateBlock(newBlock.uuid, newTitle, newBlockPropeties)
-        // calendar schedule 移动到 journal project 需要去除 start end 属性
-        if (Object.keys(newBlockPropeties).length === 0) {
-          await logseq.Editor.removeBlockProperty(newBlock.uuid, 'start')
-          await logseq.Editor.removeBlockProperty(newBlock.uuid, 'end')
-        }
+        await updateBlock(newBlock.uuid, newTitle, newBlockProperties)
         if (newBlock && initialValues?.calendarId) {
           const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
           // updateSchedule can't update id, so we need to create new schedule after delete old one
@@ -215,10 +201,7 @@ const ModifySchedule: React.FC<{
         }
       } else {
         // update schedule
-        await updateBlock(initialValues?.id!, newTitle)
-        // else {
-        //   await updateBlock(initialValues?.id!, title, newBlockPropeties)
-        // }
+        await updateBlock(initialValues?.id!, newTitle, newBlockProperties)
         const blockAfterUpdated = await logseq.Editor.getBlock(initialValues?.id!)
         const event = await transformBlockToEvent(blockAfterUpdated!, settings)
         const schedule =
