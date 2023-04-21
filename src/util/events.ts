@@ -1,61 +1,105 @@
-import { transformBlockToEvent } from './../helper/transform';
-import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
+import { IPomodoroInfo } from '@/helper/pomodoro'
 import type { BlockEntity, PageEntity } from '@logseq/libs/dist/LSPlugin'
 import dayjs from 'dayjs'
+import { transformBlockToEvent } from './../helper/transform'
 import { getInitialSettings } from './baseInfo'
 import { pureTaskBlockContent } from './logseq'
-import { deleteProjectTaskTime, fillBlockReference, getAgendaCalendars, getProjectTaskTime, getTimeInfo, isOverdue, removeTimeInfo } from './schedule'
+import { getProjectTaskTime, getTimeInfo } from './schedule'
 import { ICustomCalendar } from './type'
-import { IPomodoroInfo } from '@/helper/pomodoro';
 
-
-export const getEventTimeInfo = (block: BlockEntity): {
+export const getEventTimeInfo = (
+  block: BlockEntity
+): {
   start: string
   end?: string
   allDay: boolean
   timeFrom: 'startProperty' | 'customLink' | 'scheduledProperty' | 'deadlineProperty' | 'journal' | 'refs'
 } | null => {
-
   // start end properties date(adapt agenda calendar)
   const { start, end } = block.properties || {}
   if (start && end) {
-    if (start?.length >= 16) return { start: dayjs(start, 'YYYY-MM-DD HH:mm').format(), end: dayjs(end, 'YYYY-MM-DD HH:mm').format(), allDay: false, timeFrom: 'startProperty' }
-    return { start: dayjs(start, 'YYYY-MM-DD').format(), end: dayjs(end, 'YYYY-MM-DD').format(), allDay: true, timeFrom: 'startProperty' }
+    if (start?.length >= 16)
+      return {
+        start: dayjs(start, 'YYYY-MM-DD HH:mm').format(),
+        end: dayjs(end, 'YYYY-MM-DD HH:mm').format(),
+        allDay: false,
+        timeFrom: 'startProperty',
+      }
+    return {
+      start: dayjs(start, 'YYYY-MM-DD').format(),
+      end: dayjs(end, 'YYYY-MM-DD').format(),
+      allDay: true,
+      timeFrom: 'startProperty',
+    }
   }
 
   // custom link date
   const projectTimeInfo = getProjectTaskTime(block.content)
   const timeStart = projectTimeInfo?.start?.length === 13 ? Number(projectTimeInfo.start) : projectTimeInfo?.start
   const timeEnd = projectTimeInfo?.end?.length === 13 ? Number(projectTimeInfo.end) : projectTimeInfo?.end
-  if (projectTimeInfo) return { start: dayjs(timeStart).format(), end: dayjs(timeEnd).format(), allDay: projectTimeInfo.allDay !== 'false', timeFrom: 'customLink' }
+  if (projectTimeInfo)
+    return {
+      start: dayjs(timeStart).format(),
+      end: dayjs(timeEnd).format(),
+      allDay: projectTimeInfo.allDay !== 'false',
+      timeFrom: 'customLink',
+    }
 
   // scheduled date
   if (block.scheduled) {
-    const dateString = block.content?.split('\n')?.find(l => l.startsWith(`SCHEDULED:`))?.trim()
+    const dateString = block.content
+      ?.split('\n')
+      ?.find((l) => l.startsWith(`SCHEDULED:`))
+      ?.trim()
     const time = / (\d{2}:\d{2})[ >]/.exec(dateString!)?.[1] || ''
-    if (time) return { start: dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm').format(), allDay: false, timeFrom: 'scheduledProperty' }
+    if (time)
+      return {
+        start: dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm').format(),
+        allDay: false,
+        timeFrom: 'scheduledProperty',
+      }
     return { start: dayjs('' + block.scheduled, 'YYYYMMDD').format(), allDay: true, timeFrom: 'scheduledProperty' }
   }
 
   // deadline date
   if (block.deadline) {
-    const dateString = block.content?.split('\n')?.find(l => l.startsWith(`DEADLINE:`))?.trim()
+    const dateString = block.content
+      ?.split('\n')
+      ?.find((l) => l.startsWith(`DEADLINE:`))
+      ?.trim()
     const time = / (\d{2}:\d{2})[ >]/.exec(dateString!)?.[1] || ''
-    if (time) return { start: dayjs(`${block.deadline} ${time}`, 'YYYYMMDD HH:mm').format(), allDay: false, timeFrom: 'deadlineProperty' }
+    if (time)
+      return {
+        start: dayjs(`${block.deadline} ${time}`, 'YYYYMMDD HH:mm').format(),
+        allDay: false,
+        timeFrom: 'deadlineProperty',
+      }
     return { start: dayjs('' + block.deadline, 'YYYYMMDD').format(), allDay: true, timeFrom: 'deadlineProperty' }
   }
 
   // refs date
-  const refsDatePage = block.refs?.find(page => Boolean(page?.journalDay))
-  if (refsDatePage) return { start: dayjs(refsDatePage?.journalDay + '', 'YYYYMMDD').format(), allDay: true, timeFrom: 'refs' }
+  const refsDatePage = block.refs?.find((page) => Boolean(page?.journalDay))
+  if (refsDatePage)
+    return { start: dayjs(refsDatePage?.journalDay + '', 'YYYYMMDD').format(), allDay: true, timeFrom: 'refs' }
 
   // journal date
   const isJournal = Boolean(block?.page?.journalDay)
   if (isJournal) {
     const content = pureTaskBlockContent(block)
     const { start, end } = getTimeInfo(content)
-    if (start && end) return { start: dayjs(`${block?.page?.journalDay} ${start}`, 'YYYYMMDD HH:mm').format(), end: dayjs(`${block?.page?.journalDay} ${end}`, 'YYYYMMDD HH:mm').format(), allDay: false, timeFrom: 'journal' }
-    if (start && !end) return { start: dayjs(`${block?.page?.journalDay} ${start}`, 'YYYYMMDD HH:mm').format(), allDay: false, timeFrom: 'journal' }
+    if (start && end)
+      return {
+        start: dayjs(`${block?.page?.journalDay} ${start}`, 'YYYYMMDD HH:mm').format(),
+        end: dayjs(`${block?.page?.journalDay} ${end}`, 'YYYYMMDD HH:mm').format(),
+        allDay: false,
+        timeFrom: 'journal',
+      }
+    if (start && !end)
+      return {
+        start: dayjs(`${block?.page?.journalDay} ${start}`, 'YYYYMMDD HH:mm').format(),
+        allDay: false,
+        timeFrom: 'journal',
+      }
     return { start: dayjs(block?.page?.journalDay + '', 'YYYYMMDD').format(), allDay: true, timeFrom: 'journal' }
   }
 
@@ -90,11 +134,11 @@ export type IPageEvent = {
   tasks: {
     withTime: IEvent[]
     noTime: IEvent[]
-  },
+  }
   milestones: {
     withTime: IEvent[]
     noTime: IEvent[]
-  },
+  }
 }
 export const genDefaultProjectEvents = (): IPageEvent => ({
   tasks: {
@@ -123,6 +167,8 @@ export const getInternalEvents = async () => {
       :block/marker
       :block/priority
       :block/properties
+      :block/properties-order
+      :block/properties-text-values
       :block/pre-block?
       :block/scheduled
       :block/deadline
@@ -143,8 +189,8 @@ export const getInternalEvents = async () => {
   const settings = getInitialSettings()
   tasks = tasks.flat()
   if (settings.ignoreTag) {
-    tasks = tasks.filter(task => {
-      const shouldIgnore = task.refs?.some(ref => ref?.['original-name'] === settings.ignoreTag)
+    tasks = tasks.filter((task) => {
+      const shouldIgnore = task.refs?.some((ref) => ref?.['original-name'] === settings.ignoreTag)
       return !shouldIgnore
     })
   }
@@ -153,10 +199,9 @@ export const getInternalEvents = async () => {
   let journalEvents: IPageEvent = genDefaultProjectEvents()
   const projectEventsMap = new Map<string, IPageEvent>()
 
-  const closedProjects = settings?.projectList?.filter(p => p?.enabled !== true)
+  const closedProjects = settings?.projectList?.filter((p) => p?.enabled !== true)
 
-  const promiseList = (tasks as BlockEntity[]).map(async task => {
-
+  const promiseList = (tasks as BlockEntity[]).map(async (task) => {
     task = {
       ...task,
       uuid: typeof task.uuid === 'string' ? task.uuid : task.uuid?.['$uuid$'],
@@ -165,7 +210,7 @@ export const getInternalEvents = async () => {
         originalName: task.page?.['original-name'],
         journalDay: task.page?.['journal-day'],
       },
-      refs: task.refs?.map(_page => ({
+      refs: task.refs?.map((_page) => ({
         ..._page,
         journalDay: _page?.['journal-day'],
         originalName: _page?.['original-name'],
@@ -178,7 +223,7 @@ export const getInternalEvents = async () => {
     const isJournal = event.addOns.isJournal
 
     if (isJournal && !settings?.journal?.enabled) return
-    if (closedProjects?.some(p => p?.id === event?.addOns.project)) return
+    if (closedProjects?.some((p) => p?.id === event?.addOns.project)) return
 
     if (isMilestone) {
       if (time) {
@@ -193,7 +238,6 @@ export const getInternalEvents = async () => {
         fullEvents.tasks.noTime.push(event)
       }
     }
-
 
     if (isJournal) {
       // journal
@@ -237,7 +281,9 @@ export const getInternalEvents = async () => {
 }
 
 export const getEventPomodoroLength = (event: IEvent) => {
-  return event.addOns.pomodoros?.reduce((acc, pomo) => {
-    return acc + pomo.length
-  }, 0) || 0
+  return (
+    event.addOns.pomodoros?.reduce((acc, pomo) => {
+      return acc + pomo.length
+    }, 0) || 0
+  )
 }

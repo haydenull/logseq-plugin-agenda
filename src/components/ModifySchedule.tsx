@@ -132,9 +132,12 @@ const ModifySchedule: React.FC<{
       if (initialValues?.raw?.addOns.type === 'milestone') newTitle += ' #milestone'
 
       // new properties
-      const newBlockProperties = initialValues?.raw?.properties
-      console.log('[faiz:] === initialValues', initialValues)
-      console.log('[faiz:] === newBlockProperties', newBlockProperties)
+      let newBlockProperties = initialValues?.raw?.propertiesTextValues
+      if (initialValues?.raw?.rawTime?.timeFrom === 'startProperty') {
+        // remove start and end property
+        delete newBlockProperties?.start
+        delete newBlockProperties?.end
+      }
 
       const { preferredDateFormat } = await logseq.App.getUserConfigs()
       // oldCalendarId: journal schedule is journal page, other is calendar id
@@ -162,7 +165,6 @@ const ModifySchedule: React.FC<{
             : await logseq.Editor.insertBlock(newCalendarId!, newTitle, {
                 isPageBlock: true,
                 sibling: true,
-                properties: newBlockProperties,
               })
         } else if (newScheduleType === 'project') {
           block = await createBlockToSpecificBlock(newCalendarId!, SCHEDULE_PARENT_BLOCK, newTitle)

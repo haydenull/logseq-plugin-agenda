@@ -20,8 +20,9 @@ export const updateBlock = async (
     // properties param not working
     await logseq.Editor.updateBlock(block.uuid, content)
   }
-  const upsertBlockPropertyPromises = Object.keys(properties || {}).map((key) =>
-    logseq.Editor.upsertBlockProperty(block.uuid, key, properties?.[key])
+  const _properties = properties || block.propertiesTextValues || {}
+  const upsertBlockPropertyPromises = Object.keys(_properties).map((key) =>
+    logseq.Editor.upsertBlockProperty(block.uuid, key, _properties?.[key])
   )
   return Promise.allSettled(upsertBlockPropertyPromises)
 }
