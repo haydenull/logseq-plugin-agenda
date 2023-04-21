@@ -1,3 +1,10 @@
+## [2.15.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.1...v2.15.2) (2023-04-21)
+
+
+### Bug Fixes
+
+* The property is removed when updating the block ([#198](https://github.com/haydenull/logseq-plugin-agenda/issues/198)) ([a4bf46a](https://github.com/haydenull/logseq-plugin-agenda/commit/a4bf46ab07493ca88eafb1697ba24868975c5066))
+
 ## [2.15.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.0...v2.15.1) (2023-04-11)
 
 
