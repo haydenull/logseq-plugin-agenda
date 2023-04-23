@@ -2,6 +2,9 @@ name: Bug Report
 description: Report a bug encountered while using Agenda
 body:
   - type: markdown
+    attributes:
+      value: |
+        Thank you very much for opening a bug report with Agenda.
     
   - type: checkbox
     id: confirm-search
