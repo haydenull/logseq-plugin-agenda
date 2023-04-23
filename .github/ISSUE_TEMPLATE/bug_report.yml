@@ -1,0 +1,73 @@
+name: Bug Report
+description: Report a bug encountered while using Agenda
+body:
+  - type: markdown
+    
+  - type: checkbox
+    id: confirm-search
+    attributes:
+      label: Search first
+      description: Please search [exist issues](https://github.com/haydenull/logseq-plugin-agenda/issues) before reporting.
+      options:
+        - label: I searched and no similar issues were found
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What Happened?
+      description: |
+        Please provide as much info as possible. Not doing so may result in your bug not being addressed in a timely manner.
+    validations:
+      required: true
+   - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduce the Bug
+      description: |
+        Please tell us the steps to reproduce the bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+      validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: |
+        If applicable, add screenshots or screen recordings to help explain your problem.
+    validations:
+      required: false
+  - type: textarea
+    id: platform
+    attributes:
+      label: Environment Information
+      description: |
+        Would you mind to tell us the information about your operating environment?
+      placeholder: |
+        OS version, Logseq App version, Agenda version
+        example: macOS 13.2.1, Desktop App v0.9.3, Agenda v2.15.2
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: |
+        If applicable, add additional context to help explain your problem.
+    validations:
+      required: false
+  
+  - type: checkboxes
+    id: ask-pr
+    attributes:
+      label: Are you willing to submit a PR? If you know how to fix the bug.
+      description: |
+        If you are not familiar with programming, you can skip this step.
+        If you are a developer and know how to fix the bug, you can submit a PR to fix it.
+        Your contributions are greatly appreciated and play a vital role in helping to improve the project!
+      options:
+        - label: I'm willing to submit a PR (Thank you!)
