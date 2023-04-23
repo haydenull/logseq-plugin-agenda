@@ -5,7 +5,7 @@ body:
     attributes:
       value: |
         Thank you very much for opening a bug report with Agenda.
-  - type: checkbox
+  - type: checkboxes
     id: confirm-search
     attributes:
       label: Search first
@@ -34,7 +34,7 @@ body:
         3. Scroll down to '....'
         4. See error
     validations:
-    required: true
+      required: true
   - type: textarea
     id: screenshots
     attributes:
