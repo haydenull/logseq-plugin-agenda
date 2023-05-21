@@ -1,15 +1,14 @@
-import { Button, DatePicker, Drawer, Form, Input, Modal, Space } from 'antd'
-import React, { useEffect, useState } from 'react'
-import AnyTouch, { AnyTouchEvent } from '@any-touch/core'
-import pan from '@any-touch/pan'
-import classNames from 'classnames'
-import s from './index.module.less'
-import TagSelector from './TagSelector'
-import dayjs from 'dayjs'
-import type { Dayjs } from 'dayjs'
 import { getInitialSettings } from '@/util/baseInfo'
 import { createBlockToSpecificBlock } from '@/util/logseq'
+import AnyTouch, { AnyTouchEvent } from '@any-touch/core'
+import pan from '@any-touch/pan'
+import { Button, DatePicker, Drawer, Form, Input, Space } from 'antd'
+import classNames from 'classnames'
 import format from 'date-fns/format'
+import dayjs from 'dayjs'
+import React, { useEffect, useState } from 'react'
+import s from './index.module.less'
+import TagSelector from './TagSelector'
 
 // const TAG_LIST_DEMO = [
 //   {
@@ -43,7 +42,6 @@ const getTimeFromPosition = (position: number, rulerStartTime) => {
   return `${hour < 10 ? '0' + hour : hour}:${minute < 10 ? '0' + minute : minute}`
 }
 
-
 const AddDailyLogModal: React.FC<{
   visible: boolean
   onCancel: () => void
@@ -73,7 +71,7 @@ const AddDailyLogModal: React.FC<{
   }
 
   useEffect(() => {
-    logseq.Editor.getCurrentPage().then(page => {
+    logseq.Editor.getCurrentPage().then((page) => {
       console.log('[faiz:] === currentPage', page)
       if (page?.['journal?']) {
         const day = dayjs(`${page?.journalDay}`, 'YYYYMMDD')
@@ -87,13 +85,13 @@ const AddDailyLogModal: React.FC<{
     const at = new AnyTouch(el, { preventDefault: false })
     at.use(pan, { threshold: 0 })
     at.on(['panstart', 'panup', 'pandown', 'panend'], (e: AnyTouchEvent) => {
-      const { y, displacementY, isStart, isEnd, type, nativeEvent } = e;
+      const { y, displacementY, isStart, isEnd, type, nativeEvent } = e
       if (isStart || type === 'panstart') {
         const _y = getNearestAvaliableScalePosition((nativeEvent as any).offsetY)
-        setPanInfo(info => ({ ...info, y: _y }))
+        setPanInfo((info) => ({ ...info, y: _y }))
       }
       const _displacementY = getNearestAvaliableScalePosition(displacementY)
-      setPanInfo(info => ({ ...info, distance: _displacementY }))
+      setPanInfo((info) => ({ ...info, distance: _displacementY }))
     })
     return () => {
       at.off('panstart')
@@ -113,7 +111,9 @@ const AddDailyLogModal: React.FC<{
       extra={
         <Space>
           <Button onClick={onCancel}>Cancel</Button>
-          <Button type="primary" onClick={onClickAdd}>Add</Button>
+          <Button type="primary" onClick={onClickAdd}>
+            Add
+          </Button>
         </Space>
       }
     >
@@ -130,30 +130,41 @@ const AddDailyLogModal: React.FC<{
           {/*======= time ruler selector start ====== */}
           <div
             id="time-ruler"
-            className={classNames(s.rulerContainer, 'bg-primary relative rounded cursor-pointer select-none ml-11 description-text')}
+            className={classNames(
+              s.rulerContainer,
+              'bg-primary relative rounded cursor-pointer select-none ml-11 description-text'
+            )}
             style={{ minHeight: HOUR_HEIGHT * totalHoursCount + 'px' }}
           >
             <div className={classNames(s.mark, 'flex flex-col justify-between h-full')}>
-              {
-                [...new Array(totalHoursCount + 1).keys()].map((_, index) => {
-                  const isHeadOrTail = index === 0 || index === totalHoursCount
-                  const _showText = index + rulerStartTime
-                  const showText = _showText < 10 ? '0' + _showText : _showText
-                  return <div key={index}><span>{isHeadOrTail ? '' : showText + ':00' }</span></div>
-                })
-              }
+              {[...new Array(totalHoursCount + 1).keys()].map((_, index) => {
+                const isHeadOrTail = index === 0 || index === totalHoursCount
+                const _showText = index + rulerStartTime
+                const showText = _showText < 10 ? '0' + _showText : _showText
+                return (
+                  <div key={index}>
+                    <span>{isHeadOrTail ? '' : showText + ':00'}</span>
+                  </div>
+                )
+              })}
             </div>
             <div
               id="ruler-indicator"
-              className={classNames(s.indicator, 'absolute top-0 box-border w-full rounded opacity-50 font-bold', panInfo.distance > 0 ? 'visible' : 'hidden')}
+              className={classNames(
+                s.indicator,
+                'absolute top-0 box-border w-full rounded opacity-50 font-bold',
+                panInfo.distance > 0 ? 'visible' : 'hidden'
+              )}
               style={{ top: panInfo.y + 'px', height: panInfo.distance + 'px' }}
             >
-              <span className="absolute bottom-0 left-1">{startTime}-{endTime}</span>
+              <span className="absolute bottom-0 left-1">
+                {startTime}-{endTime}
+              </span>
             </div>
           </div>
           {/*======= time ruler selector end ====== */}
           {/*======= tag selector start ====== */}
-          <TagSelector options={dailyLogTagList} value={tag} onChange={val => setTag(val)} />
+          <TagSelector options={dailyLogTagList} value={tag} onChange={(val) => setTag(val)} />
           {/*======= tag selector end ====== */}
         </div>
       </div>

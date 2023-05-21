@@ -220,6 +220,7 @@ export const DEFAULT_SETTINGS: ISettingsForm = {
   projectList: [],
   calendarList: [],
   subscriptionList: [],
+  dailyLogTagList: [],
   pomodoro: {
     pomodoro: 25,
     shortBreak: 5,

@@ -113,9 +113,11 @@ const Settings: React.FC<{
       dailyLogTagList: 1,
     })
     logseq.updateSettings({
+      calendarList: [],
       // ensure subscription list is array
       subscriptionList: [],
       projectList: [],
+      dailyLogTagList: [],
       ..._allValues,
       // supports delete ignore tag
       ignoreTag: _allValues.ignoreTag || null,
