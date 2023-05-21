@@ -1,3 +1,10 @@
+## [2.15.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.2...v2.15.3) (2023-05-21)
+
+
+### Bug Fixes
+
+* dailyTagList data error caused daily log to not display ([#205](https://github.com/haydenull/logseq-plugin-agenda/issues/205)) ([c613a09](https://github.com/haydenull/logseq-plugin-agenda/commit/c613a09fb28d5bf2c8fe700984cd147b5b815ced))
+
 ## [2.15.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.1...v2.15.2) (2023-04-21)
 
 
