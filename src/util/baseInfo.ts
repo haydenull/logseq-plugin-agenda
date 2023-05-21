@@ -24,6 +24,9 @@ export const getInitialSettings = (params = { filterInvalidedProject: true }): I
     ...logseq.settings,
     // calendarList,
     logKey,
+    dailyLogTagList: Array.isArray(logseq.settings?.dailyLogTagList)
+      ? logseq.settings?.dailyLogTagList
+      : DEFAULT_SETTINGS.dailyLogTagList,
     projectList: filterInvalidedProject ? projectList?.filter((project) => Boolean(project.id)) : projectList,
   }
 }
