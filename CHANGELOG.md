@@ -1,3 +1,10 @@
+## [2.15.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.3...v2.15.4) (2023-06-18)
+
+
+### Bug Fixes
+
+* can't click pomodoro toolbar ([#208](https://github.com/haydenull/logseq-plugin-agenda/issues/208)) ([2e227ad](https://github.com/haydenull/logseq-plugin-agenda/commit/2e227ad478121b24ab2edf7a27a48038529715ff))
+
 ## [2.15.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.2...v2.15.3) (2023-05-21)
 
 
