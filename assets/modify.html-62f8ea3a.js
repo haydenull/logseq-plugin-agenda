@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-ec85e090","path":"/zh/other/modify.html","title":"编辑事件","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":1654839270000,"contributors":[{"name":"Hayden Chen","email":"brooklyn1984@qq.com","commits":1}]},"filePathRelative":"zh/other/modify.md"}');export{e as data};

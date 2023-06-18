@@ -1,0 +1,1 @@
+const s="/logseq-plugin-agenda/assets/journal-tasks-fee0d98a.png",a="/logseq-plugin-agenda/assets/project-task-from-journal-6b00d97c.png",e="/logseq-plugin-agenda/assets/project-tasks-514e4621.png",n="/logseq-plugin-agenda/assets/milestone-block-b582fac7.png",o="/logseq-plugin-agenda/assets/milestone-calendar-78fbb109.png";export{s as _,a,e as b,n as c,o as d};

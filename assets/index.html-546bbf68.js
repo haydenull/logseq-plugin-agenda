@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-496236ee","path":"/zh/calendar/","title":"自定义日历","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":1647771476000,"contributors":[{"name":"Haydenull","email":"brooklyn1984@qq.com","commits":1},{"name":"haydenull","email":"brooklyn1984@qq.com","commits":1}]},"filePathRelative":"zh/calendar/README.md"}');export{e as data};

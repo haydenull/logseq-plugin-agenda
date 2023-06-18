@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-ec3e2240","path":"/event/dailylog.html","title":"Daily log record","lang":"en-US","frontmatter":{},"headers":[],"git":{"updatedTime":1647778947000,"contributors":[{"name":"haydenull","email":"brooklyn1984@qq.com","commits":1}]},"filePathRelative":"event/dailylog.md"}');export{e as data};

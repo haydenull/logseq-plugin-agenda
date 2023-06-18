@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-a5487e94","path":"/zh/other/create.html","title":"新建事件","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":1654855364000,"contributors":[{"name":"Hayden Chen","email":"brooklyn1984@qq.com","commits":2}]},"filePathRelative":"zh/other/create.md"}');export{e as data};

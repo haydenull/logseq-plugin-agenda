@@ -1,0 +1,1 @@
+const s="/logseq-plugin-agenda/assets/defaultCalendar-a3ca0658.gif",a="/logseq-plugin-agenda/assets/customCalendar-362216a2.gif",g="/logseq-plugin-agenda/assets/journal-2dc03d79.gif",e="/logseq-plugin-agenda/assets/dailyLog-43c945d4.gif";export{s as _,a,g as b,e as c};

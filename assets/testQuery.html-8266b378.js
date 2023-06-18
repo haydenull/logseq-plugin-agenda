@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-ec63ad6c","path":"/zh/other/testQuery.html","title":"在控制台测试 Query","lang":"zh-CN","frontmatter":{},"headers":[],"git":{"updatedTime":1647771476000,"contributors":[{"name":"haydenull","email":"brooklyn1984@qq.com","commits":1}]},"filePathRelative":"zh/other/testQuery.md"}');export{e as data};

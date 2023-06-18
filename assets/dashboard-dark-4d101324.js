@@ -1,0 +1,1 @@
+const s="/logseq-plugin-agenda/assets/dashboard-light-4e358a07.png",a="/logseq-plugin-agenda/assets/dashboard-purple-93b037fc.png",g="/logseq-plugin-agenda/assets/dashboard-dark-b6b8d397.png";export{s as _,a,g as b};

@@ -1,0 +1,1 @@
+const t=JSON.parse('{"key":"v-14c1fbf7","path":"/settings/customCalendar.html","title":"Custom Calendar","lang":"en-US","frontmatter":{},"headers":[],"git":{"updatedTime":1654855364000,"contributors":[{"name":"Hayden Chen","email":"brooklyn1984@qq.com","commits":1}]},"filePathRelative":"settings/customCalendar.md"}');export{t as data};
