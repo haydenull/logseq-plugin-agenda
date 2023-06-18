@@ -39,6 +39,7 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
   }
 
   .agenda-toolbar-pompdoro {
+    display: block;
     height: 1.5rem;
     width: 62px;
     line-height: 1.5rem;
@@ -46,7 +47,7 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
     font-weight: 600;
     border-radius: 0.3rem;
     margin: 0 0.125rem;
-    color: #cd3838;
+    color: #cd3838 !important;
     border: 1px solid #cd3838;
     text-align: center;
     position: relative;
@@ -65,7 +66,7 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
     background-color: #a69494;
   }
   .agenda-toolbar-pompdoro.break {
-    color: #0F9960;
+    color: #0F9960 !important;
     border-color: #0F9960;
   }
   .agenda-toolbar-pompdoro.break .timer-progress-back {

@@ -1,31 +1,52 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { genToolbarPomodoro, updatePomodoroInfo } from '@/helper/pomodoro'
 import { PomodoroConfig, usePomodoro } from '@haydenull/use-pomodoro'
-import { RiExternalLinkLine } from 'react-icons/ri'
-import { MdOutlineRunningWithErrors } from 'react-icons/md'
-import { AiOutlinePoweroff, AiOutlineQuestionCircle } from 'react-icons/ai'
-import { transformBlockToEvent } from '../helper/transform'
-import { getInitialSettings } from '../util/baseInfo'
-import { IEvent } from '../util/events'
-import { genToolbarPomodoro, secondsToTime, updatePomodoroInfo } from '@/helper/pomodoro'
-import { getPageData, navToBlock } from '../util/logseq'
-import dayjs from 'dayjs'
-import { notification } from '../util/util'
-import InerruptionModal from '../components/InerruptionModal'
-import useTheme from '../hooks/useTheme'
 import { ConfigProvider, Tooltip } from 'antd'
+import dayjs from 'dayjs'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { AiOutlinePoweroff, AiOutlineQuestionCircle } from 'react-icons/ai'
+import { MdOutlineRunningWithErrors } from 'react-icons/md'
+import { RiExternalLinkLine } from 'react-icons/ri'
+import InerruptionModal from '../components/InerruptionModal'
+import { transformBlockToEvent } from '../helper/transform'
+import useTheme from '../hooks/useTheme'
+import { getInitialSettings } from '../util/baseInfo'
 import { ANTD_THEME_CONFIG } from '../util/constants'
+import { IEvent } from '../util/events'
+import { navToBlock } from '../util/logseq'
+import { notification } from '../util/util'
 
-const OperationButton = ({ label, onClick, classNames = '', tooltip }: {label: string; onClick: () => void; classNames?: string; tooltip?: string}) => (
+const OperationButton = ({
+  label,
+  onClick,
+  classNames = '',
+  tooltip,
+}: {
+  label: string
+  onClick: () => void
+  classNames?: string
+  tooltip?: string
+}) => (
   <button
     onClick={onClick}
     className={`border-transparent font-medium shadow-sm px-3 py-2 text-sm leading-4 rounded-md bg-red-600 hover:bg-red-500 text-white uppercase cursor-pointer ${classNames}`}
   >
     <Tooltip title={tooltip}>
-      <div className="flex items-center">{label}{tooltip ? <AiOutlineQuestionCircle className="ml-1" /> : ''}</div>
+      <div className="flex items-center">
+        {label}
+        {tooltip ? <AiOutlineQuestionCircle className="ml-1" /> : ''}
+      </div>
     </Tooltip>
   </button>
 )
-const SetTimeButton = ({ label, onClick, classNames = '' }: {label: string, onClick: () => void, classNames?: string}) => (
+const SetTimeButton = ({
+  label,
+  onClick,
+  classNames = '',
+}: {
+  label: string
+  onClick: () => void
+  classNames?: string
+}) => (
   <button
     onClick={onClick}
     className={`border-transparent bg-transparent font-medium shadow-sm w-12 h-5 text-xs leading-4 rounded-md border border-solid cursor-pointer description-text ${classNames}`}
@@ -90,16 +111,31 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
     const { progress } = state
 
     if (isWorking) {
-      return progress === 0
-        ? <OperationButton label="start" onClick={startPomodoro} />
-        : [
-          <OperationButton key="stop" label="stop" onClick={reset} tooltip="Give up this pomodoro and do not record the time" />,
-          <OperationButton key="finish" label="finish" onClick={finishPomodoro} classNames="ml-2" tooltip="Complete this pomodoro and record the time" />,
+      return progress === 0 ? (
+        <OperationButton label="start" onClick={startPomodoro} />
+      ) : (
+        [
+          <OperationButton
+            key="abandon"
+            label="abandon"
+            onClick={reset}
+            tooltip="Give up this pomodoro and do not record the time"
+          />,
+          <OperationButton
+            key="completed"
+            label="completed"
+            onClick={finishPomodoro}
+            classNames="ml-2"
+            tooltip="Complete this pomodoro and record the time"
+          />,
         ]
+      )
     } else {
-      return progress === 0
-        ? <OperationButton label="start" onClick={start} classNames="bg-green-600 hover:bg-green-500" />
-        : <OperationButton label="skip" onClick={goPomodoro} classNames="bg-green-600 hover:bg-green-500" />
+      return progress === 0 ? (
+        <OperationButton label="start" onClick={start} classNames="bg-green-600 hover:bg-green-500" />
+      ) : (
+        <OperationButton label="skip" onClick={goPomodoro} classNames="bg-green-600 hover:bg-green-500" />
+      )
     }
   }
 
@@ -115,8 +151,9 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
   }, [state.formattedTimer, state.type, state.paused, uuid])
   useEffect(() => {
     if (!uuid) return
-    if (!state.paused) return logseq.UI.showMsg('Pomodoro is running, please stop it first.', 'error') as unknown as undefined
-    logseq.Editor.getBlock(uuid).then(async block => {
+    if (!state.paused)
+      return logseq.UI.showMsg('Pomodoro is running, please stop it first.', 'error') as unknown as undefined
+    logseq.Editor.getBlock(uuid).then(async (block) => {
       if (!block) return
       const event = await transformBlockToEvent(block!, getInitialSettings())
       setEvent(event)
@@ -129,7 +166,7 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
         start: startTimeRef.current!,
         length: state.config.pomodoro,
         interruptions: window.interruptionMap.get(startTimeRef.current!) || [],
-      }).then(newContent => logseq.Editor.updateBlock(uuid, newContent!))
+      }).then((newContent) => logseq.Editor.updateBlock(uuid, newContent!))
       notification('Pomodoro is finished!')
     }
   }, [isWorking, state.progress, uuid])
@@ -138,31 +175,36 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
     if (logseq.isMainUIVisible) {
       const rightSidebarElement = parent.document.getElementById('right-sidebar')
       const width = rightSidebarElement?.getBoundingClientRect()?.width || 0
-      setPosition(_position => ({ ..._position, right: width + 40 + 'px' }))
+      setPosition((_position) => ({ ..._position, right: width + 40 + 'px' }))
     }
   }, [logseq.isMainUIVisible])
 
   return (
-    <ConfigProvider
-      theme={ANTD_THEME_CONFIG[theme]}
-    >
+    <ConfigProvider theme={ANTD_THEME_CONFIG[theme]}>
       <div className="fixed top-0 left-0 w-screen h-screen" onClick={() => logseq.hideMainUI()}></div>
-      <div className="fixed right-10 shadow-xl px-4 py-6 rounded-md bg-quaternary flex transition-all" style={{ top: '48px', right: position.right, minWidth: '300px' }}>
+      <div
+        className="fixed right-10 shadow-xl px-4 py-6 rounded-md bg-quaternary flex transition-all"
+        style={{ top: '48px', right: position.right, minWidth: '300px' }}
+      >
         <div className="flex-1">
-          <div className="singlge-line-ellipsis cursor-pointer description-text flex items-center" style={{ maxWidth: '220px' }} onClick={() => event && navToBlock(event)} title={event?.addOns.showTitle}>{event?.addOns.showTitle}<RiExternalLinkLine /></div>
+          <div
+            className="singlge-line-ellipsis cursor-pointer description-text flex items-center"
+            style={{ maxWidth: '220px' }}
+            onClick={() => event && navToBlock(event)}
+            title={event?.addOns.showTitle}
+          >
+            {event?.addOns.showTitle}
+            <RiExternalLinkLine />
+          </div>
           <div>
-            <p className="text-center text-4xl mt-6 mb-6 title-text">{ state.formattedTimer }</p>
-            <div className="flex flex-row justify-center">
-              {renderButtons()}
-            </div>
+            <p className="text-center text-4xl mt-6 mb-6 title-text">{state.formattedTimer}</p>
+            <div className="flex flex-row justify-center">{renderButtons()}</div>
           </div>
         </div>
         <div className="flex flex-col w-12 justify-between pt-2">
-          {
-            pomodoro?.commonPomodoros?.map(time => (
-              <SetTimeButton key={time} label={time + 'min'} onClick={() => changeTimeConfig(time)} />
-            ))
-          }
+          {pomodoro?.commonPomodoros?.map((time) => (
+            <SetTimeButton key={time} label={time + 'min'} onClick={() => changeTimeConfig(time)} />
+          ))}
         </div>
 
         <div className="absolute right-5 top-1 opacity-60 text">
@@ -185,7 +227,6 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
             />
           </Tooltip>
         </div>
-
       </div>
 
       <InerruptionModal

@@ -8,10 +8,10 @@ export const secondsToTime = (seconds: number) => {
 }
 
 export const genToolbarPomodoro = (uuid: string, time: string, progress: number, isBreak: boolean = false) => {
-  return `<div data-on-click="showPomodoro" class="agenda-toolbar-pompdoro ${isBreak ? 'break' : ''}" data-uuid="${uuid}">
+  return `<a data-on-click="showPomodoro" class="agenda-toolbar-pompdoro ${isBreak ? 'break' : ''}" data-uuid="${uuid}">
     ${time}
     <div class="timer-progress-back" style="width: ${progress * 100}%;"></div>
-  </div>`
+  </a>`
 }
 
 export const togglePomodoro = (show: boolean = true) => {
@@ -21,14 +21,14 @@ export const togglePomodoro = (show: boolean = true) => {
 }
 
 export type IInterruption = {
-  type: number   // 1: internal interruption  2: external interruption
+  type: number // 1: internal interruption  2: external interruption
   time: number
   remark: string
 }
 export type IPomodoroInfo = {
-  isFull: boolean;
-  start: number;
-  length: number;
+  isFull: boolean
+  start: number
+  length: number
   interruptions?: IInterruption[]
 }
 export const getPomodoroInfo = (blockContent: string, format: BlockEntity['format']): IPomodoroInfo[] | null => {
@@ -40,7 +40,7 @@ export const getPomodoroInfo = (blockContent: string, format: BlockEntity['forma
   const pomodoroInfo = params.t
   if (!pomodoroInfo) return null
   const pomodoros = pomodoroInfo.split(',')
-  return pomodoros.map(pomodoro => {
+  return pomodoros.map((pomodoro) => {
     const info = pomodoro.split('-')
     const [type, start, length, ...interruption] = info
     const interruptionStr = interruption.join('-')
@@ -51,7 +51,7 @@ export const getPomodoroInfo = (blockContent: string, format: BlockEntity['forma
       isFull: type === 'f',
       start: parseInt(start),
       length: parseInt(length),
-      interruptions: interruptions.map(str => {
+      interruptions: interruptions.map((str) => {
         return {
           type: Number(str?.[0]),
           time: Number(str.substring(1, 14)),
@@ -65,7 +65,7 @@ export const getPomodoroInfo = (blockContent: string, format: BlockEntity['forma
 export const updatePomodoroInfo = async (
   uuid: string,
   newPomodoro: IPomodoroInfo | IPomodoroInfo[],
-  type: 'addon' | 'update' = 'addon',
+  type: 'addon' | 'update' = 'addon'
 ) => {
   const block = await logseq.Editor.getBlock(uuid)
   if (!block) return
@@ -75,17 +75,21 @@ export const updatePomodoroInfo = async (
     newPomodoros = pomodoros.concat(newPomodoro)
   }
   // gen new pomodoro info text
-  const newInfoText = newPomodoros.map(pomodoro => {
-    const { isFull, start, length, interruptions } = pomodoro
-    const type = isFull ? 'f' : 'p'
+  const newInfoText = newPomodoros
+    .map((pomodoro) => {
+      const { isFull, start, length, interruptions } = pomodoro
+      const type = isFull ? 'f' : 'p'
 
-    const interruptionStr = interruptions?.map(interruption => {
-      const { type, time, remark } = interruption
-      return `${type}${time}${remark}`
-    }).join(POMODORO_INTERRUPTION_SEPARATOR)
+      const interruptionStr = interruptions
+        ?.map((interruption) => {
+          const { type, time, remark } = interruption
+          return `${type}${time}${remark}`
+        })
+        .join(POMODORO_INTERRUPTION_SEPARATOR)
 
-    return `${type}-${start}-${length}${interruptionStr ? `-${interruptionStr}` : ''}`
-  }).join(',')
+      return `${type}-${start}-${length}${interruptionStr ? `-${interruptionStr}` : ''}`
+    })
+    .join(',')
 
   const url = new URL('agenda-pomo://')
   url.searchParams.append('t', newInfoText)
@@ -93,10 +97,15 @@ export const updatePomodoroInfo = async (
   const countTime = newPomodoros.reduce((acc, pomodoro) => {
     return acc + pomodoro.length
   }, 0)
-  const tomato = newPomodoros.filter(pomodoro => pomodoro.isFull)?.map(() => '🍅')?.join('') || '🍅'
+  const tomato =
+    newPomodoros
+      .filter((pomodoro) => pomodoro.isFull)
+      ?.map(() => '🍅')
+      ?.join('') || '🍅'
   const showText = `${tomato} ${Math.ceil(countTime / 60)}min`
 
-  const newInfo = block?.format === 'org' ? `>[[#${url.toString()}][${showText}]]` : `>[${showText}](#${url.toString()})`
+  const newInfo =
+    block?.format === 'org' ? `>[[#${url.toString()}][${showText}]]` : `>[${showText}](#${url.toString()})`
 
   // replace
   const [firstLine, ...otherLines] = block.content?.split('\n') || []
