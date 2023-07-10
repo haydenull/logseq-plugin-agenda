@@ -13,3 +13,11 @@ interface Window {
   unmountPomodoroApp: () => void
   interruptionMap: Map<number, any>
 }
+
+interface ImportMetaEnv {
+  readonly VITE_LOGSEQ_API_SERVER: string
+  readonly VITE_LOGSEQ_API_TOKEN: string
+}
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}

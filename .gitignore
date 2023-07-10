@@ -6,3 +6,6 @@ dist-ssr
 .vscode
 .temp
 .cache
+
+# mock settings may contain sensitive tokens
+src/mock/settings.json
