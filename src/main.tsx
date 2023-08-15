@@ -1,5 +1,4 @@
 import '@logseq/libs'
-
 import 'antd/dist/reset.css'
 import { BarChart, GaugeChart, LineChart, PieChart, TreemapChart } from 'echarts/charts'
 import { GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from 'echarts/components'
@@ -106,7 +105,7 @@ if (isDevelopment) {
       (data) => {
         renderApp()
         logseq.showMainUI()
-      }
+      },
     )
     // ========== show or hide app end =========
 
@@ -168,7 +167,7 @@ async function renderApp() {
     <React.StrictMode>
       <MainApp defaultRoute={defaultRoute} />
     </React.StrictMode>,
-    document.getElementById('root')
+    document.getElementById('root'),
   )
 }
 
@@ -176,13 +175,25 @@ async function renderApp() {
 export function renderModalApp(params: IModalAppProps) {
   window.currentApp = 'modal'
   togglePomodoro(false)
-  const { type, data } = params
   toggleAppTransparent(true)
-  ReactDOM.render(
-    <React.StrictMode>
-      {/* @ts-ignore */}
-      <ModalApp type={type} data={data} showKeepRef={params.showKeepRef} />
-    </React.StrictMode>,
-    document.getElementById('root')
-  )
+
+  const renderModalApp = () => {
+    let app: React.ReactNode = null
+    switch (params.type) {
+      case 'modifySchedule':
+        app = <ModalApp type="modifySchedule" data={params.data} />
+        break
+      case 'addDailyLog':
+        app = <ModalApp type="addDailyLog" />
+        break
+      case 'pomodoro':
+        app = <ModalApp type="pomodoro" data={params.data} />
+        break
+      case 'insertTodaySchedule':
+        app = <ModalApp type="insertTodaySchedule" data={params.data} />
+    }
+    return app
+  }
+
+  ReactDOM.render(<React.StrictMode>{renderModalApp()}</React.StrictMode>, document.getElementById('root'))
 }
