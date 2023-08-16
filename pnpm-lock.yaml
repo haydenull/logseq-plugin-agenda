@@ -91,8 +91,8 @@ dependencies:
 
 devDependencies:
   '@haydenull/fabric':
-    specifier: 0.0.1-dev.6
-    version: 0.0.1-dev.6(eslint@8.44.0)(prettier-plugin-organize-imports@3.2.2)(prettier@2.8.7)(typescript@4.9.3)
+    specifier: 0.2.2
+    version: 0.2.2(eslint@8.44.0)(prettier-plugin-organize-imports@3.2.2)(prettier@2.8.7)(typescript@4.9.3)
   '@semantic-release/changelog':
     specifier: ^6.0.1
     version: 6.0.1(semantic-release@21.0.0)
@@ -925,14 +925,19 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
 
-  /@haydenull/fabric@0.0.1-dev.6(eslint@8.44.0)(prettier-plugin-organize-imports@3.2.2)(prettier@2.8.7)(typescript@4.9.3):
-    resolution: {integrity: sha512-ZZTxDCy46hyexWtBfj5FB5vUFQR2l491ebynP7fcLBKoB2xFTAh27ivfEDeM8yMr1uw2leckYKxD88tq5dB5Hw==}
+  /@haydenull/fabric@0.2.2(eslint@8.44.0)(prettier-plugin-organize-imports@3.2.2)(prettier@2.8.7)(typescript@4.9.3):
+    resolution: {integrity: sha512-jSFP9DVDjiA+8mL2pobDchCiNLBnHGgVOC7vW6m9iPsz7gkemahdl0Ig1zt1VxTQgEfq0UeMv13G3ncv0WX6FQ==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
     peerDependencies:
       eslint: '>=7.4.0'
     dependencies:
       '@trivago/prettier-plugin-sort-imports': 4.1.1(prettier@2.8.7)
       '@typescript-eslint/eslint-plugin': 6.0.0(@typescript-eslint/parser@6.0.0)(eslint@8.44.0)(typescript@4.9.3)
       '@typescript-eslint/parser': 6.0.0(eslint@8.44.0)(typescript@4.9.3)
+      chalk: 4.1.2
+      commander: 11.0.0
+      czg: 1.7.1
       eslint: 8.44.0
       eslint-config-prettier: 8.8.0(eslint@8.44.0)
       eslint-plugin-react: 7.32.2(eslint@8.44.0)
@@ -2620,9 +2625,9 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       is-string: 1.0.7
     dev: true
 
@@ -2640,7 +2645,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
       es-shim-unscopables: 1.0.0
     dev: true
@@ -2650,7 +2655,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
       es-shim-unscopables: 1.0.0
     dev: true
@@ -2659,10 +2664,10 @@ packages:
     resolution: {integrity: sha512-pZYPXPRl2PqWcsUs6LOMn+1f1532nEoPTYowBtqLwAW+W8vSVhkIGnmOX1t/UQjD6YGI0vcD2B1U7ZFGQH9jnQ==}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
       es-shim-unscopables: 1.0.0
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
     dev: true
 
   /arrify@1.0.1:
@@ -3135,6 +3140,11 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
+  /commander@11.0.0:
+    resolution: {integrity: sha512-9HMlXtt/BNoYr8ooyjjNRdIilOTkVJXB+GhxMTtOKwk0R4j4lS4NpjuqmRxroBfnfTSHQIHQB7wryHhXarNjmQ==}
+    engines: {node: '>=16'}
+    dev: true
+
   /compare-func@2.0.0:
     resolution: {integrity: sha512-zHig5N+tPWARooBnb0Zx1MFcdfpyJrfTJ3Y5L+IFvUm8rM74hHz66z0gw0x4tijh5CorKkKUCnW82R2vmpeCRA==}
     dependencies:
@@ -3311,6 +3321,12 @@ packages:
 
   /csstype@3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
+
+  /czg@1.7.1:
+    resolution: {integrity: sha512-KP93cTbZxgWYDKJzZpjnLe0sy/2FwyegatnrOaqsath04WinvsdhZl5QCGkxTKBY2DavpKloIBW/WGZzCKmrlA==}
+    engines: {node: '>=v12.20.0'}
+    hasBin: true
+    dev: true
 
   /data-urls@3.0.2:
     resolution: {integrity: sha512-Jy/tj3ldjZJo63sVAvg6LHt2mHvl4V6AgRAmNDtLdm7faqtsx+aJG42rsyCo9JCoRVKwPFzKlIPx3DIibwSIaQ==}
@@ -4414,7 +4430,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
       functions-have-names: 1.2.3
     dev: true
@@ -4517,7 +4533,7 @@ packages:
     resolution: {integrity: sha512-sFdI5LyBiNTHjRd7cGPWapiHWMOXKyuBNX/cWJ3NfzrZQVa8GI/8cofCl74AOVqq9W5kNmguTIzJ/1s2gyI9wA==}
     engines: {node: '>= 0.4'}
     dependencies:
-      define-properties: 1.1.4
+      define-properties: 1.2.0
     dev: true
 
   /globby@11.1.0:
@@ -6111,7 +6127,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
     dev: true
 
@@ -6120,14 +6136,14 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
     dev: true
 
   /object.hasown@1.1.2:
     resolution: {integrity: sha512-B5UIT3J1W+WuWIU55h0mjlwaqxiE5vYENJXIXZ4VFe05pNYrkKuK0U/6aFcb0pKywYJh7IhfoqUfKVmrJJHZHw==}
     dependencies:
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
     dev: true
 
@@ -6136,7 +6152,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
     dev: true
 
@@ -8065,12 +8081,12 @@ packages:
     resolution: {integrity: sha512-6zOCOcJ+RJAQshcTvXPHoxoQGONa3e/Lqx90wUA+wEzX78sg5Bo+1tQo4N0pohS0erG9qtCqJDjNCQBjeWVxyg==}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
-      get-intrinsic: 1.1.3
+      get-intrinsic: 1.2.1
       has-symbols: 1.0.3
       internal-slot: 1.0.5
-      regexp.prototype.flags: 1.4.3
+      regexp.prototype.flags: 1.5.0
       side-channel: 1.0.4
     dev: true
 
@@ -8079,7 +8095,7 @@ packages:
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
     dev: true
 
@@ -8087,7 +8103,7 @@ packages:
     resolution: {integrity: sha512-JySq+4mrPf9EsDBEDYMOb/lM7XQLulwg5R/m1r0PXEFqrV0qHvl58sdTilSXtKOflCsK2E8jxf+GKC0T07RWwQ==}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
     dev: true
 
@@ -8095,7 +8111,7 @@ packages:
     resolution: {integrity: sha512-omqjMDaY92pbn5HOX7f9IccLA+U1tA9GvtU4JrodiXFfYB7jPzzHpRzpglLAjtUV6bB557zwClJezTqnAiYnQA==}
     dependencies:
       call-bind: 1.0.2
-      define-properties: 1.1.4
+      define-properties: 1.2.0
       es-abstract: 1.21.3
     dev: true
 
