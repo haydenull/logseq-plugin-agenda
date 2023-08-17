@@ -14,10 +14,12 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest --watch",
+    "test:noWatch": "vitest --watch",
     "coverage": "vitest run --coverage",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "typecheck": "tsc --noEmit"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [

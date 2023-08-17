@@ -14,7 +14,7 @@ import { getInternalEvents, type IEvent } from '@/util/events'
 
 export type ModalAppType = 'modifySchedule' | 'insertTodaySchedule' | 'pomodoro' | 'addDailyLog'
 
-type IEditSchedule = {
+type IModifySchedule = {
   type: 'modifySchedule'
   data: {
     initialValues?: IScheduleValue
@@ -35,7 +35,7 @@ type IPomodoroModal = {
 type IAddDailyLogModal = {
   type: 'addDailyLog'
 }
-export type IModalAppProps = IEditSchedule | IInsertTodaySchedule | IPomodoroModal | IAddDailyLogModal
+export type IModalAppProps = IModifySchedule | IInsertTodaySchedule | IPomodoroModal | IAddDailyLogModal
 const ModalApp: React.FC<IModalAppProps> = (props) => {
   const theme = useTheme() || 'green'
 
