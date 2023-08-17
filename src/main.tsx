@@ -5,6 +5,7 @@ import { GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } fr
 import * as echarts from 'echarts/core'
 import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
+import proxyLogseq from 'logseq-proxy'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import 'tui-calendar/dist/tui-calendar.css'
@@ -12,7 +13,6 @@ import 'tui-calendar/dist/tui-calendar.css'
 import MainApp from '@/apps/MainApp'
 import ModalApp, { type IModalAppProps } from '@/apps/ModalApp'
 import { LOGSEQ_PROVIDE_COMMON_STYLE } from '@/constants/style'
-import { proxyLogseq } from '@/helper/logseqProxy'
 import { togglePomodoro } from '@/helper/pomodoro'
 import { pullTask } from '@/helper/todoist'
 import initializeDayjs from '@/register/dayjs'
@@ -45,7 +45,13 @@ const isDevelopment = import.meta.env.DEV
 
 if (isDevelopment) {
   // run in browser
-  proxyLogseq()
+  proxyLogseq({
+    config: {
+      apiServer: import.meta.env.VITE_LOGSEQ_API_SERVER,
+      apiToken: import.meta.env.VITE_LOGSEQ_API_TOKEN,
+    },
+    settings: await import('@/mock/settings.json'),
+  })
   renderApp()
   // renderPomodoroApp('pomodoro')
   // renderModalApp({ type: 'addDailyLog' })
