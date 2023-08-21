@@ -1,10 +1,12 @@
-import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'
-import { projectSchedulesAtom, todaySubscriptionSchedulesAtom } from '@/model/schedule'
-import { categorizeSubscriptions, categorizeTasks } from '@/util/schedule'
 import { useAtom } from 'jotai'
 import React, { useEffect } from 'react'
 import { MdAddTask } from 'react-icons/md'
 import { TbActivity } from 'react-icons/tb'
+
+import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'
+import { projectSchedulesAtom, todaySubscriptionSchedulesAtom } from '@/model/schedule'
+import { categorizeSubscriptions, categorizeTasks } from '@/util/schedule'
+
 import SidebarSubscription from '../components/SidebarSubscription'
 import SidebarTask from '../components/SidebarTask'
 import { renderModalApp } from '../main'
@@ -64,7 +66,7 @@ const App: React.FC<{
           title="Create Schedule"
           href="javascript:void(0);"
           onClick={() => {
-            renderModalApp({ type: 'editSchedule', data: { type: 'create' } })
+            renderModalApp({ type: 'modifySchedule', data: { type: 'create' } })
             logseq.showMainUI()
           }}
         >

@@ -1,17 +1,17 @@
 import dayjs from 'dayjs'
+
 import { transformBlockToEvent } from '@/helper/transform'
-import { startPomodoro } from '@/register/pomodoro'
 import { renderModalApp } from '@/main'
 import { getInitialSettings } from '@/util/baseInfo'
 
 const initializeEditScheduleModal = () => {
   const editSchedule = async (e) => {
-    let block = await logseq.Editor.getBlock(e.uuid)
-    const blockRefs = await Promise.all(block!.refs?.map(ref => logseq.Editor.getPage(ref.id)))
+    const block = await logseq.Editor.getBlock(e.uuid)
+    const blockRefs = await Promise.all(block!.refs?.map((ref) => logseq.Editor.getPage(ref.id)))
     block!.refs = blockRefs
     const event = await transformBlockToEvent(block!, getInitialSettings())
     renderModalApp({
-      type: 'editSchedule',
+      type: 'modifySchedule',
       data: {
         type: 'update',
         initialValues: {

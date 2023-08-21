@@ -1,7 +1,6 @@
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import usePluginImport from 'vite-plugin-importer'
 import { resolve } from 'path'
+import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,14 +19,14 @@ export default defineConfig({
   },
   base: './',
   build: {
-    target: "esnext",
+    target: 'esnext',
     // minify: "esbuild",
   },
   css: {
     preprocessorOptions: {
       less: {
         javascriptEnabled: true,
-      }
+      },
     },
   },
 })

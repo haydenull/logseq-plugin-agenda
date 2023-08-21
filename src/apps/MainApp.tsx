@@ -1,22 +1,21 @@
-import React, { useEffect } from 'react'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import Sider from '@/components/Sider'
 import { MENUS } from '@/constants/elements'
-import { useAtom } from 'jotai'
 import { subscriptionSchedulesAtom } from '@/model/schedule'
-import { getInitialSettings } from '@/util/baseInfo'
-import { getSubCalendarSchedules } from '@/util/subscription'
-import { ANTD_THEME_CONFIG, DEFAULT_SETTINGS } from '@/util/constants'
 import ProjectDetail from '@/pages/ProjectDetail'
-import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from './model/events'
-import { getInternalEvents } from './util/events'
+import { getInitialSettings } from '@/util/baseInfo'
+import { ANTD_THEME_CONFIG, DEFAULT_SETTINGS } from '@/util/constants'
+import { getSubCalendarSchedules } from '@/util/subscription'
 import { ConfigProvider } from 'antd'
-import useTheme from './hooks/useTheme'
+import { useAtom } from 'jotai'
+import React, { useEffect } from 'react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import useTheme from '../hooks/useTheme'
+import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from '../model/events'
+import { getInternalEvents } from '../util/events'
 
-const App: React.FC<{
+const MainApp: React.FC<{
   defaultRoute?: string
 }> = ({ defaultRoute }) => {
-
   // TODO: 使用 only-write 减少重新渲染
   const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
 
@@ -27,8 +26,8 @@ const App: React.FC<{
   const theme = useTheme() || 'green'
 
   const { homePage = DEFAULT_SETTINGS.homePage, logKey } = getInitialSettings()
-  const homePageElement = MENUS.find(item => item.value === homePage)?.element
-  const menus = logKey?.enabled ? MENUS : MENUS.filter(item => item.value !== 'dailyLog')
+  const homePageElement = MENUS.find((item) => item.value === homePage)?.element
+  const menus = logKey?.enabled ? MENUS : MENUS.filter((item) => item.value !== 'dailyLog')
 
   useEffect(() => {
     async function fetchSchedules() {
@@ -47,19 +46,15 @@ const App: React.FC<{
   }, [])
 
   return (
-    <ConfigProvider
-      theme={ANTD_THEME_CONFIG[theme]}
-    >
+    <ConfigProvider theme={ANTD_THEME_CONFIG[theme]}>
       <main className="w-screen h-screen flex" prefix="custom">
         <MemoryRouter>
           <Sider defaultRoute={defaultRoute} menus={menus} />
           <Routes>
             <Route path="/" element={homePageElement} />
-            {
-              menus.map(item => (
-                <Route path={item.path} element={item.element} key={item.value} />
-              ))
-            }
+            {menus.map((item) => (
+              <Route path={item.path} element={item.element} key={item.value} />
+            ))}
             <Route path="/project/:projectId" element={<ProjectDetail />} />
           </Routes>
         </MemoryRouter>
@@ -68,4 +63,4 @@ const App: React.FC<{
   )
 }
 
-export default App
+export default MainApp
