@@ -6,6 +6,8 @@
 
 Click [here](https://haydenull.github.io/logseq-plugin-agenda/) for the full documentation
 
+If you want to contribute, please visit [contribution guide](./CONTRIBUTING.md)
+
 <a href="https://www.buymeacoffee.com/haydenull"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=haydenull&button_colour=40DCA5&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" /></a>
 
 ## 🎨 Features
