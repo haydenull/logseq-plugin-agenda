@@ -1,6 +1,15 @@
 import react from '@vitejs/plugin-react'
+import { existsSync } from 'fs'
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
+
+const getMockSettings = (isDev = false) => {
+  const localSettingsPath = resolve(__dirname, 'mocks/settings.local.json')
+  if (isDev && existsSync(localSettingsPath)) {
+    return require(localSettingsPath)
+  }
+  return {}
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(async ({ command, mode }) => {
@@ -31,10 +40,7 @@ export default defineConfig(async ({ command, mode }) => {
       },
     },
     define: {
-      mockSettings:
-        mode === 'production'
-          ? await import('./mocks/settings.example.json')
-          : await import('./mocks/settings.local.json'),
+      mockSettings: getMockSettings(mode === 'development'),
     },
   }
 })
