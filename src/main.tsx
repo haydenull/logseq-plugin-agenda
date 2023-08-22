@@ -50,7 +50,7 @@ if (isDevelopment) {
       apiServer: import.meta.env.VITE_LOGSEQ_API_SERVER,
       apiToken: import.meta.env.VITE_LOGSEQ_API_TOKEN,
     },
-    settings: await import('@/mock/settings.json'),
+    settings: window.mockSettings,
   })
   renderApp()
   // renderPomodoroApp('pomodoro')

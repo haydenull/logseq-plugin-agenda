@@ -8,4 +8,4 @@ dist-ssr
 .cache
 
 # mock settings may contain sensitive tokens
-src/mock/settings.json
+mocks/settings.local.json

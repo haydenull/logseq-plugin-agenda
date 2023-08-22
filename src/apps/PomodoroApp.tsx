@@ -1,17 +1,19 @@
-import { genToolbarPomodoro, updatePomodoroInfo } from '@/helper/pomodoro'
-import { PomodoroConfig, usePomodoro } from '@haydenull/use-pomodoro'
+import { type PomodoroConfig, usePomodoro } from '@haydenull/use-pomodoro'
 import { ConfigProvider, Tooltip } from 'antd'
 import dayjs from 'dayjs'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { AiOutlinePoweroff, AiOutlineQuestionCircle } from 'react-icons/ai'
 import { MdOutlineRunningWithErrors } from 'react-icons/md'
 import { RiExternalLinkLine } from 'react-icons/ri'
+
+import { genToolbarPomodoro, updatePomodoroInfo } from '@/helper/pomodoro'
+
 import InerruptionModal from '../components/InerruptionModal'
 import { transformBlockToEvent } from '../helper/transform'
 import useTheme from '../hooks/useTheme'
 import { getInitialSettings } from '../util/baseInfo'
 import { ANTD_THEME_CONFIG } from '../util/constants'
-import { IEvent } from '../util/events'
+import type { IEvent } from '../util/events'
 import { navToBlock } from '../util/logseq'
 import { notification } from '../util/util'
 

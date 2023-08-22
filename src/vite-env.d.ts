@@ -1,8 +1,9 @@
 /// <reference types="vite/client" />
 
+type IInterruption = import('./helper/pomodoro').IInterruption
 interface Window {
-  faizNavigate: (e: any) => void
-  logseqAppUserConfigs: any
+  faizNavigate: (e: unknown) => void
+  logseqAppUserConfigs: unknown
   currentApp: 'app' | 'pomodoro' | 'modal'
   currentPomodoro: {
     uuid?: string
@@ -11,7 +12,8 @@ interface Window {
     }
   }
   unmountPomodoroApp: () => void
-  interruptionMap: Map<number, any>
+  interruptionMap: Map<number, IInterruption[]>
+  mockSettings: Record<string, unknown>
 }
 
 interface ImportMetaEnv {
