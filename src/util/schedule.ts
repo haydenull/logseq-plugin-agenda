@@ -1,52 +1,65 @@
-import { AppUserConfigs } from '@logseq/libs/dist/LSPlugin.user';
-import { ISchedule } from 'tui-calendar'
-import { flattenDeep, get, has } from 'lodash'
+import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
+import type { AppUserConfigs, PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import { endOfDay, formatISO, parse } from 'date-fns'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs, { type Dayjs } from 'dayjs'
+import { flattenDeep, get, has } from 'lodash'
+import type { ISchedule } from 'tui-calendar'
+
 import { getInitialSettings } from './baseInfo'
-import { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
-import { CALENDAR_DONN_TASK_ALLDAY_STYLE, CALENDAR_DONN_TASK_TIME_STYLE, DEFAULT_BLOCK_DEADLINE_DATE_FORMAT, DEFAULT_JOURNAL_FORMAT, MARKDOWN_PROJECT_TIME_REG, ORG_PROJECT_TIME_REG, TIME_REG } from './constants'
+import {
+  CALENDAR_DONN_TASK_ALLDAY_STYLE,
+  CALENDAR_DONN_TASK_TIME_STYLE,
+  DEFAULT_BLOCK_DEADLINE_DATE_FORMAT,
+  DEFAULT_JOURNAL_FORMAT,
+  MARKDOWN_PROJECT_TIME_REG,
+  ORG_PROJECT_TIME_REG,
+  TIME_REG,
+} from './constants'
+import type { IEvent } from './events'
 import { getBlockData, getPageData } from './logseq'
-import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
+import type { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
 import { parseUrlParams } from './util'
-import { IEvent } from './events';
 
 export const getCustomCalendarSchedules = async () => {
-
-  let calendarSchedules:ISchedule[] = []
+  let calendarSchedules: ISchedule[] = []
 
   // get calendar configs
   const settings = getInitialSettings()
   const { calendarList: calendarConfigs = [] } = settings
-  const customCalendarConfigs = calendarConfigs.filter(config => config?.enabled)
+  const customCalendarConfigs = calendarConfigs.filter((config) => config?.enabled)
 
   let scheduleQueryList: IQueryWithCalendar[] = []
 
-  scheduleQueryList = customCalendarConfigs.map((calendar) => {
-    return calendar?.query
-            ?.filter(item => item?.script?.length)
-            ?.map(item => ({
-              calendarConfig: calendar,
-              query: item,
-            }))
-  }).filter(Boolean).flat()
+  scheduleQueryList = customCalendarConfigs
+    .map((calendar) => {
+      return calendar?.query
+        ?.filter((item) => item?.script?.length)
+        ?.map((item) => ({
+          calendarConfig: calendar,
+          query: item,
+        }))
+    })
+    .filter(Boolean)
+    .flat()
 
-  const queryPromiseList = scheduleQueryList.map(async queryWithCalendar => {
+  const queryPromiseList = scheduleQueryList.map(async (queryWithCalendar) => {
     const { query } = queryWithCalendar
     const { script = '', queryType } = query
-    let blocks: any[] = []
+    let blocks: BlockEntity[] = []
     if (queryType === 'simple') {
-      blocks = await logseq.DB.q(script) || []
+      blocks = (await logseq.DB.q(script)) || []
     } else {
       blocks = await logseq.DB.datascriptQuery(script)
     }
 
-    const buildSchedulePromiseList = flattenDeep(blocks).map((block) => convertBlockToSchedule({ block, queryWithCalendar, settings }))
+    const buildSchedulePromiseList = flattenDeep(blocks).map((block) =>
+      convertBlockToSchedule({ block, queryWithCalendar, settings }),
+    )
     return Promise.all(buildSchedulePromiseList)
   })
 
   const scheduleRes = await Promise.allSettled(queryPromiseList)
-  const scheduleResFulfilled:ISchedule[] = []
+  const scheduleResFulfilled: ISchedule[] = []
   scheduleRes.forEach((res, index) => {
     if (res.status === 'fulfilled') {
       scheduleResFulfilled.push(res.value)
@@ -83,21 +96,26 @@ export const getDailyLogSchedules = async () => {
   //                 const _content = block.content?.trim()
   //                 return _content.length > 0 && block?.page?.journalDay && !block.marker && !block.scheduled && !block.deadline
   //               }) || []
-  const _logs = logs?.filter(block => {
-    // Interstitial Journal requries filter task
-    if (!block?.page?.journalDay) return false
-    return TIME_REG.test(block?.content.replace(new RegExp(`^${block.marker} `), ''))
-  }) || []
-  const _logSchedulePromises = _logs?.map(async block => {
+  const _logs =
+    logs?.filter((block) => {
+      // Interstitial Journal requries filter task
+      if (!block?.page?.journalDay) return false
+      return TIME_REG.test(block?.content.replace(new RegExp(`^${block.marker} `), ''))
+    }) || []
+  const _logSchedulePromises = _logs?.map(async (block) => {
     const date = block?.page?.journalDay
-    const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
+    const { start: _startTime, end: _endTime } = getTimeInfo(
+      block?.content.replace(new RegExp(`^${block.marker} `), ''),
+    )
     const hasTime = _startTime || _endTime
     if (!hasTime) return undefined
     block.category = hasTime ? 'time' : 'allday'
     return await genSchedule({
       blockData: block,
       category: hasTime ? 'time' : 'allday',
-      start: _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
+      start: _startTime
+        ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date()))
+        : genCalendarDate(date),
       end: _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
       calendarConfig: logKey,
       defaultDuration,
@@ -109,11 +127,21 @@ export const getDailyLogSchedules = async () => {
   return _logSchedules.filter(Boolean)
 }
 
-export const convertBlockToSchedule = async ({ block, queryWithCalendar, settings }: { block: any; queryWithCalendar: IQueryWithCalendar, settings: ISettingsForm }) => {
+export const convertBlockToSchedule = async ({
+  block,
+  queryWithCalendar,
+  settings,
+}: {
+  block: BlockEntity
+  queryWithCalendar: IQueryWithCalendar
+  settings: ISettingsForm
+}) => {
   const { calendarConfig, query } = queryWithCalendar
   const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone, queryType } = query
   const { defaultDuration } = settings
-  const _dateFormatter = ['scheduled', 'deadline'].includes(scheduleStart || scheduleEnd) ? DEFAULT_BLOCK_DEADLINE_DATE_FORMAT : dateFormatter || DEFAULT_JOURNAL_FORMAT
+  const _dateFormatter = ['scheduled', 'deadline'].includes(scheduleStart || scheduleEnd)
+    ? DEFAULT_BLOCK_DEADLINE_DATE_FORMAT
+    : dateFormatter || DEFAULT_JOURNAL_FORMAT
   const start = get(block, scheduleStart, undefined)
   const end = get(block, scheduleEnd, undefined)
   let hasTime = /[Hhm]+/.test(_dateFormatter || '')
@@ -122,22 +150,32 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, setting
   let _end
   try {
     _start = start && genCalendarDate(start, _dateFormatter)
-    _end = end && (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
+    _end =
+      end &&
+      (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
   } catch (err) {
     console.warn('[faiz:] === parse calendar date error: ', err, block, query)
     return []
   }
   if (block?.page?.['journal-day']) {
-    const { start: _startTime, end: _endTime } = getTimeInfo(block?.content.replace(new RegExp(`^${block.marker} `), ''))
+    const { start: _startTime, end: _endTime } = getTimeInfo(
+      block?.content.replace(new RegExp(`^${block.marker} `), ''),
+    )
     if (_startTime || _endTime) {
       const date = block?.page?.['journal-day']
-      _start = _startTime ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date())) : genCalendarDate(date),
-      _end = _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined,
-      hasTime = true
+      ;(_start = _startTime
+        ? formatISO(parse(date + ' ' + _startTime, 'yyyyMMdd HH:mm', new Date()))
+        : genCalendarDate(date)),
+        (_end = _endTime ? formatISO(parse(date + ' ' + _endTime, 'yyyyMMdd HH:mm', new Date())) : undefined),
+        (hasTime = true)
     }
   }
   if (start && ['scheduled', 'deadline'].includes(scheduleStart)) {
-    const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleStart.toUpperCase()}:`))?.trim()
+    const dateString =
+      block.content
+        ?.split('\n')
+        ?.find((l) => l.startsWith(`${scheduleStart.toUpperCase()}:`))
+        ?.trim() ?? ''
     const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
     if (time) {
       _start = formatISO(parse(`${start} ${time}`, 'yyyyMMdd HH:mm', new Date()))
@@ -145,7 +183,11 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, setting
     }
   }
   if (end && ['scheduled', 'deadline'].includes(scheduleEnd)) {
-    const dateString = block.content?.split('\n')?.find(l => l.startsWith(`${scheduleEnd.toUpperCase()}:`))?.trim()
+    const dateString =
+      block.content
+        ?.split('\n')
+        ?.find((l) => l.startsWith(`${scheduleEnd.toUpperCase()}:`))
+        ?.trim() ?? ''
     const time = / (\d{2}:\d{2})[ >]/.exec(dateString)?.[1] || ''
     if (time) {
       _end = formatISO(parse(`${end} ${time}`, 'yyyyMMdd HH:mm', new Date()))
@@ -181,11 +223,10 @@ export const convertBlockToSchedule = async ({ block, queryWithCalendar, setting
   return schedule
 }
 
-
 /**
  * 判断是否过期
  */
-export const isOverdue = (block: any, date: string, allDay: boolean) => {
+export const isOverdue = (block: BlockEntity, date: string, allDay: boolean) => {
   if (block.marker && block.marker !== 'DONE' && block.marker !== 'CANCELED' && block.marker !== 'WAITING') {
     if (allDay) {
       return dayjs().isAfter(dayjs(date), 'day')
@@ -202,7 +243,7 @@ export const isOverdue = (block: any, date: string, allDay: boolean) => {
  * eg: '12:00-13:00 foo' => { start: '12:00', end: '13:00' }
  * eg: 'foo' => { start: undefined, end: undefined }
  */
- export const getTimeInfo = (content: string) => {
+export const getTimeInfo = (content: string) => {
   const res = content.match(TIME_REG)
   if (res) return { start: res[1], end: res[2]?.slice(1) }
   return { start: undefined, end: undefined }
@@ -227,6 +268,7 @@ export const removeTimeInfo = (content: string) => {
  * 填充 block reference 内容
  */
 export const fillBlockReference = async (blockContent: string) => {
+  // eslint-disable-next-line no-useless-escape
   const BLOCK_REFERENCE_REG = /\(\([0-9a-z\-]{30,}\)\)/
 
   if (BLOCK_REFERENCE_REG.test(blockContent)) {
@@ -242,16 +284,16 @@ export const fillBlockReference = async (blockContent: string) => {
 
 export async function genSchedule(params: {
   id?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   blockData: any
   category: ICategory
   start?: string
-  end?:string
+  end?: string
   calendarConfig: Omit<ISettingsForm['calendarList'][number], 'query'>
   isAllDay?: boolean
   isReadOnly?: boolean
   defaultDuration?: ISettingsForm['defaultDuration']
 }): Promise<ISchedule> {
-
   const { id, blockData, category = 'time', start, end, calendarConfig, isAllDay, defaultDuration, isReadOnly } = params
   const uuid = typeof blockData?.uuid === 'string' ? blockData?.uuid : blockData?.uuid?.['$uuid$']
   if (!blockData?.id) {
@@ -279,14 +321,17 @@ export async function genSchedule(params: {
   // 单个耗时在5-7秒，整体耗时11秒
   blockData.fullContent = await fillBlockReference(blockData.content)
 
-  const projectTimeReg = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? ORG_PROJECT_TIME_REG : MARKDOWN_PROJECT_TIME_REG
+  const projectTimeReg =
+    (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org'
+      ? ORG_PROJECT_TIME_REG
+      : MARKDOWN_PROJECT_TIME_REG
   const title = blockData.fullContent
-                  .split('\n')[0]
-                  ?.replace(new RegExp(`^${blockData.marker} `), '')
-                  ?.replace(TIME_REG, '')
-                  ?.replace(projectTimeReg, '')
-                  ?.replace(' #milestone', '')
-                  ?.trim?.()
+    .split('\n')[0]
+    ?.replace(new RegExp(`^${blockData.marker} `), '')
+    ?.replace(TIME_REG, '')
+    ?.replace(projectTimeReg, '')
+    ?.replace(' #milestone', '')
+    ?.trim?.()
   const isDone = ['DONE', 'CANCELED'].includes(blockData.marker)
 
   function supportEdit() {
@@ -296,10 +341,12 @@ export async function genSchedule(params: {
   }
   const isSupportEdit = isReadOnly === undefined ? supportEdit() : !isReadOnly
 
-  const _defaultDuration = defaultDuration ||  getInitialSettings()?.defaultDuration
+  const _defaultDuration = defaultDuration || getInitialSettings()?.defaultDuration
   let _end = end
   if ((category === 'time' || blockData?.category === 'time') && !end && start && _defaultDuration) {
-    _end = dayjs(start).add(_defaultDuration.value, _defaultDuration.unit as dayjs.ManipulateType).format()
+    _end = dayjs(start)
+      .add(_defaultDuration.value, _defaultDuration.unit as dayjs.ManipulateType)
+      .format()
   }
   if (blockData?.category !== 'time' && !end) {
     _end = start
@@ -333,8 +380,8 @@ export const genCalendarDate = (date: number | string, format = DEFAULT_BLOCK_DE
 }
 
 export const genScheduleWithCalendarMap = (schedules: ISchedule[]) => {
-  let res = new Map<string, ISchedule[]>()
-  schedules.forEach(schedule => {
+  const res = new Map<string, ISchedule[]>()
+  schedules.forEach((schedule) => {
     const key = schedule.calendarId || ''
     if (!res.has(key)) res.set(key, [])
     res.get(key)?.push(schedule)
@@ -344,14 +391,17 @@ export const genScheduleWithCalendarMap = (schedules: ISchedule[]) => {
 
 export const getAgendaCalendars = async () => {
   const { calendarList } = logseq.settings as unknown as ISettingsForm
-  const calendarPagePromises = calendarList.map(calendar => getPageData({ originalName: calendar.id }))
+  const calendarPagePromises = calendarList.map((calendar) => getPageData({ originalName: calendar.id }))
   const res = await Promise.all(calendarPagePromises)
-  return res.map((page, index) => {
-            if (!page) return null
-            if ((page as any)?.properties?.agenda !== true) return null
-            return calendarList[index]
-          })
-          .filter(function<T>(item: T | null): item is T { return Boolean(item) })
+  return res
+    .map((page, index) => {
+      if (!page) return null
+      if ((page as PageEntity)?.properties?.agenda !== true) return null
+      return calendarList[index]
+    })
+    .filter(function <T>(item: T | null): item is T {
+      return Boolean(item)
+    })
 }
 
 export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
@@ -362,18 +412,18 @@ export const supportEdit = (blockData, calendarId, agendaCalendarIds) => {
 
 export const categorizeTask = (events: IEvent[] = []) => {
   return {
-    waiting: events.filter(event => event?.addOns?.status === 'waiting'),
-    todo: events.filter(event => event?.addOns?.status === 'todo'),
-    doing: events.filter(event => event?.addOns?.status === 'doing'),
-    done: events.filter(event => event?.addOns?.status === 'done'),
-    canceled: events.filter(event => event?.addOns?.status === 'canceled'),
+    waiting: events.filter((event) => event?.addOns?.status === 'waiting'),
+    todo: events.filter((event) => event?.addOns?.status === 'todo'),
+    doing: events.filter((event) => event?.addOns?.status === 'doing'),
+    done: events.filter((event) => event?.addOns?.status === 'done'),
+    canceled: events.filter((event) => event?.addOns?.status === 'canceled'),
   }
 }
 
 // 以开始时间为为key，转为map
 export const scheduleStartDayMap = (events: IEvent[]) => {
   const res = new Map<string, IEvent[]>()
-  events.forEach(event => {
+  events.forEach((event) => {
     const key = dayjs(event.addOns.start).startOf('day').format()
     if (!res.has(key)) res.set(key, [])
     res.get(key)?.push(event)
@@ -381,7 +431,7 @@ export const scheduleStartDayMap = (events: IEvent[]) => {
   return res
 }
 
-export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
+export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs; end: Dayjs; allDay?: boolean }) => {
   const url = new URL('agenda://')
   url.searchParams.append('start', '' + start.valueOf())
   url.searchParams.append('end', '' + end.valueOf())
@@ -395,35 +445,53 @@ export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs, end: 
   if (isSameDay && !allDay) endText = end.format('HH:mm')
 
   const showText = startText + (endText ? ` - ${endText}` : '')
-  const time = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? `>[[#${url.toString()}][${showText}]]` : `>[${showText}](#${url.toString()})`
+  const time =
+    (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org'
+      ? `>[[#${url.toString()}][${showText}]]`
+      : `>[${showText}](#${url.toString()})`
 
   return time
 }
 export const getProjectTaskTime = (blockContent: string) => {
-  const projectTimeReg = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? ORG_PROJECT_TIME_REG : MARKDOWN_PROJECT_TIME_REG
+  const projectTimeReg =
+    (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org'
+      ? ORG_PROJECT_TIME_REG
+      : MARKDOWN_PROJECT_TIME_REG
   const res = blockContent.match(projectTimeReg)
   if (!res || !res?.[1]) return null
   return parseUrlParams(res[1])
 }
 export const deleteProjectTaskTime = (blockContent: string) => {
-  const projectTimeReg = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? ORG_PROJECT_TIME_REG : MARKDOWN_PROJECT_TIME_REG
+  const projectTimeReg =
+    (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org'
+      ? ORG_PROJECT_TIME_REG
+      : MARKDOWN_PROJECT_TIME_REG
   return blockContent.replace(projectTimeReg, '')
 }
-export const updateProjectTaskTime = (blockContent: string, timeInfo: { start: Dayjs, end: Dayjs, allDay?: boolean }) => {
-  const projectTimeReg = (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org' ? ORG_PROJECT_TIME_REG : MARKDOWN_PROJECT_TIME_REG
+export const updateProjectTaskTime = (
+  blockContent: string,
+  timeInfo: { start: Dayjs; end: Dayjs; allDay?: boolean },
+) => {
+  const projectTimeReg =
+    (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org'
+      ? ORG_PROJECT_TIME_REG
+      : MARKDOWN_PROJECT_TIME_REG
   const time = genProjectTaskTime(timeInfo)
   const newContent = removeTimeInfo(blockContent)?.trim()
   if (projectTimeReg.test(newContent)) {
     return newContent.replace(projectTimeReg, time)
   }
-  return newContent?.split('\n').map((txt, index) => index === 0 ? txt + ' ' + time : txt).join('\n')
+  return newContent
+    ?.split('\n')
+    .map((txt, index) => (index === 0 ? txt + ' ' + time : txt))
+    .join('\n')
 }
 
-export function categorizeTasks (tasks: IEvent[]) {
-  let overdueTasks: IEvent[] = []
-  let allDayTasks: IEvent[] = []
-  let timeTasks: IEvent[] = []
-  tasks.forEach(task => {
+export function categorizeTasks(tasks: IEvent[]) {
+  const overdueTasks: IEvent[] = []
+  const allDayTasks: IEvent[] = []
+  const timeTasks: IEvent[] = []
+  tasks.forEach((task) => {
     if (task.addOns.isOverdue) {
       overdueTasks.push(task)
     } else if (task.addOns.allDay) {
@@ -436,10 +504,10 @@ export function categorizeTasks (tasks: IEvent[]) {
   return { overdueTasks, allDayTasks, timeTasks }
 }
 
-export function categorizeSubscriptions (subscriptions: ISchedule[]) {
-  let allDaySubscriptions: ISchedule[] = []
-  let timeSubscriptions: ISchedule[] = []
-  subscriptions.forEach(subscription => {
+export function categorizeSubscriptions(subscriptions: ISchedule[]) {
+  const allDaySubscriptions: ISchedule[] = []
+  const timeSubscriptions: ISchedule[] = []
+  subscriptions.forEach((subscription) => {
     if (subscription.isAllDay) {
       allDaySubscriptions.push(subscription)
     } else {

@@ -83,33 +83,25 @@ const Task = ({ task, type = 'allDay' }: { task: IEvent; type?: 'overdue' | 'all
       <div
         style={{ width: '3px', backgroundColor: calendarConfig?.bgColor, borderRadius: '2px', margin: '0 6px' }}
       ></div>
-      <div style={{ width: 'calc(100% - 114px)', paddingBottom: '24px', position: 'relative' }}>
-        <div style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: 0.6 }}>{calendarConfig?.id}</div>
+      <div style={{ width: 'calc(100% - 114px)' }} className="relative">
+        <div className="truncate" style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: 0.6 }}>
+          {calendarConfig?.id}
+        </div>
         <div
-          className="agenda-sidebar-task__title"
-          style={{
-            marginBottom: '-0.2em',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            position: 'absolute',
-            bottom: 0,
-            width: 'calc(100% - 30px)',
-          }}
+          className="agenda-sidebar-task__title line-clamp-2"
+          style={{ width: 'calc(100% - 30px)' }}
           title={task.addOns.showTitle}
         >
           {task.addOns.showTitle}
         </div>
         {isActive && (
           <span
-            className="ui__button bg-indigo-600"
+            className="ui__button bg-indigo-600 absolute right-0"
             style={{
               fontSize: '0.5em',
-              position: 'absolute',
-              right: 0,
-              bottom: 0,
               padding: '0 3px',
               borderRadius: '3px',
+              top: 'calc(50% - 7px)',
             }}
           >
             NOW

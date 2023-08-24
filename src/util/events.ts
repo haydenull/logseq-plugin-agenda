@@ -1,14 +1,16 @@
-import { IPomodoroInfo } from '@/helper/pomodoro'
 import type { BlockEntity, PageEntity } from '@logseq/libs/dist/LSPlugin'
-import dayjs from 'dayjs'
+import dayjs, { type Dayjs } from 'dayjs'
+
+import type { IPomodoroInfo } from '@/helper/pomodoro'
+
 import { transformBlockToEvent } from './../helper/transform'
 import { getInitialSettings } from './baseInfo'
 import { pureTaskBlockContent } from './logseq'
 import { getProjectTaskTime, getTimeInfo } from './schedule'
-import { ICustomCalendar } from './type'
+import type { ICustomCalendar } from './type'
 
 export const getEventTimeInfo = (
-  block: BlockEntity
+  block: BlockEntity,
 ): {
   start: string
   end?: string
@@ -195,8 +197,8 @@ export const getInternalEvents = async () => {
     })
   }
 
-  let fullEvents: IPageEvent = genDefaultProjectEvents()
-  let journalEvents: IPageEvent = genDefaultProjectEvents()
+  const fullEvents: IPageEvent = genDefaultProjectEvents()
+  const journalEvents: IPageEvent = genDefaultProjectEvents()
   const projectEventsMap = new Map<string, IPageEvent>()
 
   const closedProjects = settings?.projectList?.filter((p) => p?.enabled !== true)
@@ -286,4 +288,23 @@ export const getEventPomodoroLength = (event: IEvent) => {
       return acc + pomo.length
     }, 0) || 0
   )
+}
+
+/**
+ * Retrieve tasks within a specified range and combine them into a map based on time.
+ */
+export const getTasksInTimeRange = (events: IEvent[], range: Dayjs[]) => {
+  const tasksInTimeRange = new Map<string, IEvent[]>()
+
+  range.forEach((day) => {
+    const eventsInDay = events
+      .filter((event) => {
+        if (!event.addOns.start || !event.addOns.end) return false
+        return day.isBetween(dayjs(event.addOns.start), dayjs(event.addOns.end), 'd', '[]')
+      })
+      .sort((a, b) => dayjs(a.addOns.start).diff(dayjs(b.addOns.start)))
+    tasksInTimeRange.set(day.format('YYYY-MM-DD'), eventsInDay)
+  })
+
+  return tasksInTimeRange
 }

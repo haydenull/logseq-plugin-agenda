@@ -1,6 +1,11 @@
-import { Language } from '@/constants/language'
+/* eslint-disable no-useless-escape */
+
+/* eslint-disable no-misleading-character-class */
 import { theme as antdTheme } from 'antd'
-import { ISettingsForm } from './type'
+
+import { Language } from '@/constants/language'
+
+import type { ISettingsForm } from './type'
 
 export const SHOW_DATE_FORMAT = 'yyyy-MM-dd'
 

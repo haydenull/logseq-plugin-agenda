@@ -1,19 +1,19 @@
+import dayjs from 'dayjs'
 import { atom } from 'jotai'
 import type { ISchedule } from 'tui-calendar'
-import { genScheduleWithCalendarMap } from '@/util/schedule'
-import dayjs from 'dayjs'
-import { getInitialSettings } from '@/util/baseInfo'
 
 export const projectSchedulesAtom = atom<ISchedule[]>([]) // include overdue schedules
 export const subscriptionSchedulesAtom = atom<ISchedule[]>([])
 
-export const todaySubscriptionSchedulesAtom = atom<ISchedule[]>(get => {
+export const todaySubscriptionSchedulesAtom = atom<ISchedule[]>((get) => {
   const subscriptions = get(subscriptionSchedulesAtom)
-  return subscriptions.filter(schedule => {
-    const start = dayjs(schedule.start as string)
-    const end = dayjs(schedule.end as string)
-    return dayjs().isBetween(start, end, 'day', '[]')
-  }).sort((a, b) => dayjs(a.start as string).diff(dayjs(b.start as string)))
+  return subscriptions
+    .filter((schedule) => {
+      const start = dayjs(schedule.start as string)
+      const end = dayjs(schedule.end as string)
+      return dayjs().isBetween(start, end, 'day', '[]')
+    })
+    .sort((a, b) => dayjs(a.start as string).diff(dayjs(b.start as string)))
 })
 
 // export const schedulesAtom = atom((get) => get(projectSchedulesAtom).concat(get(subscriptionSchedulesAtom)))
