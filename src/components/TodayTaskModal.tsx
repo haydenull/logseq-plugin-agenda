@@ -1,9 +1,10 @@
-import { todayTasksAtom } from '@/model/events'
-import { getBlockData } from '@/util/logseq'
-import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
-import { Modal, Checkbox, Divider, Row, Col, Alert } from 'antd'
+import type { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
+import { Modal, Checkbox, Divider, Row, Col } from 'antd'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
+
+import { todayTasksAtom } from '@/model/events'
+import { fixedBlockUUID, getBlockData } from '@/util/logseq'
 
 const TodayTaskModal: React.FC<{
   visible: boolean
@@ -24,13 +25,14 @@ const TodayTaskModal: React.FC<{
     if (options.length === value.length) {
       setValue([])
     } else {
-      setValue(options.map(option => option.value))
+      setValue(options.map((option) => option.value))
     }
   }
   const onClickOk = async () => {
-    let blockList: BlockEntity[] = []
+    const blockList: BlockEntity[] = []
     for (let i = 0; i < value.length; i++) {
       const block = await getBlockData({ uuid: value[i] })
+      await fixedBlockUUID(value[i])
       blockList.push(block)
     }
     logseq.Editor.insertBatchBlock(
@@ -41,11 +43,10 @@ const TodayTaskModal: React.FC<{
       {
         before: false,
         sibling: true,
-      }
+      },
     )
     onSave()
   }
-
 
   useEffect(() => {
     if (value?.length > 0 && value.length < options.length) {
@@ -56,29 +57,20 @@ const TodayTaskModal: React.FC<{
   }, [value?.length, options?.length])
 
   return (
-    <Modal
-      visible={visible}
-      title="Insert Today Task"
-      onCancel={onCancel}
-      onOk={onClickOk}
-    >
-      <Alert className="mb-2" message="It is not recommended to use this feature for the time being, as it may cause some block refs to be lost after reindex, unless you ensure that all embed blocks generate id." type="warning" />
-      <Alert className="mb-2" message="You can jump to the corresponding block by clicking the task from the sidebar and then copy the block ref." type="warning" />
-      <Checkbox.Group value={value} onChange={list => setValue(list as string[])}>
-        {options.map((option, index) => (
-          <Row>
+    <Modal open={visible} title="Insert Today Task" onCancel={onCancel} onOk={onClickOk}>
+      <Checkbox.Group value={value} onChange={(list) => setValue(list as string[])}>
+        {options.map((option) => (
+          <Row key={option.value}>
             <Col span={24}>
-              <Checkbox key={option.value} value={option.value}>{option.label}</Checkbox>
+              <Checkbox key={option.value} value={option.value}>
+                {option.label}
+              </Checkbox>
             </Col>
           </Row>
         ))}
       </Checkbox.Group>
       <Divider />
-      <Checkbox
-        indeterminate={indeterminate}
-        checked={options.length === value.length}
-        onClick={onClickCheckAll}
-      >
+      <Checkbox indeterminate={indeterminate} checked={options.length === value.length} onClick={onClickCheckAll}>
         Check All
       </Checkbox>
     </Modal>

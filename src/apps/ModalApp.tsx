@@ -8,7 +8,6 @@ import PomodoroModal from '@/components/PomodoroModal'
 import TodayTaskModal from '@/components/TodayTaskModal'
 import useTheme from '@/hooks/useTheme'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from '@/model/events'
-import { projectSchedulesAtom } from '@/model/schedule'
 import { ANTD_THEME_CONFIG } from '@/util/constants'
 import { getInternalEvents, type IEvent } from '@/util/events'
 
@@ -39,7 +38,6 @@ export type IModalAppProps = IModifySchedule | IInsertTodaySchedule | IPomodoroM
 const ModalApp: React.FC<IModalAppProps> = (props) => {
   const theme = useTheme() || 'green'
 
-  const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
   const [, setFullEvents] = useAtom(fullEventsAtom)
   const [, setJournalEvents] = useAtom(journalEventsAtom)
   const [, setProjectEvents] = useAtom(projectEventsAtom)
