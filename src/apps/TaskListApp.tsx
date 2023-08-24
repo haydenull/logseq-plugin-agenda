@@ -3,21 +3,17 @@ import React, { useEffect } from 'react'
 import { MdAddTask } from 'react-icons/md'
 import { TbActivity } from 'react-icons/tb'
 
+import SidebarSubscription from '@/components/SidebarSubscription'
+import SidebarTask from '@/components/SidebarTask'
+import { renderModalApp } from '@/main'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'
-import { projectSchedulesAtom, todaySubscriptionSchedulesAtom } from '@/model/schedule'
+import { todaySubscriptionSchedulesAtom } from '@/model/schedule'
+import { getInternalEvents } from '@/util/events'
 import { categorizeSubscriptions, categorizeTasks } from '@/util/schedule'
-
-import SidebarSubscription from '../components/SidebarSubscription'
-import SidebarTask from '../components/SidebarTask'
-import { renderModalApp } from '../main'
-import { getInternalEvents } from '../util/events'
 
 const App: React.FC<{
   containerId: string
 }> = ({ containerId }) => {
-  // TODO: 使用 only-write 减少重新渲染
-  const [, setProjectSchedules] = useAtom(projectSchedulesAtom)
-
   const [todaySubscriptions] = useAtom(todaySubscriptionSchedulesAtom)
   const { allDaySubscriptions, timeSubscriptions } = categorizeSubscriptions(todaySubscriptions)
   const [todayTasks] = useAtom(todayTasksAtom)
@@ -76,6 +72,7 @@ const App: React.FC<{
       {overdueTasks?.length === 0 && allDayTasks?.length === 0 && timeTasks?.length === 0 && (
         <div>Agenda: No Task Today</div>
       )}
+      {/* overdue tasks */}
       {overdueTasks.length > 0 && (
         <div style={{ margin: '8px 0' }}>
           {/* <span>Overdue</span> */}
@@ -84,6 +81,7 @@ const App: React.FC<{
           ))}
         </div>
       )}
+      {/* all day tasks */}
       {(allDayTasks.length > 0 || allDaySubscriptions.length > 0) && (
         <div>
           {/* <span>All Day</span> */}
@@ -95,6 +93,7 @@ const App: React.FC<{
           ))}
         </div>
       )}
+      {/* time tasks */}
       {(timeTasks.length > 0 || timeSubscriptions.length > 0) && (
         <div>
           {/* <span>Time</span> */}

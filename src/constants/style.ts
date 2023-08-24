@@ -7,7 +7,7 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
     display: none;
   }
   .agenda-sidebar-task {
-    padding: 5px 0;
+    padding: 5px 8px 5px 0;
     border-radius: 4px;
   }
   .agenda-sidebar-task:hover {

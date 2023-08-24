@@ -1,15 +1,16 @@
-import { BlockEntity } from '@logseq/libs/dist/LSPlugin'
+import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { format } from 'date-fns'
-import { Dayjs } from 'dayjs'
+import type { Dayjs } from 'dayjs'
+
 import { getInitialSettings } from './baseInfo'
 import { fillBlockReference } from './schedule'
-import { ISettingsForm } from './type'
+import type { ISettingsForm } from './type'
 import { extractDays } from './util'
 
 export const updateBlock = async (
   blockId: number | string,
   content: string | false,
-  properties?: Record<string, any>
+  properties?: Record<string, unknown>,
 ) => {
   const block = await logseq.Editor.getBlock(blockId)
   if (!block) {
@@ -22,7 +23,7 @@ export const updateBlock = async (
   }
   const _properties = properties || block.propertiesTextValues || {}
   const upsertBlockPropertyPromises = Object.keys(_properties).map((key) =>
-    logseq.Editor.upsertBlockProperty(block.uuid, key, _properties?.[key])
+    logseq.Editor.upsertBlockProperty(block.uuid, key, _properties?.[key]),
   )
   return Promise.allSettled(upsertBlockPropertyPromises)
 }
@@ -38,7 +39,7 @@ export const moveBlockToNewPage = async (blockUuid: string, pageName: string) =>
 export const moveBlockToSpecificBlock = async (
   srcBlockId: number | string,
   targetPageName: string,
-  targetBlockContent: string
+  targetBlockContent: string,
 ) => {
   const query = typeof srcBlockId === 'number' ? { id: srcBlockId } : { uuid: srcBlockId }
   const srcBlock = await getBlockData(query)
@@ -60,7 +61,7 @@ export const createBlockToSpecificBlock = async (
   targetPageName: string,
   targetBlockContent: string,
   blockContent: string,
-  blockProperties: Record<string, any> = {}
+  blockProperties: Record<string, unknown> = {},
 ) => {
   let targetPage = await getPageData({ originalName: targetPageName })
   if (!targetPage) targetPage = await logseq.Editor.createPage(targetPageName)
@@ -98,7 +99,7 @@ const pageDataCacheMap = new Map()
 export const getPageData = async (
   srcPage: { id?: number; uuid?: string; originalName?: string },
   opts?: Partial<{ includeChildren: boolean }>,
-  useCache = false
+  useCache = false,
 ) => {
   const { id, uuid, originalName } = srcPage
   const key = id || uuid || originalName
@@ -133,13 +134,14 @@ export const getJouralPageBlocksTree = async (start: Dayjs, end: Dayjs) => {
     const date = format(day.toDate(), preferredDateFormat)
     return logseq.Editor.getPageBlocksTree(date)
   })
-  // @ts-ignore item是存在value属性的
+  // @ts-expect-error item是存在value属性的
   return (await Promise.allSettled(promises)).map((item) => item?.value)
 }
 
 export const extractBlockContentToText = (block: BlockEntity) => {
   if (!block) return block
-  let { content, children } = block
+  let { content } = block
+  const children = block.children
   if (children) {
     const childrenContent = children.map((child) => extractBlockContentToText(child as BlockEntity)).join('\n')
     return (content += '\n' + childrenContent)
@@ -149,7 +151,8 @@ export const extractBlockContentToText = (block: BlockEntity) => {
 
 export const extractBlockContentToHtml = async (block: BlockEntity, depth = 1): Promise<string> => {
   if (!block) return block
-  let { content, children } = block
+  let { content } = block
+  const children = block.children
   content = await fillBlockReference(content)
   const intent = `margin-left: ${(depth - 1) * 20}px;`
   const contentHtml = `<p style="${intent} white-space: pre-line;">${content}</p>`
@@ -198,7 +201,7 @@ export const getBlockUuidFromEventPath = (path: HTMLElement[]) => {
 export const pureTaskBlockContent = (block: BlockEntity, content?: string) => {
   const marker = block.marker
   const priority = block.priority
-  let res = content || block.content
+  const res = content || block.content
   return res?.replace(marker, '').trim().replace(`[#${priority}]`, '').trim()
 }
 export const joinPrefixTaskBlockContent = (block: BlockEntity, content: string) => {
@@ -210,7 +213,7 @@ export const joinPrefixTaskBlockContent = (block: BlockEntity, content: string) 
   return res
 }
 
-let DBChangeTimerIDMap = new Map<string, number>()
+const DBChangeTimerIDMap = new Map<string, number>()
 export const genDBTaskChangeCallback = (cb: (uuid: string) => void, delay = 2000) => {
   return ({ blocks, txData, txMeta }) => {
     const { marker, properties, uuid } = blocks[0]
@@ -227,7 +230,7 @@ export const genDBTaskChangeCallback = (cb: (uuid: string) => void, delay = 2000
           clearInterval(_timerId)
           cb(uuid)
         }
-      }, delay)
+      }, delay),
     )
   }
 }
@@ -254,4 +257,13 @@ export const navToPage = async (block: BlockEntity) => {
   }
   logseq.App.pushState('page', { name: pageName })
   logseq.hideMainUI()
+}
+
+/**
+ * fixed block uuid
+ */
+export const fixedBlockUUID = async (blockUUID: string) => {
+  const isFixed = await logseq.Editor.getBlockProperty(blockUUID, 'id')
+  if (isFixed) return
+  logseq.Editor.upsertBlockProperty(blockUUID, 'id', blockUUID)
 }
