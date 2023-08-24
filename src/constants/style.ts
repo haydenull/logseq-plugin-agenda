@@ -1,7 +1,55 @@
 export const LOGSEQ_PROVIDE_COMMON_STYLE = `
+  .truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
   .external-link[href^="#agenda://"]::before {
     content: '📅';
     margin: 0 4px;
+  }
+  .agenda-sidebar-calendar {
+    font-size: 14px;
+    cursor: default;
+    margin-bottom: 14px;
+  }
+  .agenda-sidebar-calendar__week-day--today {
+    color: var(--ls-link-text-color);
+    font-weight: 600;
+  }
+  .agenda-sidebar-calendar__number {
+    width: 26px;
+    height: 26px;
+    border-radius: 100%;
+    cursor: pointer;
+    position: relative;
+  }
+  .agenda-sidebar-calendar__number--today {
+    color: var(--ls-link-text-color);
+    border: 1px solid var(--ls-link-text-color);
+    box-sizing: border-box;
+  }
+  .agenda-sidebar-calendar__number--active {
+    border: none;
+    opacity: 0.9;
+    color: #fff;
+  }
+  .agenda-sidebar-calendar__number--dot::after {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 100%;
+    background: var(--ls-link-text-color);
+    position: absolute;
+    left: calc(50% - 2px);
+    top: calc(100% + 2px);
   }
   .agenda-sidebar-task__add {
     display: none;

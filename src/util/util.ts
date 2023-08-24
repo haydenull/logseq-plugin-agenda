@@ -1,8 +1,10 @@
 import { format, formatRFC3339, parse } from 'date-fns'
-import { Dayjs } from 'dayjs'
+import type { Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
+
 // import en from 'dayjs/locale/en'
 import { DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
-import { ISettingsForm } from './type'
+import type { ISettingsForm } from './type'
 
 // dayjs.locale({
 //   ...en,
@@ -20,17 +22,17 @@ export const getWeekly = async (startDate, endDate) => {
   const _end = format(parse(endDate, SHOW_DATE_FORMAT, new Date()), journalFormat)
   const logs = await logseq.DB.q(`(and [[${keyword}]] (between [[${_start}]] [[${_end}]]))`)
   const _logs = logs
-                  ?.filter(block => block.content?.trim() === `[[${keyword}]]`)
-                  ?.map(block => Array.isArray(block.parent) ? block.parent : [])
-                  ?.flat()
-                  ?.filter(block => {
-                    const _content = block.content?.trim()
-                    return _content.length > 0
-                  })
+    ?.filter((block) => block.content?.trim() === `[[${keyword}]]`)
+    ?.map((block) => (Array.isArray(block.parent) ? block.parent : []))
+    ?.flat()
+    ?.filter((block) => {
+      const _content = block.content?.trim()
+      return _content.length > 0
+    })
   return _logs
 }
 
-export const log = (msg, color='blue') => console.log(`%c${msg}`, `color:${color}`)
+export const log = (msg, color = 'blue') => console.log(`%c${msg}`, `color:${color}`)
 
 export const setPluginTheme = (theme: 'dark' | 'light') => {
   const html = document.querySelector('html')
@@ -47,7 +49,7 @@ export const setPluginTheme = (theme: 'dark' | 'light') => {
   }
 }
 export const managePluginTheme = async () => {
-  const { theme } = logseq.settings as ISettingsForm & {disabled: boolean}
+  const { theme } = logseq.settings as ISettingsForm & { disabled: boolean }
   if (theme === 'dark') return setPluginTheme('dark')
   if (theme === 'light') return setPluginTheme('light')
 
@@ -101,9 +103,11 @@ export const insertCss = (css: string) => {
     head.appendChild(style)
   }
   const antdCssFileList = head.querySelectorAll('.antd-css')
-  Array.from(antdCssFileList)?.slice(1)?.forEach(element => {
-    head.removeChild(element)
-  })
+  Array.from(antdCssFileList)
+    ?.slice(1)
+    ?.forEach((element) => {
+      head.removeChild(element)
+    })
   // if (antdCssFile?.[1]) head.removeChild(antdCssFile[1])
 }
 
@@ -140,8 +144,8 @@ export const genRandomString = (length: number = 6) => {
 
 export const parseUrlParams = (url: string): Record<string, string> => {
   const l = new URL(url).searchParams
-  let res = {}
-  l.forEach((val, key) => res[key] = val)
+  const res = {}
+  l.forEach((val, key) => (res[key] = val))
   return res
 }
 
@@ -152,7 +156,7 @@ export const notification = (msg: string) => {
   }
 }
 
-export const formatDayjsToRFC3339 = (day: Dayjs, fractionDigits: 0|1|2|3 = 0) => {
+export const formatDayjsToRFC3339 = (day: Dayjs, fractionDigits: 0 | 1 | 2 | 3 = 0) => {
   return formatRFC3339(day.toDate(), { fractionDigits })
 }
 
@@ -165,4 +169,18 @@ export const convertMinutesToHours = (minutes: number) => {
   const hours = Math.floor(minutes / 60)
   const mins = minutes % 60
   return `${hours}h ${mins}m`
+}
+
+/**generate week days */
+export const genWeekDays = (startOfWeek: 0 | 1 = 0, someoneDay?: Dayjs) => {
+  const _someoneDay = someoneDay || dayjs()
+  const day = _someoneDay.day() === 0 && startOfWeek === 1 ? 7 : _someoneDay.day()
+
+  const endOfWeek = startOfWeek === 0 ? 6 : 7
+
+  const days: Dayjs[] = []
+  for (let i = startOfWeek; i <= endOfWeek; i++) {
+    days.push(_someoneDay.add(i - day, 'day'))
+  }
+  return days
 }
