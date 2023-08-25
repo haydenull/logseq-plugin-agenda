@@ -1,3 +1,10 @@
+## [2.16.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.16.0...v2.16.1) (2023-08-25)
+
+
+### Bug Fixes
+
+* **side-bar:** :bug: show overdue tasks in today ([404c163](https://github.com/haydenull/logseq-plugin-agenda/commit/404c1638f705c7dd0da2270daab05e1538869d8d))
+
 # [2.16.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.4...v2.16.0) (2023-08-25)
 
 
