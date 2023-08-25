@@ -1,3 +1,11 @@
+# [2.16.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.4...v2.16.0) (2023-08-25)
+
+
+### Features
+
+* **side-bar:** :sparkles: side bar supports date switching ([174778f](https://github.com/haydenull/logseq-plugin-agenda/commit/174778f57c194c01b4483b5eed03619185ca78de))
+* **side-bar:** :sparkles: support add task ref to journal from side bar ([83c6510](https://github.com/haydenull/logseq-plugin-agenda/commit/83c6510f3f898349126f4c7ae665b6bee33019ac))
+
 ## [2.15.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.15.3...v2.15.4) (2023-06-18)
 
 
