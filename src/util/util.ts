@@ -174,8 +174,9 @@ export const convertMinutesToHours = (minutes: number) => {
 /**generate week days */
 export const genWeekDays = (startOfWeek: 0 | 1 = 0, someoneDay?: Dayjs) => {
   const _someoneDay = someoneDay || dayjs()
+  // startOfWeek 0 - endOfWeek 6
+  // startOfWeek 1 - endOfWeek 7
   const day = _someoneDay.day() === 0 && startOfWeek === 1 ? 7 : _someoneDay.day()
-
   const endOfWeek = startOfWeek === 0 ? 6 : 7
 
   const days: Dayjs[] = []
