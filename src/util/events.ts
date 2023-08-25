@@ -294,12 +294,16 @@ export const getEventPomodoroLength = (event: IEvent) => {
  * Retrieve tasks within a specified range and combine them into a map based on time.
  */
 export const getTasksInTimeRange = (events: IEvent[], range: Dayjs[]) => {
+  const today = dayjs()
   const tasksInTimeRange = new Map<string, IEvent[]>()
 
   range.forEach((day) => {
     const eventsInDay = events
       .filter((event) => {
+        if (event.addOns.status === 'canceled') return false
         if (!event.addOns.start || !event.addOns.end) return false
+        // all overdue tasks should show up in today
+        if (event.addOns.isOverdue && day.isSame(today, 'day')) return true
         return day.isBetween(dayjs(event.addOns.start), dayjs(event.addOns.end), 'd', '[]')
       })
       .sort((a, b) => dayjs(a.addOns.start).diff(dayjs(b.addOns.start)))
