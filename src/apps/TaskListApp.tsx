@@ -9,8 +9,8 @@ import { TbActivity } from 'react-icons/tb'
 import SidebarSubscription from '@/components/SidebarSubscription'
 import SidebarTask from '@/components/SidebarTask'
 import { renderModalApp } from '@/main'
-import { fullEventsAtom, journalEventsAtom, projectEventsAtom, todayTasksAtom } from '@/model/events'
-import { todaySubscriptionSchedulesAtom, subscriptionSchedulesAtom } from '@/model/schedule'
+import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from '@/model/events'
+import { subscriptionSchedulesAtom } from '@/model/schedule'
 import { getInitialSettings } from '@/util/baseInfo'
 import { getInternalEvents, getTasksInTimeRange } from '@/util/events'
 import { categorizeSubscriptions, categorizeTasks } from '@/util/schedule'
@@ -79,6 +79,7 @@ const App: React.FC<{
   }, [])
 
   useEffect(() => {
+    // generate current week days
     const { weekStartDay } = getInitialSettings()
     const days = genWeekDays(weekStartDay)
     setWeekDays(days)
@@ -123,31 +124,36 @@ const App: React.FC<{
         >
           <IoIosArrowBack />
         </div>
-        {weekDays.map((day) => (
-          <div
-            className="flex flex-col items-center"
-            key={day.format('YYYY-MM-DD')}
-            onClick={() => onClickCalendarNumber(day)}
-          >
-            <span
-              className={clsx({
-                'agenda-sidebar-calendar__week-day--today': day.isSame(dayjs(), 'day'),
-              })}
-            >
-              {day.format('dd')?.charAt(0)}
-            </span>
+        {weekDays.map((day) => {
+          const isActiveDay = day.isSame(activeDay, 'day')
+          const today = dayjs()
+          const isToday = day.isSame(today, 'day')
+          return (
             <div
-              className={clsx('agenda-sidebar-calendar__number flex items-center justify-center', {
-                'bg-indigo-600 agenda-sidebar-calendar__number--active': day.isSame(activeDay, 'day'),
-                'agenda-sidebar-calendar__number--dot': weekDaysWithDots[day.format('YYYY-MM-DD')],
-                'agenda-sidebar-calendar__number--today': day.isSame(dayjs(), 'day'),
-              })}
-              style={{ opacity: day.isSameOrAfter(dayjs(), 'day') || day.isSame(activeDay, 'day') ? 0.9 : 0.4 }}
+              className="flex flex-col items-center"
+              key={day.format('YYYY-MM-DD')}
+              onClick={() => onClickCalendarNumber(day)}
             >
-              {day.format('DD')}
+              <span
+                className={clsx({
+                  'agenda-sidebar-calendar__week-day--today': isToday,
+                })}
+              >
+                {day.format('dd')?.charAt(0)}
+              </span>
+              <div
+                className={clsx('agenda-sidebar-calendar__number flex items-center justify-center', {
+                  'bg-indigo-600 agenda-sidebar-calendar__number--active': isActiveDay,
+                  'agenda-sidebar-calendar__number--dot': weekDaysWithDots[day.format('YYYY-MM-DD')],
+                  'agenda-sidebar-calendar__number--today': isToday,
+                })}
+                style={{ opacity: day.isSameOrAfter(today, 'day') || isActiveDay ? 0.9 : 0.4 }}
+              >
+                {day.format('DD')}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
         <div
           className="agenda-sidebar-calendar__number flex items-center justify-center"
           onClick={() => onClickCalendarArrow('forward')}
