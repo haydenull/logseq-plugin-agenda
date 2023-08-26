@@ -7,5 +7,8 @@ dist-ssr
 .temp
 .cache
 
+# bundle analytics
+stats.html
+
 # mock settings may contain sensitive tokens
 mocks/settings.local.json

@@ -1,6 +1,7 @@
 import react from '@vitejs/plugin-react'
 import { existsSync } from 'fs'
 import { resolve } from 'path'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
 
 const getMockSettings = (isDev = false) => {
@@ -16,6 +17,7 @@ export default defineConfig(async ({ command, mode }) => {
   return {
     plugins: [
       react(),
+      visualizer(),
       // usePluginImport({
       //   libraryName: "antd",
       //   libraryDirectory: "es",
