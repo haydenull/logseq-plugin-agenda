@@ -1,5 +1,6 @@
-import { Language } from '@/constants/language'
-import { ValuesType } from 'utility-types'
+import type { ValuesType } from 'utility-types'
+
+import type { Language } from '@/constants/language'
 
 export type ICustomCalendar = {
   id: string
@@ -17,6 +18,7 @@ export type ISettingsFormQuery = Partial<{
   isMilestone: boolean
   queryType: 'simple' | 'advanced'
 }>
+export type CalendarConfig = ICustomCalendar & { query: ISettingsFormQuery[] }
 export type ISettingsForm = {
   theme?: 'light' | 'dark' | 'auto'
   lightThemeType?: 'green' | 'purple'
@@ -34,9 +36,9 @@ export type ISettingsForm = {
   }
   logKey?: ICustomCalendar
   dailyLogTagList?: ILogTag[]
-  journal: ICustomCalendar & { query: ISettingsFormQuery[] }
+  journal: CalendarConfig
   projectList?: ICustomCalendar[]
-  calendarList: Array<ICustomCalendar & { query: ISettingsFormQuery[] }>
+  calendarList?: Array<CalendarConfig>
   subscriptionList?: Array<ICustomCalendar & { url: string }>
   pomodoro: {
     pomodoro: number
@@ -61,7 +63,7 @@ export type ISettingsForm = {
   }
 }
 export type IQueryWithCalendar = {
-  calendarConfig: ISettingsForm['calendarList'][number]
+  calendarConfig: CalendarConfig
   query: ISettingsFormQuery
 }
 export type ICategory = 'time' | 'allday' | 'milestone' | 'task'

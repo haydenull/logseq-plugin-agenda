@@ -1,6 +1,21 @@
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import type { TodoistApi } from '@doist/todoist-api-typescript'
+import type { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
+import { Alert, Button, Form, Input, InputNumber, Popconfirm, Select, Switch } from 'antd'
+import classNames from 'classnames'
+import dayjs from 'dayjs'
+import { useAtom } from 'jotai'
+import { cloneDeep, get, set } from 'lodash-es'
+import React, { useEffect, useState } from 'react'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+
 import ColorPicker from '@/components/ColorPicker'
 import CreateCalendarModal from '@/components/CreateCalendarModal'
 import Query from '@/components/Query'
+import { MENUS } from '@/constants/elements'
+import { Language, LANGUAGES } from '@/constants/language'
+import { autoTextColor } from '@/helper/autoTextColor'
+import { getTodoistInstance } from '@/helper/todoist'
 import { subscriptionSchedulesAtom } from '@/model/schedule'
 import { settingsAtom } from '@/model/settings'
 import { genAgendaQuery, genDefaultQuery, getInitialSettings } from '@/util/baseInfo'
@@ -14,21 +29,8 @@ import {
 } from '@/util/constants'
 import { getSubCalendarSchedules } from '@/util/subscription'
 import type { ISettingsForm } from '@/util/type'
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
-import { Alert, Button, Form, Input, InputNumber, Popconfirm, Select, Switch } from 'antd'
-import classNames from 'classnames'
-import { useAtom } from 'jotai'
-import { cloneDeep, get, set } from 'lodash'
-import React, { useEffect, useState } from 'react'
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-
-import { MENUS } from '@/constants/elements'
-import { Language, LANGUAGES } from '@/constants/language'
-import { autoTextColor } from '@/helper/autoTextColor'
-import { getTodoistInstance } from '@/helper/todoist'
 import { managePluginTheme } from '@/util/util'
-import { TodoistApi } from '@doist/todoist-api-typescript'
-import dayjs from 'dayjs'
+
 import Tabs from './components/Tabs'
 import s from './index.module.less'
 
@@ -48,13 +50,13 @@ const Settings: React.FC<{
   // visible: boolean
   // onCancel: () => void
   // onOk: (values: ISettingsForm) => void
-  [key: string]: any
+  [key: string]: unknown
 }> = ({ ...props }) => {
   const [settingForm] = Form.useForm<ISettingsForm>()
   const [tab, setTab] = useState(TABS[0].value)
-  const [pageOptions, setPageOptions] = useState<any>([])
-  const [todoistProjectOptions, setTodoistProjectOptions] = useState<any>([])
-  const [todoistLabelOptions, setTodoistLabelOptions] = useState<any>([])
+  const [pageOptions, setPageOptions] = useState<{ value: string; label: string }[]>([])
+  const [todoistProjectOptions, setTodoistProjectOptions] = useState<{ value: string; label: string }[]>([])
+  const [todoistLabelOptions, setTodoistLabelOptions] = useState<{ value: string; label: string }[]>([])
 
   const [createCalendarModalVisible, setCreateCalendarModalVisible] = useState(false)
   const initialValues = getInitialSettings({ filterInvalidedProject: false })
@@ -75,7 +77,7 @@ const Settings: React.FC<{
     onValuesChange({ calendarList }, settingForm.getFieldsValue(true))
   }
   const onValuesChange = (changedValues: Partial<ISettingsForm>, allValues: ISettingsForm) => {
-    let _allValues = cloneDeep(allValues)
+    const _allValues = cloneDeep(allValues)
 
     // Automatically changes the color of text and border when the background color changes
     ;['logKey', 'journal'].forEach((key) => {
@@ -156,14 +158,14 @@ const Settings: React.FC<{
 
   useEffect(() => {
     logseq.Editor.getAllPages().then((res) => {
-      setPageOptions(
+      const options =
         res
           ?.filter((item) => !item?.['journal?'])
           ?.map((item) => ({
             value: item.originalName,
             label: item.originalName,
-          }))
-      )
+          })) ?? []
+      setPageOptions(options)
     })
     const todoist = getTodoistInstance()
     setTodoistOptions(todoist)
@@ -447,7 +449,7 @@ const Settings: React.FC<{
               {(fields, { add, remove }) => (
                 <>
                   {fields.map((field, index) => (
-                    <Form.Item>
+                    <Form.Item key={index}>
                       <div className="flex items-center justify-between">
                         <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
                           <Input placeholder="Calendar ID" style={{ width: '160px' }} />
@@ -517,7 +519,11 @@ const Settings: React.FC<{
               {(fields, { add, remove }) => (
                 <>
                   {fields.map((field, index) => (
-                    <Form.Item label={index === 0 ? 'Tag' : ''} {...(index === 0 ? {} : { wrapperCol: { offset: 4 } })}>
+                    <Form.Item
+                      key={index}
+                      label={index === 0 ? 'Tag' : ''}
+                      {...(index === 0 ? {} : { wrapperCol: { offset: 4 } })}
+                    >
                       <div className="flex items-center justify-between">
                         <Form.Item name={[field.name, 'id']} noStyle rules={[{ required: true }]}>
                           <Select
@@ -599,6 +605,7 @@ const Settings: React.FC<{
             </Form.Item>
             {[...new Array(5).keys()].map((i) => (
               <Form.Item
+                key={i}
                 name={['pomodoro', 'commonPomodoros', i]}
                 label={i === 0 ? 'Common Pomodoro' : ''}
                 labelCol={{ span: 5 }}

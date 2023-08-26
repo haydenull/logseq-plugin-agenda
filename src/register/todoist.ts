@@ -1,11 +1,22 @@
-import { pullTask, getTodoistInstance, updateTask, closeTask, getTask, reopenTask, createTask, updateBlock, PRIORITY_MAP, transformEventToTodoistEvent } from '@/helper/todoist'
-import { AddTaskArgs, TodoistRequestError, UpdateTaskArgs } from '@doist/todoist-api-typescript'
-import type { ISettingsForm } from "@/util/type"
+import type { AddTaskArgs, TodoistRequestError, UpdateTaskArgs } from '@doist/todoist-api-typescript'
+import dayjs from 'dayjs'
+import { findKey } from 'lodash-es'
+
+import {
+  getTodoistInstance,
+  updateTask,
+  closeTask,
+  getTask,
+  reopenTask,
+  createTask,
+  updateBlock,
+  PRIORITY_MAP,
+  transformEventToTodoistEvent,
+} from '@/helper/todoist'
 import { transformBlockToEvent } from '@/helper/transform'
 import { getInitialSettings } from '@/util/baseInfo'
-import { findKey } from 'lodash'
-import dayjs from 'dayjs'
 import { genDBTaskChangeCallback } from '@/util/logseq'
+import type { ISettingsForm } from '@/util/type'
 
 const initializeTodoist = (todoist: ISettingsForm['todoist']) => {
   if (todoist?.token) {
@@ -24,11 +35,12 @@ const initializeTodoist = (todoist: ISettingsForm['todoist']) => {
         const todoistId = transformEventToTodoistEvent(event)?.todoistId
         try {
           const task = await getTask(todoistId)
-          const priority = findKey(PRIORITY_MAP, v => v === event.priority)
-          let params: UpdateTaskArgs = {
+          const priority = findKey(PRIORITY_MAP, (v) => v === event.priority)
+          const _priority = priority === undefined ? undefined : Number(priority)
+          const params: UpdateTaskArgs = {
             content: event.addOns.contentWithoutTime?.split('\n')?.[0],
             description: block?.properties?.todoistDesc,
-            priority,
+            priority: _priority,
           }
           if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
           if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
@@ -38,28 +50,35 @@ const initializeTodoist = (todoist: ISettingsForm['todoist']) => {
           updateTask(todoistId, params)
         } catch (error) {
           if ((error as TodoistRequestError).httpStatusCode === 404) {
-            return logseq.UI.showMsg(`Todoist Sync Error\nmessage: ${(error as TodoistRequestError)?.responseData}\nPlease check whether the task has been deleted or whether the todoist-id is correct`, 'error')
+            return logseq.UI.showMsg(
+              `Todoist Sync Error\nmessage: ${
+                (error as TodoistRequestError)?.responseData
+              }\nPlease check whether the task has been deleted or whether the todoist-id is correct`,
+              'error',
+            )
           }
         }
       }
       genDBTaskChangeCallback(syncToTodoist)?.({ blocks, txData, txMeta })
     })
 
-    // @ts-ignore The requirement to return a void can be ignored
+    // @ts-expect-error The requirement to return a void can be ignored
     logseq.Editor.registerBlockContextMenuItem('Agenda: Upload to todoist', async ({ uuid }) => {
       const settings = getInitialSettings()
       const { todoist } = settings
       const block = await logseq.Editor.getBlock(uuid)
       if (!block?.marker) return logseq.UI.showMsg('This block is not a task', 'error')
-      if (block?.properties?.todoistId) return logseq.UI.showMsg('This task has already been uploaded,\nplease do not upload it again', 'error')
+      if (block?.properties?.todoistId)
+        return logseq.UI.showMsg('This task has already been uploaded,\nplease do not upload it again', 'error')
       const event = await transformBlockToEvent(block!, settings)
 
-      const priority = findKey(PRIORITY_MAP, v => v === event.priority)
+      const priority = findKey(PRIORITY_MAP, (v) => v === event.priority)
+      const _priority = priority === undefined ? undefined : Number(priority)
 
-      let params: AddTaskArgs = {
+      const params: AddTaskArgs = {
         content: event.addOns.contentWithoutTime?.split('\n')?.[0],
         description: block?.properties?.todoistDesc,
-        priority,
+        priority: _priority,
       }
       if (event.addOns.allDay === true) params.dueDate = dayjs(event.addOns.start).format('YYYY-MM-DD')
       if (event.addOns.allDay === false) params.dueDatetime = dayjs.utc(event.addOns.start).format()
@@ -67,15 +86,14 @@ const initializeTodoist = (todoist: ISettingsForm['todoist']) => {
       if (todoist?.label) params.labels = [todoist.label]
 
       createTask(params)
-        ?.then(async task => {
+        ?.then(async (task) => {
           await updateBlock(event, task)
           return logseq.UI.showMsg('Upload task to todoist success')
         })
-        .catch(err => {
+        .catch((err) => {
           logseq.UI.showMsg('Upload task to todoist failed', 'error')
           console.error('[faiz:] === Upload task to todoist failed', err)
         })
-
     })
   }
 }

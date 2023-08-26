@@ -1,8 +1,10 @@
+import type { ISchedule } from 'tui-calendar'
+
 import { md } from '@/helper/md'
 import { getCurrentTheme } from '@/util/logseq'
-import { ISchedule } from 'tui-calendar'
+
 import { CALENDAR_THEME, DEFAULT_SETTINGS } from './constants'
-import { ISettingsForm } from './type'
+import type { ILogTag, ISettingsForm } from './type'
 
 export const getInitialSettings = (params = { filterInvalidedProject: true }): ISettingsForm => {
   const { filterInvalidedProject } = params
@@ -25,7 +27,7 @@ export const getInitialSettings = (params = { filterInvalidedProject: true }): I
     // calendarList,
     logKey,
     dailyLogTagList: Array.isArray(logseq.settings?.dailyLogTagList)
-      ? logseq.settings?.dailyLogTagList
+      ? (logseq.settings?.dailyLogTagList as ILogTag[])
       : DEFAULT_SETTINGS.dailyLogTagList,
     projectList: filterInvalidedProject ? projectList?.filter((project) => Boolean(project.id)) : projectList,
   }
