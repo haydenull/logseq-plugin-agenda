@@ -2,7 +2,7 @@ import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import type { AppUserConfigs, PageEntity } from '@logseq/libs/dist/LSPlugin.user'
 import { endOfDay, formatISO, parse } from 'date-fns'
 import dayjs, { type Dayjs } from 'dayjs'
-import { flattenDeep, get, has } from 'lodash'
+import { flattenDeep, get, has } from 'lodash-es'
 import type { ISchedule } from 'tui-calendar'
 
 import { getInitialSettings } from './baseInfo'
@@ -17,12 +17,10 @@ import {
 } from './constants'
 import type { IEvent } from './events'
 import { getBlockData, getPageData } from './logseq'
-import type { ICategory, IQueryWithCalendar, ISettingsForm } from './type'
+import type { CalendarConfig, ICategory, IQueryWithCalendar, ISettingsForm } from './type'
 import { parseUrlParams } from './util'
 
 export const getCustomCalendarSchedules = async () => {
-  let calendarSchedules: ISchedule[] = []
-
   // get calendar configs
   const settings = getInitialSettings()
   const { calendarList: calendarConfigs = [] } = settings
@@ -59,10 +57,10 @@ export const getCustomCalendarSchedules = async () => {
   })
 
   const scheduleRes = await Promise.allSettled(queryPromiseList)
-  const scheduleResFulfilled: ISchedule[] = []
+  const scheduleResFulfilled: ISchedule[][] = []
   scheduleRes.forEach((res, index) => {
     if (res.status === 'fulfilled') {
-      scheduleResFulfilled.push(res.value)
+      scheduleResFulfilled.push(res.value?.filter(Boolean))
     } else {
       console.error('[faiz:] === scheduleRes error: ', scheduleQueryList[index], res)
       const { calendarConfig, query } = scheduleQueryList[index]
@@ -73,9 +71,7 @@ message: ${res.reason.message}`
       logseq.UI.showMsg(msg, 'error')
     }
   })
-  calendarSchedules = flattenDeep(calendarSchedules.concat(scheduleResFulfilled))
-
-  return calendarSchedules
+  return flattenDeep(scheduleResFulfilled)
 }
 
 export const getDailyLogSchedules = async () => {
@@ -98,7 +94,7 @@ export const getDailyLogSchedules = async () => {
   //               }) || []
   const _logs =
     logs?.filter((block) => {
-      // Interstitial Journal requries filter task
+      // Interstitial Journal required filter task
       if (!block?.page?.journalDay) return false
       return TIME_REG.test(block?.content.replace(new RegExp(`^${block.marker} `), ''))
     }) || []
@@ -135,9 +131,9 @@ export const convertBlockToSchedule = async ({
   block: BlockEntity
   queryWithCalendar: IQueryWithCalendar
   settings: ISettingsForm
-}) => {
+}): Promise<ISchedule | null> => {
   const { calendarConfig, query } = queryWithCalendar
-  const { script = '', scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone, queryType } = query
+  const { scheduleStart = '', scheduleEnd = '', dateFormatter, isMilestone } = query
   const { defaultDuration } = settings
   const _dateFormatter = ['scheduled', 'deadline'].includes(scheduleStart || scheduleEnd)
     ? DEFAULT_BLOCK_DEADLINE_DATE_FORMAT
@@ -155,7 +151,7 @@ export const convertBlockToSchedule = async ({
       (hasTime ? genCalendarDate(end, _dateFormatter) : formatISO(endOfDay(parse(end, _dateFormatter, new Date()))))
   } catch (err) {
     console.warn('[faiz:] === parse calendar date error: ', err, block, query)
-    return []
+    return null
   }
   if (block?.page?.['journal-day']) {
     const { start: _startTime, end: _endTime } = getTimeInfo(
@@ -289,7 +285,7 @@ export async function genSchedule(params: {
   category: ICategory
   start?: string
   end?: string
-  calendarConfig: Omit<ISettingsForm['calendarList'][number], 'query'>
+  calendarConfig: Omit<CalendarConfig, 'query'>
   isAllDay?: boolean
   isReadOnly?: boolean
   defaultDuration?: ISettingsForm['defaultDuration']
@@ -390,7 +386,7 @@ export const genScheduleWithCalendarMap = (schedules: ISchedule[]) => {
 }
 
 export const getAgendaCalendars = async () => {
-  const { calendarList } = logseq.settings as unknown as ISettingsForm
+  const { calendarList = [] } = logseq.settings as unknown as ISettingsForm
   const calendarPagePromises = calendarList.map((calendar) => getPageData({ originalName: calendar.id }))
   const res = await Promise.all(calendarPagePromises)
   return res

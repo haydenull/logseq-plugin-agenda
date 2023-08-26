@@ -1,7 +1,7 @@
-import dayjs, { Dayjs } from 'dayjs'
-import { clone } from 'lodash'
-import { ICooradinate, IEvent, IGroup, IMode } from './type'
+import dayjs, { type Dayjs } from 'dayjs'
+
 import { CALENDAR_EVENT_HEIGHT, CALENDAR_GROUP_GAP, SIDEBAR_GROUP_TITLE_HEIGHT } from './constants'
+import type { ICooradinate, IEvent, IGroup, IMode } from './type'
 
 export const extractDays = (startDate: Dayjs, endDate: Dayjs): Dayjs[] => {
   const days: Dayjs[] = []
@@ -38,13 +38,19 @@ export const isWeekend = (day: Dayjs): boolean => {
 }
 
 export const getDataWithGroupCoordinates = (data: IGroup[], mode: IMode = 'simple') => {
-  let dataWithCoordinates: (IGroup & {coordinate: ICooradinate})[] = []
+  const dataWithCoordinates: (IGroup & { coordinate: ICooradinate })[] = []
   data.forEach((group, index) => {
     const preGroup = dataWithCoordinates[index - 1]
     const { levelCount = 0, events = [], milestones = [] } = preGroup || {}
     const eventsCount = mode === 'simple' ? levelCount : events.length
     const milestoneCount = mode === 'simple' ? (milestones.length > 0 ? 1 : 0) : milestones.length
-    const y = index === 0 ? 0 : preGroup.coordinate.y + (eventsCount + milestoneCount) * CALENDAR_EVENT_HEIGHT + CALENDAR_GROUP_GAP + SIDEBAR_GROUP_TITLE_HEIGHT
+    const y =
+      index === 0
+        ? 0
+        : preGroup.coordinate.y +
+          (eventsCount + milestoneCount) * CALENDAR_EVENT_HEIGHT +
+          CALENDAR_GROUP_GAP +
+          SIDEBAR_GROUP_TITLE_HEIGHT
 
     dataWithCoordinates.push({
       ...group,
@@ -61,31 +67,35 @@ export const getXCoordinate = (start: Dayjs, day: Dayjs, itemWidth: number): num
 }
 
 export const scrollToDate = (date: Dayjs, uniqueId = '') => {
-  document.getElementById(`date${uniqueId}${date.format('YYYYMMDD')}`)?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
+  document
+    .getElementById(`date${uniqueId}${date.format('YYYYMMDD')}`)
+    ?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' })
 }
 
 export const transformDataToAdvancedMode = (data: IGroup[]) => {
-  return data.map(group => sortGroup(group))
+  return data.map((group) => sortGroup(group))
 }
 export const transformDataToSimpleMode = (data: IGroup[]) => {
-  return data.map(group => transformGroupToSimpleMode(group))
+  return data.map((group) => transformGroupToSimpleMode(group))
 }
 export const transformGroupToSimpleMode = (group: IGroup) => {
   const { events, rangeStart, rangeEnd } = sortGroup(group)
 
-  let levelEvents: IEvent[][] = addEventsToLevel(events, [], dayjs(rangeStart), dayjs(rangeEnd))
+  const levelEvents: IEvent[][] = addEventsToLevel(events, [], dayjs(rangeStart), dayjs(rangeEnd))
 
   return {
     ...group,
     levelCount: levelEvents.length,
-    events: levelEvents.map((level, index) => {
-      return level.map(event => {
-        return {
-          ...event,
-          level: index,
-        }
+    events: levelEvents
+      .map((level, index) => {
+        return level.map((event) => {
+          return {
+            ...event,
+            level: index,
+          }
+        })
       })
-    }).flat(),
+      .flat(),
   }
 }
 export const sortGroup = (group: IGroup) => {
@@ -94,7 +104,7 @@ export const sortGroup = (group: IGroup) => {
   events.sort((a, b) => dayjs(a.start).diff(dayjs(b.start)))
 
   // 按开始时间分组
-  let classByStart = new Map<string, IEvent[]>()
+  const classByStart = new Map<string, IEvent[]>()
   events.forEach((event) => {
     const { start } = event
     if (classByStart.has(start)) {
@@ -137,11 +147,11 @@ function addEventsToLevel(events: IEvent[] = [], levelArr: IEvent[][] = [], rang
   const rangeDaysMap = genRangeMap(dayjs(rangeStart), dayjs(rangeEnd))
   const levelItem: IEvent[] = []
   const notCurrentLevelEvents: IEvent[] = []
-  events.forEach(event => {
+  events.forEach((event) => {
     const { start, end } = event
     const startDay = dayjs(start)
     const endDay = dayjs(end)
-    const rangeDays = extractDays(startDay, endDay).map(day => day.format('YYYY-MM-DD'))
+    const rangeDays = extractDays(startDay, endDay).map((day) => day.format('YYYY-MM-DD'))
     if (rangeDaysMap.get(startDay.format('YYYY-MM-DD')) === false) {
       rangeDays.forEach((day) => {
         rangeDaysMap.set(day, true)
@@ -160,14 +170,16 @@ function addEventsToLevel(events: IEvent[] = [], levelArr: IEvent[][] = [], rang
  * 获取日期范围
  */
 export const getDateRange = (data: IGroup[]) => {
-  const arr = data.map(group => {
-    const { events, milestones = [] } = group
-    return [...events, ...milestones]
-  }).flat()
+  const arr = data
+    .map((group) => {
+      const { events, milestones = [] } = group
+      return [...events, ...milestones]
+    })
+    .flat()
 
   let rangeStart = dayjs()
   let rangeEnd = dayjs()
-  arr.forEach(event => {
+  arr.forEach((event) => {
     const { start, end } = event
     if (dayjs(start).isBefore(rangeStart)) {
       rangeStart = dayjs(start)
