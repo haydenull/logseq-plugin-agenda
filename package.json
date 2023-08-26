@@ -19,7 +19,8 @@
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
     "prepare": "husky install",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "analyze": "pnpm run build && npx http-server ./"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
@@ -60,7 +61,7 @@
     "tui-calendar": "^1.15.3"
   },
   "devDependencies": {
-    "@haydenull/fabric": "0.2.2",
+    "@haydenull/fabric": "0.2.4",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
@@ -86,11 +87,12 @@
     "prettier": "^2.8.7",
     "prettier-plugin-organize-imports": "^3.2.2",
     "prettier-plugin-tailwindcss": "^0.2.5",
+    "rollup-plugin-visualizer": "5.8.3",
     "semantic-release": "^21.0.0",
     "tailwindcss": "^3.2.4",
     "typescript": "^4.9.3",
     "utility-types": "^3.10.0",
-    "vite": "^2.9.15",
+    "vite": "^4.4.9",
     "vite-plugin-importer": "^0.2.5",
     "vitest": "^0.9.4",
     "vue": "^3.2.47",
