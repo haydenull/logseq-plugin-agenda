@@ -1,0 +1,476 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Sidebar App > should render 1`] = `
+{
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <main>
+        <div
+          class="flex items-center"
+        >
+          <a
+            class="button items-center"
+            href="javascript:void(0);"
+            style="display: flex;"
+            title="Add Daily Log"
+          >
+            <svg
+              fill="none"
+              height="1em"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <desc />
+              <path
+                d="M0 0h24v24H0z"
+                fill="none"
+                stroke="none"
+              />
+              <path
+                d="M3 12h4l3 8l4 -16l3 8h4"
+              />
+            </svg>
+          </a>
+          <a
+            class="button items-center"
+            href="javascript:void(0);"
+            style="display: flex;"
+            title="Create Schedule"
+          >
+            <svg
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 24 24"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 0h24v24H0z"
+                fill="none"
+              />
+              <path
+                d="M22 5.18L10.59 16.6l-4.24-4.24 1.41-1.41 2.83 2.83 10-10L22 5.18zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8c1.57 0 3.04.46 4.28 1.25l1.45-1.45A10.02 10.02 0 0012 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.73 0 3.36-.44 4.78-1.22l-1.5-1.5c-1 .46-2.11.72-3.28.72zm7-5h-3v2h3v3h2v-3h3v-2h-3v-3h-2v3z"
+              />
+            </svg>
+          </a>
+        </div>
+        <div
+          class="flex items-center justify-between agenda-sidebar-calendar"
+        >
+          <div
+            class="agenda-sidebar-calendar__number flex items-center justify-center"
+          >
+            <svg
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M217.9 256L345 129c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.3-34 0L167 239c-9.1 9.1-9.3 23.7-.7 33.1L310.9 417c4.7 4.7 10.9 7 17 7s12.3-2.3 17-7c9.4-9.4 9.4-24.6 0-33.9L217.9 256z"
+              />
+            </svg>
+          </div>
+          <div
+            class="flex flex-col items-center"
+          >
+            <span
+              class="agenda-sidebar-calendar__week-day--today"
+            >
+              S
+            </span>
+            <div
+              class="agenda-sidebar-calendar__number flex items-center justify-center bg-indigo-600 agenda-sidebar-calendar__number--active agenda-sidebar-calendar__number--today"
+              style="opacity: 0.9;"
+            >
+              27
+            </div>
+          </div>
+          <div
+            class="flex flex-col items-center"
+          >
+            <span
+              class=""
+            >
+              M
+            </span>
+            <div
+              class="agenda-sidebar-calendar__number flex items-center justify-center"
+              style="opacity: 0.9;"
+            >
+              28
+            </div>
+          </div>
+          <div
+            class="flex flex-col items-center"
+          >
+            <span
+              class=""
+            >
+              T
+            </span>
+            <div
+              class="agenda-sidebar-calendar__number flex items-center justify-center"
+              style="opacity: 0.9;"
+            >
+              29
+            </div>
+          </div>
+          <div
+            class="flex flex-col items-center"
+          >
+            <span
+              class=""
+            >
+              W
+            </span>
+            <div
+              class="agenda-sidebar-calendar__number flex items-center justify-center"
+              style="opacity: 0.9;"
+            >
+              30
+            </div>
+          </div>
+          <div
+            class="flex flex-col items-center"
+          >
+            <span
+              class=""
+            >
+              T
+            </span>
+            <div
+              class="agenda-sidebar-calendar__number flex items-center justify-center"
+              style="opacity: 0.9;"
+            >
+              31
+            </div>
+          </div>
+          <div
+            class="flex flex-col items-center"
+          >
+            <span
+              class=""
+            >
+              F
+            </span>
+            <div
+              class="agenda-sidebar-calendar__number flex items-center justify-center"
+              style="opacity: 0.9;"
+            >
+              01
+            </div>
+          </div>
+          <div
+            class="flex flex-col items-center"
+          >
+            <span
+              class=""
+            >
+              S
+            </span>
+            <div
+              class="agenda-sidebar-calendar__number flex items-center justify-center"
+              style="opacity: 0.9;"
+            >
+              02
+            </div>
+          </div>
+          <div
+            class="agenda-sidebar-calendar__number flex items-center justify-center"
+          >
+            <svg
+              fill="currentColor"
+              height="1em"
+              stroke="currentColor"
+              stroke-width="0"
+              viewBox="0 0 512 512"
+              width="1em"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M294.1 256L167 129c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.3 34 0L345 239c9.1 9.1 9.3 23.7.7 33.1L201.1 417c-4.7 4.7-10.9 7-17 7s-12.3-2.3-17-7c-9.4-9.4-9.4-24.6 0-33.9l127-127.1z"
+              />
+            </svg>
+          </div>
+        </div>
+        <div
+          class="flex justify-center"
+        >
+          No tasks found, enjoy your day
+        </div>
+      </main>
+    </div>
+  </body>,
+  "container": <div>
+    <main>
+      <div
+        class="flex items-center"
+      >
+        <a
+          class="button items-center"
+          href="javascript:void(0);"
+          style="display: flex;"
+          title="Add Daily Log"
+        >
+          <svg
+            fill="none"
+            height="1em"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <desc />
+            <path
+              d="M0 0h24v24H0z"
+              fill="none"
+              stroke="none"
+            />
+            <path
+              d="M3 12h4l3 8l4 -16l3 8h4"
+            />
+          </svg>
+        </a>
+        <a
+          class="button items-center"
+          href="javascript:void(0);"
+          style="display: flex;"
+          title="Create Schedule"
+        >
+          <svg
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 24 24"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0 0h24v24H0z"
+              fill="none"
+            />
+            <path
+              d="M22 5.18L10.59 16.6l-4.24-4.24 1.41-1.41 2.83 2.83 10-10L22 5.18zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8c1.57 0 3.04.46 4.28 1.25l1.45-1.45A10.02 10.02 0 0012 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.73 0 3.36-.44 4.78-1.22l-1.5-1.5c-1 .46-2.11.72-3.28.72zm7-5h-3v2h3v3h2v-3h3v-2h-3v-3h-2v3z"
+            />
+          </svg>
+        </a>
+      </div>
+      <div
+        class="flex items-center justify-between agenda-sidebar-calendar"
+      >
+        <div
+          class="agenda-sidebar-calendar__number flex items-center justify-center"
+        >
+          <svg
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 512 512"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M217.9 256L345 129c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.3-34 0L167 239c-9.1 9.1-9.3 23.7-.7 33.1L310.9 417c4.7 4.7 10.9 7 17 7s12.3-2.3 17-7c9.4-9.4 9.4-24.6 0-33.9L217.9 256z"
+            />
+          </svg>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <span
+            class="agenda-sidebar-calendar__week-day--today"
+          >
+            S
+          </span>
+          <div
+            class="agenda-sidebar-calendar__number flex items-center justify-center bg-indigo-600 agenda-sidebar-calendar__number--active agenda-sidebar-calendar__number--today"
+            style="opacity: 0.9;"
+          >
+            27
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <span
+            class=""
+          >
+            M
+          </span>
+          <div
+            class="agenda-sidebar-calendar__number flex items-center justify-center"
+            style="opacity: 0.9;"
+          >
+            28
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <span
+            class=""
+          >
+            T
+          </span>
+          <div
+            class="agenda-sidebar-calendar__number flex items-center justify-center"
+            style="opacity: 0.9;"
+          >
+            29
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <span
+            class=""
+          >
+            W
+          </span>
+          <div
+            class="agenda-sidebar-calendar__number flex items-center justify-center"
+            style="opacity: 0.9;"
+          >
+            30
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <span
+            class=""
+          >
+            T
+          </span>
+          <div
+            class="agenda-sidebar-calendar__number flex items-center justify-center"
+            style="opacity: 0.9;"
+          >
+            31
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <span
+            class=""
+          >
+            F
+          </span>
+          <div
+            class="agenda-sidebar-calendar__number flex items-center justify-center"
+            style="opacity: 0.9;"
+          >
+            01
+          </div>
+        </div>
+        <div
+          class="flex flex-col items-center"
+        >
+          <span
+            class=""
+          >
+            S
+          </span>
+          <div
+            class="agenda-sidebar-calendar__number flex items-center justify-center"
+            style="opacity: 0.9;"
+          >
+            02
+          </div>
+        </div>
+        <div
+          class="agenda-sidebar-calendar__number flex items-center justify-center"
+        >
+          <svg
+            fill="currentColor"
+            height="1em"
+            stroke="currentColor"
+            stroke-width="0"
+            viewBox="0 0 512 512"
+            width="1em"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M294.1 256L167 129c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.3 34 0L345 239c9.1 9.1 9.3 23.7.7 33.1L201.1 417c-4.7 4.7-10.9 7-17 7s-12.3-2.3-17-7c-9.4-9.4-9.4-24.6 0-33.9l127-127.1z"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        class="flex justify-center"
+      >
+        No tasks found, enjoy your day
+      </div>
+    </main>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;

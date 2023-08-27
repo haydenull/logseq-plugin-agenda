@@ -7,7 +7,7 @@ import { UniversalTransition } from 'echarts/features'
 import { CanvasRenderer } from 'echarts/renderers'
 import proxyLogseq from 'logseq-proxy'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { type Root, createRoot } from 'react-dom/client'
 import 'tui-calendar/dist/tui-calendar.css'
 
 import MainApp from '@/apps/MainApp'
@@ -25,6 +25,7 @@ import initializeTodoist from '@/register/todoist'
 import { getInitialSettings, initializeSettings } from '@/util/baseInfo'
 import { listenEsc, log, managePluginTheme, setPluginTheme, toggleAppTransparent } from '@/util/util'
 
+import TaskListApp from './apps/TaskListApp'
 import './style/index.less'
 
 echarts.use([
@@ -42,6 +43,7 @@ echarts.use([
 ])
 
 const isDevelopment = import.meta.env.DEV
+let root: Root | null = null
 
 if (isDevelopment) {
   // run in browser
@@ -52,9 +54,10 @@ if (isDevelopment) {
     },
     settings: window.mockSettings,
   })
-  renderApp()
+  // renderApp()
   // renderPomodoroApp('pomodoro')
   // renderModalApp({ type: 'addDailyLog' })
+  // renderSidebar()
 } else {
   log('=== logseq-plugin-agenda loaded ===')
   logseq.ready(() => {
@@ -96,7 +99,7 @@ if (isDevelopment) {
     })
     logseq.on('ui:visible:changed', (e) => {
       if (!e.visible && window.currentApp !== 'pomodoro') {
-        ReactDOM.unmountComponentAtNode(document.getElementById('root') as Element)
+        root && root.unmount()
       }
     })
     listenEsc(() => logseq.hideMainUI())
@@ -167,13 +170,15 @@ async function renderApp() {
   let defaultRoute = ''
   const page = await logseq.Editor.getCurrentPage()
   const { projectList = [] } = getInitialSettings()
-  if (projectList.some((project) => Boolean(project.id) && project.id === page?.originalName))
+  if (projectList.some((project) => Boolean(project.id) && project.id === page?.originalName)) {
     defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
-  ReactDOM.render(
+  }
+
+  root = createRoot(document.getElementById('root')!)
+  root.render(
     <React.StrictMode>
       <MainApp defaultRoute={defaultRoute} />
     </React.StrictMode>,
-    document.getElementById('root'),
   )
 }
 
@@ -201,5 +206,15 @@ export function renderModalApp(params: IModalAppProps) {
     return app
   }
 
-  ReactDOM.render(<React.StrictMode>{renderModalApp()}</React.StrictMode>, document.getElementById('root'))
+  root = createRoot(document.getElementById('root')!)
+  root.render(<React.StrictMode>{renderModalApp()}</React.StrictMode>)
+}
+
+function renderSidebar() {
+  root = createRoot(document.getElementById('root')!)
+  root.render(
+    <React.StrictMode>
+      <TaskListApp containerId="agenda-task-list-test" />
+    </React.StrictMode>,
+  )
 }

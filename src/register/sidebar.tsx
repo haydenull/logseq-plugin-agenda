@@ -1,7 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { LOGSEQ_PROVIDE_COMMON_STYLE } from '@/constants/style'
+import { createRoot } from 'react-dom/client'
+
 import TaskListApp from '@/apps/TaskListApp'
+import { LOGSEQ_PROVIDE_COMMON_STYLE } from '@/constants/style'
 
 const initializeSidebar = () => {
   logseq.Editor.registerSlashCommand('Agenda: Insert Task List', async () => {
@@ -33,11 +35,11 @@ const initializeSidebar = () => {
         }
       `)
       setTimeout(() => {
-        ReactDOM.render(
+        const root = createRoot(parent.document.getElementById(id)!)
+        root.render(
           <React.StrictMode>
             <TaskListApp containerId={id} />
           </React.StrictMode>,
-          parent.document.getElementById(id)
         )
       }, 0)
     } else if (args?.[1] === 'pomodoro-timer') {
