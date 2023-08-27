@@ -1,7 +1,8 @@
-import { IInterruption } from '@/helper/pomodoro'
 import { Form, Input, Modal, Radio, Tooltip } from 'antd'
 import dayjs from 'dayjs'
-import React, { useState } from 'react'
+import React from 'react'
+
+import type { IInterruption } from '@/helper/pomodoro'
 
 const InerruptionModal: React.FC<{
   visible: boolean
@@ -15,16 +16,19 @@ const InerruptionModal: React.FC<{
   return (
     <Modal
       title="Record Inerruption"
-      visible={visible}
+      open={visible}
       onCancel={onCancel}
       onOk={async () => {
         const values = await form.validateFields()
         const interruptions = window.interruptionMap.get(pomodoroId) || []
-        window.interruptionMap.set(pomodoroId, interruptions.concat({
-          type: values.type,
-          remark: values.remark,
-          time: dayjs().valueOf(),
-        }))
+        window.interruptionMap.set(
+          pomodoroId,
+          interruptions.concat({
+            type: values.type,
+            remark: values.remark,
+            time: dayjs().valueOf(),
+          }),
+        )
         onCancel()
       }}
     >
@@ -34,8 +38,22 @@ const InerruptionModal: React.FC<{
             optionType="button"
             buttonStyle="solid"
             options={[
-              { label: <Tooltip title="Internal interruptions are distractions that come from within, such as checking social media or looking at your phone.">Internal</Tooltip>, value: 1 },
-              { label: <Tooltip title="External interruptions are distractions that come from outside, such as someone calling you or a notification on your computer.">External</Tooltip>, value: 2 },
+              {
+                label: (
+                  <Tooltip title="Internal interruptions are distractions that come from within, such as checking social media or looking at your phone.">
+                    Internal
+                  </Tooltip>
+                ),
+                value: 1,
+              },
+              {
+                label: (
+                  <Tooltip title="External interruptions are distractions that come from outside, such as someone calling you or a notification on your computer.">
+                    External
+                  </Tooltip>
+                ),
+                value: 2,
+              },
             ]}
           />
         </Form.Item>

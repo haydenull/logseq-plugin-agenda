@@ -44,5 +44,10 @@ export default defineConfig(async ({ command, mode }) => {
     define: {
       mockSettings: getMockSettings(mode === 'development'),
     },
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: ['./src/tests/setupTest.ts'],
+    },
   }
 })
