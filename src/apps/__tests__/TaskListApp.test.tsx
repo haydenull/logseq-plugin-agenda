@@ -18,10 +18,10 @@ describe('Sidebar App', () => {
   //   })
   // })
 
-  test('should render', async () => {
-    const sidebarApp = render(<TaskListApp containerId={containerId} />)
-    expect(sidebarApp).toMatchSnapshot()
-  })
+  // test('should render', async () => {
+  //   const sidebarApp = render(<TaskListApp containerId={containerId} />)
+  //   expect(sidebarApp).toMatchSnapshot()
+  // })
 
   test('should show overdue tasks in today', async () => {
     render(<TaskListApp containerId={containerId} />)

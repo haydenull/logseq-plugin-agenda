@@ -15,7 +15,7 @@ import { getInitialSettings } from '@/util/baseInfo'
 import { getInternalEvents, getTasksInTimeRange } from '@/util/events'
 import { categorizeSubscriptions, categorizeTasks } from '@/util/schedule'
 import { getSubscriptionsInTimeRange } from '@/util/subscription'
-import { genWeekDays } from '@/util/util'
+import { genDaysOfWeek } from '@/util/util'
 
 const App: React.FC<{
   containerId: string
@@ -24,24 +24,24 @@ const App: React.FC<{
   const [, setProjectEvents] = useAtom(projectEventsAtom)
 
   // calendar
-  const [weekDays, setWeekDays] = useState<Dayjs[]>([])
+  const [daysOfWeek, setDaysOfWeek] = useState<Dayjs[]>([])
   const [activeDay, setActiveDay] = useState<Dayjs>(dayjs())
 
   // subscriptions
   const [fullSubscriptions] = useAtom(subscriptionSchedulesAtom)
-  const weekSubscriptionsMap = getSubscriptionsInTimeRange(fullSubscriptions, weekDays)
+  const weekSubscriptionsMap = getSubscriptionsInTimeRange(fullSubscriptions, daysOfWeek)
   const activeDaySubscriptions = weekSubscriptionsMap.get(activeDay.format('YYYY-MM-DD')) ?? []
   const { allDaySubscriptions, timeSubscriptions } = categorizeSubscriptions(activeDaySubscriptions)
 
   // tasks
   const [fullTasks, setFullEvents] = useAtom(fullEventsAtom)
-  const weekTasksMap = getTasksInTimeRange(fullTasks?.tasks?.withTime, weekDays)
+  const weekTasksMap = getTasksInTimeRange(fullTasks?.tasks?.withTime, daysOfWeek)
   const activeDayTasks = weekTasksMap.get(activeDay.format('YYYY-MM-DD')) ?? []
   const { overdueTasks, allDayTasks, timeTasks } = categorizeTasks(activeDayTasks)
 
-  // weekday with dots
+  // week day with dots
   const weekDaysWithDots = Object.fromEntries(
-    weekDays.map((day) => {
+    daysOfWeek.map((day) => {
       const dayString = day.format('YYYY-MM-DD')
       const subscriptions = weekSubscriptionsMap.get(dayString) ?? []
       const tasks = weekTasksMap.get(dayString) ?? []
@@ -53,10 +53,11 @@ const App: React.FC<{
     setActiveDay(day)
   }
   const onClickCalendarArrow = (direction: 'back' | 'forward') => {
-    const oneDay = direction === 'back' ? weekDays[0]?.add(-1, 'day') : weekDays[weekDays.length - 1].add(1, 'day')
+    const oneDay =
+      direction === 'back' ? daysOfWeek[0]?.add(-1, 'day') : daysOfWeek[daysOfWeek.length - 1].add(1, 'day')
     const { weekStartDay } = getInitialSettings()
-    const days = genWeekDays(weekStartDay, oneDay)
-    setWeekDays(days)
+    const days = genDaysOfWeek(weekStartDay, oneDay)
+    setDaysOfWeek(days)
     setActiveDay((_old) => days.find((day) => day.day() === _old.day()) ?? days[0])
   }
 
@@ -81,8 +82,8 @@ const App: React.FC<{
   useEffect(() => {
     // generate current week days
     const { weekStartDay } = getInitialSettings()
-    const days = genWeekDays(weekStartDay)
-    setWeekDays(days)
+    const days = genDaysOfWeek(weekStartDay)
+    setDaysOfWeek(days)
   }, [])
 
   return (
@@ -124,7 +125,7 @@ const App: React.FC<{
         >
           <IoIosArrowBack />
         </div>
-        {weekDays.map((day) => {
+        {daysOfWeek.map((day) => {
           const isActiveDay = day.isSame(activeDay, 'day')
           const today = dayjs()
           const isToday = day.isSame(today, 'day')
