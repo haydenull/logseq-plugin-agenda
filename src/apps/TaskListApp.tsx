@@ -14,7 +14,7 @@ import { subscriptionSchedulesAtom } from '@/model/schedule'
 import { getInitialSettings } from '@/util/baseInfo'
 import { getInternalEvents, getTasksInTimeRange } from '@/util/events'
 import { categorizeSubscriptions, categorizeTasks } from '@/util/schedule'
-import { getSubscriptionsInTimeRange } from '@/util/subscription'
+import { getSubCalendarSchedules, getSubscriptionsInTimeRange } from '@/util/subscription'
 import { genDaysOfWeek } from '@/util/util'
 
 const App: React.FC<{
@@ -28,7 +28,7 @@ const App: React.FC<{
   const [activeDay, setActiveDay] = useState<Dayjs>(dayjs())
 
   // subscriptions
-  const [fullSubscriptions] = useAtom(subscriptionSchedulesAtom)
+  const [fullSubscriptions, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
   const weekSubscriptionsMap = getSubscriptionsInTimeRange(fullSubscriptions, daysOfWeek)
   const activeDaySubscriptions = weekSubscriptionsMap.get(activeDay.format('YYYY-MM-DD')) ?? []
   const { allDaySubscriptions, timeSubscriptions } = categorizeSubscriptions(activeDaySubscriptions)
@@ -70,6 +70,9 @@ const App: React.FC<{
         setJournalEvents(journalEvents)
         setProjectEvents(projectEventsMap)
       }
+
+      const { subscriptionList } = getInitialSettings()
+      setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
     }
     fetchSchedules()
     logseq.DB.onChanged(({ blocks, txData, txMeta }) => {
