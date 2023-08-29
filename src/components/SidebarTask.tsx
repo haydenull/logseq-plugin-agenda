@@ -60,10 +60,11 @@ const Task = ({ task, type = 'allDay' }: { task: IEvent; type?: 'overdue' | 'all
 
   return (
     <div
-      className="agenda-sidebar-task flex cursor-pointer"
+      className="agenda-sidebar-task flex cursor-pointer relative"
       style={{ opacity: isDone ? 0.4 : 0.9 }}
       onClick={() => navToBlock(task)}
     >
+      {/* time info */}
       <div
         className="flex flex-col justify-between text-right"
         style={{
@@ -80,13 +81,19 @@ const Task = ({ task, type = 'allDay' }: { task: IEvent; type?: 'overdue' | 'all
           </div>
         )}
       </div>
+
+      {/* divider */}
       <div
         style={{ width: '3px', backgroundColor: calendarConfig?.bgColor, borderRadius: '2px', margin: '0 6px' }}
       ></div>
-      <div style={{ width: 'calc(100% - 114px)' }} className="relative">
+
+      {/* task info */}
+      <div style={{ width: 'calc(100% - 59px)' }} className="relative">
+        {/* project info */}
         <div className="truncate" style={{ color: 'var(--ls-icon-color)', fontSize: '0.8em', opacity: 0.6 }}>
           {calendarConfig?.id}
         </div>
+        {/* task title */}
         <div
           className="agenda-sidebar-task__title line-clamp-2"
           style={{ width: 'calc(100% - 30px)' }}
@@ -94,6 +101,7 @@ const Task = ({ task, type = 'allDay' }: { task: IEvent; type?: 'overdue' | 'all
         >
           {task.addOns.showTitle}
         </div>
+        {/* NOW Badge */}
         {isActive && (
           <span
             className="ui__button bg-indigo-600 absolute right-0"
@@ -109,21 +117,16 @@ const Task = ({ task, type = 'allDay' }: { task: IEvent; type?: 'overdue' | 'all
         )}
       </div>
 
-      <div
-        onClick={embedToToday}
-        className="agenda-sidebar-task__add flex"
-        style={{ alignItems: 'center', paddingLeft: '8px' }}
-      >
-        <MdPlaylistAdd
-          style={{ color: 'var(--ls-icon-color)', fontSize: '1.2em', opacity: '0.7', marginTop: '0.2em' }}
-        />
-      </div>
-      <div
-        onClick={onClickStartPomodoro}
-        className="agenda-sidebar-task__add flex"
-        style={{ alignItems: 'center', paddingLeft: '8px' }}
-      >
-        <GiTomato style={{ color: 'var(--ls-icon-color)', fontSize: '0.9em', opacity: '0.7', marginTop: '0.2em' }} />
+      {/* actions */}
+      <div className="absolute top-0 h-full agenda-sidebar-task__action flex-row">
+        <div onClick={embedToToday} className="flex" style={{ alignItems: 'center', paddingLeft: '8px' }}>
+          <MdPlaylistAdd
+            style={{ color: 'var(--ls-icon-color)', fontSize: '1.2em', opacity: '0.7', marginTop: '0.2em' }}
+          />
+        </div>
+        <div onClick={onClickStartPomodoro} className="flex" style={{ alignItems: 'center', paddingLeft: '8px' }}>
+          <GiTomato style={{ color: 'var(--ls-icon-color)', fontSize: '0.9em', opacity: '0.7', marginTop: '0.2em' }} />
+        </div>
       </div>
     </div>
   )
