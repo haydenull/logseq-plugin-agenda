@@ -51,19 +51,27 @@ export const LOGSEQ_PROVIDE_COMMON_STYLE = `
     left: calc(50% - 2px);
     top: calc(100% + 2px);
   }
-  .agenda-sidebar-task__add {
-    display: none;
+  .agenda-sidebar-task__action {
+    display: flex;
+    width: 58px;
+    background: var(--ls-tertiary-background-color);
+    opacity: 0.85;
+    right: -60px;
+    visibility: hidden;
+    transition: right 0.1s ease;
   }
   .agenda-sidebar-task {
     padding: 5px 8px 5px 0;
     border-radius: 4px;
+    overflow: hidden;
   }
   .agenda-sidebar-task:hover {
     opacity: 1;
     background: var(--ls-tertiary-background-color);
   }
-  .agenda-sidebar-task:hover .agenda-sidebar-task__add {
-    display: flex;
+  .agenda-sidebar-task:hover .agenda-sidebar-task__action {
+    visibility: visible;
+    right: 0;
   }
   .agenda-sidebar-task:hover .agenda-sidebar-task__title {
     color: var(--ls-link-text-color);
