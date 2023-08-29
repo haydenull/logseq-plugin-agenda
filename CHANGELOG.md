@@ -1,3 +1,11 @@
+## [2.16.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.16.1...v2.16.2) (2023-08-29)
+
+
+### Bug Fixes
+
+* **side-bar:** :bug: increase the bandwith of displaying task name ([9e28102](https://github.com/haydenull/logseq-plugin-agenda/commit/9e2810292a541de66afee4a55b101cd4944a5543))
+* **side-bar:** :bug: request subscriptions when initilaizing sidebar ([4970bb9](https://github.com/haydenull/logseq-plugin-agenda/commit/4970bb9e54fd4415b334dcddaf6bfcef700dd8ab))
+
 ## [2.16.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.16.0...v2.16.1) (2023-08-25)
 
 
