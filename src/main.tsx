@@ -26,6 +26,7 @@ import { getInitialSettings, initializeSettings } from '@/util/baseInfo'
 import { listenEsc, log, managePluginTheme, setPluginTheme, toggleAppTransparent } from '@/util/util'
 
 import TaskListApp from './apps/TaskListApp'
+import i18n from './locales/i18n'
 import './style/index.less'
 
 echarts.use([
@@ -64,6 +65,8 @@ if (isDevelopment) {
     initializeSettings()
     logseq.App.getUserConfigs().then((configs) => {
       window.logseqAppUserConfigs = configs
+      console.log('[faiz:] === configs', configs)
+      i18n.changeLanguage(configs.preferredLanguage || 'en')
     })
     // fix: https://github.com/haydenull/logseq-plugin-agenda/issues/87
     logseq.setMainUIInlineStyle({ zIndex: 1000 })
