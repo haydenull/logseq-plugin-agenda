@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io'
 import { MdAddTask } from 'react-icons/md'
 import { TbActivity } from 'react-icons/tb'
@@ -20,6 +21,7 @@ import { genDaysOfWeek } from '@/util/util'
 const App: React.FC<{
   containerId: string
 }> = ({ containerId }) => {
+  const { t } = useTranslation()
   const [, setJournalEvents] = useAtom(journalEventsAtom)
   const [, setProjectEvents] = useAtom(projectEventsAtom)
 
@@ -96,7 +98,7 @@ const App: React.FC<{
         <a
           className="button items-center"
           style={{ display: 'flex' }}
-          title="Add Daily Log"
+          title={t('Add Daily Log')}
           href="javascript:void(0);"
           onClick={() => {
             renderModalApp({ type: 'addDailyLog' })
@@ -108,7 +110,7 @@ const App: React.FC<{
         <a
           className="button items-center"
           style={{ display: 'flex' }}
-          title="Create Schedule"
+          title={t('Create Task')}
           href="javascript:void(0);"
           onClick={() => {
             renderModalApp({ type: 'modifySchedule', data: { type: 'create' } })

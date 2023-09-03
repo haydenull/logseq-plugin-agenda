@@ -1,14 +1,17 @@
-import { getInitialSettings } from '@/util/baseInfo'
-import { createBlockToSpecificBlock } from '@/util/logseq'
-import AnyTouch, { AnyTouchEvent } from '@any-touch/core'
+import AnyTouch, { type AnyTouchEvent } from '@any-touch/core'
 import pan from '@any-touch/pan'
 import { Button, DatePicker, Drawer, Form, Input, Space } from 'antd'
 import classNames from 'classnames'
 import format from 'date-fns/format'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import s from './index.module.less'
+import { useTranslation } from 'react-i18next'
+
+import { getInitialSettings } from '@/util/baseInfo'
+import { createBlockToSpecificBlock } from '@/util/logseq'
+
 import TagSelector from './TagSelector'
+import s from './index.module.less'
 
 // const TAG_LIST_DEMO = [
 //   {
@@ -32,8 +35,8 @@ const SCALE_INTERVAL_TIME_LENGTH = 15
 /** 时间轴单位刻度对应的高度 */
 const SCALE_INTERVAL = HOUR_HEIGHT / (60 / SCALE_INTERVAL_TIME_LENGTH)
 
-const getNearestAvaliableScalePosition = (truelyPosition: number) => {
-  return Math.round(truelyPosition / SCALE_INTERVAL) * SCALE_INTERVAL
+const getNearestAvailableScalePosition = (trulyPosition: number) => {
+  return Math.round(trulyPosition / SCALE_INTERVAL) * SCALE_INTERVAL
 }
 const getTimeFromPosition = (position: number, rulerStartTime) => {
   const timeLength = (position / SCALE_INTERVAL) * SCALE_INTERVAL_TIME_LENGTH
@@ -46,6 +49,7 @@ const AddDailyLogModal: React.FC<{
   visible: boolean
   onCancel: () => void
 }> = ({ visible, onCancel }) => {
+  const { t } = useTranslation()
   const { dailyLogTagList = [], logKey, weekHourStart = 0, weekHourEnd = 24 } = getInitialSettings()
 
   /** 时间轴开始时刻 */
@@ -87,10 +91,11 @@ const AddDailyLogModal: React.FC<{
     at.on(['panstart', 'panup', 'pandown', 'panend'], (e: AnyTouchEvent) => {
       const { y, displacementY, isStart, isEnd, type, nativeEvent } = e
       if (isStart || type === 'panstart') {
-        const _y = getNearestAvaliableScalePosition((nativeEvent as any).offsetY)
+        // @ts-expect-error nativeEvent has offsetY property
+        const _y = getNearestAvailableScalePosition((nativeEvent as unknown).offsetY)
         setPanInfo((info) => ({ ...info, y: _y }))
       }
-      const _displacementY = getNearestAvaliableScalePosition(displacementY)
+      const _displacementY = getNearestAvailableScalePosition(displacementY)
       setPanInfo((info) => ({ ...info, distance: _displacementY }))
     })
     return () => {
@@ -103,26 +108,26 @@ const AddDailyLogModal: React.FC<{
 
   return (
     <Drawer
-      title="Add a log"
+      title={t('Add Daily Log')}
       width={400}
       open={visible}
       onClose={onCancel}
       placement="right"
       extra={
         <Space>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onCancel}>{t('Cancel')}</Button>
           <Button type="primary" onClick={onClickAdd}>
-            Add
+            {t('Add')}
           </Button>
         </Space>
       }
     >
       <div className="flex flex-col h-full">
         <Form labelCol={{ span: 5 }} form={form}>
-          <Form.Item name="date" label="Date" initialValue={dayjs()}>
+          <Form.Item name="date" label={t('Date')} initialValue={dayjs()}>
             <DatePicker className="w-full" style={{ marginBottom: '12px' }} format="YYYY-MM-DD ddd" />
           </Form.Item>
-          <Form.Item name="content" label="Content">
+          <Form.Item name="content" label={t('Content')}>
             <Input />
           </Form.Item>
         </Form>
@@ -132,7 +137,7 @@ const AddDailyLogModal: React.FC<{
             id="time-ruler"
             className={classNames(
               s.rulerContainer,
-              'bg-primary relative rounded cursor-pointer select-none ml-11 description-text'
+              'bg-primary relative rounded cursor-pointer select-none ml-11 description-text',
             )}
             style={{ minHeight: HOUR_HEIGHT * totalHoursCount + 'px' }}
           >
@@ -153,7 +158,7 @@ const AddDailyLogModal: React.FC<{
               className={classNames(
                 s.indicator,
                 'absolute top-0 box-border w-full rounded opacity-50 font-bold',
-                panInfo.distance > 0 ? 'visible' : 'hidden'
+                panInfo.distance > 0 ? 'visible' : 'hidden',
               )}
               style={{ top: panInfo.y + 'px', height: panInfo.distance + 'px' }}
             >
