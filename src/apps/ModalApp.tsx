@@ -68,7 +68,6 @@ const ModalApp: React.FC<IModalAppProps> = (props) => {
         {type === 'modifySchedule' && (
           <ModifySchedule
             visible
-            showKeepRef={props.showKeepRef}
             type={props.data.type}
             initialValues={props.data.initialValues}
             onSave={onSave}

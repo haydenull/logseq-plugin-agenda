@@ -1,5 +1,12 @@
+import { RobotOutlined } from '@ant-design/icons'
+import { Button, DatePicker, Divider, Form, Input, message, Modal, Radio, Select, Space } from 'antd'
+import { format } from 'date-fns'
+import dayjs, { type Dayjs } from 'dayjs'
+import React, { useState } from 'react'
+import type Calendar from 'tui-calendar'
+
 import { DEFAULT_CALENDAR_STYLE } from '@/constants/style'
-import { getScheduleInfoFromAI, OpenAIMessageContent } from '@/helper/openai'
+import { getScheduleInfoFromAI, type OpenAIMessageContent } from '@/helper/openai'
 import {
   transformBlockToEvent,
   transformMilestoneEventToSchedule,
@@ -7,7 +14,7 @@ import {
 } from '@/helper/transform'
 import { getInitialSettings } from '@/util/baseInfo'
 import { MARKDOWN_POMODORO_REG, ORG_POMODORO_REG, SCHEDULE_PARENT_BLOCK } from '@/util/constants'
-import { IEvent } from '@/util/events'
+import type { IEvent } from '@/util/events'
 import {
   createBlockToSpecificBlock,
   joinPrefixTaskBlockContent,
@@ -16,12 +23,7 @@ import {
   updateBlock,
 } from '@/util/logseq'
 import { modifyTimeInfo, updateProjectTaskTime } from '@/util/schedule'
-import { RobotOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Divider, Form, Input, message, Modal, Radio, Select, Space } from 'antd'
-import { format } from 'date-fns'
-import dayjs, { Dayjs } from 'dayjs'
-import React, { useState } from 'react'
-import Calendar from 'tui-calendar'
+
 import type { ISettingsForm } from '../util/type'
 
 export type IScheduleForm = {
@@ -39,10 +41,9 @@ const ModifySchedule: React.FC<{
   initialValues?: IScheduleValue
   type?: 'create' | 'update'
   calendar?: Calendar
-  showKeepRef?: boolean
   onSave?: () => void
   onCancel?: () => void
-}> = ({ visible, initialValues, onCancel, onSave, type = 'create', calendar, showKeepRef }) => {
+}> = ({ visible, initialValues, onCancel, onSave, type = 'create', calendar }) => {
   const [showTime, setShowTime] = useState(!initialValues?.isAllDay)
   const [scheduleMessage, setScheduleMessage] = useState('')
   const [scheduleFromAiLoading, setScheduleFromAiLoading] = useState(false)
@@ -50,7 +51,7 @@ const ModifySchedule: React.FC<{
 
   const isInitialJournal = initialValues?.calendarId === 'Journal'
   const isInitialProject = projectList.some(({ id }) => id === initialValues?.calendarId)
-  let projects =
+  const projects =
     !isInitialProject && !isInitialJournal && type === 'update'
       ? [journal, { id: initialValues?.calendarId, ...DEFAULT_CALENDAR_STYLE }, ...projectList]
       : [journal, ...projectList]
@@ -69,7 +70,7 @@ const ModifySchedule: React.FC<{
         start: dayjs(start),
         end: dayjs(end),
         isAllDay,
-        calendarId: Boolean(project) ? { value: project } : undefined,
+        calendarId: project ? { value: project } : undefined,
       })
       setShowTime(!isAllDay)
       setScheduleFromAiLoading(false)
@@ -96,7 +97,7 @@ const ModifySchedule: React.FC<{
       const endTime = dayjs(end).format('HH:mm')
       const settings = getInitialSettings()
       const calendarConfig = projects.find(({ id }) => id === calendarId.value)
-      let newScheduleType: 'journal' | 'project' = calendarConfig?.id === 'Journal' ? 'journal' : 'project'
+      const newScheduleType: 'journal' | 'project' = calendarConfig?.id === 'Journal' ? 'journal' : 'project'
       // console.log('[faiz:] === newScheduleType', newScheduleType)
       // console.log('[faiz:] === onClickSave', values)
       // 变更后的schedule是否是journal中的schedule
@@ -114,25 +115,25 @@ const ModifySchedule: React.FC<{
           : title
       if (newScheduleType === 'journal') {
         if (type === 'create') newTitle = isAllDay ? `TODO ${newTitle}` : `TODO ${startTime}-${endTime} ${newTitle}`
-        if (type === 'update') {
+        if (type === 'update' && initialValues?.raw) {
           newTitle = isAllDay
-            ? joinPrefixTaskBlockContent(initialValues?.raw!, newTitle)
-            : joinPrefixTaskBlockContent(initialValues?.raw!, modifyTimeInfo(newTitle, startTime, endTime))
+            ? joinPrefixTaskBlockContent(initialValues.raw, newTitle)
+            : joinPrefixTaskBlockContent(initialValues.raw, modifyTimeInfo(newTitle, startTime, endTime))
         }
       } else if (newScheduleType === 'project') {
         if (type === 'create') {
           newTitle = 'TODO ' + updateProjectTaskTime(newTitle, { start, end, allDay: isAllDay })
-        } else if (type === 'update') {
+        } else if (type === 'update' && initialValues?.raw) {
           newTitle = joinPrefixTaskBlockContent(
-            initialValues?.raw!,
-            updateProjectTaskTime(newTitle, { start, end, allDay: isAllDay })
+            initialValues.raw,
+            updateProjectTaskTime(newTitle, { start, end, allDay: isAllDay }),
           )
         }
       }
       if (initialValues?.raw?.addOns.type === 'milestone') newTitle += ' #milestone'
 
       // new properties
-      let newBlockProperties = initialValues?.raw?.propertiesTextValues
+      const newBlockProperties = initialValues?.raw?.propertiesTextValues
       if (initialValues?.raw?.rawTime?.timeFrom === 'startProperty') {
         // remove start and end property
         delete newBlockProperties?.start
@@ -181,19 +182,19 @@ const ModifySchedule: React.FC<{
         // move schedule: move block to new page
         let newBlock
         const logKey: ISettingsForm['logKey'] = logseq.settings?.logKey
-        if (isJournalSchedule) {
+        if (isJournalSchedule && initialValues?.id) {
           newBlock = logKey?.enabled
-            ? await moveBlockToSpecificBlock(initialValues?.id!, newCalendarId!, `[[${logKey?.id}]]`)
-            : await moveBlockToNewPage(initialValues?.id!, newCalendarId!)
-        } else if (newScheduleType === 'project') {
-          newBlock = await moveBlockToSpecificBlock(initialValues?.id!, newCalendarId!, SCHEDULE_PARENT_BLOCK)
+            ? await moveBlockToSpecificBlock(initialValues.id, newCalendarId!, `[[${logKey?.id}]]`)
+            : await moveBlockToNewPage(initialValues.id, newCalendarId!)
+        } else if (newScheduleType === 'project' && initialValues?.id) {
+          newBlock = await moveBlockToSpecificBlock(initialValues.id, newCalendarId!, SCHEDULE_PARENT_BLOCK)
         }
         // 移动完成后需要设置 content
         await updateBlock(newBlock.uuid, newTitle, newBlockProperties)
-        if (newBlock && initialValues?.calendarId) {
+        if (newBlock && initialValues?.calendarId && initialValues?.id) {
           const _newBlock = await logseq.Editor.getBlock(newBlock.uuid)
           // updateSchedule can't update id, so we need to create new schedule after delete old one
-          calendar?.deleteSchedule(initialValues?.id!, initialValues.calendarId)
+          calendar?.deleteSchedule(initialValues.id, initialValues.calendarId)
           const event = await transformBlockToEvent(_newBlock!, settings)
           const schedule =
             initialValues?.raw?.addOns.type === 'milestone'
@@ -201,16 +202,16 @@ const ModifySchedule: React.FC<{
               : transformTaskEventToSchedule(event)
           calendar?.createSchedules([schedule])
         }
-      } else {
+      } else if (initialValues?.id && initialValues?.calendarId) {
         // update schedule
-        await updateBlock(initialValues?.id!, newTitle, newBlockProperties)
-        const blockAfterUpdated = await logseq.Editor.getBlock(initialValues?.id!)
+        await updateBlock(initialValues.id, newTitle, newBlockProperties)
+        const blockAfterUpdated = await logseq.Editor.getBlock(initialValues.id)
         const event = await transformBlockToEvent(blockAfterUpdated!, settings)
         const schedule =
           initialValues?.raw?.addOns.type === 'task'
             ? transformTaskEventToSchedule(event)
             : transformMilestoneEventToSchedule(event)
-        calendar?.updateSchedule(initialValues?.id!, initialValues?.calendarId!, schedule)
+        calendar?.updateSchedule(initialValues.id, initialValues.calendarId, schedule)
       }
       onSave?.()
     })
@@ -227,7 +228,7 @@ const ModifySchedule: React.FC<{
       onCancel={onClickCancel}
       bodyStyle={{ paddingTop: '20px' }}
     >
-      {openai?.apiKey && (
+      {/* {openai?.apiKey && (
         <div className="mb-6">
           <Space.Compact block>
             <Input
@@ -246,7 +247,7 @@ const ModifySchedule: React.FC<{
           </Space.Compact>
           <Divider dashed />
         </div>
-      )}
+      )} */}
       <Form
         form={form}
         onValuesChange={onFormChange}

@@ -55,7 +55,7 @@ if (isDevelopment) {
     },
     settings: window.mockSettings,
   })
-  // renderApp()
+  renderApp()
   // renderPomodoroApp('pomodoro')
   // renderModalApp({ type: 'addDailyLog' })
   // renderSidebar()
