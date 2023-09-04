@@ -43,7 +43,7 @@ const TABS = [
   { value: 'pomodoro', label: 'Pomodoro' },
   { value: 'todoist', label: 'Todoist' },
   { value: 'dailyLog', label: 'Daily Log' },
-  { value: 'openai', label: 'OpenAI' },
+  // { value: 'openai', label: 'OpenAI' },
 ]
 
 const Settings: React.FC<{
@@ -723,7 +723,7 @@ const Settings: React.FC<{
               />
             </Form.Item>
           </div>
-          <div id="openai" className={classNames(s.formBlock, { [s.show]: tab === 'openai' })}>
+          {/* <div id="openai" className={classNames(s.formBlock, { [s.show]: tab === 'openai' })}>
             <Alert
               message="To improve the accuracy of OpenAI's understanding of your input, please select the language you will be using in the Settings-Basis first."
               type="info"
@@ -753,7 +753,7 @@ const Settings: React.FC<{
             >
               <Input placeholder="Please input openai api key" />
             </Form.Item>
-          </div>
+          </div> */}
         </Form>
       </div>
       <CreateCalendarModal
