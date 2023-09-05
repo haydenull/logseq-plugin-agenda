@@ -1,3 +1,4 @@
+import { StyleProvider } from '@ant-design/cssinjs'
 import { type PomodoroConfig, usePomodoro } from '@haydenull/use-pomodoro'
 import { ConfigProvider, Tooltip } from 'antd'
 import dayjs from 'dayjs'
@@ -183,59 +184,61 @@ const PomodoroApp: React.FC<IPomodoroAppProps> = ({ uuid }) => {
 
   return (
     <ConfigProvider theme={ANTD_THEME_CONFIG[theme]}>
-      <div className="fixed top-0 left-0 w-screen h-screen" onClick={() => logseq.hideMainUI()}></div>
-      <div
-        className="fixed right-10 shadow-xl px-4 py-6 rounded-md bg-quaternary flex transition-all"
-        style={{ top: '48px', right: position.right, minWidth: '300px' }}
-      >
-        <div className="flex-1">
-          <div
-            className="singlge-line-ellipsis cursor-pointer description-text flex items-center"
-            style={{ maxWidth: '220px' }}
-            onClick={() => event && navToBlock(event)}
-            title={event?.addOns.showTitle}
-          >
-            {event?.addOns.showTitle}
-            <RiExternalLinkLine />
+      <StyleProvider hashPriority="high">
+        <div className="fixed top-0 left-0 w-screen h-screen" onClick={() => logseq.hideMainUI()}></div>
+        <div
+          className="fixed right-10 shadow-xl px-4 py-6 rounded-md bg-quaternary flex transition-all"
+          style={{ top: '48px', right: position.right, minWidth: '300px' }}
+        >
+          <div className="flex-1">
+            <div
+              className="singlge-line-ellipsis cursor-pointer description-text flex items-center"
+              style={{ maxWidth: '220px' }}
+              onClick={() => event && navToBlock(event)}
+              title={event?.addOns.showTitle}
+            >
+              {event?.addOns.showTitle}
+              <RiExternalLinkLine />
+            </div>
+            <div>
+              <p className="text-center text-4xl mt-6 mb-6 title-text">{state.formattedTimer}</p>
+              <div className="flex flex-row justify-center">{renderButtons()}</div>
+            </div>
           </div>
-          <div>
-            <p className="text-center text-4xl mt-6 mb-6 title-text">{state.formattedTimer}</p>
-            <div className="flex flex-row justify-center">{renderButtons()}</div>
+          <div className="flex flex-col w-12 justify-between pt-2">
+            {pomodoro?.commonPomodoros?.map((time) => (
+              <SetTimeButton key={time} label={time + 'min'} onClick={() => changeTimeConfig(time)} />
+            ))}
           </div>
-        </div>
-        <div className="flex flex-col w-12 justify-between pt-2">
-          {pomodoro?.commonPomodoros?.map((time) => (
-            <SetTimeButton key={time} label={time + 'min'} onClick={() => changeTimeConfig(time)} />
-          ))}
+
+          <div className="absolute right-5 top-1 opacity-60 text">
+            <Tooltip title="Record interruption">
+              <MdOutlineRunningWithErrors className="cursor-pointer" onClick={() => setShowInterruptionModal(true)} />
+            </Tooltip>
+            <Tooltip title="Exit pomodoro">
+              <AiOutlinePoweroff
+                className="ml-2 cursor-pointer"
+                onClick={() => {
+                  logseq.hideMainUI()
+                  window?.unmountPomodoroApp()
+                  window.currentPomodoro = {}
+                  window.interruptionMap.delete(startTimeRef.current!)
+                  logseq.App.registerUIItem('toolbar', {
+                    key: 'logseq-plugin-agenda-pomodoro',
+                    template: `<div class="agenda-toolbar-pompdoro hide"></div>`,
+                  })
+                }}
+              />
+            </Tooltip>
+          </div>
         </div>
 
-        <div className="absolute right-5 top-1 opacity-60 text">
-          <Tooltip title="Record interruption">
-            <MdOutlineRunningWithErrors className="cursor-pointer" onClick={() => setShowInterruptionModal(true)} />
-          </Tooltip>
-          <Tooltip title="Exit pomodoro">
-            <AiOutlinePoweroff
-              className="ml-2 cursor-pointer"
-              onClick={() => {
-                logseq.hideMainUI()
-                window?.unmountPomodoroApp()
-                window.currentPomodoro = {}
-                window.interruptionMap.delete(startTimeRef.current!)
-                logseq.App.registerUIItem('toolbar', {
-                  key: 'logseq-plugin-agenda-pomodoro',
-                  template: `<div class="agenda-toolbar-pompdoro hide"></div>`,
-                })
-              }}
-            />
-          </Tooltip>
-        </div>
-      </div>
-
-      <InerruptionModal
-        pomodoroId={startTimeRef.current!}
-        visible={showInterruptionModal}
-        onCancel={() => setShowInterruptionModal(false)}
-      />
+        <InerruptionModal
+          pomodoroId={startTimeRef.current!}
+          visible={showInterruptionModal}
+          onCancel={() => setShowInterruptionModal(false)}
+        />
+      </StyleProvider>
     </ConfigProvider>
   )
 }

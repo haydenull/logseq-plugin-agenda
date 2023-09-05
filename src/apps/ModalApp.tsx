@@ -1,3 +1,4 @@
+import { StyleProvider } from '@ant-design/cssinjs'
 import { ConfigProvider } from 'antd'
 import { useAtom } from 'jotai'
 import React, { useEffect } from 'react'
@@ -64,22 +65,24 @@ const ModalApp: React.FC<IModalAppProps> = (props) => {
 
   return (
     <ConfigProvider theme={ANTD_THEME_CONFIG[theme]}>
-      <div className="w-screen h-screen">
-        {type === 'modifySchedule' && (
-          <ModifySchedule
-            visible
-            type={props.data.type}
-            initialValues={props.data.initialValues}
-            onSave={onSave}
-            onCancel={onCancel}
-          />
-        )}
-        {type === 'insertTodaySchedule' && (
-          <TodayTaskModal visible uuid={props.data.uuid} onSave={onSave} onCancel={onCancel} />
-        )}
-        {type === 'pomodoro' && <PomodoroModal visible data={props.data} onOk={onSave} onCancel={onCancel} />}
-        {type === 'addDailyLog' && <AddDailyLogModal visible onCancel={onCancel} />}
-      </div>
+      <StyleProvider hashPriority="high">
+        <div className="w-screen h-screen">
+          {type === 'modifySchedule' && (
+            <ModifySchedule
+              visible
+              type={props.data.type}
+              initialValues={props.data.initialValues}
+              onSave={onSave}
+              onCancel={onCancel}
+            />
+          )}
+          {type === 'insertTodaySchedule' && (
+            <TodayTaskModal visible uuid={props.data.uuid} onSave={onSave} onCancel={onCancel} />
+          )}
+          {type === 'pomodoro' && <PomodoroModal visible data={props.data} onOk={onSave} onCancel={onCancel} />}
+          {type === 'addDailyLog' && <AddDailyLogModal visible onCancel={onCancel} />}
+        </div>
+      </StyleProvider>
     </ConfigProvider>
   )
 }

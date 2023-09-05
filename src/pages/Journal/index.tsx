@@ -1,11 +1,12 @@
+import { DatePicker, Typography } from 'antd'
 import classNames from 'classnames'
+import { AnimatePresence, motion } from 'framer-motion'
 import React, { useState } from 'react'
 
 import Tabs from '@/pages/Settings/components/Tabs'
-import s from './index.module.less'
+
 import ChronoView from './components/Chrono'
-import { AnimatePresence, motion } from 'framer-motion'
-import { DatePicker } from 'antd'
+import s from './index.module.less'
 
 const TABS = [
   { value: 'chrono', label: 'Chrono View' },
@@ -17,7 +18,9 @@ const Journal = () => {
 
   return (
     <div className="page-container p-8 flex flex-col items-center">
-      <h1 className={classNames(s.title, 'title-text w-full')}>Journal</h1>
+      <Typography.Title className={classNames(s.title, 'title-text w-full')} level={3}>
+        Journal
+      </Typography.Title>
       <div className={classNames(s.content, 'bg-quaternary rounded-2xl flex w-full h-full p-8')}>
         <div className="flex flex-col justify-between">
           <Tabs value={tab} tabs={TABS} onChange={setTab} />

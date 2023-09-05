@@ -1,7 +1,7 @@
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import type { TodoistApi } from '@doist/todoist-api-typescript'
 import type { PageEntity } from '@logseq/libs/dist/LSPlugin.user'
-import { Alert, Button, Form, Input, InputNumber, Popconfirm, Select, Switch } from 'antd'
+import { Alert, Button, Form, Input, InputNumber, Popconfirm, Select, Switch, Typography } from 'antd'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
@@ -173,7 +173,9 @@ const Settings: React.FC<{
 
   return (
     <div className="page-container p-8 flex flex-col items-center">
-      <h1 className={classNames(s.title, 'title-text')}>Settings</h1>
+      <Typography.Title className={classNames(s.title, 'title-text')} level={3}>
+        Settings
+      </Typography.Title>
       <div className={classNames(s.content, 'rounded-2xl flex')}>
         <div className="flex flex-col justify-between pr-5">
           <Tabs value={tab} tabs={TABS} onChange={onTabChange} />
