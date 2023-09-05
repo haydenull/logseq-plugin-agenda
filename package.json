@@ -38,7 +38,7 @@
     "@effect/schema": "^0.26.0",
     "@haydenull/use-pomodoro": "^1.1.4",
     "@logseq/libs": "^0.0.14",
-    "antd": "^5.0.6",
+    "antd": "^5.8.6",
     "axios": "^0.26.1",
     "classnames": "^2.3.2",
     "clsx": "^2.0.0",
@@ -63,6 +63,7 @@
     "tui-calendar": "^1.15.3"
   },
   "devDependencies": {
+    "@ant-design/cssinjs": "^1.17.0",
     "@haydenull/fabric": "^0.2.4",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/exec": "^6.0.3",

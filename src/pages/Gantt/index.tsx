@@ -1,18 +1,21 @@
-import React, { useState } from 'react'
+import { Typography } from 'antd'
 import classNames from 'classnames'
 import { useAtom } from 'jotai'
+
 import { ganttDataAtom } from '@/model/gantt'
 
-import s from './index.module.less'
 import GanttCom from './components/Gantt'
+import s from './index.module.less'
 
-const index: React.FC<{}> = () => {
+const Index = () => {
   const [ganttData] = useAtom(ganttDataAtom)
   const projectData = ganttData || []
 
   return (
     <div className="page-container p-8 flex flex-col">
-      <h1 className="title-text">Gantt</h1>
+      <Typography.Title className="title-text" level={3}>
+        Gantt
+      </Typography.Title>
       <div className={classNames(s.contentWrapper, 'shadow rounded-2xl')}>
         <GanttCom projects={projectData} />
       </div>
@@ -20,4 +23,4 @@ const index: React.FC<{}> = () => {
   )
 }
 
-export default index
+export default Index
