@@ -17,6 +17,7 @@ import {
 } from './constants'
 import type { IEvent } from './events'
 import { getBlockData, getPageData } from './logseq'
+import { genTaskTimeLinkText } from './task'
 import type { CalendarConfig, ICategory, IQueryWithCalendar, ISettingsForm } from './type'
 import { parseUrlParams } from './util'
 
@@ -427,27 +428,6 @@ export const scheduleStartDayMap = (events: IEvent[]) => {
   return res
 }
 
-export const genProjectTaskTime = ({ start, end, allDay }: { start: Dayjs; end: Dayjs; allDay?: boolean }) => {
-  const url = new URL('agenda://')
-  url.searchParams.append('start', '' + start.valueOf())
-  url.searchParams.append('end', '' + end.valueOf())
-  if (allDay === false) url.searchParams.append('allDay', 'false')
-
-  const startText = allDay ? start.format('YYYY-MM-DD') : start.format('YYYY-MM-DD HH:mm')
-  let endText = allDay ? end.format('YYYY-MM-DD') : end.format('YYYY-MM-DD HH:mm')
-
-  const isSameDay = start.isSame(end, 'day')
-  if (isSameDay && allDay) endText = ''
-  if (isSameDay && !allDay) endText = end.format('HH:mm')
-
-  const showText = startText + (endText ? ` - ${endText}` : '')
-  const time =
-    (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org'
-      ? `>[[#${url.toString()}][${showText}]]`
-      : `>[${showText}](#${url.toString()})`
-
-  return time
-}
 export const getProjectTaskTime = (blockContent: string) => {
   const projectTimeReg =
     (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org'
@@ -472,7 +452,7 @@ export const updateProjectTaskTime = (
     (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat === 'org'
       ? ORG_PROJECT_TIME_REG
       : MARKDOWN_PROJECT_TIME_REG
-  const time = genProjectTaskTime(timeInfo)
+  const time = genTaskTimeLinkText(timeInfo, (window.logseqAppUserConfigs as AppUserConfigs)?.preferredFormat)
   const newContent = removeTimeInfo(blockContent)?.trim()
   if (projectTimeReg.test(newContent)) {
     return newContent.replace(projectTimeReg, time)

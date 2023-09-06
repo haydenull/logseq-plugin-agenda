@@ -1,0 +1,32 @@
+.fullCalendarTimeBox {
+  :global {
+    .fc {
+      flex: 1;
+    }
+    .fc-theme-standard {
+      thead th.fc-timegrid-axis {
+        border-right: none;
+      }
+      thead th.fc-day {
+        border-left: none;
+      }
+      .fc-timegrid-slot-minor {
+        border: none;
+      }
+      .fc-timegrid-slot-label {
+        font-weight: 500;
+        font-size: 10px;
+        @apply text-gray-400;
+      }
+      .fc-scrollgrid {
+        border: none;
+      }
+      .fc-timegrid-col.fc-day-today {
+        @apply bg-blue-50;
+      }
+      .fc-v-event .fc-event-main {
+        height: 100%;
+      }
+    }
+  }
+}

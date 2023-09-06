@@ -46,8 +46,10 @@ echarts.use([
 const isDevelopment = import.meta.env.DEV
 let root: Root | null = null
 
-if (isDevelopment) {
+if (import.meta.env.VITE_MODE === 'web') {
   // run in browser
+  console.log('[faiz:] === meta.env.VITE_LOGSEQ_API_SERVER', import.meta.env.VITE_LOGSEQ_API_SERVER)
+  console.log(`%c[version]: v${window.__APP_VERSION__}`, 'background-color: #60A5FA; color: white; padding: 4px;')
   proxyLogseq({
     config: {
       apiServer: import.meta.env.VITE_LOGSEQ_API_SERVER,
@@ -55,7 +57,9 @@ if (isDevelopment) {
     },
     settings: window.mockSettings,
   })
+  // logseq.provideStyle(`.drawer[data-drawer-name="agenda"] {display: none;}`)
   renderApp()
+  // renderModalApp({ type: 'createTask' })
   // renderPomodoroApp('pomodoro')
   // renderModalApp({ type: 'addDailyLog' })
   // renderSidebar()
@@ -196,6 +200,9 @@ export function renderModalApp(params: IModalAppProps) {
     switch (params.type) {
       case 'modifySchedule':
         app = <ModalApp type="modifySchedule" data={params.data} />
+        break
+      case 'createTask':
+        app = <ModalApp type="createTask" />
         break
       case 'addDailyLog':
         app = <ModalApp type="addDailyLog" />

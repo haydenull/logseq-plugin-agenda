@@ -1,10 +1,16 @@
+import { type ClassValue, clsx } from 'clsx'
 import { format, formatRFC3339, parse } from 'date-fns'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
+import { twMerge } from 'tailwind-merge'
 
 // import en from 'dayjs/locale/en'
 import { DEFAULT_JOURNAL_FORMAT, DEFAULT_SETTINGS, SHOW_DATE_FORMAT } from './constants'
 import type { ISettingsForm } from './type'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 // dayjs.locale({
 //   ...en,
@@ -168,7 +174,7 @@ export const genLinkText = (text: string, url: string, format: 'markdown' | 'org
 export const convertMinutesToHours = (minutes: number) => {
   const hours = Math.floor(minutes / 60)
   const mins = minutes % 60
-  return `${hours}h ${mins}m`
+  return mins === 0 ? `${hours}h` : `${hours}h ${mins}m`
 }
 
 /**generate week days */
@@ -184,4 +190,46 @@ export const genDaysOfWeek = (startOfWeek: 0 | 1 = 0, someoneDay?: Dayjs) => {
     days.push(_someoneDay.add(i - day, 'day'))
   }
   return days
+}
+
+/**
+ * replace dayjs date info
+ */
+export const replaceDateInfo = (oldDate: Dayjs, newDate: Dayjs) => {
+  const timeFormatter = 'HH:mm'
+  const dateFormatter = 'YYYY-MM-DD'
+  const timeInfo = oldDate.format(timeFormatter)
+  const dateInfo = newDate.format(dateFormatter)
+
+  return dayjs(`${dateInfo} ${timeInfo}`, `${dateFormatter} ${timeFormatter}`)
+}
+
+/**
+ * replace dayjs time info
+ */
+export const replaceTimeInfo = (oldDate: Dayjs, newDate: Dayjs) => {
+  const timeFormatter = 'HH:mm'
+  const dateFormatter = 'YYYY-MM-DD'
+  const timeInfo = newDate.format(timeFormatter)
+  const dateInfo = oldDate.format(dateFormatter)
+
+  return dayjs(`${dateInfo} ${timeInfo}`, `${dateFormatter} ${timeFormatter}`)
+}
+
+/**
+ * pad with zero if length less than 10
+ */
+export const padZero = (num: number) => {
+  if (num < 10) return `0${num}`
+  return `${num}`
+}
+
+export const genDays = (start: Dayjs, end: Dayjs) => {
+  const arr: Dayjs[] = []
+  let cur = start
+  while (cur.isSameOrBefore(end)) {
+    arr.push(cur)
+    cur = cur.add(1, 'day')
+  }
+  return arr
 }
