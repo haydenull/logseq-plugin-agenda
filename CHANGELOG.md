@@ -1,3 +1,11 @@
+# [2.17.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.16.2...v2.17.0) (2023-09-06)
+
+
+### Features
+
+* :sparkles: add i18n ([71d35fb](https://github.com/haydenull/logseq-plugin-agenda/commit/71d35fbff8b4d4b5af4af1d9a3a5ae55f3657cca))
+* :sparkles: temporarily remove openai-releated feature ([7485b35](https://github.com/haydenull/logseq-plugin-agenda/commit/7485b351576fca33d12cef35b5125a570cf8fc49))
+
 ## [2.16.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.16.1...v2.16.2) (2023-08-29)
 
 
