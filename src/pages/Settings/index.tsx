@@ -213,9 +213,9 @@ const Settings: React.FC<{
             <Form.Item label="Light Theme Type" name="lightThemeType">
               <Select options={LIGHT_THEME_TYPE} />
             </Form.Item>
-            <Form.Item label="Language" name="language" initialValue={Language.English}>
+            {/* <Form.Item label="Language" name="language" initialValue={Language.English}>
               <Select options={LANGUAGES} />
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item label="Home Page" name="homePage">
               <Select options={MENUS} />
             </Form.Item>
