@@ -1,3 +1,10 @@
+## [2.17.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.17.0...v2.17.1) (2023-09-06)
+
+
+### Bug Fixes
+
+* **settings:** :bug: remove language selector ([4136a8d](https://github.com/haydenull/logseq-plugin-agenda/commit/4136a8da0f9ed5ca51ec0940db7235b4f82b40a8))
+
 # [2.17.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.16.2...v2.17.0) (2023-09-06)
 
 
