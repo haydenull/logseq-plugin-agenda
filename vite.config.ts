@@ -4,9 +4,11 @@ import { resolve } from 'path'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
 
-const getMockSettings = (isDev = false) => {
+import packageJSON from './package.json'
+
+const getMockSettings = (isWeb = false) => {
   const localSettingsPath = resolve(__dirname, 'mocks/settings.local.json')
-  if (isDev && existsSync(localSettingsPath)) {
+  if (isWeb && existsSync(localSettingsPath)) {
     return require(localSettingsPath)
   }
   return {}
@@ -42,7 +44,8 @@ export default defineConfig(async ({ command, mode }) => {
       },
     },
     define: {
-      mockSettings: getMockSettings(mode === 'development'),
+      mockSettings: getMockSettings(mode === 'web'),
+      __APP_VERSION__: JSON.stringify(packageJSON.version),
     },
     test: {
       globals: true,

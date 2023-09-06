@@ -113,7 +113,7 @@ const App: React.FC<{
           title={t('Create Task')}
           href="javascript:void(0);"
           onClick={() => {
-            renderModalApp({ type: 'modifySchedule', data: { type: 'create' } })
+            renderModalApp({ type: 'createTask' })
             logseq.showMainUI()
           }}
         >
