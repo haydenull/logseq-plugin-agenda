@@ -49,7 +49,7 @@ export const getAgendaTasks = async () => {
         [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}])
     :where
     [?block :block/marker ?marker]
-    [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE" "CANCELED"} ?marker)]]
+    [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
   `)) as BlockFromQuery[]
   if (!blocks || blocks?.length === 0) return []
   blocks = blocks.flat()
