@@ -75,22 +75,20 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
     })
   }
   const onEventScheduleUpdate = (info: unknown) => {
-    const calendarApi = calendarRef.current?.getApi()
+    // const calendarApi = calendarRef.current?.getApi()
     const _info = info as FullCalendarEventInfo
     console.log('[faiz:] === eventResize', _info)
     const { start, end, id: blockUUID, allDay, extendedProps } = _info.event
     const startDay = dayjs(start)
-    const estimatedTime = dayjs(end).diff(start, 'minute')
-    console.log('[faiz:] === estimatedTime', estimatedTime)
+    // const estimatedTime = dayjs(end).diff(start, 'minute')
     const endDay = dayjs(end).subtract(1, 'day')
-    const isMultipleDay = end ? !dayjs(end).isSame(endDay, 'day') : false
+    const isMultipleDay = end && allDay ? !dayjs(end).isSame(endDay, 'day') : false
     const dateInfo = {
       start: startDay,
       estimatedTime: allDay ? extendedProps.estimatedTime : dayjs(end).diff(start, 'minute'),
       end: isMultipleDay ? endDay : undefined,
       allDay,
     }
-    console.log('[faiz:] === dateInfo', dateInfo)
     try {
       updateTaskData(blockUUID, dateInfo)
       updateDateInfo({
@@ -110,7 +108,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
     } catch (error) {
       logseq.UI.showMsg('resize failed')
       _info.revert()
-      console.error('[Agenda3] timebox resize failed', error)
+      console.error('[Agenda3] calendar resize failed', error)
     }
   }
 
@@ -148,6 +146,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         dayMaxEventRows // allow "more" link when too many events
         weekNumbers
         weekNumberClassNames="text-xs"
+        defaultTimedEventDuration="00:30"
         fixedWeekCount={false}
         ref={calendarRef}
         height="100%"

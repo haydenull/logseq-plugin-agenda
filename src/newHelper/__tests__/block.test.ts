@@ -12,12 +12,10 @@ import {
   updateTitle,
 } from '../block'
 
-const DEMO_AGENDA_DRAWER = `
-:AGENDA:
+const DEMO_AGENDA_DRAWER = `:AGENDA:
 estimated: 1h30m
 :END:`
-const DEMO_AGENDA_DRAWER_NULL = `
-:AGENDA:
+const DEMO_AGENDA_DRAWER_NULL = `:AGENDA:
 :END:`
 
 describe('helper: block', () => {
@@ -42,7 +40,7 @@ describe('helper: block', () => {
     expect(genDurationString(30)).toEqual('30m')
   })
   test('parseAgendaDrawer', () => {
-    expect(parseAgendaDrawer(DEMO_AGENDA_DRAWER)).toEqual({
+    expect(parseAgendaDrawer('\n' + DEMO_AGENDA_DRAWER)).toEqual({
       estimated: 90,
     })
     expect(parseAgendaDrawer(DEMO_AGENDA_DRAWER_NULL)).toEqual(null)

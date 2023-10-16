@@ -2,7 +2,7 @@ import { ThirdPartyDraggable } from '@fullcalendar/interaction'
 import { Button, Progress, message } from 'antd'
 import clsx from 'clsx'
 import dayjs, { type Dayjs } from 'dayjs'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { BsPatchCheck, BsPatchCheckFill } from 'react-icons/bs'
 import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline, IoMdCheckmarkCircleOutline } from 'react-icons/io'
@@ -14,6 +14,7 @@ import useAgendaTasks from '@/hooks/useAgendaTasks'
 import { genDurationString, parseDurationString, updateDateInfo, updateTask, updateTaskStatus } from '@/newHelper/block'
 import { minutesToHHmm } from '@/newHelper/fullCalendar'
 import { DATE_FORMATTER_FOR_KEY, separateTasksInDay, transformTasksToKanbanTasks } from '@/newHelper/task'
+import { appAtom } from '@/newModel/app'
 import { recentTasksAtom } from '@/newModel/tasks'
 import type { AgendaTaskWithStart, AgendaTask } from '@/types/task'
 import { cn, genDays, replaceDateInfo } from '@/util/util'
@@ -41,6 +42,8 @@ const KanBan = (props, ref) => {
   const tasksInDay = separateTasksInDay(tasks)
   const days = getRecentDays()
   const today = dayjs()
+
+  const app = useAtomValue(appAtom)
 
   const [editTaskModal, setEditTaskModal] = useState<{
     open: boolean
@@ -70,7 +73,8 @@ const KanBan = (props, ref) => {
 
   // bind draggable
   useEffect(() => {
-    if (!hadBindDrop && kanBanContainerRef.current) {
+    console.log('[faiz:] === bind draggable', app.view)
+    if (app.view === 'tasks' && !hadBindDrop && kanBanContainerRef.current) {
       // console.log('bind drop', document.getElementsByClassName('droppable-task-element'))
       new ThirdPartyDraggable(kanBanContainerRef.current, {
         itemSelector: '.droppable-task-element',
@@ -78,7 +82,10 @@ const KanBan = (props, ref) => {
       })
       hadBindDrop = true
     }
-  }, [])
+    return () => {
+      hadBindDrop = false
+    }
+  }, [app.view])
 
   useImperativeHandle(ref, () => ({
     scrollToToday,
