@@ -46,7 +46,7 @@ const MultipleView = ({ className }: { className?: string }) => {
   }
 
   return (
-    <div className={cn('flex flex-col px-2 py-1 flex-1 w-0', className)}>
+    <div className={cn('flex flex-col px-2 py-1 flex-1 w-0 z-0', className)}>
       {/* ========= View Actions ========= */}
       <div className="border-b flex justify-between w-full py-1 items-center">
         <div className="flex items-center">

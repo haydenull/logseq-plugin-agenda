@@ -156,6 +156,7 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
         ]}
         headerToolbar={false}
         initialView="timeGridOneDay"
+        defaultTimedEventDuration="00:30"
         plugins={[timeGridPlugin, interactionPlugin]}
         eventTimeFormat={FULL_CALENDAR_24HOUR_FORMAT}
         slotLabelFormat={FULL_CALENDAR_24HOUR_FORMAT}

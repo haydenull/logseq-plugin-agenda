@@ -3,7 +3,6 @@ import { useAtom } from 'jotai'
 import { useEffect, useRef } from 'react'
 import { BsArchive } from 'react-icons/bs'
 
-import { DEFAULT_ESTIMATED_TIME_HHmm } from '@/constants/agenda'
 import { backlogTasksAtom } from '@/newModel/tasks'
 
 const Backlog = () => {
@@ -25,11 +24,10 @@ const Backlog = () => {
         {tasks.map((task) => (
           <div
             key={task.id}
-            className="border rounded px-2 py-1 text-sm text-gray-600 break-all droppable-task-element"
+            className="border rounded px-2 py-1 text-sm text-gray-600 break-all droppable-task-element bg-white"
             data-event={JSON.stringify({
               id: task.id,
               title: task.title,
-              duration: DEFAULT_ESTIMATED_TIME_HHmm,
             })}
           >
             {task.title}

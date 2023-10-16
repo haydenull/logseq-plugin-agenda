@@ -38,19 +38,24 @@ export const CALENDAR_VIEWS = [
 ]
 
 export const ANTD_THEME_CONFIG: Record<string, ThemeConfig> = {
+  // green: {
+  //   token: {
+  //     colorPrimary: '#047857',
+  //   },
+  //   components: {
+  //     Select: {
+  //       optionSelectedBg: '#e9f2f0',
+  //     },
+  //     DatePicker: {
+  //       cellActiveWithRangeBg: '#e9f2f0',
+  //       cellHoverWithRangeBg: '#c3e3db',
+  //       cellRangeBorderColor: '#c3e3db',
+  //     },
+  //   },
+  // },
   green: {
     token: {
-      colorPrimary: '#047857',
-    },
-    components: {
-      Select: {
-        optionSelectedBg: '#e9f2f0',
-      },
-      DatePicker: {
-        cellActiveWithRangeBg: '#e9f2f0',
-        cellHoverWithRangeBg: '#c3e3db',
-        cellRangeBorderColor: '#c3e3db',
-      },
+      colorPrimary: '#3688d8',
     },
   },
   purple: {

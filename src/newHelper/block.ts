@@ -332,7 +332,7 @@ export function updateAgendaDrawer(blockContent: string, drawer: AgendaDrawer) {
   // if (!drawer.estimated || drawer.estimated === DEFAULT_ESTIMATED_TIME) delete _drawer.estimated
   const newText = genAgendaDrawerText(drawer)
   if (!AGENDA_DRAWER_REGEX.test(blockContent) && newText) return blockContent + '\n' + newText
-  return blockContent.replace(AGENDA_DRAWER_REGEX, newText)
+  return blockContent.replace(AGENDA_DRAWER_REGEX, '\n' + newText)
 }
 /**
  * updateScheduled
