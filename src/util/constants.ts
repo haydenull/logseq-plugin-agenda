@@ -58,30 +58,30 @@ export const ANTD_THEME_CONFIG: Record<string, ThemeConfig> = {
       colorPrimary: '#3688d8',
     },
   },
-  purple: {
-    token: {
-      colorPrimary: '#5146a0',
-    },
-  },
-  dark: {
-    token: {
-      colorPrimary: '#fcb714',
-      colorBgBase: '#212528',
-      colorBgContainer: '#282c31',
-      colorBgElevated: '#282c31',
-    },
-    components: {
-      Select: {
-        optionSelectedBg: '#6b531a',
-      },
-      DatePicker: {
-        cellActiveWithRangeBg: '#5e460c',
-        cellHoverWithRangeBg: '#6b531a',
-        cellRangeBorderColor: '#6b531a',
-      },
-    },
-    algorithm: antdTheme.darkAlgorithm,
-  },
+  // purple: {
+  //   token: {
+  //     colorPrimary: '#5146a0',
+  //   },
+  // },
+  // dark: {
+  //   token: {
+  //     colorPrimary: '#fcb714',
+  //     colorBgBase: '#212528',
+  //     colorBgContainer: '#282c31',
+  //     colorBgElevated: '#282c31',
+  //   },
+  //   components: {
+  //     Select: {
+  //       optionSelectedBg: '#6b531a',
+  //     },
+  //     DatePicker: {
+  //       cellActiveWithRangeBg: '#5e460c',
+  //       cellHoverWithRangeBg: '#6b531a',
+  //       cellRangeBorderColor: '#6b531a',
+  //     },
+  //   },
+  //   algorithm: antdTheme.darkAlgorithm,
+  // },
 }
 
 export const THEME = [

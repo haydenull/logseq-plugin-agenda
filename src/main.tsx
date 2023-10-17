@@ -172,19 +172,19 @@ if (import.meta.env.VITE_MODE === 'web') {
 
 async function renderApp() {
   window.currentApp = 'app'
-  togglePomodoro(false)
-  toggleAppTransparent(false)
-  let defaultRoute = ''
-  const page = await logseq.Editor.getCurrentPage()
-  const { projectList = [] } = getInitialSettings()
-  if (projectList.some((project) => Boolean(project.id) && project.id === page?.originalName)) {
-    defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
-  }
+  // togglePomodoro(false)
+  // toggleAppTransparent(false)
+  // let defaultRoute = ''
+  // const page = await logseq.Editor.getCurrentPage()
+  // const { projectList = [] } = getInitialSettings()
+  // if (projectList.some((project) => Boolean(project.id) && project.id === page?.originalName)) {
+  //   defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
+  // }
 
   root = createRoot(document.getElementById('root')!)
   root.render(
     <React.StrictMode>
-      <MainApp defaultRoute={defaultRoute} />
+      <MainApp />
     </React.StrictMode>,
   )
 }

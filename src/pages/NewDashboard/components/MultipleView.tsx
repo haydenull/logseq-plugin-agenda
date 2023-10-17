@@ -86,6 +86,8 @@ const MultipleView = ({ className }: { className?: string }) => {
           onChange={(key) => setApp({ view: key as App['view'] })}
           // renderTabBar={(props, DefaultTabBar) => <DefaultTabBar />}
           tabBarStyle={{ height: '36px', margin: 0 }}
+          // fix windows tabs 闪烁问题
+          className="min-w-[166px]"
         />
       </div>
       <div className="flex-1 h-0">
