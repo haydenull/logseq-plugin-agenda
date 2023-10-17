@@ -1,3 +1,4 @@
+import { Modal } from 'antd'
 import { useAtom } from 'jotai'
 
 import { getAgendaTasks } from '@/newHelper/task'
@@ -8,7 +9,7 @@ const useAgendaTasks = () => {
   const [tasks, setTasks] = useAtom(agendaTasksAtom)
 
   const refreshTasks = () => {
-    getAgendaTasks().then((res) => {
+    return getAgendaTasks().then((res) => {
       setTasks(res)
     })
   }

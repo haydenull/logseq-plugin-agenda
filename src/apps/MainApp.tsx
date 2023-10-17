@@ -17,9 +17,7 @@ import useTheme from '../hooks/useTheme'
 import { fullEventsAtom, journalEventsAtom, projectEventsAtom } from '../model/events'
 import { getInternalEvents } from '../util/events'
 
-const MainApp: React.FC<{
-  defaultRoute?: string
-}> = ({ defaultRoute }) => {
+const MainApp = () => {
   // TODO: 使用 only-write 减少重新渲染
   const [, setSubscriptionSchedules] = useAtom(subscriptionSchedulesAtom)
 
@@ -33,21 +31,21 @@ const MainApp: React.FC<{
   const homePageElement = MENUS.find((item) => item.value === homePage)?.element
   const menus = logKey?.enabled ? MENUS : MENUS.filter((item) => item.value !== 'dailyLog')
 
-  useEffect(() => {
-    async function fetchSchedules() {
-      const res = await getInternalEvents()
-      if (res) {
-        const { fullEvents, journalEvents, projectEventsMap } = res
-        setFullEvents(fullEvents)
-        setJournalEvents(journalEvents)
-        setProjectEvents(projectEventsMap)
-      }
+  // useEffect(() => {
+  //   async function fetchSchedules() {
+  //     const res = await getInternalEvents()
+  //     if (res) {
+  //       const { fullEvents, journalEvents, projectEventsMap } = res
+  //       setFullEvents(fullEvents)
+  //       setJournalEvents(journalEvents)
+  //       setProjectEvents(projectEventsMap)
+  //     }
 
-      const { subscriptionList } = getInitialSettings()
-      setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
-    }
-    fetchSchedules()
-  }, [])
+  //     const { subscriptionList } = getInitialSettings()
+  //     setSubscriptionSchedules(await getSubCalendarSchedules(subscriptionList))
+  //   }
+  //   fetchSchedules()
+  // }, [])
 
   return (
     <ConfigProvider theme={ANTD_THEME_CONFIG[theme]}>
