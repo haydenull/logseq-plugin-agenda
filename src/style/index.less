@@ -159,18 +159,21 @@ html, body {
 //   @apply w-screen h-screen;
 // }
 // Scroll bar style optimization
-// *::-webkit-scrollbar {
-//   background-color: transparent;
-// }
-// *::-webkit-scrollbar-corner {
-//   background-color: transparent;
-// }
-// *::-webkit-scrollbar-thumb {
-//   background-color: var(--ls-tint-text-color);
-//   border: 5px solid transparent;
-//   border-radius: 9px;
-//   background-clip: content-box;
-// }
+*::-webkit-scrollbar {
+  background-color: transparent;
+}
+*::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--ls-tint-text-color);
+  border: 5px solid transparent;
+  border-radius: 9px;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ls-description-text-color);
+}
 
 // a {
 //   color: var(--ls-tertiary-background-color);
