@@ -313,3 +313,23 @@ export const transformTasksToKanbanTasks = (tasks: AgendaTaskWithStart[]): KanBa
     })
     .flat()
 }
+
+/**
+ * categorize task according to project name
+ */
+export const categorizeTasksByPage = (tasks: AgendaTask[]) => {
+  const categorizedTasks: Record<string, AgendaTask[]> = {}
+  tasks.forEach((task) => {
+    const { originalName: projectName } = task.project
+    if (!categorizedTasks[projectName]) {
+      categorizedTasks[projectName] = []
+    }
+    categorizedTasks[projectName].push(task)
+  })
+  return Object.values(categorizedTasks).map((projectTasks) => {
+    return {
+      project: projectTasks[0].project,
+      tasks: projectTasks,
+    }
+  })
+}
