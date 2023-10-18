@@ -4,5 +4,5 @@ export type App = {
   view: 'tasks' | 'calendar'
 }
 export const appAtom = atom<App>({
-  view: 'calendar',
+  view: 'tasks',
 })
