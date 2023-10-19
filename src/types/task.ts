@@ -4,13 +4,16 @@ import type { Overwrite } from 'utility-types'
 import { type BlockFromQuery } from '@/newHelper/task'
 
 import type { RRule } from './fullcalendar'
+import type { AgendaProject } from './project'
 
 // full calendar event object https://fullcalendar.io/docs/event-object
 
 export type AgendaTaskPage = {
+  uuid: string
   originalName: string
   isJournal: boolean
   journalDay?: number
+  properties?: Record<string, string>
 }
 export type TimeLog = { start: Dayjs; end: Dayjs; amount: number /** unit: minute */ }
 export type AgendaTask = {
@@ -21,7 +24,7 @@ export type AgendaTask = {
   start?: Dayjs // logseq scheduled
   end?: Dayjs // from agenda drawer end
   deadline?: Dayjs // logseq deadline
-  project: AgendaTaskPage // logseq page
+  project: AgendaProject // logseq page
   label?: AgendaTaskPage // logseq page
   repeat?: string // from logseq scheduled
   estimatedTime?: number // unit: minute, from agenda drawer estimated

@@ -222,9 +222,18 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
                   })}
                   title={info.event.title}
                 >
-                  {info.event.allDay ? null : <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />}
+                  {info.event.allDay ? null : (
+                    <span
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: info.event.backgroundColor }}
+                    />
+                  )}
                   <span className="truncate flex-1">{info.event.title}</span>
-                  {isDone ? <IoIosCheckmarkCircle className="text-green-500 absolute right-0" /> : null}
+                  {isDone ? (
+                    <IoIosCheckmarkCircle
+                      className={cn('absolute right-0', info.event.allDay ? 'text-white' : 'text-green-500')}
+                    />
+                  ) : null}
                 </div>
               )
               break
@@ -235,7 +244,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
                     {info.event.title}
                   </div>
                   {isShowTimeText ? <div className="text-xs text-gray-200">{info.timeText}</div> : null}
-                  {isDone ? <IoIosCheckmarkCircle className="text-green-500 absolute right-0 top-0.5" /> : null}
+                  {isDone ? <IoIosCheckmarkCircle className="absolute right-0 top-0.5" /> : null}
                 </div>
               )
               break

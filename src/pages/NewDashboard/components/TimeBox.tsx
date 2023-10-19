@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { useRef, useState } from 'react'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
+import { MdSchedule } from 'react-icons/md'
 import { RiDeleteBin4Line, RiInboxUnarchiveLine } from 'react-icons/ri'
 import { TbArrowsExchange2 } from 'react-icons/tb'
 
@@ -137,7 +138,7 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
     >
       <div className="h-[44px] flex items-center">
         <div className="flex gap-1.5  items-center px-2 py-1 cursor-default">
-          <TbArrowsExchange2 /> Time Box
+          <MdSchedule className="text-lg" /> Time Box
         </div>
       </div>
       <FullCalendar
@@ -211,16 +212,16 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
                   },
                 }}
               >
-                <div className={clsx('h-full', { 'opacity-70': isDone })}>
+                <div className={clsx('h-full', { 'opacity-60': isDone })}>
                   <div
                     className={clsx('truncate font-semibold flex items-center relative', {
                       'line-through': isDone,
                     })}
                   >
                     {info.event.title}
-                    {isDone ? <IoIosCheckmarkCircle className="text-green-500 absolute right-0" /> : null}
+                    {isDone ? <IoIosCheckmarkCircle className="text-white absolute right-0" /> : null}
                   </div>
-                  {isShowTimeText ? <div className="text-xs text-gray-200">{info.timeText}</div> : null}
+                  {isShowTimeText ? <div className="text-xs text-gray-100">{info.timeText}</div> : null}
                 </div>
               </Dropdown>
             </TaskModal>

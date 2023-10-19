@@ -21,6 +21,7 @@ export const transformAgendaTaskToCalendarEvent = (task: AgendaTaskWithStart): C
     extendedProps: task,
     rrule: task.rrule,
     editable: !(task.recurringPast || task.rrule),
+    color: task.project.bgColor,
   }
 }
 
