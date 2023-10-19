@@ -16,4 +16,6 @@ export type CalendarEvent = {
   allDay: boolean
   rrule?: RRule
   editable?: boolean
+  color?: string
+  textColor?: string
 }

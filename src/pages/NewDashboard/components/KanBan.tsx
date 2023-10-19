@@ -100,10 +100,12 @@ const KanBan = (props, ref) => {
         const isToday = day.isSame(today, 'day')
         const isFuture = day.isAfter(today, 'day')
         const doneTasks = columnTasks.filter((task) => task.status === 'done')
-        const estimatedTime = columnTasks.reduce((acc, task) => {
+        const undoneTasks = columnTasks.filter((task) => task.status !== 'done')
+        const _dayTasks = undoneTasks.concat(doneTasks)
+        const estimatedTime = _dayTasks.reduce((acc, task) => {
           return acc + (task.estimatedTime ?? DEFAULT_ESTIMATED_TIME)
         }, 0)
-        const actualTime = columnTasks.reduce((acc, task) => {
+        const actualTime = _dayTasks.reduce((acc, task) => {
           return acc + (task.actualTime ?? task.estimatedTime ?? DEFAULT_ESTIMATED_TIME)
         }, 0)
         return (
@@ -131,7 +133,7 @@ const KanBan = (props, ref) => {
                 status="success"
                 className="!m-0"
                 showInfo={false}
-                percent={(doneTasks.length / columnTasks.length) * 100}
+                percent={(doneTasks.length / _dayTasks.length) * 100}
               />
             ) : (
               <div className="h-[24px]"></div>
@@ -152,11 +154,11 @@ const KanBan = (props, ref) => {
             {/* ========= Tasks List ========= */}
             <ReactSortable
               forceFallback // 该属性如果不加就无法与 fullcalendar 交互
-              className={cn('flex flex-col gap-2 flex-1 overflow-y-auto', { 'pb-28': columnTasks.length === 0 })}
+              className={cn('flex flex-col gap-2 flex-1 overflow-y-auto', { 'pb-28': _dayTasks.length === 0 })}
               group="shared"
               dragClass="dragged-mirror-element"
               draggable=".droppable-task-element"
-              list={columnTasks}
+              list={_dayTasks}
               // onMove={(event, originalEvent) => {
               //   console.log('[faiz:] === xxx onMove', event)
               //   console.log('[faiz:] === xxx originalEvent', originalEvent)
@@ -182,7 +184,7 @@ const KanBan = (props, ref) => {
                 })
               }}
             >
-              {columnTasks.map((task) => {
+              {_dayTasks.map((task) => {
                 const editDisabled = task.rrule || task.recurringPast
                 const estimatedTime = task.estimatedTime ?? DEFAULT_ESTIMATED_TIME
                 return (
@@ -204,7 +206,7 @@ const KanBan = (props, ref) => {
                       <div className="flex gap-1 items-center">
                         {task.status === 'done' ? (
                           <IoIosCheckmarkCircle
-                            className="text-green-500 text-xl cursor-pointer"
+                            className="text-xl cursor-pointer text-gray-300"
                             onClick={(e) => onClickTaskMark(e, task, 'todo')}
                           />
                         ) : (
@@ -214,7 +216,12 @@ const KanBan = (props, ref) => {
                           />
                         )}
                         {task.allDay ? null : (
-                          <span className="text-[10px] bg-blue-300 rounded px-1 py-0.5 text-white">
+                          <span
+                            className="text-[10px] rounded px-1 py-0.5 text-white opacity-70"
+                            style={{
+                              backgroundColor: task.project.bgColor,
+                            }}
+                          >
                             {task.start.format('HH:mm')}
                           </span>
                         )}
@@ -226,10 +233,12 @@ const KanBan = (props, ref) => {
                         {minutesToHHmm(estimatedTime)}
                       </div>
                     </div>
-                    <div className={cn('text-gray-600', { 'line-through': task.status === 'done' })}>{task.title}</div>
+                    <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>
+                      {task.title}
+                    </div>
                     {task.project.isJournal ? null : (
                       <div className="text-gray-400 text-xs flex gap-1 items-center">
-                        <span className="w-2 h-2 rounded-full bg-blue-400" />
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: task.project.bgColor }} />
                         <span>{task.project?.originalName}</span>
                       </div>
                     )}

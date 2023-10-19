@@ -9,6 +9,7 @@ import type { AgendaTask, AgendaTaskWithStart, AgendaTaskPage } from '@/types/ta
 import { genDays } from '@/util/util'
 
 import { parseAgendaDrawer } from './block'
+import { transformPageToProject } from './project'
 
 export type BlockFromQuery = BlockEntity & {
   marker: 'TODO' | 'DOING' | 'NOW' | 'LATER' | 'WAITING' | 'DONE' | 'CANCELED'
@@ -44,16 +45,15 @@ export const getAgendaTasks = async () => {
       :block/file
       :block/heading-level
       {:block/page
-        [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}
+        [:db/id :block/uuid :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}
       {:block/refs
-        [:db/id :block/name :block/original-name :block/journal-day :block/journal?]}])
+        [:db/id :block/uuid :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}])
     :where
     [?block :block/marker ?marker]
     [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
   `)) as BlockFromQuery[]
   if (!blocks || blocks?.length === 0) return []
   blocks = blocks.flat()
-
   const promiseList: Promise<AgendaTask[]>[] = blocks.map(async (block) => {
     const _block = {
       ...block,
@@ -61,15 +61,19 @@ export const getAgendaTasks = async () => {
       repeated: block['repeated?'],
       page: {
         // ...block.page,
+        uuid: block.page?.['uuid'],
         originalName: block.page?.['original-name'],
         journalDay: block.page?.['journal-day'],
         isJournal: block.page?.['journal?'],
+        properties: block.page?.['properties'],
       },
       refs: block.refs?.map((_page) => ({
         // ..._page,
+        uuid: _page?.['uuid'],
         journalDay: _page?.['journal-day'],
         originalName: _page?.['original-name'],
         isJournal: _page?.['journal?'],
+        properties: _page?.['properties'],
       })),
     }
 
@@ -200,7 +204,7 @@ export const transformBlockToAgendaTask = async (block: BlockFromQuery): Promise
     deadline,
     estimatedTime,
     actualTime,
-    project: page,
+    project: transformPageToProject(page),
     timeLogs,
     // TODO: read from logseq
     // label: page,
