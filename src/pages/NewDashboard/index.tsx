@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { TbComet, TbSettings } from 'react-icons/tb'
 
 import useAgendaTasks from '@/hooks/useAgendaTasks'
+import useNewProjects from '@/hooks/useNewProjects'
 import { appAtom } from '@/newModel/app'
 
 import Backlog from './components/Backlog'
@@ -18,13 +19,15 @@ const Dashboard = () => {
   const [timeBoxType, setTimeBoxType] = useState<TimeBoxType>('estimated')
   const [app] = useAtom(appAtom)
   const { refreshTasks } = useAgendaTasks()
+  const { refreshProjects } = useNewProjects()
   const [connectionErrorModal, setConnectionErrorModal] = useState(false)
 
   // move to App.tsx
   useEffect(() => {
-    refreshTasks().catch((err) => {
+    refreshTasks().catch(() => {
       setConnectionErrorModal(true)
     })
+    refreshProjects()
   }, [])
   return (
     <div className="flex w-screen h-screen bg-gray-100 before:absolute before:pointer-events-none before:h-[180px] before:w-[240px] before:left-1/2 before:top-1/2 before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:content-['']  before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40">

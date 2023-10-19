@@ -6,7 +6,9 @@ import type { AgendaTaskWithStart } from '@/types/task'
 import { type BlockFromQuery, transformBlockToAgendaTask, separateTasksInDay } from '../task'
 
 export const DEMO_BLOCK = {
-  properties: {},
+  properties: {
+    'agenda-color': 'blue',
+  },
   scheduled: 20230924,
   parent: {
     id: 137,
@@ -30,6 +32,7 @@ export const DEMO_BLOCK = {
     name: 'sep 24th, 2023',
     'original-name': 'Sep 24th, 2023',
     id: 137,
+    uuid: '123123123-sep-24th-2023a',
     originalName: 'Sep 24th, 2023',
     journalDay: 20230924,
   },
@@ -65,7 +68,11 @@ export const DEMO_TASK = {
     'journal-day': 20230924,
     name: 'sep 24th, 2023',
     'original-name': 'Sep 24th, 2023',
-    id: 137,
+    id: '123123123-sep-24th-2023a',
+    uuid: '123123123-sep-24th-2023a',
+    bgColor: '#2196f3',
+    isFavorite: false,
+    isJournal: true,
   },
   timeLogs: [
     {

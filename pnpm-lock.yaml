@@ -167,6 +167,9 @@ dependencies:
   tailwindcss-animate:
     specifier: ^1.0.7
     version: 1.0.7(tailwindcss@3.2.4)
+  tinycolor2:
+    specifier: ^1.6.0
+    version: 1.6.0
   tui-calendar:
     specifier: ^1.15.3
     version: 1.15.3
@@ -8855,7 +8858,7 @@ packages:
       prop-types: 15.8.1
       react: 18.2.0
       reactcss: 1.2.3(react@18.2.0)
-      tinycolor2: 1.4.2
+      tinycolor2: 1.6.0
     dev: false
 
   /react-day-picker@8.8.1(date-fns@2.29.3)(react@18.2.0):
@@ -9989,8 +9992,8 @@ packages:
     resolution: {integrity: sha512-kRwSG8Zx4tjF9ZiyH4bhaebu+EDz1BOx9hOigYHlUW4xxI/wKIUQUqo018UlU4ar6ATPBsaMrdbKZ+tmPdohFA==}
     dev: true
 
-  /tinycolor2@1.4.2:
-    resolution: {integrity: sha512-vJhccZPs965sV/L2sU4oRQVAos0pQXwsvTLkWYdqJ+a8Q5kPFzJTuOFwy7UniPli44NKQGAglksjvOcpo95aZA==}
+  /tinycolor2@1.6.0:
+    resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
     dev: false
 
   /tinypool@0.7.0:

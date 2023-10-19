@@ -84,6 +84,7 @@
     "sortablejs": "^1.15.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
+    "tinycolor2": "^1.6.0",
     "tui-calendar": "^1.15.3",
     "valibot": "^0.17.0"
   },
