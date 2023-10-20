@@ -139,7 +139,14 @@ const KanBan = (props, ref) => {
               <div className="h-[24px]"></div>
             )}
             <TaskModal onOk={addNewTask} info={{ type: 'create', initialData: { startDateVal: day } }}>
-              <div className="bg-white rounded-md p-2 my-2 text-gray-400 text-sm flex items-center hover:shadow cursor-default group justify-between">
+              <div
+                className={cn(
+                  'bg-white rounded-md p-2 my-2 text-gray-400 text-sm flex items-center hover:shadow cursor-default group justify-between',
+                  {
+                    'bg-[#edeef0]': undoneTasks.length === 0,
+                  },
+                )}
+              >
                 <div className="flex items-center gap-1">
                   <IoAddCircleOutline />
                   <span className={cn('group-hover:opacity-100 transition-opacity', { 'opacity-0': !isToday })}>
@@ -191,7 +198,7 @@ const KanBan = (props, ref) => {
                   <div
                     key={task.id}
                     className={cn('bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-default', {
-                      'opacity-60': task.status === 'done',
+                      'bg-[#edeef0]': task.status === 'done',
                       'cursor-not-allowed': editDisabled,
                       'droppable-task-element': !(editDisabled || task.end) || !task.allDay,
                     })}
