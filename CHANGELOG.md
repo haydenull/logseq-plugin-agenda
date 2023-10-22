@@ -1,3 +1,10 @@
+## [2.17.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.17.1...v2.17.2) (2023-10-22)
+
+
+### Bug Fixes
+
+* :bug: the style of insert today's modal ([4b5bb75](https://github.com/haydenull/logseq-plugin-agenda/commit/4b5bb7505f59739ceb85d9718c7ab44628fb4ff7))
+
 ## [2.17.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.17.0...v2.17.1) (2023-09-06)
 
 
