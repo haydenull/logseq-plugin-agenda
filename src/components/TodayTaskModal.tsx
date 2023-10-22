@@ -59,15 +59,13 @@ const TodayTaskModal: React.FC<{
   return (
     <Modal open={visible} title="Insert Today Task" onCancel={onCancel} onOk={onClickOk}>
       <Checkbox.Group value={value} onChange={(list) => setValue(list as string[])}>
-        {options.map((option) => (
-          <Row key={option.value}>
-            <Col span={24}>
-              <Checkbox key={option.value} value={option.value}>
-                {option.label}
-              </Checkbox>
-            </Col>
-          </Row>
-        ))}
+        <div className="flex flex-col gap-1">
+          {options.map((option) => (
+            <Checkbox key={option.value} value={option.value}>
+              {option.label}
+            </Checkbox>
+          ))}
+        </div>
       </Checkbox.Group>
       <Divider />
       <Checkbox indeterminate={indeterminate} checked={options.length === value.length} onClick={onClickCheckAll}>
