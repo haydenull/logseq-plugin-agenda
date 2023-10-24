@@ -11,7 +11,7 @@ import {
   SCHEDULED_DATE_FORMATTER,
 } from '@/constants/agenda'
 import type { AgendaTask, CreateAgendaTask } from '@/types/task'
-import { updateBlock } from '@/util/logseq'
+import { moveBlockToNewPage, updateBlock } from '@/util/logseq'
 
 import { secondsToHHmmss } from './fullCalendar'
 
@@ -144,8 +144,8 @@ export const deleteTimeLog = async (uuid: string, index: number) => {
 /**
  * create task
  */
-export const createTask = async (taskInfo: CreateAgendaTask) => {
-  const { title, allDay, start, end, estimatedTime } = taskInfo
+export const createTaskBlock = async (taskInfo: CreateAgendaTask) => {
+  const { title, allDay, start, end, estimatedTime, projectId } = taskInfo
 
   const AGENDA_DRAWER = genAgendaDrawerText({
     estimated: estimatedTime,
@@ -160,17 +160,13 @@ export const createTask = async (taskInfo: CreateAgendaTask) => {
     .filter(Boolean)
     .join('\n')
 
-  // create journal page
-  const { preferredDateFormat } = await logseq.App.getUserConfigs()
-  const journalName = format(dayjs().valueOf(), preferredDateFormat)
-  const journalPage = await logseq.Editor.createPage(journalName, {}, { journal: true })
+  const targetProjectId = projectId ? projectId : (await createTodayJournalPage()).uuid
 
-  if (!journalPage) return Promise.reject(new Error('Failed to create journal page'))
-
-  return logseq.Editor.insertBlock(journalPage.originalName, content, {
+  const block = await logseq.Editor.insertBlock(targetProjectId, content, {
     isPageBlock: true,
-    sibling: true,
   })
+  if (!block) return Promise.reject(new Error('Failed to create task block'))
+  return logseq.Editor.getBlock(block.uuid)
 }
 
 export function generateTimeLogText({ start, end }: { start: Dayjs; end: Dayjs }) {
@@ -188,8 +184,8 @@ export function generateTimeLogText({ start, end }: { start: Dayjs; end: Dayjs }
 /**
  * update task
  */
-export const updateTask = async (taskInfo: AgendaTask) => {
-  const { id, title, allDay, start, end, estimatedTime, status, timeLogs } = taskInfo
+export const updateTaskBlock = async (taskInfo: AgendaTask & { projectId?: string }) => {
+  const { id, title, allDay, start, end, estimatedTime, status, timeLogs, projectId } = taskInfo
   const originalBlock = await logseq.Editor.getBlock(id)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
@@ -197,8 +193,21 @@ export const updateTask = async (taskInfo: AgendaTask) => {
   const content2 = updateScheduled(content1, { start, allDay })
   const content3 = updateAgendaDrawer(content2, { estimated: estimatedTime, end })
   const content4 = updateTimeLogText(content3, timeLogs)
+  await updateBlock(id, content4)
 
-  return await updateBlock(id, content4)
+  const page = await logseq.Editor.getPage(originalBlock.page.id)
+  if (!page) return Promise.reject(new Error('Page not found'))
+  if (page.uuid !== projectId) {
+    // move task to new page's bottom
+    const targetPageId = projectId ? projectId : (await createTodayJournalPage()).uuid
+    const blocks = await logseq.Editor.getPageBlocksTree(targetPageId)
+    const targetBlockId = blocks.length > 0 ? blocks[blocks.length - 1].uuid : targetPageId
+    await logseq.Editor.moveBlock(id, targetBlockId, {
+      children: false,
+    })
+  }
+
+  return logseq.Editor.getBlock(id)
 }
 
 /**
@@ -391,4 +400,12 @@ export function updateTimeLogText(blockContent: string, timeLogs: { start: Dayjs
    */
   if (!matches && isHasLogs) return blockContent + logbookText
   return blockContent.replace(LOGBOOK_REGEX, logbookText)
+}
+
+export async function createTodayJournalPage() {
+  const { preferredDateFormat } = await logseq.App.getUserConfigs()
+  const journalName = format(dayjs().valueOf(), preferredDateFormat)
+  const journalPage = await logseq.Editor.createPage(journalName, {}, { journal: true })
+  if (!journalPage) return Promise.reject(new Error('Failed to create journal page'))
+  return journalPage
 }

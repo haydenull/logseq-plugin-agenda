@@ -1,9 +1,10 @@
+import { message } from 'antd'
 import dayjs, { isDayjs, type Dayjs } from 'dayjs'
 import { useState } from 'react'
 import { object, string, optional, special, type Output, safeParse, array, number } from 'valibot'
 
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
-import { genDurationString, parseDurationString, updateTask } from '@/newHelper/block'
+import { genDurationString, parseDurationString, updateTaskBlock } from '@/newHelper/block'
 import type { AgendaTask } from '@/types/task'
 
 import { genStart } from './useCreate'
@@ -25,6 +26,7 @@ const editFormSchema = object({
       }),
     ),
   ),
+  projectId: optional(string()),
 })
 type EditTaskForm = Output<typeof editFormSchema>
 type EditTaskFormNoValidation = Partial<EditTaskForm>
@@ -37,6 +39,7 @@ const useEdit = (initialTask: AgendaTask | null) => {
     estimatedTime: initialTask?.estimatedTime ? genDurationString(initialTask.estimatedTime) : undefined,
     actualTime: initialTask?.actualTime ? genDurationString(initialTask.actualTime) : undefined,
     timeLogs: initialTask?.timeLogs || [],
+    projectId: initialTask?.project.id,
   }
   const [formData, setFormData] = useState<EditTaskFormNoValidation>(initialFormData)
 
@@ -63,11 +66,12 @@ const useEdit = (initialTask: AgendaTask | null) => {
   const edit = async () => {
     const result = safeParse(editFormSchema, formData)
     if (!result.success || !initialTask) {
-      logseq.UI.showMsg('Failed to edit task block')
+      message.error('Failed to edit task block')
+      console.error('edit error', result)
       throw new Error('Failed to edit task block')
     }
     const estimatedTime = result.output.estimatedTime
-    await updateTask({
+    await updateTaskBlock({
       ...initialTask,
       ...result.output,
       allDay,
@@ -76,6 +80,7 @@ const useEdit = (initialTask: AgendaTask | null) => {
       estimatedTime: estimatedTime ? parseDurationString(estimatedTime) : undefined,
       // actual time is generated from time logs
       actualTime: undefined,
+      projectId: result.output.projectId,
     })
     return logseq.Editor.getBlock(initialTask.id)
   }

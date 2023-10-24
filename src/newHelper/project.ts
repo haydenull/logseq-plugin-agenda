@@ -16,13 +16,17 @@ export const getAllProjects = async () => {
 }
 
 export const transformPageToProject = (page: AgendaTaskPage): AgendaProject => {
-  const colorName = page.properties?.['agenda-color'] || DEFAULT_BG_COLOR_NAME
+  // query 查询的 properties 属性名为原始值
+  // getAllPage 查询的 properties 属性名为会转为驼峰
+  const originalColor = page.properties?.['agenda-color'] || page.properties?.agendaColor
+  const originalFavorite = page.properties?.['agenda-favorite'] || page.properties?.agendaFavorite
+  const colorName = originalColor || DEFAULT_BG_COLOR_NAME
   const bgColor = BACKGROUND_COLOR[colorName] || BACKGROUND_COLOR[DEFAULT_BG_COLOR_NAME]
   return {
     ...page,
     id: page.uuid,
     isJournal: page['journal?'],
-    isFavorite: page.properties?.['agenda-favorite'] === 'yes',
+    isFavorite: originalFavorite === 'yes',
     bgColor,
   }
 }

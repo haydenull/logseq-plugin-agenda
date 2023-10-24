@@ -42,7 +42,7 @@ export type AgendaTaskWithStart = AgendaTask & {
   start: Dayjs
 }
 
-export type CreateAgendaTask = Overwrite<
+export type CreateAgendaTask = { projectId?: string } & Overwrite<
   Partial<AgendaTask>,
   {
     title: string

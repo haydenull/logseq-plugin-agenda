@@ -1,7 +1,7 @@
 import dayjs, { type Dayjs } from 'dayjs'
 import { useState } from 'react'
 
-import { createTask, parseDurationString } from '@/newHelper/block'
+import { createTaskBlock, parseDurationString } from '@/newHelper/block'
 import { replaceTimeInfo } from '@/util/util'
 
 export type CreateTaskForm = {
@@ -11,6 +11,7 @@ export type CreateTaskForm = {
   startTime?: string
   estimatedTime?: string
   actualTime?: string
+  projectId?: string
 }
 const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
   const _initialData = initialData
@@ -34,12 +35,13 @@ const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
     }))
   }
   const create = async () => {
-    const block = await createTask({
+    const block = await createTaskBlock({
       allDay,
       start,
       end: formData.endDateVal,
       title: formData.title,
       estimatedTime: formData.estimatedTime ? parseDurationString(formData.estimatedTime) : undefined,
+      projectId: formData.projectId,
     })
     if (!block) {
       logseq.UI.showMsg('Failed to create task block')
