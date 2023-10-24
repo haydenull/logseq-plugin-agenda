@@ -1,4 +1,4 @@
-import { Button, Calendar, Input, type InputRef, Modal, Popover, Popconfirm, DatePicker, message } from 'antd'
+import { Button, Calendar, Input, type InputRef, Modal, Popover, Popconfirm, DatePicker, message, Select } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
 import React, { useEffect, useState } from 'react'
 import { BsCalendar4Event, BsCalendar4Range, BsClock, BsClockHistory } from 'react-icons/bs'
@@ -11,6 +11,7 @@ import { deleteTask } from '@/newHelper/block'
 import { type BlockFromQuery, transformBlockToAgendaTask } from '@/newHelper/task'
 import type { AgendaTask, TimeLog } from '@/types/task'
 
+import ProjectSelect from '../ProjectSelect'
 import TimeLogComponent from './TimeLog'
 import useCreate, { type CreateTaskForm } from './useCreate'
 import useEdit from './useEdit'
@@ -74,8 +75,8 @@ const TaskModal = ({
       ...block,
       page: {
         ...page,
-        originalName: page?.['original-name'],
-        journalDay: page?.['journal-day'],
+        originalName: page.originalName,
+        journalDay: page.journalDay,
         isJournal: page?.['journal?'],
       },
     } as BlockFromQuery)
@@ -276,6 +277,15 @@ const TaskModal = ({
           </div>
         ) : null}
         {/* ========= Actual Time End ========= */}
+
+        {/* ========= Project Start ========= */}
+        <div className="flex my-2">
+          <div className="w-[160px] text-gray-400 flex gap-1 items-center">
+            <BsClock /> Project
+          </div>
+          <ProjectSelect value={formData.projectId} onChange={(val) => updateFormData({ projectId: val })} />
+        </div>
+        {/* ========= Project End ========= */}
 
         {/* <Divider className="!m-0" orientation="center" orientationMargin={0} dashed>
           <Button

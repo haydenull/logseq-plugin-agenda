@@ -60,7 +60,7 @@ export const getAgendaTasks = async () => {
       uuid: typeof block.uuid === 'string' ? block.uuid : block.uuid?.['$uuid$'],
       repeated: block['repeated?'],
       page: {
-        // ...block.page,
+        ...block.page,
         uuid: block.page?.['uuid'],
         originalName: block.page?.['original-name'],
         journalDay: block.page?.['journal-day'],
@@ -68,7 +68,7 @@ export const getAgendaTasks = async () => {
         properties: block.page?.['properties'],
       },
       refs: block.refs?.map((_page) => ({
-        // ..._page,
+        ..._page,
         uuid: _page?.['uuid'],
         journalDay: _page?.['journal-day'],
         originalName: _page?.['original-name'],

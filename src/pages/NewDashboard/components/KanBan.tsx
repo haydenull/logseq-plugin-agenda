@@ -11,7 +11,13 @@ import { ReactSortable } from 'react-sortablejs'
 
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import useAgendaTasks from '@/hooks/useAgendaTasks'
-import { genDurationString, parseDurationString, updateDateInfo, updateTask, updateTaskStatus } from '@/newHelper/block'
+import {
+  genDurationString,
+  parseDurationString,
+  updateDateInfo,
+  updateTaskBlock,
+  updateTaskStatus,
+} from '@/newHelper/block'
 import { minutesToHHmm } from '@/newHelper/fullCalendar'
 import { DATE_FORMATTER_FOR_KEY, separateTasksInDay, transformTasksToKanbanTasks } from '@/newHelper/task'
 import { appAtom } from '@/newModel/app'
