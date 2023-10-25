@@ -1,7 +1,9 @@
 import { Button, Calendar, Input, type InputRef, Modal, Popover, Popconfirm, DatePicker, message, Select } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { BsCalendar4Event, BsCalendar4Range, BsClock, BsClockHistory } from 'react-icons/bs'
+import { BiCategory } from 'react-icons/bi'
+import { BsCalendar4Event, BsCalendar4Range, BsClipboard, BsClock, BsClockHistory } from 'react-icons/bs'
+import { MdOutlineCategory } from 'react-icons/md'
 import { RiDeleteBin4Line } from 'react-icons/ri'
 
 import DurationSelect from '@/components/TaskModal/components/DurationSelect'
@@ -176,7 +178,7 @@ const TaskModal = ({
             <div className="w-[160px] text-gray-400 flex gap-1 items-center">
               <BsCalendar4Range /> Date Range
             </div>
-            <div className="flex items-center group">
+            <div className="flex items-center group gap-1">
               <DatePicker.RangePicker
                 allowClear={false}
                 bordered={false}
@@ -196,7 +198,7 @@ const TaskModal = ({
             <div className="w-[160px] text-gray-400 flex gap-1 items-center">
               <BsCalendar4Event /> Start Date
             </div>
-            <div className="flex items-center group">
+            <div className="flex items-center group gap-1">
               <Popover
                 trigger={['click']}
                 arrow={false}
@@ -255,7 +257,7 @@ const TaskModal = ({
               <BsClockHistory /> Actual Time
             </div>
             <div>
-              <div className="px-3 py-1 flex gap-2 items-center cursor-default h-[32px]">
+              <div className="px-3 py-1 flex gap-2 items-center cursor-pointer h-[32px]">
                 {formData.actualTime}
                 <div className="text-xs text-gray-400 hover:text-gray-800" onClick={addDefaultTimeLog}>
                   (Add a log)
@@ -281,7 +283,7 @@ const TaskModal = ({
         {/* ========= Project Start ========= */}
         <div className="flex my-2">
           <div className="w-[160px] text-gray-400 flex gap-1 items-center">
-            <BsClock /> Project
+            <BsClipboard /> Project
           </div>
           <ProjectSelect value={formData.projectId} onChange={(val) => updateFormData({ projectId: val })} />
         </div>

@@ -66,13 +66,13 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
     open: false,
   })
 
-  const onEventClick = (info: unknown) => {
-    const _info = info as FullCalendarEventInfo
-    setEditTaskModal({
-      open: true,
-      task: _info.event.extendedProps,
-    })
-  }
+  // const onEventClick = (info: unknown) => {
+  //   const _info = info as FullCalendarEventInfo
+  //   setEditTaskModal({
+  //     open: true,
+  //     task: _info.event.extendedProps,
+  //   })
+  // }
   const onDeleteTask = async (taskId: string) => {
     deleteTask(taskId)
     deleteTaskBlock(taskId)
@@ -118,9 +118,6 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
           estimatedTime,
         })
       }
-
-      // refreshAllTasks()
-      // 其他天移动到今天的 timebox，需要对应移动 kanban
     } catch (error) {
       logseq.UI.showMsg('resize failed')
       _info.revert()
@@ -180,14 +177,22 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
           })
         }}
         eventContent={(info) => {
+          const taskData = info.event.extendedProps
+          if (!taskData?.id) return null
           const isShowTimeText =
             info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 20
-          const isDone = info.event.extendedProps?.status === 'done'
+          const isDone = taskData?.status === 'done'
           return (
             <TaskModal
               info={{
                 type: 'edit',
-                initialTaskData: info.event.extendedProps as AgendaTaskWithStart,
+                initialTaskData: taskData as AgendaTaskWithStart,
+              }}
+              onOk={(taskInfo) => {
+                updateTaskData(taskData.id, taskInfo)
+              }}
+              onDelete={(taskId) => {
+                deleteTask(taskId)
               }}
             >
               <Dropdown
@@ -214,8 +219,9 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
               >
                 <div className={clsx('h-full', { 'opacity-60': isDone })}>
                   <div
-                    className={clsx('truncate font-semibold flex items-center relative', {
+                    className={clsx('truncate flex items-center relative', {
                       'line-through': isDone,
+                      'font-semibold': !isDone,
                     })}
                   >
                     {info.event.title}
@@ -245,7 +251,7 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
           },
         }}
       />
-      {editTaskModal.task ? (
+      {/* {editTaskModal.task ? (
         <TaskModal
           key={editTaskModal.task.id}
           open={editTaskModal.open}
@@ -260,7 +266,7 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
             setEditTaskModal({ open: false })
           }}
         />
-      ) : null}
+      ) : null} */}
       {createTaskModal.open ? (
         <TaskModal
           open={createTaskModal.open}
