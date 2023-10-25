@@ -62,9 +62,9 @@ const Dashboard = () => {
         okText="Refresh"
         onOk={() => window.location.reload()}
       >
-        <div>请检查 logseq api 配置，然后刷新页面重试</div>
+        <div>Please check the logseq api configuration and refresh the page to try again.</div>
         <a href="https://haydenut.notion.site/Agenda3-ef115e277c864de3b2679d6bda0e6376?pvs=4">
-          参考文档：https://haydenut.notion.site/Agenda3-ef115e277c864de3b2679d6bda0e6376?pvs=4
+          Reference Documents: https://haydenut.notion.site/Agenda3-ef115e277c864de3b2679d6bda0e6376?pvs=4
         </a>
       </Modal>
     </div>
