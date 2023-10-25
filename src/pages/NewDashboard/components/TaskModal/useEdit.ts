@@ -39,7 +39,7 @@ const useEdit = (initialTask: AgendaTask | null) => {
     estimatedTime: initialTask?.estimatedTime ? genDurationString(initialTask.estimatedTime) : undefined,
     actualTime: initialTask?.actualTime ? genDurationString(initialTask.actualTime) : undefined,
     timeLogs: initialTask?.timeLogs || [],
-    projectId: initialTask?.project.id,
+    projectId: initialTask?.project?.id,
   }
   const [formData, setFormData] = useState<EditTaskFormNoValidation>(initialFormData)
 

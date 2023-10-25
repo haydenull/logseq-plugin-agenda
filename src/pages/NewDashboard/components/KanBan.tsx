@@ -6,7 +6,7 @@ import { useAtom, useAtomValue } from 'jotai'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { BsPatchCheck, BsPatchCheckFill } from 'react-icons/bs'
 import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline, IoMdCheckmarkCircleOutline } from 'react-icons/io'
-import { IoAddCircleOutline, IoCheckbox, IoCheckboxOutline } from 'react-icons/io5'
+import { IoAddCircleOutline, IoCheckbox, IoCheckboxOutline, IoRepeatOutline } from 'react-icons/io5'
 import { ReactSortable } from 'react-sortablejs'
 
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
@@ -147,7 +147,7 @@ const KanBan = (props, ref) => {
             <TaskModal onOk={addNewTask} info={{ type: 'create', initialData: { startDateVal: day } }}>
               <div
                 className={cn(
-                  'bg-white rounded-md p-2 my-2 text-gray-400 text-sm flex items-center hover:shadow cursor-default group justify-between',
+                  'bg-white rounded-md p-2 my-2 text-gray-400 text-sm flex items-center hover:shadow cursor-pointer group justify-between',
                   {
                     'bg-[#edeef0]': undoneTasks.length === 0,
                   },
@@ -203,7 +203,7 @@ const KanBan = (props, ref) => {
                 return (
                   <div
                     key={task.id}
-                    className={cn('bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-default', {
+                    className={cn('bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-pointer', {
                       'bg-[#edeef0]': task.status === 'done',
                       'cursor-not-allowed': editDisabled,
                       'droppable-task-element': !(editDisabled || task.end) || !task.allDay,
@@ -238,6 +238,7 @@ const KanBan = (props, ref) => {
                             {task.start.format('HH:mm')}
                           </span>
                         )}
+                        {task.rrule || task.recurringPast ? <IoRepeatOutline className="text-gray-400" /> : null}
                       </div>
                       <div className="bg-gray-100 rounded px-1 py-0.5 text-gray-400 text-[10px]">
                         {task.status === 'done' ? (

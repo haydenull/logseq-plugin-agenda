@@ -28,6 +28,9 @@ const Dashboard = () => {
       setConnectionErrorModal(true)
     })
     refreshProjects()
+    logseq.App.getUserInfo().then((res) => {
+      console.log('getUserConfigs', res)
+    })
   }, [])
   return (
     <div className="flex w-screen h-screen bg-gray-100 before:absolute before:pointer-events-none before:h-[180px] before:w-[240px] before:left-1/2 before:top-1/2 before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:content-['']  before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40">

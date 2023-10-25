@@ -53,7 +53,7 @@ const TimeLogComponent = ({ value, onChange }: { value: TimeLog; onChange: (valu
         </div>
       }
     >
-      <div className="hover:bg-gray-100 px-3 py-1 rounded cursor-default text-gray-400 text-xs">
+      <div className="hover:bg-gray-100 px-3 py-1 rounded cursor-pointer text-gray-400 text-xs">
         {`${start.format('MM-DD')} ${start.format('HH:mm')}-${end.format('HH:mm')} (${genDurationString(amount)})`}
       </div>
     </Popover>

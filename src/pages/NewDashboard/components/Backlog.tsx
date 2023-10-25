@@ -1,9 +1,9 @@
 import { CaretRightOutlined } from '@ant-design/icons'
 import { Draggable } from '@fullcalendar/interaction'
-import { Collapse, Empty } from 'antd'
+import { Collapse, Empty, Select } from 'antd'
 import clsx from 'clsx'
 import { useAtom } from 'jotai'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 
 import { categorizeTasksByPage } from '@/newHelper/task'
@@ -15,6 +15,17 @@ const Backlog = () => {
   const taskContainerRef = useRef<HTMLDivElement>(null)
   const [backlogTasks] = useAtom(backlogTasksAtom)
   const categorizedTasks = categorizeTasksByPage(backlogTasks)
+  const projects = categorizedTasks.map(({ project }) => project)
+
+  const [filterProjectIds, setFilterProjectIds] = useState<string[]>([])
+
+  const showCategorizedTasks = categorizedTasks.filter((categorizedTask) => {
+    if (filterProjectIds?.length > 0) {
+      return filterProjectIds.includes(categorizedTask.project.id)
+    }
+    return true
+  })
+
   useEffect(() => {
     if (taskContainerRef.current) {
       new Draggable(taskContainerRef.current, {
@@ -26,20 +37,36 @@ const Backlog = () => {
     <div className={clsx('w-[290px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md', s.backlog)}>
       <div className="h-[44px] flex items-center gap-1.5 relative after:shadow after:absolute after:bottom-0 after:w-full after:h-1">
         <BsArchive /> Backlog
+        <Select
+          showSearch
+          allowClear
+          value={filterProjectIds}
+          onChange={setFilterProjectIds}
+          bordered={false}
+          suffixIcon={null}
+          className="w-[160px]"
+          maxTagCount="responsive"
+          placeholder="Filters"
+          mode="multiple"
+          optionFilterProp="label"
+          popupClassName="min-w-[300px]"
+          options={projects.map((project) => ({ label: project.originalName, value: project.id }))}
+          filterOption={(input, option) => (option?.label as string)?.toLowerCase()?.includes(input?.toLowerCase())}
+        />
       </div>
       <div
         className={clsx('flex flex-col gap-2 flex-1 overflow-auto pt-2', {
-          'justify-center': categorizedTasks?.length <= 0,
+          'justify-center': showCategorizedTasks?.length <= 0,
         })}
         ref={taskContainerRef}
       >
-        {categorizedTasks?.length > 0 ? (
+        {showCategorizedTasks?.length > 0 ? (
           <Collapse
             accordion
             bordered={false}
             expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
             style={{ background: '#f9fafb' }}
-            items={categorizedTasks.map((project) => ({
+            items={showCategorizedTasks.map((project) => ({
               key: project.project.originalName,
               label: project.project.originalName,
               children: (
@@ -47,7 +74,7 @@ const Backlog = () => {
                   {project.tasks.map((task) => (
                     <div
                       key={task.id}
-                      className="border rounded px-2 py-2 text-sm text-gray-600 break-all droppable-task-element bg-[#f9fafb]"
+                      className="border rounded px-2 py-2 text-sm text-gray-600 break-all droppable-task-element bg-[#f9fafb] cursor-move"
                       data-event={JSON.stringify({
                         id: task.id,
                         title: task.title,
