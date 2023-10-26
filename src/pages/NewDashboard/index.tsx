@@ -1,12 +1,13 @@
 import { Analytics } from '@vercel/analytics/react'
-import { FloatButton, Modal } from 'antd'
-import { useAtom } from 'jotai'
+import { FloatButton, Modal, message } from 'antd'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
 import { TbComet, TbSettings } from 'react-icons/tb'
 
 import useAgendaTasks from '@/hooks/useAgendaTasks'
 import useNewProjects from '@/hooks/useNewProjects'
 import { appAtom } from '@/newModel/app'
+import { logseqAtom } from '@/newModel/logseq'
 
 import Backlog from './components/Backlog'
 import MultipleView from './components/MultipleView'
@@ -17,19 +18,27 @@ import TimeBoxActual from './components/TimeBoxActual'
 export type TimeBoxType = 'estimated' | 'actual'
 const Dashboard = () => {
   const [timeBoxType, setTimeBoxType] = useState<TimeBoxType>('estimated')
-  const [app] = useAtom(appAtom)
+  const app = useAtomValue(appAtom)
+  const setLogseq = useSetAtom(logseqAtom)
   const { refreshTasks } = useAgendaTasks()
   const { refreshProjects } = useNewProjects()
   const [connectionErrorModal, setConnectionErrorModal] = useState(false)
 
-  // move to App.tsx
+  // get tasks and projects
   useEffect(() => {
     refreshTasks().catch(() => {
       setConnectionErrorModal(true)
     })
     refreshProjects()
-    logseq.App.getUserInfo().then((res) => {
-      console.log('getUserConfigs', res)
+    // logseq.App.getCurrentGraph().then((res) => {
+    //   console.log('getUserConfigs', res)
+    // })
+  }, [])
+  // set logseq app and user info
+  useEffect(() => {
+    logseq.App.getCurrentGraph().then((graph) => {
+      if (!graph) return message.error('Unknown Graph')
+      setLogseq({ currentGraph: graph })
     })
   }, [])
   return (
