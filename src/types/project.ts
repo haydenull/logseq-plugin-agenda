@@ -9,13 +9,11 @@ export type AgendaProject = {
   updatedAt?: number
   createdAt?: number
   properties?: {
-    'agenda-favorite'?: 'yes' | 'no'
     'agenda-color'?: string
     [key: string]: string | boolean | undefined
   }
   propertiesOrder?: string[]
   propertiesTextValues?: {
-    'agenda-favorite'?: string
     'agenda-color'?: string
     [key: string]: string | undefined
   }

@@ -72,16 +72,19 @@ const TaskModal = ({
     if (!block) return message.error('Failed to create/edit task block')
     const page = await logseq.Editor.getPage(block?.page?.id ?? block?.page)
     if (!page) return message.error('Failed to find page')
-    // @ts-expect-error type correct
-    const task = await transformBlockToAgendaTask({
-      ...block,
-      page: {
-        ...page,
-        originalName: page.originalName,
-        journalDay: page.journalDay,
-        isJournal: page?.['journal?'],
-      },
-    } as BlockFromQuery)
+    const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
+    const task = await transformBlockToAgendaTask(
+      {
+        ...block,
+        page: {
+          ...page,
+          originalName: page.originalName,
+          journalDay: page.journalDay,
+          isJournal: page?.['journal?'],
+        },
+      } as unknown as BlockFromQuery,
+      favoritePages,
+    )
     onOk?.(task)
     setInternalOpen(false)
   }

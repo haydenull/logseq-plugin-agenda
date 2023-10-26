@@ -5,6 +5,7 @@ import type { AgendaTaskWithStart } from '@/types/task'
 
 import { type BlockFromQuery, transformBlockToAgendaTask, separateTasksInDay } from '../task'
 
+const DEMO_FAVORITE_PAGES = []
 export const DEMO_BLOCK = {
   properties: {
     'agenda-color': 'blue',
@@ -90,7 +91,7 @@ export const DEMO_TASK = {
 
 describe('helper: task', () => {
   test('transformBlockToAgendaTask', async () => {
-    expect(await transformBlockToAgendaTask(DEMO_BLOCK)).toEqual(DEMO_TASK)
+    expect(await transformBlockToAgendaTask(DEMO_BLOCK, DEMO_FAVORITE_PAGES)).toEqual(DEMO_TASK)
   })
   test('separateTasksInDay', async () => {
     const tasks: AgendaTaskWithStart[] = [

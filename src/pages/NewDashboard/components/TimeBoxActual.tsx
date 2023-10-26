@@ -76,7 +76,8 @@ const TimeBoxActual = ({ date }: { date: Dayjs }) => {
     const event = calendarApi?.getEventById(blockUUID)
     const block = await logseq.Editor.getBlock(blockUUID)
     if (!event || !block) return _info.revert()
-    const agendaTask = await transformBlockToAgendaTask(block as BlockFromQuery)
+    const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
+    const agendaTask = await transformBlockToAgendaTask(block as BlockFromQuery, favoritePages)
     // 将 log index 补充到 id 上，防止 resize 时 index 丢失
     event.setProp('id', `${blockUUID}_${agendaTask.timeLogs.length}`)
     event.setProp('extendedProps', agendaTask)

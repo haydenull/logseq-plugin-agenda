@@ -74,8 +74,9 @@ const KanBan = (props, ref) => {
     document.getElementById(`${todayDateStr}`)?.scrollIntoView({ block: 'nearest', inline: 'start' })
     kanBanContainerRef.current?.scrollBy({ left: -30, behavior: 'smooth' })
   }, [])
-  const navToLogseqBlock = (uuid: string) => {
+  const navToLogseqBlock = (task: AgendaTaskWithStart) => {
     if (!currentGraph) return
+    const uuid = task.recurringPast ? task.id.split('_')[0] : task.id
     // example: logseq://graph/zio?block-id=65385ad5-f4e9-4423-8595-a5e4236cc8ad
     window.open(`logseq://graph/${currentGraph.name}?block-id=${uuid}`, '_blank')
   }
@@ -223,6 +224,7 @@ const KanBan = (props, ref) => {
                       id: task.id,
                       title: task.title,
                       duration: minutesToHHmm(estimatedTime),
+                      color: task.project.bgColor,
                     })}
                     onClick={() => !editDisabled && setEditTaskModal({ open: true, task })}
                   >
@@ -254,7 +256,7 @@ const KanBan = (props, ref) => {
                           className="text-gray-300 opacity-0 group-hover/card:opacity-100 transition-opacity cursor-pointer"
                           onClick={(e) => {
                             e.stopPropagation()
-                            navToLogseqBlock(task.id)
+                            navToLogseqBlock(task)
                           }}
                         >
                           {/* logseq logo */}

@@ -18,6 +18,7 @@ export type BlockFromQuery = BlockEntity & {
   repeated?: boolean
 }
 export const getAgendaTasks = async () => {
+  const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
   let blocks = (await logseq.DB.datascriptQuery(`
   [:find (pull
     ?block
@@ -77,7 +78,7 @@ export const getAgendaTasks = async () => {
       })),
     }
 
-    const task = await transformBlockToAgendaTask(_block as unknown as BlockFromQuery)
+    const task = await transformBlockToAgendaTask(_block as unknown as BlockFromQuery, favoritePages)
     const recurringPastTasks: AgendaTask[] =
       task.doneHistory?.map((pastTaskEnd) => {
         const { estimatedTime = DEFAULT_ESTIMATED_TIME } = task
@@ -103,7 +104,10 @@ export const getAgendaTasks = async () => {
 /**
  * transform logseq block to agenda task
  */
-export const transformBlockToAgendaTask = async (block: BlockFromQuery): Promise<AgendaTask> => {
+export const transformBlockToAgendaTask = async (
+  block: BlockFromQuery,
+  favoritePages: string[],
+): Promise<AgendaTask> => {
   const { uuid, marker, content, scheduled: scheduledNumber, deadline: deadlineNumber, properties, page } = block
 
   const title = content.split('\n')[0]?.replace(marker, '')?.trim()
@@ -204,7 +208,7 @@ export const transformBlockToAgendaTask = async (block: BlockFromQuery): Promise
     deadline,
     estimatedTime,
     actualTime,
-    project: transformPageToProject(page),
+    project: transformPageToProject(page, favoritePages),
     timeLogs,
     // TODO: read from logseq
     // label: page,

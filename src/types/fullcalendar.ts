@@ -18,4 +18,5 @@ export type CalendarEvent = {
   editable?: boolean
   color?: string
   textColor?: string
+  duration?: { minute: number } // rrule event duration
 }

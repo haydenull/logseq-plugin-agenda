@@ -78,6 +78,7 @@ const Backlog = () => {
                       data-event={JSON.stringify({
                         id: task.id,
                         title: task.title,
+                        color: task.project.bgColor,
                       })}
                     >
                       {task.title}
