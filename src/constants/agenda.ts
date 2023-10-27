@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 export const TIME_FORMATTER = 'HH:mm'
 export const DATE_FORMATTER = 'YYYY-MM-DD'
 export const DATE_TIME_FORMATTER = 'YYYY-MM-DD HH:mm'
@@ -37,3 +39,6 @@ export const BACKGROUND_COLOR = {
   blueGrey: '#607d8b',
 }
 export const DEFAULT_BG_COLOR_NAME = 'blue'
+
+const today = dayjs()
+export const recentDaysRange = [today.subtract(14, 'day'), today.add(14, 'day')] as const

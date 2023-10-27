@@ -1,8 +1,10 @@
+import type { FREQ_ENUM_MAP } from '@/newHelper/task'
+
 import type { AgendaTaskWithStart } from './task'
 
 /** https://github.com/jkbrzt/rrule */
 export type RRule = {
-  freq: string // hourly daily weekly monthly yearly
+  freq: keyof typeof FREQ_ENUM_MAP
   interval: number
   dtstart: string
 }

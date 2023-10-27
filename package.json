@@ -81,6 +81,7 @@
     "react-icons": "^4.11.0",
     "react-router-dom": "^6.4.3",
     "react-sortablejs": "^6.1.4",
+    "rrule": "^2.7.2",
     "sortablejs": "^1.15.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",

@@ -1,8 +1,9 @@
 /* eslint-disable no-useless-escape */
 import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import dayjs, { type Dayjs } from 'dayjs'
+import { RRule as RRuleClass } from 'rrule'
 
-import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
+import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
 import type { KanBanItem } from '@/pages/NewDashboard/components/KanBan'
 import type { RRule } from '@/types/fullcalendar'
 import type { AgendaTask, AgendaTaskWithStart, AgendaTaskPage } from '@/types/task'
@@ -10,6 +11,21 @@ import { genDays } from '@/util/util'
 
 import { parseAgendaDrawer } from './block'
 import { transformPageToProject } from './project'
+
+export const FREQ_ENUM_MAP = {
+  hourly: RRuleClass.HOURLY,
+  daily: RRuleClass.DAILY,
+  weekly: RRuleClass.WEEKLY,
+  monthly: RRuleClass.MONTHLY,
+  yearly: RRuleClass.YEARLY,
+} as const
+const FREQ_MAP = {
+  h: 'hourly',
+  d: 'daily',
+  w: 'weekly',
+  m: 'monthly',
+  y: 'yearly',
+} as const
 
 export type BlockFromQuery = BlockEntity & {
   marker: 'TODO' | 'DOING' | 'NOW' | 'LATER' | 'WAITING' | 'DONE' | 'CANCELED'
@@ -233,18 +249,11 @@ function parseRRule(input: string): RRule | null {
   const parts = cleanedInput.split(' ')
 
   function parseFreq(freq: string) {
-    const freqMap = {
-      h: 'hourly',
-      d: 'daily',
-      w: 'weekly',
-      m: 'monthly',
-      y: 'yearly',
-    }
     const rruleReg = /[.+]*\+(\d+)([hdwmy])/
     const res = freq.match(rruleReg)
     if (!res) return null
     return {
-      freq: freqMap[res[2]],
+      freq: FREQ_MAP[res[2]],
       interval: Number(res[1]),
     }
   }
@@ -293,13 +302,14 @@ export const separateTasksInDay = (tasks: AgendaTaskWithStart[]): Map<string, Ag
 
 /**
  * adapt task to kanban
- * splitting multi-days task into single-day tasks
  */
 export const transformTasksToKanbanTasks = (tasks: AgendaTaskWithStart[]): KanBanItem[] => {
   const today = dayjs()
   return tasks
     .map((task) => {
       const { allDay, end, start } = task
+
+      // splitting multi-days task into single-day tasks
       if (allDay && end) {
         const days = genDays(start, end)
         return days.map((day) => {
@@ -308,16 +318,35 @@ export const transformTasksToKanbanTasks = (tasks: AgendaTaskWithStart[]): KanBa
           return {
             ...task,
             start: day,
-            filtered: true,
+            // filtered: true,
             // 过去且不是结束日期的任务默认为已完成
             status: (isPast && !isEndDay) || task.status === 'done' ? 'done' : 'todo',
           } as KanBanItem
         })
       }
-      return {
-        ...task,
-        filtered: task.recurringPast || Boolean(task.rrule),
+
+      // show recurring task
+      if (task.rrule) {
+        const rruleInstance = new RRuleClass({
+          ...task.rrule,
+          freq: FREQ_ENUM_MAP[task.rrule.freq],
+          dtstart: dayjs(task.rrule.dtstart).toDate(),
+        })
+        const [startDay, endDay] = recentDaysRange
+        const dates = rruleInstance.between(startDay.toDate(), endDay.add(1, 'day').toDate())
+        return dates.map((date) => {
+          return {
+            ...task,
+            start: dayjs(date),
+          }
+        })
       }
+
+      return task
+      // return {
+      //   ...task,
+      //   filtered: task.recurringPast || Boolean(task.rrule),
+      // }
     })
     .flat()
 }

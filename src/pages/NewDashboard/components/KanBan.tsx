@@ -9,7 +9,7 @@ import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline, IoMdCheckmarkCircleO
 import { IoAddCircleOutline, IoCheckbox, IoCheckboxOutline, IoRepeatOutline } from 'react-icons/io5'
 import { ReactSortable } from 'react-sortablejs'
 
-import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
+import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
 import useAgendaTasks from '@/hooks/useAgendaTasks'
 import {
   genDurationString,
@@ -33,8 +33,7 @@ export type KanBanItem = AgendaTaskWithStart & {
 }
 
 const getRecentDays = () => {
-  const startDay = dayjs().subtract(7, 'day')
-  const endDay = dayjs().add(14, 'day')
+  const [startDay, endDay] = recentDaysRange
   return genDays(startDay, endDay)
 }
 export type KanBanHandle = {
@@ -208,6 +207,7 @@ const KanBan = (props, ref) => {
             >
               {_dayTasks.map((task) => {
                 const editDisabled = task.rrule || task.recurringPast
+                const isMultipleDays = task.allDay && task.end
                 const estimatedTime = task.estimatedTime ?? DEFAULT_ESTIMATED_TIME
                 return (
                   <div
@@ -217,7 +217,8 @@ const KanBan = (props, ref) => {
                       {
                         'bg-[#edeef0]': task.status === 'done',
                         'cursor-not-allowed': editDisabled,
-                        'droppable-task-element': !(editDisabled || task.end) || !task.allDay,
+                        // 循环任务及多天任务不能拖拽
+                        'droppable-task-element': !editDisabled && !isMultipleDays,
                       },
                     )}
                     data-event={JSON.stringify({
