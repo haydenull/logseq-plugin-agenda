@@ -4,13 +4,14 @@ import { type EventAttributes } from 'ics'
 import { getRRuleInstance } from '@/newHelper/task'
 import type { AgendaTaskWithStart } from '@/types/task'
 
-export const transformAgendaTaskToICSEvent = (task: AgendaTaskWithStart): EventAttributes => {
-  const { title, start, allDay, end, estimatedTime } = task
-  let common: Pick<EventAttributes, 'start' | 'title' | 'calName' | 'recurrenceRule' | 'productId'> = {
+export const transformAgendaTaskToICSEvent = (task: AgendaTaskWithStart, graphName: string): EventAttributes => {
+  const { title, start, allDay, end, estimatedTime, project, rawBlock } = task
+  let common: Pick<EventAttributes, 'start' | 'title' | 'calName' | 'recurrenceRule' | 'productId' | 'description'> = {
     title,
     start: genDateArray(start, allDay),
     calName: 'Agenda',
     productId: 'haydenull/ics',
+    description: `project: ${project.originalName}\n\nLogseq Deep Link: logseq://graph/${graphName}?block-id=${rawBlock.uuid}`,
   } as const
   if (task.rrule) {
     const rruleInstance = getRRuleInstance(task.rrule)
