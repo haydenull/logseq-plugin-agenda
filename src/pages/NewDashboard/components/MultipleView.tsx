@@ -1,7 +1,8 @@
-import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { Button, Segmented, Tabs } from 'antd'
+import { LeftOutlined, RightOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons'
+import { Avatar, Button, Segmented, Tabs } from 'antd'
 import { useAtom } from 'jotai'
 import { useRef, useState } from 'react'
+import { FiSettings } from 'react-icons/fi'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
 
 import i18n from '@/locales/i18n'
@@ -10,6 +11,8 @@ import { cn } from '@/util/util'
 
 import Calendar, { type CalendarView, type CalendarHandle } from './Calendar'
 import KanBan, { type KanBanHandle } from './KanBan'
+import SettingsModal from './SettingsModal'
+import UploadIcs from './UploadIcs'
 
 const VIEWS = [
   {
@@ -80,15 +83,21 @@ const MultipleView = ({ className }: { className?: string }) => {
           </Button>
           {app.view === 'calendar' ? <h1 className="ml-3 font-medium text-xl">{calendarTitle}</h1> : null}
         </div>
-        <Tabs
-          activeKey={app.view}
-          items={VIEWS}
-          onChange={(key) => setApp({ view: key as App['view'] })}
-          // renderTabBar={(props, DefaultTabBar) => <DefaultTabBar />}
-          tabBarStyle={{ height: '36px', margin: 0 }}
-          // fix windows tabs 闪烁问题
-          className="min-w-[166px]"
-        />
+        <div className="flex items-center gap-6">
+          <Tabs
+            activeKey={app.view}
+            items={VIEWS}
+            onChange={(key) => setApp({ view: key as App['view'] })}
+            // renderTabBar={(props, DefaultTabBar) => <DefaultTabBar />}
+            tabBarStyle={{ height: '36px', margin: 0 }}
+            // fix windows tabs 闪烁问题
+            className="min-w-[166px]"
+          />
+          <UploadIcs className="text-lg cursor-pointer" />
+          <SettingsModal>
+            <FiSettings className="text-lg cursor-pointer" />
+          </SettingsModal>
+        </div>
       </div>
       <div className="flex-1 h-0">
         {app.view === 'tasks' ? (

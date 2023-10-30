@@ -327,11 +327,7 @@ export const transformTasksToKanbanTasks = (tasks: AgendaTaskWithStart[]): KanBa
 
       // show recurring task
       if (task.rrule) {
-        const rruleInstance = new RRuleClass({
-          ...task.rrule,
-          freq: FREQ_ENUM_MAP[task.rrule.freq],
-          dtstart: dayjs(task.rrule.dtstart).toDate(),
-        })
+        const rruleInstance = getRRuleInstance(task.rrule)
         const [startDay, endDay] = recentDaysRange
         const dates = rruleInstance.between(startDay.toDate(), endDay.add(1, 'day').toDate())
         return dates.map((date) => {
@@ -349,6 +345,14 @@ export const transformTasksToKanbanTasks = (tasks: AgendaTaskWithStart[]): KanBa
       // }
     })
     .flat()
+}
+
+export function getRRuleInstance(rrule: RRule) {
+  return new RRuleClass({
+    ...rrule,
+    freq: FREQ_ENUM_MAP[rrule.freq],
+    dtstart: dayjs(rrule.dtstart).toDate(),
+  })
 }
 
 /**
