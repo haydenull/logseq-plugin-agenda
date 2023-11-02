@@ -68,6 +68,7 @@ const TaskModal = ({
     onCancel?.()
   }
   const handleOk = async () => {
+    umami.track(`Task Modal: Ok Button`, { type: info.type })
     const block = await action()
     if (!block) return message.error('Failed to create/edit task block')
     const page = await logseq.Editor.getPage(block?.page?.id ?? block?.page)

@@ -159,11 +159,20 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
         eventTimeFormat={FULL_CALENDAR_24HOUR_FORMAT}
         slotLabelFormat={FULL_CALENDAR_24HOUR_FORMAT}
         // drag external kanban element to calendar
-        eventReceive={onEventScheduleUpdate}
+        eventReceive={(info) => {
+          onEventScheduleUpdate(info)
+          umami.track('Time Box: Receive Event')
+        }}
         // resize duration
-        eventResize={onEventScheduleUpdate}
+        eventResize={(info) => {
+          onEventScheduleUpdate(info)
+          umami.track('Time Box: Resize Event')
+        }}
         // drag move
-        eventDrop={onEventScheduleUpdate}
+        eventDrop={(info) => {
+          onEventScheduleUpdate(info)
+          umami.track('Time Box: Move Event')
+        }}
         // click
         // eventClick={onEventClick}
         select={(info) => {
@@ -175,6 +184,7 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
               estimatedTime: genDurationString(dayjs(info.end).diff(info.start, 'minute')),
             },
           })
+          umami.track('Time Box: Select Event')
         }}
         eventContent={(info) => {
           const taskData = info.event.extendedProps

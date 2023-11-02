@@ -9,6 +9,7 @@
     "sortablejs",
     "timeblock",
     "timebox",
-    "timegrid"
+    "timegrid",
+    "umami"
   ]
 }

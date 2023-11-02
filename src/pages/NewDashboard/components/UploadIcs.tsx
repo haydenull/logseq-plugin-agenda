@@ -37,7 +37,11 @@ const UploadIcs = ({ className }: { className?: string }) => {
 
   return (
     <div className="relative">
-      <FiUploadCloud className={cn('text-lg', className)} onClick={onClickUpload} />
+      <FiUploadCloud
+        className={cn('text-lg', className)}
+        onClick={onClickUpload}
+        data-umami-event="Upload ICS Button"
+      />
       {loading ? (
         <span className="animate-pulse absolute w-2 h-2 rounded-full bg-orange-500 top-0 right-0"></span>
       ) : null}

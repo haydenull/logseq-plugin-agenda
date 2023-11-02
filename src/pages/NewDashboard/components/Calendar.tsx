@@ -77,7 +77,6 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   const onEventScheduleUpdate = (info: unknown) => {
     // const calendarApi = calendarRef.current?.getApi()
     const _info = info as FullCalendarEventInfo
-    console.log('[faiz:] === eventResize', _info)
     const { start, end, id: blockUUID, allDay, extendedProps } = _info.event
     const startDay = dayjs(start)
     // const estimatedTime = dayjs(end).diff(start, 'minute')
@@ -174,15 +173,27 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
           onCalendarTitleChange(info.view.title)
         }}
         // drag external kanban element to calendar
-        eventReceive={onEventScheduleUpdate}
+        eventReceive={(info) => {
+          onEventScheduleUpdate(info)
+          umami.track('Calendar: Receive Event', { calendarView: info.view.type })
+        }}
         // resize duration
-        eventResize={onEventScheduleUpdate}
+        eventResize={(info) => {
+          onEventScheduleUpdate(info)
+          umami.track('Calendar: Resize Event', { calendarView: info.view.type })
+        }}
         // drag move
-        eventDrop={onEventScheduleUpdate}
+        eventDrop={(info) => {
+          onEventScheduleUpdate(info)
+          umami.track('Calendar: Move Event', { calendarView: info.view.type })
+        }}
         // click event
-        eventClick={onEventClick}
+        eventClick={(info) => {
+          onEventClick(info)
+          umami.track('Calendar: Click Event', { calendarView: info.view.type })
+        }}
         select={(info) => {
-          console.log('[faiz:] === select', info)
+          umami.track('Calendar: Select Event', { calendarView: info.view.type })
           if (info.allDay) {
             const endDay = dayjs(info.end).subtract(1, 'day')
             const startDay = dayjs(info.start)

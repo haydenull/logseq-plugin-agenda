@@ -46,6 +46,7 @@ const MultipleView = ({ className }: { className?: string }) => {
     } else {
       kanbanRef.current?.scrollToToday()
     }
+    umami.track('Today Button', { view: app.view })
   }
 
   return (
@@ -62,19 +63,28 @@ const MultipleView = ({ className }: { className?: string }) => {
                   { value: 'timeGridWeek', label: 'Week' },
                 ]}
                 className="!bg-gray-200 !mr-3"
-                onChange={(view) => calendarRef.current?.changeView(view as CalendarView)}
+                onChange={(view) => {
+                  calendarRef.current?.changeView(view as CalendarView)
+                  umami.track('Calendar View Change', { calendarView: view })
+                }}
               />
               <Button
                 icon={<LeftOutlined />}
                 shape="circle"
                 className="!bg-transparent mr-1"
-                onClick={() => calendarRef.current?.prev()}
+                onClick={() => {
+                  calendarRef.current?.prev()
+                  umami.track('Calendar Previous Button')
+                }}
               />
               <Button
                 icon={<RightOutlined />}
                 shape="circle"
                 className="!bg-transparent"
-                onClick={() => calendarRef.current?.next()}
+                onClick={() => {
+                  calendarRef.current?.next()
+                  umami.track('Calendar Next Button')
+                }}
               />
             </div>
           ) : null}
@@ -87,7 +97,10 @@ const MultipleView = ({ className }: { className?: string }) => {
           <Tabs
             activeKey={app.view}
             items={VIEWS}
-            onChange={(key) => setApp({ view: key as App['view'] })}
+            onChange={(key) => {
+              setApp({ view: key as App['view'] })
+              umami.track('View Change', { view: key })
+            }}
             // renderTabBar={(props, DefaultTabBar) => <DefaultTabBar />}
             tabBarStyle={{ height: '36px', margin: 0 }}
             // fix windows tabs 闪烁问题
@@ -95,7 +108,7 @@ const MultipleView = ({ className }: { className?: string }) => {
           />
           <UploadIcs className="text-lg cursor-pointer" />
           <SettingsModal>
-            <FiSettings className="text-lg cursor-pointer" />
+            <FiSettings className="text-lg cursor-pointer" data-umami-event="Settings Button" />
           </SettingsModal>
         </div>
       </div>

@@ -238,6 +238,9 @@ devDependencies:
   '@types/sortablejs':
     specifier: ^1.15.2
     version: 1.15.2
+  '@types/umami':
+    specifier: ^0.1.4
+    version: 0.1.4
   '@vitejs/plugin-react':
     specifier: ^4.0.4
     version: 4.0.4(vite@4.4.9)
@@ -3197,6 +3200,10 @@ packages:
 
   /@types/sortablejs@1.15.2:
     resolution: {integrity: sha512-mOIv/EnPMzAZAVbuh9uGjOZ1BBdimP9Y6IPGntsvQJtko5yapSDKB7GwB3AOlF5N3bkpk4sBwQRpS3aEkiUbaA==}
+
+  /@types/umami@0.1.4:
+    resolution: {integrity: sha512-kX9IM0XTyPA2xOp/QkI89vRjPdIVJPzCAgF5cxF7iFW/RnHkM9wNV0FMrpx+x5rdveQ+cWes4f30BRGiVM6Tfg==}
+    dev: true
 
   /@types/web-bluetooth@0.0.16:
     resolution: {integrity: sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==}

@@ -154,6 +154,8 @@ const KanBan = (props, ref) => {
             )}
             <TaskModal onOk={addNewTask} info={{ type: 'create', initialData: { startDateVal: day } }}>
               <div
+                data-umami-event="KanBan: Add Task Button"
+                data-umami-event-today={isToday}
                 className={cn(
                   'bg-white rounded-md p-2 my-2 text-gray-400 text-sm flex items-center hover:shadow cursor-pointer group justify-between',
                   {
@@ -203,6 +205,7 @@ const KanBan = (props, ref) => {
                   start: startDay,
                   allDay: task.allDay,
                 })
+                umami.track('KanBan: Drag Task')
               }}
             >
               {_dayTasks.map((task) => {
