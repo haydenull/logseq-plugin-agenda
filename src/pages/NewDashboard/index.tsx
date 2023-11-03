@@ -1,8 +1,7 @@
 import { Analytics } from '@vercel/analytics/react'
-import { FloatButton, Modal, message } from 'antd'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { Modal, message } from 'antd'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
-import { TbComet, TbSettings } from 'react-icons/tb'
 
 import useAgendaTasks from '@/hooks/useAgendaTasks'
 import useNewProjects from '@/hooks/useNewProjects'
@@ -13,7 +12,8 @@ import Backlog from './components/Backlog'
 import MultipleView from './components/MultipleView'
 import ProjectSidebar from './components/ProjectSidebar'
 import TimeBox from './components/TimeBox'
-import TimeBoxActual from './components/TimeBoxActual'
+
+// import TimeBoxActual from './components/TimeBoxActual'
 
 export type TimeBoxType = 'estimated' | 'actual'
 const Dashboard = () => {
@@ -24,8 +24,7 @@ const Dashboard = () => {
   const { refreshProjects } = useNewProjects()
   const [connectionErrorModal, setConnectionErrorModal] = useState(false)
 
-  // get tasks and projects
-  useEffect(() => {
+  const loadData = async () => {
     refreshTasks().catch(() => {
       setConnectionErrorModal(true)
     })
@@ -33,6 +32,21 @@ const Dashboard = () => {
     // logseq.App.getCurrentGraph().then((res) => {
     //   console.log('getUserConfigs', res)
     // })
+  }
+  // get tasks and projects
+  useEffect(() => {
+    const handleWindowFocus = () => {
+      // 在浏览器获得焦点时刷新数据
+      loadData()
+    }
+    // 添加窗口焦点事件监听器
+    window.addEventListener('focus', handleWindowFocus)
+    // 在页面初次加载时刷新数据
+    loadData()
+    // 在组件卸载时移除事件监听器
+    return () => {
+      window.removeEventListener('focus', handleWindowFocus)
+    }
   }, [])
   // set logseq app and user info
   useEffect(() => {
