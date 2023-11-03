@@ -9,7 +9,7 @@ const useSettings = () => {
   const [settings, setAtomSettings] = useAtom(settingsAtom)
   const { set: setLocalStorage, value: valueLocalStorage } = useLocalStorageValue<Settings>('settings')
 
-  const setSettings = (key: string, value: string) => {
+  const setSettings = (key: string, value: string | boolean | undefined) => {
     const newSettings = set(clone(settings), key, value)
     setLocalStorage(newSettings)
     setAtomSettings(newSettings)

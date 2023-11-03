@@ -6,13 +6,14 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import { message } from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
+import { useAtomValue } from 'jotai'
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 
 import useAgendaTasks from '@/hooks/useAgendaTasks'
 import { deleteTask as deleteTaskBlock, genDurationString, updateDateInfo } from '@/newHelper/block'
 import { transformAgendaTaskToCalendarEvent } from '@/newHelper/fullCalendar'
+import { settingsAtom } from '@/newModel/settings'
 import { tasksWithStartAtom } from '@/newModel/tasks'
 import type { CalendarEvent } from '@/types/fullcalendar'
 import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
@@ -45,9 +46,13 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   // const [currentView, setCurrentView] = useState<CalendarView>('dayGridMonth')
   const calendarRef = useRef<FullCalendar>(null)
   const { updateTaskData, deleteTask, addNewTask } = useAgendaTasks()
-  const [tasksWithStart] = useAtom(tasksWithStartAtom)
+  const tasksWithStart = useAtomValue(tasksWithStartAtom)
+  const settings = useAtomValue(settingsAtom)
+  const showTasks = tasksWithStart?.filter((task) =>
+    settings.viewOptions?.hideCompleted ? task.status === 'todo' : true,
+  )
   // const now = dayjs()
-  const calendarEvents = tasksWithStart?.map(transformAgendaTaskToCalendarEvent)
+  const calendarEvents = showTasks?.map(transformAgendaTaskToCalendarEvent)
 
   const [editTaskModal, setEditTaskModal] = useState<{
     open: boolean

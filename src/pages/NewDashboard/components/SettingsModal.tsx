@@ -1,10 +1,11 @@
 import { CopyOutlined, QuestionCircleOutlined, QuestionOutlined } from '@ant-design/icons'
-import { Input, Menu, Modal, Tooltip, Typography, message } from 'antd'
+import { Checkbox, Input, Menu, Modal, Tooltip, Typography, message } from 'antd'
 import type { MenuProps } from 'antd'
 import copy from 'copy-to-clipboard'
 import { useState } from 'react'
 
 import useSettings from '@/hooks/useSettings'
+import { cn } from '@/util/util'
 
 import s from './settingsModal.module.less'
 
@@ -22,14 +23,24 @@ import s from './settingsModal.module.less'
 //     ],
 //   },
 // ]
-
+const tabs = [
+  {
+    key: 'viewOptions',
+    label: 'View Options',
+  },
+  {
+    key: 'shareAgenda',
+    label: 'Share Agenda',
+  },
+] as const
 const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
   const [open, setOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['key']>('viewOptions')
   const { settings, setSettings } = useSettings()
 
   const icsUrl = `https://agenda-ics.haydenhayden.com?repo=${settings.ics?.repo}&token=${settings.ics?.token}`
 
-  const onChange = (key: string, value: string) => {
+  const onChange = (key: string, value: string | boolean | undefined) => {
     setSettings(key, value)
   }
   const onClickCopyIcsUrl = () => {
@@ -37,18 +48,11 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
     message.success('🎉 Copied!')
   }
 
-  return (
-    <>
-      <span onClick={() => setOpen(true)}>{children}</span>
-      <Modal open={open} footer={null} width={900} onCancel={() => setOpen(false)} wrapClassName={s.modalWrapper}>
-        <div className="flex">
-          {/* sidebar */}
-          <div className="w-[300px] bg-gray-100 px-4 py-4">
-            <div className="font-semibold">APP SETTINGS</div>
-            <div className="cursor-pointer bg-gray-200 hover:bg-gray-200 rounded p-2 mt-1">Share Agenda</div>
-          </div>
-          {/* content */}
-          <div className="flex-1">
+  const renderForm = () => {
+    switch (activeTab) {
+      case 'shareAgenda':
+        return (
+          <>
             <div className="h-14 pl-4 flex items-center font-semibold text-lg border-b">ICS File Setting</div>
             <div className="px-4 mt-4 pb-8">
               <div className="mt-4">
@@ -83,7 +87,50 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
                 </div>
               ) : null}
             </div>
+          </>
+        )
+      case 'viewOptions':
+        return (
+          <>
+            <div className="h-14 pl-4 flex items-center font-semibold text-lg border-b">View Options</div>
+            <div className="px-4 mt-4 pb-8">
+              <div className="mt-4">
+                <div className="text-gray-500">Calendar</div>
+                <Checkbox
+                  checked={settings.viewOptions?.hideCompleted}
+                  onChange={(e) => onChange('viewOptions.hideCompleted', e.target.checked)}
+                >
+                  Hide Completed Tasks
+                </Checkbox>
+              </div>
+            </div>
+          </>
+        )
+    }
+  }
+
+  return (
+    <>
+      <span onClick={() => setOpen(true)}>{children}</span>
+      <Modal open={open} footer={null} width={900} onCancel={() => setOpen(false)} wrapClassName={s.modalWrapper}>
+        <div className="flex">
+          {/* sidebar */}
+          <div className="w-[300px] bg-gray-100 px-4 py-4">
+            <div className="font-semibold">APP SETTINGS</div>
+            {tabs.map((tab) => (
+              <div
+                key={tab.key}
+                className={cn('cursor-pointer hover:bg-gray-200 rounded p-2 mt-1', {
+                  'bg-gray-200': tab.key === activeTab,
+                })}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                {tab.label}
+              </div>
+            ))}
           </div>
+          {/* content */}
+          <div className="flex-1">{renderForm()}</div>
         </div>
       </Modal>
     </>

@@ -5,5 +5,8 @@ export type Settings = {
     repo?: string
     token?: string
   }
+  viewOptions?: {
+    hideCompleted?: boolean
+  }
 }
 export const settingsAtom = atom<Settings>({})
