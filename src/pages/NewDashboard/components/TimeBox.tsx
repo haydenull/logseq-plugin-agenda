@@ -1,20 +1,21 @@
 import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
+import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { Dropdown, Tooltip } from 'antd'
+import { Dropdown } from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
-import { useAtom } from 'jotai'
+import { useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 import { MdSchedule } from 'react-icons/md'
 import { RiDeleteBin4Line, RiInboxUnarchiveLine } from 'react-icons/ri'
-import { TbArrowsExchange2 } from 'react-icons/tb'
 
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import useAgendaTasks from '@/hooks/useAgendaTasks'
 import { deleteTask as deleteTaskBlock, genDurationString, updateDateInfo } from '@/newHelper/block'
 import { transformAgendaTaskToCalendarEvent } from '@/newHelper/fullCalendar'
+import { settingsAtom } from '@/newModel/settings'
 import { tasksWithStartAtom } from '@/newModel/tasks'
 import type { CalendarEvent } from '@/types/fullcalendar'
 import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
@@ -42,12 +43,22 @@ const FULL_CALENDAR_24HOUR_FORMAT = {
   hour12: false,
 } as const
 const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
+  const settings = useAtomValue(settingsAtom)
   const calendarRef = useRef<FullCalendar>(null)
   const { updateTaskData, deleteTask, addNewTask } = useAgendaTasks()
-  const [tasksWithStart] = useAtom(tasksWithStartAtom)
+  const tasksWithStart = useAtomValue(tasksWithStartAtom)
   const now = dayjs()
-  const todayTasks = tasksWithStart.filter((task) => dayjs(task.start).isSame(now, 'day'))
-  const calendarEvents = todayTasks?.filter(({ allDay }) => allDay === false).map(transformAgendaTaskToCalendarEvent)
+  const todayTasks = tasksWithStart.filter((task) => {
+    const startDay = dayjs(task.start)
+    return task.rrule ? startDay.isSameOrBefore(now, 'day') : startDay.isSame(now, 'day')
+  })
+  const calendarEvents = todayTasks
+    ?.filter(({ allDay }) => allDay === false)
+    .map((task) =>
+      transformAgendaTaskToCalendarEvent(task, {
+        showFirstEventInCycleOnly: settings.viewOptions?.showFirstEventInCycleOnly,
+      }),
+    )
   const calendarApi = calendarRef.current?.getApi()
 
   const [editTaskModal, setEditTaskModal] = useState<{
@@ -155,7 +166,7 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
         headerToolbar={false}
         initialView="timeGridOneDay"
         defaultTimedEventDuration="00:30"
-        plugins={[timeGridPlugin, interactionPlugin]}
+        plugins={[timeGridPlugin, interactionPlugin, rrulePlugin]}
         eventTimeFormat={FULL_CALENDAR_24HOUR_FORMAT}
         slotLabelFormat={FULL_CALENDAR_24HOUR_FORMAT}
         // drag external kanban element to calendar

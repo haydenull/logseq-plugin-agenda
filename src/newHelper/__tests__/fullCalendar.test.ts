@@ -92,6 +92,10 @@ describe('helper: fullCalendar', () => {
       rrule: DEMO_TASK.rrule,
       editable: true,
       extendedProps: DEMO_TASK,
+      color: undefined,
+      duration: {
+        minute: 30,
+      },
     })
     expect(1).toBe(1)
   })

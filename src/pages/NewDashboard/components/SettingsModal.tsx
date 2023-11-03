@@ -95,6 +95,14 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
             <div className="h-14 pl-4 flex items-center font-semibold text-lg border-b">View Options</div>
             <div className="px-4 mt-4 pb-8">
               <div className="mt-4">
+                <Checkbox
+                  checked={settings.viewOptions?.showFirstEventInCycleOnly}
+                  onChange={(e) => onChange('viewOptions.showFirstEventInCycleOnly', e.target.checked)}
+                >
+                  Only Show First Event In Cycle
+                </Checkbox>
+              </div>
+              <div className="mt-4">
                 <div className="text-gray-500">Calendar</div>
                 <Checkbox
                   checked={settings.viewOptions?.hideCompleted}

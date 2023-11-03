@@ -7,6 +7,7 @@ export type Settings = {
   }
   viewOptions?: {
     hideCompleted?: boolean
+    showFirstEventInCycleOnly?: boolean
   }
 }
 export const settingsAtom = atom<Settings>({})

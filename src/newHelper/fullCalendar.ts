@@ -6,9 +6,20 @@ import { padZero } from '@/util/util'
 /**
  * transform agenda task to calendar event
  */
-export const transformAgendaTaskToCalendarEvent = (task: AgendaTaskWithStart): CalendarEvent => {
+export const transformAgendaTaskToCalendarEvent = (
+  task: AgendaTaskWithStart,
+  options: { showFirstEventInCycleOnly?: boolean } = {},
+): CalendarEvent => {
+  const { showFirstEventInCycleOnly = false } = options
   const { estimatedTime = DEFAULT_ESTIMATED_TIME } = task
   const spanTime = task.status === 'done' && task.actualTime ? task.actualTime : estimatedTime
+  const rrule: CalendarEvent['rrule'] =
+    showFirstEventInCycleOnly && task.rrule
+      ? {
+          ...task.rrule,
+          count: 1,
+        }
+      : task.rrule
   return {
     id: task.id,
     title: task.title,
@@ -19,7 +30,7 @@ export const transformAgendaTaskToCalendarEvent = (task: AgendaTaskWithStart): C
     // so we need to add 1 day
     end: task.end ? task.end.add(1, 'day').toDate() : task.start.add(spanTime, 'minute').toDate(),
     extendedProps: task,
-    rrule: task.rrule,
+    rrule,
     // 只有时间点事件才能传 duration
     duration: task.allDay ? undefined : { minute: spanTime },
     editable: !(task.recurringPast || task.rrule),

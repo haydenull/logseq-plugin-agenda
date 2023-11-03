@@ -303,7 +303,11 @@ export const separateTasksInDay = (tasks: AgendaTaskWithStart[]): Map<string, Ag
 /**
  * adapt task to kanban
  */
-export const transformTasksToKanbanTasks = (tasks: AgendaTaskWithStart[]): KanBanItem[] => {
+export const transformTasksToKanbanTasks = (
+  tasks: AgendaTaskWithStart[],
+  options: { showFirstEventInCycleOnly?: boolean } = {},
+): KanBanItem[] => {
+  const { showFirstEventInCycleOnly = false } = options
   const today = dayjs()
   return tasks
     .map((task) => {
@@ -327,7 +331,7 @@ export const transformTasksToKanbanTasks = (tasks: AgendaTaskWithStart[]): KanBa
 
       // show recurring task
       if (task.rrule) {
-        const rruleInstance = getRRuleInstance(task.rrule)
+        const rruleInstance = getRRuleInstance(showFirstEventInCycleOnly ? { ...task.rrule, count: 1 } : task.rrule)
         const [startDay, endDay] = recentDaysRange
         const dates = rruleInstance.between(startDay.toDate(), endDay.add(1, 'day').toDate())
         return dates.map((date) => {

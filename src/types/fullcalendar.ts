@@ -7,6 +7,7 @@ export type RRule = {
   freq: keyof typeof FREQ_ENUM_MAP
   interval: number
   dtstart: string
+  count?: number
 }
 // https://fullcalendar.io/docs/event-object
 export type CalendarEvent = {

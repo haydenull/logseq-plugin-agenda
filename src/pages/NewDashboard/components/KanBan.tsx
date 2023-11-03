@@ -1,27 +1,20 @@
 import { ThirdPartyDraggable } from '@fullcalendar/interaction'
-import { Button, Progress, message } from 'antd'
-import clsx from 'clsx'
-import dayjs, { type Dayjs } from 'dayjs'
-import { useAtom, useAtomValue } from 'jotai'
+import { Progress, message } from 'antd'
+import dayjs from 'dayjs'
+import { useAtomValue } from 'jotai'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { BsPatchCheck, BsPatchCheckFill } from 'react-icons/bs'
 import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline, IoMdCheckmarkCircleOutline } from 'react-icons/io'
-import { IoAddCircleOutline, IoCheckbox, IoCheckboxOutline, IoRepeatOutline } from 'react-icons/io5'
+import { IoAddCircleOutline, IoRepeatOutline } from 'react-icons/io5'
 import { ReactSortable } from 'react-sortablejs'
 
 import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
 import useAgendaTasks from '@/hooks/useAgendaTasks'
-import {
-  genDurationString,
-  parseDurationString,
-  updateDateInfo,
-  updateTaskBlock,
-  updateTaskStatus,
-} from '@/newHelper/block'
+import { updateDateInfo, updateTaskStatus } from '@/newHelper/block'
 import { minutesToHHmm } from '@/newHelper/fullCalendar'
 import { DATE_FORMATTER_FOR_KEY, separateTasksInDay, transformTasksToKanbanTasks } from '@/newHelper/task'
 import { appAtom } from '@/newModel/app'
 import { logseqAtom } from '@/newModel/logseq'
+import { settingsAtom } from '@/newModel/settings'
 import { recentTasksAtom } from '@/newModel/tasks'
 import type { AgendaTaskWithStart, AgendaTask } from '@/types/task'
 import { cn, genDays, replaceDateInfo } from '@/util/util'
@@ -41,11 +34,14 @@ export type KanBanHandle = {
 }
 let hadBindDrop = false
 const KanBan = (props, ref) => {
+  const settings = useAtomValue(settingsAtom)
   const kanBanContainerRef = useRef<HTMLDivElement>(null)
   const { updateTaskData, addNewTask, deleteTask } = useAgendaTasks()
   const recentTasks = useAtomValue(recentTasksAtom)
   const { currentGraph } = useAtomValue(logseqAtom)
-  const tasks = transformTasksToKanbanTasks(recentTasks)
+  const tasks = transformTasksToKanbanTasks(recentTasks, {
+    showFirstEventInCycleOnly: settings.viewOptions?.showFirstEventInCycleOnly,
+  })
   const tasksInDay = separateTasksInDay(tasks)
   const days = getRecentDays()
   const today = dayjs()

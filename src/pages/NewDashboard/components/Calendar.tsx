@@ -52,7 +52,11 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
     settings.viewOptions?.hideCompleted ? task.status === 'todo' : true,
   )
   // const now = dayjs()
-  const calendarEvents = showTasks?.map(transformAgendaTaskToCalendarEvent)
+  const calendarEvents = showTasks?.map((task) =>
+    transformAgendaTaskToCalendarEvent(task, {
+      showFirstEventInCycleOnly: settings.viewOptions?.showFirstEventInCycleOnly,
+    }),
+  )
 
   const [editTaskModal, setEditTaskModal] = useState<{
     open: boolean
