@@ -219,6 +219,8 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
           const editDisabled = info.event.extendedProps?.rrule || info.event.extendedProps?.recurringPast
           const isShowTimeText =
             info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 50
+          const isSmallHeight =
+            info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 20
           const isDone = info.event.extendedProps?.status === 'done'
           let element: React.ReactNode | null = null
           switch (info.view.type) {
@@ -251,7 +253,13 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
             case 'timeGridWeek':
               element = (
                 <div className={clsx('h-full relative', { 'opacity-70': isDone, 'cursor-not-allowed': editDisabled })}>
-                  <div className={clsx('truncate', { 'line-through': isDone, 'font-semibold': !isDone })}>
+                  <div
+                    className={clsx('truncate', {
+                      'line-through': isDone,
+                      'font-semibold': !isDone,
+                      'text-[10px]': isSmallHeight,
+                    })}
+                  >
                     {info.event.title}
                   </div>
                   {isShowTimeText ? <div className="text-xs text-gray-200">{info.timeText}</div> : null}
