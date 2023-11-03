@@ -202,6 +202,8 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
           if (!taskData?.id) return null
           const isShowTimeText =
             info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 20
+          const isSmallHeight =
+            info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 10
           const isDone = taskData?.status === 'done'
           return (
             <TaskModal
@@ -243,6 +245,7 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
                     className={clsx('truncate flex items-center relative', {
                       'line-through': isDone,
                       'font-semibold': !isDone,
+                      'text-[10px]': isSmallHeight,
                     })}
                   >
                     {info.event.title}
