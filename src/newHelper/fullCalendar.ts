@@ -20,7 +20,8 @@ export const transformAgendaTaskToCalendarEvent = (task: AgendaTaskWithStart): C
     end: task.end ? task.end.add(1, 'day').toDate() : task.start.add(spanTime, 'minute').toDate(),
     extendedProps: task,
     rrule: task.rrule,
-    duration: task.rrule ? { minute: spanTime } : undefined,
+    // 只有时间点事件才能传 duration
+    duration: task.allDay ? undefined : { minute: spanTime },
     editable: !(task.recurringPast || task.rrule),
     color: task.project.bgColor,
   }
