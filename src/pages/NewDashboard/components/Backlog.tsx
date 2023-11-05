@@ -6,7 +6,7 @@ import { useAtom } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 
-import { categorizeTasksByPage } from '@/newHelper/task'
+import { categorizeTasksByPage, formatTaskTitle } from '@/newHelper/task'
 import { backlogTasksAtom } from '@/newModel/tasks'
 
 import s from './backlog.module.less'
@@ -71,19 +71,22 @@ const Backlog = () => {
               label: project.project.originalName,
               children: (
                 <div className="flex flex-col gap-2">
-                  {project.tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="border rounded px-2 py-2 text-sm text-gray-600 break-all droppable-task-element bg-[#f9fafb] cursor-move"
-                      data-event={JSON.stringify({
-                        id: task.id,
-                        title: task.title,
-                        color: task.project.bgColor,
-                      })}
-                    >
-                      {task.title}
-                    </div>
-                  ))}
+                  {project.tasks.map((task) => {
+                    const showTitle = formatTaskTitle(task)
+                    return (
+                      <div
+                        key={task.id}
+                        className="border rounded px-2 py-2 text-sm text-gray-600 break-all droppable-task-element bg-[#f9fafb] cursor-move"
+                        data-event={JSON.stringify({
+                          id: task.id,
+                          title: showTitle,
+                          color: task.project.bgColor,
+                        })}
+                      >
+                        {showTitle}
+                      </div>
+                    )
+                  })}
                 </div>
               ),
               style: {

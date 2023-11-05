@@ -3,7 +3,7 @@ import { Progress, message } from 'antd'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline, IoMdCheckmarkCircleOutline } from 'react-icons/io'
+import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { IoAddCircleOutline, IoRepeatOutline } from 'react-icons/io5'
 import { ReactSortable } from 'react-sortablejs'
 
@@ -11,7 +11,12 @@ import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
 import useAgendaTasks from '@/hooks/useAgendaTasks'
 import { updateDateInfo, updateTaskStatus } from '@/newHelper/block'
 import { minutesToHHmm } from '@/newHelper/fullCalendar'
-import { DATE_FORMATTER_FOR_KEY, separateTasksInDay, transformTasksToKanbanTasks } from '@/newHelper/task'
+import {
+  DATE_FORMATTER_FOR_KEY,
+  formatTaskTitle,
+  separateTasksInDay,
+  transformTasksToKanbanTasks,
+} from '@/newHelper/task'
 import { appAtom } from '@/newModel/app'
 import { logseqAtom } from '@/newModel/logseq'
 import { settingsAtom } from '@/newModel/settings'
@@ -208,6 +213,7 @@ const KanBan = (props, ref) => {
                 const editDisabled = task.rrule || task.recurringPast
                 const isMultipleDays = task.allDay && task.end
                 const estimatedTime = task.estimatedTime ?? DEFAULT_ESTIMATED_TIME
+                const showTitle = formatTaskTitle(task)
                 return (
                   <div
                     key={task.id}
@@ -222,7 +228,7 @@ const KanBan = (props, ref) => {
                     )}
                     data-event={JSON.stringify({
                       id: task.id,
-                      title: task.title,
+                      title: showTitle,
                       duration: minutesToHHmm(estimatedTime),
                       color: task.project.bgColor,
                     })}
@@ -277,7 +283,7 @@ const KanBan = (props, ref) => {
                       </div>
                     </div>
                     <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>
-                      {task.title}
+                      {showTitle}
                     </div>
                     {task.project.isJournal ? null : (
                       <div className="text-gray-400 text-xs flex gap-1 items-center">

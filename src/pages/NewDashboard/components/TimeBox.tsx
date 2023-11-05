@@ -15,6 +15,7 @@ import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import useAgendaTasks from '@/hooks/useAgendaTasks'
 import { deleteTask as deleteTaskBlock, genDurationString, updateDateInfo } from '@/newHelper/block'
 import { transformAgendaTaskToCalendarEvent } from '@/newHelper/fullCalendar'
+import { formatTaskTitle } from '@/newHelper/task'
 import { settingsAtom } from '@/newModel/settings'
 import { tasksWithStartAtom } from '@/newModel/tasks'
 import type { CalendarEvent } from '@/types/fullcalendar'
@@ -199,7 +200,7 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
         }}
         eventContent={(info) => {
           const taskData = info.event.extendedProps
-          if (!taskData?.id) return null
+          const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaTask) : info.event.title
           const isShowTimeText =
             info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 20
           const isSmallHeight =
@@ -247,8 +248,9 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
                       'font-semibold': !isDone,
                       'text-[10px]': isSmallHeight,
                     })}
+                    title={showTitle}
                   >
-                    {info.event.title}
+                    {showTitle}
                     {isDone ? <IoIosCheckmarkCircle className="text-white absolute right-0" /> : null}
                   </div>
                   {isShowTimeText ? <div className="text-xs text-gray-100">{info.timeText}</div> : null}

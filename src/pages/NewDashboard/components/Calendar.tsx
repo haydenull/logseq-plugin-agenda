@@ -13,6 +13,7 @@ import { IoIosCheckmarkCircle } from 'react-icons/io'
 import useAgendaTasks from '@/hooks/useAgendaTasks'
 import { deleteTask as deleteTaskBlock, genDurationString, updateDateInfo } from '@/newHelper/block'
 import { transformAgendaTaskToCalendarEvent } from '@/newHelper/fullCalendar'
+import { formatTaskTitle } from '@/newHelper/task'
 import { settingsAtom } from '@/newModel/settings'
 import { tasksWithStartAtom } from '@/newModel/tasks'
 import type { CalendarEvent } from '@/types/fullcalendar'
@@ -225,12 +226,14 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
           })
         }}
         eventContent={(info) => {
-          const editDisabled = info.event.extendedProps?.rrule || info.event.extendedProps?.recurringPast
+          const taskData = info.event.extendedProps
+          const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaTask) : info.event.title
+          const editDisabled = taskData?.rrule || taskData?.recurringPast
           const isShowTimeText =
             info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 50
           const isSmallHeight =
             info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 20
-          const isDone = info.event.extendedProps?.status === 'done'
+          const isDone = taskData?.status === 'done'
           let element: React.ReactNode | null = null
           switch (info.view.type) {
             case 'dayGridMonth':
@@ -242,7 +245,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
                     'font-semibold': !isDone,
                     'cursor-not-allowed': editDisabled,
                   })}
-                  title={info.event.title}
+                  title={showTitle}
                 >
                   {info.event.allDay ? null : (
                     <span
@@ -250,7 +253,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
                       style={{ backgroundColor: info.event.backgroundColor }}
                     />
                   )}
-                  <span className="truncate flex-1">{info.event.title}</span>
+                  <span className="truncate flex-1">{showTitle}</span>
                   {isDone ? (
                     <IoIosCheckmarkCircle
                       className={cn('absolute right-0', info.event.allDay ? 'text-white' : 'text-green-500')}
@@ -269,7 +272,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
                       'text-[10px]': isSmallHeight,
                     })}
                   >
-                    {info.event.title}
+                    {showTitle}
                   </div>
                   {isShowTimeText ? <div className="text-xs text-gray-200">{info.timeText}</div> : null}
                   {isDone ? <IoIosCheckmarkCircle className="absolute right-0 top-0.5" /> : null}

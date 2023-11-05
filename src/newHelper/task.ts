@@ -7,6 +7,7 @@ import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
 import type { KanBanItem } from '@/pages/NewDashboard/components/KanBan'
 import type { RRule } from '@/types/fullcalendar'
 import type { AgendaTask, AgendaTaskWithStart, AgendaTaskPage } from '@/types/task'
+import { fillBlockReference } from '@/util/schedule'
 import { genDays } from '@/util/util'
 
 import { parseAgendaDrawer } from './block'
@@ -377,4 +378,33 @@ export const categorizeTasksByPage = (tasks: AgendaTask[]) => {
       tasks: projectTasks,
     }
   })
+}
+
+function replaceLinks(text: string, format: 'org' | 'markdown' = 'markdown') {
+  if (format === 'org') {
+    const orgRegex = /\[\[([^\]]+)\]\[([^\]]+)\]\]/g
+    return text.replace(orgRegex, (match, link, title) => title)
+  }
+  const markdownRegex = /\[([^\]]+)\]\(([^)]+)\)/g
+  return text.replace(markdownRegex, (match, title, link) => title)
+}
+/**
+ * replace page reference
+ * [[test]] -> test
+ */
+function replacePageReference(text: string) {
+  const pageReferenceRegex = /\[\[([^\]]+)\]\]/g
+  return text.replace(pageReferenceRegex, (match, title) => title)
+}
+
+/**
+ * format title
+ * 1. link [title](link) or [[link][title]] -> title
+ * 2. page reference [[test]] -> test
+ * TODO: 3. block reference ((sdfash-sdfa-ss)) -> test
+ */
+export const formatTaskTitle = (task: AgendaTask) => {
+  return replacePageReference(replaceLinks(task.title, task.rawBlock?.format))
+
+  // return await fillBlockReference(task.title)
 }
