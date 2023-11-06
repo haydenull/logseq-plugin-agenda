@@ -77,8 +77,13 @@ const KanBan = (props, ref) => {
   const navToLogseqBlock = (task: AgendaTaskWithStart) => {
     if (!currentGraph) return
     const uuid = task.recurringPast ? task.id.split('_')[0] : task.id
-    // example: logseq://graph/zio?block-id=65385ad5-f4e9-4423-8595-a5e4236cc8ad
-    window.open(`logseq://graph/${currentGraph.name}?block-id=${uuid}`, '_blank')
+    if (import.meta.env.VITE_MODE === 'plugin') {
+      logseq.Editor.scrollToBlockInPage(task.project.originalName, uuid)
+      logseq.hideMainUI()
+    } else {
+      // example: logseq://graph/zio?block-id=65385ad5-f4e9-4423-8595-a5e4236cc8ad
+      window.open(`logseq://graph/${currentGraph.name}?block-id=${uuid}`, '_blank')
+    }
   }
 
   // scroll to today

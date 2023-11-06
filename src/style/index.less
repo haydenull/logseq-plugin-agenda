@@ -148,16 +148,19 @@ html {
   --ls-checked-img: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAABmJLR0QA/wD/AP+gvaeTAAAEtElEQVRoge2Zz29UVRTHP+e9KQuCC1tAptNK+KGdCq4YOm1XQtxI+NWFwYgmLlxIgMR/wIWJcW+kVWJ0VRIpJi0NumxMIS0zGdxI6ZRYIqXTEkpnoVgE581xMQXaeXfmvdd51gX97Obec+79nnvPve/NebDGGs83EsYgfdpnb81tbcNin6J7QOJAFNiwaPIAmAGdEOSaWjqUfCmZFpFirXPXFEA6l25WS0+q8h4QC+g+DdpLke72pvbplWpYUQDDs79sWqeFz0A/ANatdPJFHit8V4f9SaIxcT+oc+AAUjOpdxW+BOqD+nowj+qp9lj790GcfAeQ0UydM+v0KHwYXFsgzkai9umEJP7xY+wrgMxMZn2Bwg8gb9WmzTc/RbDfTjQmFrwMLS+DjGbqVlk8wIEChYtjY2Oe58szAGfW6Vll8YvIm3+8+OALT6tqnaMz6eOC9oYnKjiq8k5HrO18pf6KAaSmUw1qkQU2/ifK/JOPYLdUumIrppBa8jmrKH7u4VylrvqCFj6t1GncgavTV5uwZJLaH1K+uDGfZWDyIu1bkux/+Q2TyeMI9iuJxsRUeYdxB8SWU6yS+PF8SXxRi4zMjjI09bPJbF2BwglThysAVbVUOR62UBPj8+P0/1YS/4Srd1PcWzClk7zfp312easrgHQunQSaQlVqYDyfpX9ycJl4EeHw9oNsXr/J5BJrurttT3mjO4Us9oUp1MR4PutaeRHhyPZD7N64q6Kfpbrf1VbeUIREWEJNVBJ/ePvBquJLqPcOCLxau0wz1cS/vnG3jxGkpbzFdAtF/QoyHzYzpgMrIhzdcdineAB1aTMFsMHQ5mI4d5lvrn/Lr/eve9pWO7C7Gl7zM13JB14ob4v49l7CcO4yw9NXABi8dQmg4iouveefCgmUNtUx7cCDag73Fua4kht5+ltVGbx1ibH5Gy7bG/OlnHeKtaTNMxT+LG8zBTBbbZDN6zfRtfMIljxzVVUGJgeXpVM2P8HFW+aVD5I2yxGXNlcKKdwUqHqftdbHYScMTD5b3Sc7AVBn1dE/OeBa+drTRic8A7Ago9DlNVRrfRxUlx3OJ0EI4n5I7TjE7gave95DvpIx6C0zsnTI74CtDa107TyCbS1PJ+NDqkbxALYlLm2u12lVtVKz6d+BZr8DZ/MTrpSBcG8bhan2aNu28mqe+0ksUgQ9F2TweH0LXTuOLtuJMMUDCHLOVIo0/yMr0g08DjLB0iDCF8+jolPortBnZnQm9ZXAR0EnG89ncYqOjxcz/6hwpiOaPG3qqxjAyJ2Resu2J/j//9TPR7Djgf/UdzZ35lE1Rr2aiHCiWtG3amFrsdB6NnRVflHpTkaTF6qZeFbmpqK3TwIDoYnyz48PG//62MsoQHHXuQAcqFmWD1S5VCf2sVCKuwCJxsRCJGofVfi6dnkeqHT/3bjQ5Uc8rOADx2gufUxEzxDy7SQwh3DSK+fL8bUDS+mItZ2XInFUewQeBfUvR+CRCmccx4kHFb/ov3JG7ozELNs6BXKcAO9Oi9wB6S06he7O5s7cSjWE8plVVa3Ru5lEqW6je0rVA42x9DOrMI1yU5WMbcnQ3i17r4XxmXWNNZ53/gWeFuU7tUC6hwAAAABJRU5ErkJggg==");
 }
 html, body {
-  // background-color: var(--ls-primary-background-color);
-  // margin: 0;
+  background-color: var(--ls-primary-background-color);
+  margin: 0;
   @apply w-screen h-screen overflow-hidden;
   &.modal-app {
     background-color: transparent;
   }
+  &.agenda3 {
+    background-color: #fff;
+  }
 }
-// #root {
-//   @apply w-screen h-screen;
-// }
+#root {
+  @apply w-screen h-screen;
+}
 // Scroll bar style optimization
 *::-webkit-scrollbar {
   background-color: transparent;
@@ -175,80 +178,120 @@ html, body {
   background-color: var(--ls-description-text-color);
 }
 
-// a {
-//   color: var(--ls-tertiary-background-color);
-//   cursor: pointer;
-// }
-// a:hover {
-//   color: var(--ls-tertiary-background-color);
-//   cursor: pointer;
-// }
+body:not(.agenda3) {
+  a {
+    color: var(--ls-tertiary-background-color);
+    cursor: pointer;
+  }
+  a:hover {
+    color: var(--ls-tertiary-background-color);
+    cursor: pointer;
+  }
+  
+  .page-container {
+    width: calc(100vw - 90px);
+    @apply h-screen;
+  }
+  /** 单行溢出隐藏 */
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-// .page-container {
-//   width: calc(100vw - 90px);
-//   @apply h-screen;
-// }
+  .sidebar .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+    padding: 4px 10px;
+  }
+  .sidebar .ant-collapse-ghost > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
+    padding: 2px 10px;
+  }
 
-/** 单行溢出隐藏 */
-// .ellipsis {
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   white-space: nowrap;
-// }
+  .singlge-line-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .bg-primary {
+    background-color: var(--ls-primary-background-color);
+  }
+  .bg-quaternary {
+    background-color: var(--ls-quaternary-background-color);
+  }
+  .title-text {
+    color: var(--ls-title-text-color);
+  }
+  .text {
+    color: var(--ls-text-color);
+  }
+  .description-text {
+    color: var(--ls-description-text-color);
+  }
+  .tint-text {
+    color: var(--ls-tint-text-color);
+  }
+  // ============= calendar start =============
+  .tui-full-calendar-popup-container {
+    background-color: var(--ls-quaternary-background-color);
+    border-color: var(--ls-description-text-color);
+  }
+  .tui-full-calendar-arrow-left .tui-full-calendar-popup-arrow-fill {
+    border-right-color: var(--ls-quaternary-background-color);
+  }
+  .tui-full-calendar-popup-detail .tui-full-calendar-section-button {
+    border-top-color: var(--ls-description-text-color);
+  }
+  .tui-full-calendar-popup-vertical-line {
+    background-color: var(--ls-description-text-color);
+  }
 
-// .sidebar .ant-collapse > .ant-collapse-item > .ant-collapse-header {
-//   padding: 4px 10px;
-// }
-// .sidebar .ant-collapse-ghost > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
-//   padding: 2px 10px;
-// }
-
-// .singlge-line-ellipsis {
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   white-space: nowrap;
-// }
-
-// .dark {
-//   filter: invert(1) hue-rotate(180deg);
-// }
-// .dark .mask {
-//   filter: invert(1) hue-rotate(180deg);
-// }
-
-// .bg-primary {
-//   background-color: var(--ls-primary-background-color);
-// }
-// .bg-quaternary {
-//   background-color: var(--ls-quaternary-background-color);
-// }
-// .title-text {
-//   color: var(--ls-title-text-color);
-// }
-// .text {
-//   color: var(--ls-text-color);
-// }
-// .description-text {
-//   color: var(--ls-description-text-color);
-// }
-// .tint-text {
-//   color: var(--ls-tint-text-color);
-// }
-
-// ============= calendar start =============
-// .tui-full-calendar-popup-container {
-//   background-color: var(--ls-quaternary-background-color);
-//   border-color: var(--ls-description-text-color);
-// }
-// .tui-full-calendar-arrow-left .tui-full-calendar-popup-arrow-fill {
-//   border-right-color: var(--ls-quaternary-background-color);
-// }
-// .tui-full-calendar-popup-detail .tui-full-calendar-section-button {
-//   border-top-color: var(--ls-description-text-color);
-// }
-// .tui-full-calendar-popup-vertical-line {
-//   background-color: var(--ls-description-text-color);
-// }
+  .calendar-popup-detail-content {
+    max-height: 200px;
+    overflow-y: auto;
+    > p {
+      white-space: pre-line;
+    }
+  }
+  // ============= calendar end =============
+  .check-box {
+    position: relative;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    vertical-align: middle;
+  }
+  /* checked border */
+  .check-box.checked span {
+    content: "";
+    box-sizing: border-box;
+    display: inline-block;
+    width: 6px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: 0;
+    border-left: 0;
+    position: absolute;
+    left: 5px;
+    top: 7px;
+    transform: translateY(-50%) rotate(45deg);
+  }
+}
+.dark body:not(.agenda3) {
+  .tui-full-calendar-weekday-schedule-bullet + .tui-full-calendar-weekday-schedule-title {
+    color: var(--ls-title-text-color) !important;
+  }
+  .tui-full-calendar-month-more {
+    background-color: var(--ls-quaternary-background-color) !important;
+    border-color: #58595c !important;
+    .tui-full-calendar-month-more-title-day {
+      color: var(--ls-title-text-color);
+    }
+    .tui-full-calendar-month-more-title-day-label {
+      color: var(--ls-title-text-color);
+    }
+  }
+}
 // .dark .tui-full-calendar-weekday-schedule-bullet + .tui-full-calendar-weekday-schedule-title {
 //   color: var(--ls-title-text-color) !important;
 // }
@@ -263,39 +306,23 @@ html, body {
 //   }
 // }
 
-// .calendar-popup-detail-content {
-//   max-height: 200px;
-//   overflow-y: auto;
-//   > p {
-//     white-space: pre-line;
-//   }
-// }
-// ============= calendar end =============
 
-// .check-box {
-//   position: relative;
-//   display: inline-block;
-//   width: 16px;
-//   height: 16px;
-//   border-radius: 4px;
-//   box-sizing: border-box;
-//   vertical-align: middle;
+
+
+// .dark {
+//   filter: invert(1) hue-rotate(180deg);
 // }
-/* checked border */
-// .check-box.checked span {
-//   content: "";
-//   box-sizing: border-box;
-//   display: inline-block;
-//   width: 6px;
-//   height: 9px;
-//   border: 2px solid #fff;
-//   border-top: 0;
-//   border-left: 0;
-//   position: absolute;
-//   left: 5px;
-//   top: 7px;
-//   transform: translateY(-50%) rotate(45deg);
+// .dark .mask {
+//   filter: invert(1) hue-rotate(180deg);
 // }
+
+
+
+
+.hide {
+  display: none;
+}
+
 
 // .ant-popover .ant-popover-inner {
 //   padding: 0 !important;

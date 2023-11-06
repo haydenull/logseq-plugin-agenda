@@ -114,7 +114,9 @@ const Settings: React.FC<{
       projectList: 1,
       dailyLogTagList: 1,
     })
+    const oldSettings = logseq.settings ?? {}
     logseq.updateSettings({
+      ...oldSettings,
       calendarList: [],
       // ensure subscription list is array
       subscriptionList: [],

@@ -2,7 +2,7 @@ import { LeftOutlined, RightOutlined, SettingOutlined, UserOutlined } from '@ant
 import { Avatar, Button, Segmented, Tabs } from 'antd'
 import { useAtom } from 'jotai'
 import { useRef, useState } from 'react'
-import { FiSettings } from 'react-icons/fi'
+import { FiPower, FiSettings, FiX, FiXCircle } from 'react-icons/fi'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
 
 import i18n from '@/locales/i18n'
@@ -110,6 +110,9 @@ const MultipleView = ({ className }: { className?: string }) => {
           <SettingsModal>
             <FiSettings className="text-lg cursor-pointer" data-umami-event="Settings Button" />
           </SettingsModal>
+          {import.meta.env.VITE_MODE === 'plugin' ? (
+            <FiXCircle className="text-lg cursor-pointer" onClick={() => logseq.hideMainUI()} />
+          ) : null}
         </div>
       </div>
       <div className="flex-1 h-0">

@@ -38,50 +38,52 @@ export const CALENDAR_VIEWS = [
 ]
 
 export const ANTD_THEME_CONFIG: Record<string, ThemeConfig> = {
-  // green: {
-  //   token: {
-  //     colorPrimary: '#047857',
-  //   },
-  //   components: {
-  //     Select: {
-  //       optionSelectedBg: '#e9f2f0',
-  //     },
-  //     DatePicker: {
-  //       cellActiveWithRangeBg: '#e9f2f0',
-  //       cellHoverWithRangeBg: '#c3e3db',
-  //       cellRangeBorderColor: '#c3e3db',
-  //     },
-  //   },
-  // },
+  green: {
+    token: {
+      colorPrimary: '#047857',
+    },
+    components: {
+      Select: {
+        optionSelectedBg: '#e9f2f0',
+      },
+      DatePicker: {
+        cellActiveWithRangeBg: '#e9f2f0',
+        cellHoverWithRangeBg: '#c3e3db',
+        cellRangeBorderColor: '#c3e3db',
+      },
+    },
+  },
+  purple: {
+    token: {
+      colorPrimary: '#5146a0',
+    },
+  },
+  dark: {
+    token: {
+      colorPrimary: '#fcb714',
+      colorBgBase: '#212528',
+      colorBgContainer: '#282c31',
+      colorBgElevated: '#282c31',
+    },
+    components: {
+      Select: {
+        optionSelectedBg: '#6b531a',
+      },
+      DatePicker: {
+        cellActiveWithRangeBg: '#5e460c',
+        cellHoverWithRangeBg: '#6b531a',
+        cellRangeBorderColor: '#6b531a',
+      },
+    },
+    algorithm: antdTheme.darkAlgorithm,
+  },
+}
+export const NEW_ANTD_THEME_CONFIG: Record<string, ThemeConfig> = {
   green: {
     token: {
       colorPrimary: '#3688d8',
     },
   },
-  // purple: {
-  //   token: {
-  //     colorPrimary: '#5146a0',
-  //   },
-  // },
-  // dark: {
-  //   token: {
-  //     colorPrimary: '#fcb714',
-  //     colorBgBase: '#212528',
-  //     colorBgContainer: '#282c31',
-  //     colorBgElevated: '#282c31',
-  //   },
-  //   components: {
-  //     Select: {
-  //       optionSelectedBg: '#6b531a',
-  //     },
-  //     DatePicker: {
-  //       cellActiveWithRangeBg: '#5e460c',
-  //       cellHoverWithRangeBg: '#6b531a',
-  //       cellRangeBorderColor: '#6b531a',
-  //     },
-  //   },
-  //   algorithm: antdTheme.darkAlgorithm,
-  // },
 }
 
 export const THEME = [

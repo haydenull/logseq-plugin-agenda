@@ -7,6 +7,7 @@ import useAgendaTasks from '@/hooks/useAgendaTasks'
 import useNewProjects from '@/hooks/useNewProjects'
 import { appAtom } from '@/newModel/app'
 import { logseqAtom } from '@/newModel/logseq'
+import { cn } from '@/util/util'
 
 import Backlog from './components/Backlog'
 import MultipleView from './components/MultipleView'
@@ -56,7 +57,14 @@ const Dashboard = () => {
     })
   }, [])
   return (
-    <div className="flex w-screen h-screen bg-gray-100 before:absolute before:pointer-events-none before:h-[180px] before:w-[240px] before:left-1/2 before:top-1/2 before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:content-['']  before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40">
+    <div
+      className={cn(
+        "flex w-screen h-screen bg-gray-100 before:absolute before:pointer-events-none before:h-[180px] before:w-[240px] before:left-1/2 before:top-1/2 before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:content-['']  before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40",
+        {
+          'pt-[30px]': import.meta.env.VITE_MODE === 'plugin',
+        },
+      )}
+    >
       {/* ========== projects sidebar ========== */}
       <ProjectSidebar className="hidden" />
 
@@ -67,16 +75,8 @@ const Dashboard = () => {
       {app.view === 'calendar' ? <Backlog /> : <TimeBox onChangeType={() => setTimeBoxType('actual')} />}
 
       {/* ========== Toolbar ======== */}
-      <div></div>
+      {/* <div></div> */}
 
-      {/* ========== Float Button ========= */}
-      {/* <FloatButton.Group trigger="hover" type="primary" icon={<TbComet />}>
-        <FloatButton tooltip="Backlog" />
-        <FloatButton tooltip="Daily Log" />
-        <FloatButton tooltip="Weekly Review" />
-        <FloatButton tooltip="Analytics" />
-        <FloatButton tooltip="Settings" icon={<TbSettings />} />
-      </FloatButton.Group> */}
       <Analytics />
       <Modal
         open={connectionErrorModal}

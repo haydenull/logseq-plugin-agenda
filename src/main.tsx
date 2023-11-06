@@ -25,6 +25,7 @@ import initializeTodoist from '@/register/todoist'
 import { getInitialSettings, initializeSettings } from '@/util/baseInfo'
 import { listenEsc, log, managePluginTheme, setPluginTheme, toggleAppTransparent } from '@/util/util'
 
+import NewMainApp from './apps/NewMainApp'
 import TaskListApp from './apps/TaskListApp'
 import i18n from './locales/i18n'
 import './style/index.less'
@@ -58,7 +59,7 @@ if (import.meta.env.VITE_MODE === 'web') {
     settings: window.mockSettings,
   })
   // logseq.provideStyle(`.drawer[data-drawer-name="agenda"] {display: none;}`)
-  renderApp()
+  renderApp(true)
   // renderModalApp({ type: 'createTask' })
   // renderPomodoroApp('pomodoro')
   // renderModalApp({ type: 'addDailyLog' })
@@ -82,7 +83,17 @@ if (import.meta.env.VITE_MODE === 'web') {
     // ===== logseq plugin model start =====
     logseq.provideModel({
       show() {
-        renderApp()
+        renderApp(false)
+        managePluginTheme()
+        logseq.showMainUI()
+        window.isMounted = false
+      },
+      showAgenda3() {
+        if (window.isMounted !== true) {
+          renderApp(true)
+          window.isMounted = true
+        }
+        setPluginTheme('light')
         logseq.showMainUI()
       },
       hide() {
@@ -104,8 +115,12 @@ if (import.meta.env.VITE_MODE === 'web') {
       key: 'logseq-plugin-agenda',
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
+    logseq.App.registerUIItem('toolbar', {
+      key: 'Agenda-beta',
+      template: '<a data-on-click="showAgenda3" class="button" style="color: orange;"><i class="ti ti-comet"></i></a>',
+    })
     logseq.on('ui:visible:changed', (e) => {
-      if (!e.visible && window.currentApp !== 'pomodoro') {
+      if (!e.visible && window.currentApp !== 'pomodoro' && window.currentApp !== 'agenda3App') {
         root && root.unmount()
       }
     })
@@ -170,22 +185,30 @@ if (import.meta.env.VITE_MODE === 'web') {
   })
 }
 
-async function renderApp() {
-  window.currentApp = 'app'
-  // togglePomodoro(false)
-  // toggleAppTransparent(false)
-  // let defaultRoute = ''
-  // const page = await logseq.Editor.getCurrentPage()
-  // const { projectList = [] } = getInitialSettings()
-  // if (projectList.some((project) => Boolean(project.id) && project.id === page?.originalName)) {
-  //   defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
-  // }
+async function renderApp(isVersion3 = false) {
+  window.currentApp = isVersion3 ? 'agenda3App' : 'app'
+  togglePomodoro(false)
+  toggleAppTransparent(false)
+  let defaultRoute = ''
+  const page = await logseq.Editor.getCurrentPage()
+  const { projectList = [] } = getInitialSettings()
+  if (projectList.some((project) => Boolean(project.id) && project.id === page?.originalName)) {
+    defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
+  }
+
+  const html = document.querySelector('html')
+  const body = document.querySelector('body')
+  if (isVersion3) {
+    html?.classList.add('agenda3')
+    body?.classList.add('agenda3')
+  } else {
+    html?.classList.remove('agenda3')
+    body?.classList.remove('agenda3')
+  }
 
   root = createRoot(document.getElementById('root')!)
   root.render(
-    <React.StrictMode>
-      <MainApp />
-    </React.StrictMode>,
+    <React.StrictMode>{isVersion3 ? <NewMainApp /> : <MainApp defaultRoute={defaultRoute} />}</React.StrictMode>,
   )
 }
 

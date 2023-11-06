@@ -5,7 +5,9 @@ type AppUserConfigs = import('@logseq/libs/dist/LSPlugin').AppUserConfigs
 interface Window {
   faizNavigate: (e: unknown) => void
   logseqAppUserConfigs: AppUserConfigs
-  currentApp: 'app' | 'pomodoro' | 'modal'
+  currentApp: 'app' | 'pomodoro' | 'modal' | 'agenda3App'
+  /** if Agenda3 is mounted */
+  isMounted?: boolean
   currentPomodoro: {
     uuid?: string
     state?: {
@@ -21,7 +23,7 @@ interface Window {
 interface ImportMetaEnv {
   readonly VITE_LOGSEQ_API_SERVER: string
   readonly VITE_LOGSEQ_API_TOKEN: string
-  readonly VITE_MODE: 'development' | 'production' | 'web'
+  readonly VITE_MODE: 'development' | 'production' | 'web' | 'plugin'
 }
 interface ImportMeta {
   readonly env: ImportMetaEnv
