@@ -14,6 +14,7 @@ import useAgendaTasks from '@/hooks/useAgendaTasks'
 import { deleteTask as deleteTaskBlock, genDurationString, updateDateInfo } from '@/newHelper/block'
 import { transformAgendaTaskToCalendarEvent } from '@/newHelper/fullCalendar'
 import { formatTaskTitle } from '@/newHelper/task'
+import { track } from '@/newHelper/umami'
 import { settingsAtom } from '@/newModel/settings'
 import { tasksWithStartAtom } from '@/newModel/tasks'
 import type { CalendarEvent } from '@/types/fullcalendar'
@@ -185,25 +186,25 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         // drag external kanban element to calendar
         eventReceive={(info) => {
           onEventScheduleUpdate(info)
-          umami.track('Calendar: Receive Event', { calendarView: info.view.type })
+          track('Calendar: Receive Event', { calendarView: info.view.type })
         }}
         // resize duration
         eventResize={(info) => {
           onEventScheduleUpdate(info)
-          umami.track('Calendar: Resize Event', { calendarView: info.view.type })
+          track('Calendar: Resize Event', { calendarView: info.view.type })
         }}
         // drag move
         eventDrop={(info) => {
           onEventScheduleUpdate(info)
-          umami.track('Calendar: Move Event', { calendarView: info.view.type })
+          track('Calendar: Move Event', { calendarView: info.view.type })
         }}
         // click event
         eventClick={(info) => {
           onEventClick(info)
-          umami.track('Calendar: Click Event', { calendarView: info.view.type })
+          track('Calendar: Click Event', { calendarView: info.view.type })
         }}
         select={(info) => {
-          umami.track('Calendar: Select Event', { calendarView: info.view.type })
+          track('Calendar: Select Event', { calendarView: info.view.type })
           if (info.allDay) {
             const endDay = dayjs(info.end).subtract(1, 'day')
             const startDay = dayjs(info.start)

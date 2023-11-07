@@ -17,8 +17,8 @@ interface Window {
   unmountPomodoroApp: () => void
   interruptionMap: Map<number, IInterruption[]>
   mockSettings: Record<string, unknown>
-  __APP_VERSION__: string
 }
+declare const __APP_VERSION__: string
 
 interface ImportMetaEnv {
   readonly VITE_LOGSEQ_API_SERVER: string

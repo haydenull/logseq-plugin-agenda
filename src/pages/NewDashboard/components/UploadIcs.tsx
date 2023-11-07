@@ -5,6 +5,7 @@ import { useAtomValue } from 'jotai'
 import { FiUploadCloud } from 'react-icons/fi'
 
 import useSettings from '@/hooks/useSettings'
+import { track } from '@/newHelper/umami'
 import { logseqAtom } from '@/newModel/logseq'
 import { tasksWithStartAtom } from '@/newModel/tasks'
 import { uploadIcsHttp } from '@/services/ics'
@@ -20,6 +21,7 @@ const UploadIcs = ({ className }: { className?: string }) => {
   const { runAsync: doUpload, loading } = useRequest(uploadIcsHttp, { manual: true })
 
   const onClickUpload = async () => {
+    track('Upload ICS Button')
     const { repo, token } = ics ?? {}
     if (!repo || !token) return message.error('Please set repo and token')
     const events: EventAttributes[] = tasks.map((task) => transformAgendaTaskToICSEvent(task, currentGraph?.name ?? ''))
@@ -37,11 +39,7 @@ const UploadIcs = ({ className }: { className?: string }) => {
 
   return (
     <div className="relative">
-      <FiUploadCloud
-        className={cn('text-lg', className)}
-        onClick={onClickUpload}
-        data-umami-event="Upload ICS Button"
-      />
+      <FiUploadCloud className={cn('text-lg', className)} onClick={onClickUpload} />
       {loading ? (
         <span className="animate-pulse absolute w-2 h-2 rounded-full bg-orange-500 top-0 right-0"></span>
       ) : null}

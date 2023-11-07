@@ -16,6 +16,7 @@ import useAgendaTasks from '@/hooks/useAgendaTasks'
 import { deleteTask as deleteTaskBlock, genDurationString, updateDateInfo } from '@/newHelper/block'
 import { transformAgendaTaskToCalendarEvent } from '@/newHelper/fullCalendar'
 import { formatTaskTitle } from '@/newHelper/task'
+import { track } from '@/newHelper/umami'
 import { settingsAtom } from '@/newModel/settings'
 import { tasksWithStartAtom } from '@/newModel/tasks'
 import type { CalendarEvent } from '@/types/fullcalendar'
@@ -173,17 +174,17 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
         // drag external kanban element to calendar
         eventReceive={(info) => {
           onEventScheduleUpdate(info)
-          umami.track('Time Box: Receive Event')
+          track('Time Box: Receive Event')
         }}
         // resize duration
         eventResize={(info) => {
           onEventScheduleUpdate(info)
-          umami.track('Time Box: Resize Event')
+          track('Time Box: Resize Event')
         }}
         // drag move
         eventDrop={(info) => {
           onEventScheduleUpdate(info)
-          umami.track('Time Box: Move Event')
+          track('Time Box: Move Event')
         }}
         // click
         // eventClick={onEventClick}
@@ -196,7 +197,7 @@ const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
               estimatedTime: genDurationString(dayjs(info.end).diff(info.start, 'minute')),
             },
           })
-          umami.track('Time Box: Select Event')
+          track('Time Box: Select Event')
         }}
         eventContent={(info) => {
           const taskData = info.event.extendedProps

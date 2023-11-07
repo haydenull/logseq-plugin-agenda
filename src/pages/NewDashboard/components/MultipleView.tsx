@@ -6,6 +6,7 @@ import { FiPower, FiSettings, FiX, FiXCircle } from 'react-icons/fi'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
 
 import i18n from '@/locales/i18n'
+import { track } from '@/newHelper/umami'
 import { type App, appAtom } from '@/newModel/app'
 import { cn } from '@/util/util'
 
@@ -46,7 +47,7 @@ const MultipleView = ({ className }: { className?: string }) => {
     } else {
       kanbanRef.current?.scrollToToday()
     }
-    umami.track('Today Button', { view: app.view })
+    track('Today Button', { view: app.view })
   }
 
   return (
@@ -65,7 +66,7 @@ const MultipleView = ({ className }: { className?: string }) => {
                 className="!bg-gray-200 !mr-3"
                 onChange={(view) => {
                   calendarRef.current?.changeView(view as CalendarView)
-                  umami.track('Calendar View Change', { calendarView: view })
+                  track('Calendar View Change', { calendarView: view })
                 }}
               />
               <Button
@@ -74,7 +75,7 @@ const MultipleView = ({ className }: { className?: string }) => {
                 className="!bg-transparent mr-1"
                 onClick={() => {
                   calendarRef.current?.prev()
-                  umami.track('Calendar Previous Button')
+                  track('Calendar Previous Button')
                 }}
               />
               <Button
@@ -83,7 +84,7 @@ const MultipleView = ({ className }: { className?: string }) => {
                 className="!bg-transparent"
                 onClick={() => {
                   calendarRef.current?.next()
-                  umami.track('Calendar Next Button')
+                  track('Calendar Next Button')
                 }}
               />
             </div>
@@ -99,7 +100,7 @@ const MultipleView = ({ className }: { className?: string }) => {
             items={VIEWS}
             onChange={(key) => {
               setApp({ view: key as App['view'] })
-              umami.track('View Change', { view: key })
+              track('View Change', { view: key })
             }}
             // renderTabBar={(props, DefaultTabBar) => <DefaultTabBar />}
             tabBarStyle={{ height: '36px', margin: 0 }}
@@ -108,7 +109,7 @@ const MultipleView = ({ className }: { className?: string }) => {
           />
           <UploadIcs className="text-lg cursor-pointer" />
           <SettingsModal>
-            <FiSettings className="text-lg cursor-pointer" data-umami-event="Settings Button" />
+            <FiSettings className="text-lg cursor-pointer" onClick={() => track('Settings Button')} />
           </SettingsModal>
           {import.meta.env.VITE_MODE === 'plugin' ? (
             <FiXCircle className="text-lg cursor-pointer" onClick={() => logseq.hideMainUI()} />

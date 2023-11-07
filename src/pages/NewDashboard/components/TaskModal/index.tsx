@@ -11,6 +11,7 @@ import TimeSelect from '@/components/TaskModal/components/TimeSelect'
 import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda'
 import { deleteTask } from '@/newHelper/block'
 import { type BlockFromQuery, transformBlockToAgendaTask } from '@/newHelper/task'
+import { track } from '@/newHelper/umami'
 import type { AgendaTask, TimeLog } from '@/types/task'
 
 import ProjectSelect from '../ProjectSelect'
@@ -68,7 +69,7 @@ const TaskModal = ({
     onCancel?.()
   }
   const handleOk = async () => {
-    umami.track(`Task Modal: Ok Button`, { type: info.type })
+    track(`Task Modal: Ok Button`, { type: info.type })
     const block = await action()
     if (!block) return message.error('Failed to create/edit task block')
     const page = await logseq.Editor.getPage(block?.page?.id ?? block?.page)

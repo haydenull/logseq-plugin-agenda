@@ -28,6 +28,7 @@ import { listenEsc, log, managePluginTheme, setPluginTheme, toggleAppTransparent
 import NewMainApp from './apps/NewMainApp'
 import TaskListApp from './apps/TaskListApp'
 import i18n from './locales/i18n'
+import { track } from './newHelper/umami'
 import './style/index.less'
 
 echarts.use([
@@ -50,7 +51,7 @@ let root: Root | null = null
 if (import.meta.env.VITE_MODE === 'web') {
   // run in browser
   console.log('[faiz:] === meta.env.VITE_LOGSEQ_API_SERVER', import.meta.env.VITE_LOGSEQ_API_SERVER)
-  console.log(`%c[version]: v${window.__APP_VERSION__}`, 'background-color: #60A5FA; color: white; padding: 4px;')
+  console.log(`%c[version]: v${__APP_VERSION__}`, 'background-color: #60A5FA; color: white; padding: 4px;')
   proxyLogseq({
     config: {
       apiServer: import.meta.env.VITE_LOGSEQ_API_SERVER,
@@ -83,12 +84,14 @@ if (import.meta.env.VITE_MODE === 'web') {
     // ===== logseq plugin model start =====
     logseq.provideModel({
       show() {
+        track('Show Agenda2', { version: __APP_VERSION__ })
         renderApp(false)
         managePluginTheme()
         logseq.showMainUI()
         window.isMounted = false
       },
       showAgenda3() {
+        track('Show Agenda', { version: __APP_VERSION__ })
         if (window.isMounted !== true) {
           renderApp(true)
           window.isMounted = true

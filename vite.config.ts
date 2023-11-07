@@ -46,6 +46,7 @@ export default defineConfig(async ({ command, mode }) => {
     define: {
       mockSettings: getMockSettings(mode === 'web'),
       __APP_VERSION__: JSON.stringify(packageJSON.version),
+      faizVal: JSON.stringify('test'),
     },
     test: {
       globals: true,
