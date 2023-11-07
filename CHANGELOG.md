@@ -1,3 +1,47 @@
+# [3.0.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.17.2...v3.0.0) (2023-11-07)
+
+
+### Bug Fixes
+
+* **agenda3:** :bug: all-day recurring task not show on canendar ([af1c2eb](https://github.com/haydenull/logseq-plugin-agenda/commit/af1c2ebb992d4cd49f1d2c1a326796d30e92049f))
+* **agenda3:** :bug: can't drag tasks into the timebox after switching views ([0afce47](https://github.com/haydenull/logseq-plugin-agenda/commit/0afce473346af61722a7f81753097c6cacd51ea1))
+* **agenda3:** :bug: hide canceled task ([8484bf1](https://github.com/haydenull/logseq-plugin-agenda/commit/8484bf14c337e3c9c0c6ee5bf6447e95fcd49d37))
+* **agenda3:** :bug: windows tabs flickering ([9546b34](https://github.com/haydenull/logseq-plugin-agenda/commit/9546b343c7434e10e584883ba105d88f6fcd59d5))
+
+
+### Features
+
+* :construction_worker: supports prerelease ([991d3ad](https://github.com/haydenull/logseq-plugin-agenda/commit/991d3ad7239a4bf22bc96825c3c27f5c2e7ac591))
+* :sparkles: agenda3 ([2741c5d](https://github.com/haydenull/logseq-plugin-agenda/commit/2741c5d8da32d618956f785461892582f9d58b04))
+* **agenda3:** :sparkles: add log for plugin mode ([443867f](https://github.com/haydenull/logseq-plugin-agenda/commit/443867fe9927e953107076f752cfe6ab55024a1a))
+* **agenda3:** :sparkles: add project and deep link in ics ([a1b8df8](https://github.com/haydenull/logseq-plugin-agenda/commit/a1b8df847aa5d4928e2614f29ccdc25072bbd7a6))
+* **agenda3:** :sparkles: add umami log ([a02393f](https://github.com/haydenull/logseq-plugin-agenda/commit/a02393f68dcbd46155c3adedcc27637a1a14382b))
+* **agenda3:** :sparkles: add umami log ([105e420](https://github.com/haydenull/logseq-plugin-agenda/commit/105e420d3ac1443199cb5bfa216ea47745508e1c))
+* **agenda3:** :sparkles: backlog support filter ([dd4ea4a](https://github.com/haydenull/logseq-plugin-agenda/commit/dd4ea4a98869ad585f899acb7b98cba0d8fc7eea))
+* **agenda3:** :sparkles: categoriz tasks by page in backlog ([b13434a](https://github.com/haydenull/logseq-plugin-agenda/commit/b13434a73b5b1b46e4759ba0b3add2285534fafb))
+* **agenda3:** :sparkles: change the error prompt to English ([efb5382](https://github.com/haydenull/logseq-plugin-agenda/commit/efb53824de045eed2aea6075db33d550c5d25b6f))
+* **agenda3:** :sparkles: compitablee style for empty backlog ([496f967](https://github.com/haydenull/logseq-plugin-agenda/commit/496f96702690ccdf6cc335a44804b6c6a2ecbff6))
+* **agenda3:** :sparkles: custom project color ([70e9ae1](https://github.com/haydenull/logseq-plugin-agenda/commit/70e9ae15b3ac5b96ea1559d373a1732d24c7b717))
+* **agenda3:** :sparkles: customize the style of scrollbar ([735c0a1](https://github.com/haydenull/logseq-plugin-agenda/commit/735c0a18fac1a91e757892235d74088193ef3d01))
+* **agenda3:** :sparkles: optimize task title display ([f0bba8f](https://github.com/haydenull/logseq-plugin-agenda/commit/f0bba8ffc0c45b4a8c4f740f09df0807c7047c96))
+* **agenda3:** :sparkles: optimize the style of completed task in kanban ([6405fc0](https://github.com/haydenull/logseq-plugin-agenda/commit/6405fc0d92e5d1f51369e32b7c64acb90f34c033))
+* **agenda3:** :sparkles: refresh data when the page is focused ([b686486](https://github.com/haydenull/logseq-plugin-agenda/commit/b686486bb9995850b73c3efb50a189e2f2e8459d))
+* **agenda3:** :sparkles: support custom project ([9daa22a](https://github.com/haydenull/logseq-plugin-agenda/commit/9daa22a218fd4d031b33b3f7a8b02b74ef1a11ea))
+* **agenda3:** :sparkles: support for displaying future recurring tasks on Kanban ([7a162fa](https://github.com/haydenull/logseq-plugin-agenda/commit/7a162fae85c38b23d601ac87a44462f605a51303))
+* **agenda3:** :sparkles: support only Show First Event In Cycle ([e630a03](https://github.com/haydenull/logseq-plugin-agenda/commit/e630a0387279f20211c113abebd1b830ef37d9b0))
+* **agenda3:** :sparkles: support open logseq app and nav to task block ([e5a8ad0](https://github.com/haydenull/logseq-plugin-agenda/commit/e5a8ad0560db54d7951652a337243c5852e186b6))
+* **agenda3:** :sparkles: support plugin mode ([50eed1a](https://github.com/haydenull/logseq-plugin-agenda/commit/50eed1a6882b786fa26f44df32cdff6c911d2ecd))
+* **agenda3:** :sparkles: support share agenda through url ([0b05c2b](https://github.com/haydenull/logseq-plugin-agenda/commit/0b05c2bf9da857161ae43cc5a6fbc9e4576b2e51))
+* **agenda3:** :sparkles: supports hide completed tasks in calendar view ([7715dd2](https://github.com/haydenull/logseq-plugin-agenda/commit/7715dd28c3b2105da6bfa0f5edcf2d191e5fab4b))
+* **agenda3:** :sparkles: use logseq favorite page repalce agenda-favorite property ([6d34dd7](https://github.com/haydenull/logseq-plugin-agenda/commit/6d34dd7a8df65ab88266390c0ac00b2293fb069a))
+* **agenda3:** :sparkles: when the duration of a task on the calendar week view is less than 20 minutes, reduce the font size. ([de28728](https://github.com/haydenull/logseq-plugin-agenda/commit/de28728ccb69c3137fd3b7b0081eaa6f392c82e2))
+* **agenda3:** :sparkles: when the duration of a task on the timebox is less than 10 minutes, reduce the font size ([1cabf11](https://github.com/haydenull/logseq-plugin-agenda/commit/1cabf118821e074226f341b1a73eba2febc0bca2))
+
+
+### BREAKING CHANGES
+
+* agenda3
+
 ## [2.17.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.17.1...v2.17.2) (2023-10-22)
 
 
