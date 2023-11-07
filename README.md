@@ -31,8 +31,8 @@ If you want to contribute, please visit [contribution guide](./CONTRIBUTING.md)
 - Supports pomodoro timer -->
 
 ![kanban](./screenshots/agenda3-kanban.jpeg)
-![calendar-month](./screenshots/agenda3-calendar-moonth.png)
-![calendar-week](./screenshots/agenda3-calendar-week.png)
+![calendar-month](./screenshots/agenda3-calendar-month.jpeg)
+![calendar-week](./screenshots/agenda3-calendar-week.jpeg)
 ![ics](./screenshots/agenda3-ics.png)
 <!-- ![dashboard-light](./screenshots/dashboard-light.png)
 ![dashboard-purple](./screenshots/dashboard-purple.png)
