@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.0.0...v3.1.0) (2023-11-08)
+
+
+### Features
+
+* **agenda3:** :sparkles: support displaing Recurring task deatil in task modal ([6a3a51c](https://github.com/haydenull/logseq-plugin-agenda/commit/6a3a51c7755d03cf3c235445d202c8475c60abeb))
+
 # [3.0.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v2.17.2...v3.0.0) (2023-11-07)
 
 
