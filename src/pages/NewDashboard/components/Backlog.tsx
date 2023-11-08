@@ -62,7 +62,7 @@ const Backlog = () => {
       >
         {showCategorizedTasks?.length > 0 ? (
           <Collapse
-            accordion
+            // accordion
             bordered={false}
             expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
             style={{ background: '#f9fafb' }}

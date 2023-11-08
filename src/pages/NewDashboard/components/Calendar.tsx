@@ -3,7 +3,6 @@ import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { message } from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
@@ -11,7 +10,7 @@ import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 
 import useAgendaTasks from '@/hooks/useAgendaTasks'
-import { deleteTask as deleteTaskBlock, genDurationString, updateDateInfo } from '@/newHelper/block'
+import { genDurationString, updateDateInfo } from '@/newHelper/block'
 import { transformAgendaTaskToCalendarEvent } from '@/newHelper/fullCalendar'
 import { formatTaskTitle } from '@/newHelper/task'
 import { track } from '@/newHelper/umami'
@@ -78,8 +77,8 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
 
   const onEventClick = (info: unknown) => {
     const _info = info as FullCalendarEventInfo
-    const editDisabled = _info.event.extendedProps?.rrule || _info.event.extendedProps?.recurringPast
-    if (editDisabled) return message.error('Please modify the recurring task in the logseq.')
+    // const editDisabled = _info.event.extendedProps?.rrule || _info.event.extendedProps?.recurringPast
+    // if (editDisabled) return message.error('Please modify the recurring task in the logseq.')
     setEditTaskModal({
       open: true,
       task: _info.event.extendedProps,
@@ -229,7 +228,6 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         eventContent={(info) => {
           const taskData = info.event.extendedProps
           const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaTask) : info.event.title
-          const editDisabled = taskData?.rrule || taskData?.recurringPast
           const isShowTimeText =
             info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 50
           const isSmallHeight =
@@ -241,10 +239,9 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
             case 'dayGridWeek':
               element = (
                 <div
-                  className={clsx('flex items-center gap-1 w-full px-0.5 relative', {
+                  className={clsx('flex items-center gap-1 w-full px-0.5 relative cursor-pointer', {
                     'opacity-60 line-through': isDone,
                     'font-semibold': !isDone,
-                    'cursor-not-allowed': editDisabled,
                   })}
                   title={showTitle}
                 >
@@ -265,7 +262,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
               break
             case 'timeGridWeek':
               element = (
-                <div className={clsx('h-full relative', { 'opacity-70': isDone, 'cursor-not-allowed': editDisabled })}>
+                <div className={clsx('h-full relative cursor-pointer', { 'opacity-70': isDone })}>
                   <div
                     className={clsx('truncate', {
                       'line-through': isDone,

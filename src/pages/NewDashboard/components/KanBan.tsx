@@ -226,7 +226,6 @@ const KanBan = (props, ref) => {
                       'bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-pointer group/card',
                       {
                         'bg-[#edeef0]': task.status === 'done',
-                        'cursor-not-allowed': editDisabled,
                         // 循环任务及多天任务不能拖拽
                         'droppable-task-element': !editDisabled && !isMultipleDays,
                       },
@@ -237,7 +236,7 @@ const KanBan = (props, ref) => {
                       duration: minutesToHHmm(estimatedTime),
                       color: task.project.bgColor,
                     })}
-                    onClick={() => !editDisabled && setEditTaskModal({ open: true, task })}
+                    onClick={() => setEditTaskModal({ open: true, task })}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex gap-1 items-center">

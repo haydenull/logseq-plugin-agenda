@@ -1,9 +1,7 @@
 import { Button, Calendar, Input, type InputRef, Modal, Popover, Popconfirm, DatePicker, message, Select } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { BiCategory } from 'react-icons/bi'
 import { BsCalendar4Event, BsCalendar4Range, BsClipboard, BsClock, BsClockHistory } from 'react-icons/bs'
-import { MdOutlineCategory } from 'react-icons/md'
 import { RiDeleteBin4Line } from 'react-icons/ri'
 
 import DurationSelect from '@/components/TaskModal/components/DurationSelect'
@@ -61,6 +59,9 @@ const TaskModal = ({
   const { create } = createHookResult
   const { edit } = editHookResult
   const action = info.type === 'edit' ? edit : create
+  // can't edit recurring task
+  const editDisabled =
+    info.type === 'edit' && (info.initialTaskData.rrule || info.initialTaskData.recurringPast) ? true : false
 
   const showStartTimeFormatter = allDay ? SHOW_DATE_FORMATTER : SHOW_DATETIME_FORMATTER
 
@@ -164,7 +165,7 @@ const TaskModal = ({
           <Button key="cancel" onClick={handleCancel}>
             Cancel
           </Button>,
-          <Button key="ok" type="primary" onClick={handleOk}>
+          <Button key="ok" type="primary" onClick={handleOk} disabled={editDisabled}>
             {info.type === 'create' ? 'Add Task' : 'Save'}
           </Button>,
         ]}
