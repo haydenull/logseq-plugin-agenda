@@ -24,6 +24,7 @@ const UploadIcs = ({ className }: { className?: string }) => {
     track('Upload ICS Button')
     const { repo, token } = ics ?? {}
     if (!repo || !token) return message.error('Please set repo and token')
+    if (!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(repo)) return message.error('Invalid repo format. eg: username/repo')
     const events: EventAttributes[] = tasks.map((task) => transformAgendaTaskToICSEvent(task, currentGraph?.name ?? ''))
     createEvents(events, (error, value) => {
       if (error) return console.log('generate ics error', error)

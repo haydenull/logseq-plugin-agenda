@@ -75,7 +75,7 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
                   className="w-[300px]"
                   placeholder="username/repo"
                   value={settings.ics?.repo}
-                  onChange={(e) => onChange('ics.repo', e.target.value)}
+                  onChange={(e) => onChange('ics.repo', e.target.value?.trim())}
                 />
               </div>
               <div className="mt-4">
@@ -84,7 +84,7 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
                   className="w-[300px]"
                   placeholder="github access token"
                   value={settings.ics?.token}
-                  onChange={(e) => onChange('ics.token', e.target.value)}
+                  onChange={(e) => onChange('ics.token', e.target.value?.trim())}
                 />
               </div>
               {settings.ics?.repo && settings.ics?.token ? (
