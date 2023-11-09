@@ -31,7 +31,7 @@ const UploadIcs = ({ className }: { className?: string }) => {
       doUpload({ file: value, repo, token })
         .then(() => message.success('🎉 Upload success'))
         .catch((err) => {
-          message.error('Upload failed')
+          message.error(err.message || 'Upload failed')
           console.error('update ics failed', err)
         })
     })
