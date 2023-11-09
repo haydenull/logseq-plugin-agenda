@@ -138,9 +138,17 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
               <img src={logo} className="w-20 mt-6" />
               <h1 className="text-xl">Agenda</h1>
               <div className="text-gray-400">version: v{__APP_VERSION__}</div>
-              <a onClick={() => onClickLink('https://haydenut.notion.site/Agenda3-ef115e277c864de3b2679d6bda0e6376')}>
-                User Manual
-              </a>
+              <div className="flex divide-x">
+                <a
+                  className="pr-2"
+                  onClick={() => onClickLink('https://haydenut.notion.site/Agenda3-ef115e277c864de3b2679d6bda0e6376')}
+                >
+                  User Manual
+                </a>
+                <a className="pl-2" onClick={() => onClickLink('https://github.com/haydenull/logseq-plugin-agenda')}>
+                  Github Repo
+                </a>
+              </div>
               <div className="text-xs text-gray-400 w-96">
                 Please note that the beta version is still under development and may contain bugs. We encourage you to
                 test it out and provide feedback on any issues or suggestions on our GitHub page. Your input is valuable
