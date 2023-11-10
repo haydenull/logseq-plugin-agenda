@@ -1,3 +1,19 @@
+# [3.2.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.1.0...v3.2.0) (2023-11-10)
+
+
+### Bug Fixes
+
+* :bug: when using keyboard shortcuts to open the plugin, there is a style error ([6f273c3](https://github.com/haydenull/logseq-plugin-agenda/commit/6f273c3050b1781554e24ea6e44b593d6fa3c1b5))
+* **agenda3:** :bug: can't show error msg when uploading ics file ([6557e25](https://github.com/haydenull/logseq-plugin-agenda/commit/6557e25a21c38a1e1990e5d7df0f877200627ad3))
+* **share:** :bug: add repo format validation ([1c65600](https://github.com/haydenull/logseq-plugin-agenda/commit/1c65600f8f44484aa5f6be2c0d51a25d2a1317ff))
+* **share:** :bug: format the title when uploading ics ([655dfcb](https://github.com/haydenull/logseq-plugin-agenda/commit/655dfcb9025b99e9d33263d2746032f0601cb661))
+
+
+### Features
+
+* **backlog:** :sparkles: display the number of tasks in backlog ([afc3e18](https://github.com/haydenull/logseq-plugin-agenda/commit/afc3e187f32d8d43f492187c4a6d43b9c75ecc2c))
+* **settings:** :sparkles: display the github repo link in setting-about ([9f74d48](https://github.com/haydenull/logseq-plugin-agenda/commit/9f74d4861c2553ef4e50d626ac953c7aa96aabbc))
+
 # [3.1.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.0.0...v3.1.0) (2023-11-08)
 
 
