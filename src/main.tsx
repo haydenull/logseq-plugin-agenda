@@ -81,6 +81,16 @@ if (import.meta.env.VITE_MODE === 'web') {
 
     const { weekStartDay, todoist } = getInitialSettings()
 
+    const showAgenda3 = () => {
+      track('Show Agenda', { version: __APP_VERSION__ })
+      if (window.isMounted !== true) {
+        renderApp(true)
+        window.isMounted = true
+      }
+      setPluginTheme('light')
+      logseq.showMainUI()
+    }
+
     // ===== logseq plugin model start =====
     logseq.provideModel({
       show() {
@@ -90,15 +100,7 @@ if (import.meta.env.VITE_MODE === 'web') {
         logseq.showMainUI()
         window.isMounted = false
       },
-      showAgenda3() {
-        track('Show Agenda', { version: __APP_VERSION__ })
-        if (window.isMounted !== true) {
-          renderApp(true)
-          window.isMounted = true
-        }
-        setPluginTheme('light')
-        logseq.showMainUI()
-      },
+      showAgenda3,
       hide() {
         logseq.hideMainUI()
       },
@@ -115,11 +117,11 @@ if (import.meta.env.VITE_MODE === 'web') {
     // ===== logseq plugin model end =====
     // ========== show or hide app start =========
     logseq.App.registerUIItem('toolbar', {
-      key: 'logseq-plugin-agenda',
+      key: 'Agenda2',
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
     logseq.App.registerUIItem('toolbar', {
-      key: 'Agenda-beta',
+      key: 'Agenda3',
       template: '<a data-on-click="showAgenda3" class="button" style="color: orange;"><i class="ti ti-comet"></i></a>',
     })
     logseq.on('ui:visible:changed', (e) => {
@@ -130,15 +132,14 @@ if (import.meta.env.VITE_MODE === 'web') {
     listenEsc(() => logseq.hideMainUI())
     logseq.App.registerCommandPalette(
       {
-        key: 'logseq-plugin-agenda:show',
+        key: 'Agenda:show',
         label: 'Show Agenda',
         keybinding: {
           binding: 'ctrl+shift+s',
         },
       },
       (data) => {
-        renderApp()
-        logseq.showMainUI()
+        showAgenda3()
       },
     )
     // ========== show or hide app end =========
