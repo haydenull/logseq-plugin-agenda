@@ -2,18 +2,22 @@ import { CaretRightOutlined } from '@ant-design/icons'
 import { Draggable } from '@fullcalendar/interaction'
 import { Collapse, Empty, Select } from 'antd'
 import clsx from 'clsx'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 
+import { navToLogseqBlock } from '@/newHelper/logseq'
 import { categorizeTasksByPage, formatTaskTitle } from '@/newHelper/task'
+import { logseqAtom } from '@/newModel/logseq'
 import { backlogTasksAtom } from '@/newModel/tasks'
 
+import LogseqLogo from './LogseqLogo'
 import s from './backlog.module.less'
 
 const Backlog = () => {
   const taskContainerRef = useRef<HTMLDivElement>(null)
   const [backlogTasks] = useAtom(backlogTasksAtom)
+  const { currentGraph } = useAtomValue(logseqAtom)
   const categorizedTasks = categorizeTasksByPage(backlogTasks)
   const projects = categorizedTasks.map(({ project }) => project)
 
@@ -66,9 +70,11 @@ const Backlog = () => {
             bordered={false}
             expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
             style={{ background: '#f9fafb' }}
+            defaultActiveKey={showCategorizedTasks.map((project) => project.project.originalName)}
             items={showCategorizedTasks.map((project) => ({
               key: project.project.originalName,
               label: project.project.originalName,
+              extra: <span className="text-xs text-gray-400 pr-0.5">{project.tasks.length}</span>,
               children: (
                 <div className="flex flex-col gap-2">
                   {project.tasks.map((task) => {
@@ -76,14 +82,23 @@ const Backlog = () => {
                     return (
                       <div
                         key={task.id}
-                        className="border rounded px-2 py-2 text-sm text-gray-600 break-all droppable-task-element bg-[#f9fafb] cursor-move"
+                        className="border rounded px-2 py-2 text-sm text-gray-600 break-all droppable-task-element bg-[#f9fafb] cursor-move group"
                         data-event={JSON.stringify({
                           id: task.id,
                           title: showTitle,
                           color: task.project.bgColor,
                         })}
                       >
-                        {showTitle}
+                        {showTitle}{' '}
+                        <span
+                          className="text-gray-300 inline-block opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            navToLogseqBlock(task, currentGraph)
+                          }}
+                        >
+                          <LogseqLogo />
+                        </span>
                       </div>
                     )
                   })}
