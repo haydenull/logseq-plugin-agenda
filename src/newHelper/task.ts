@@ -398,13 +398,21 @@ function replacePageReference(text: string) {
 }
 
 /**
+ * replace block reference
+ * ((some-id-id)) -> block reference
+ */
+function replaceBlockReference(text: string) {
+  return text.replace(/\(\(([\w-]+)\)\)/g, 'block')
+}
+
+/**
  * format title
  * 1. link [title](link) or [[link][title]] -> title
  * 2. page reference [[test]] -> test
- * TODO: 3. block reference ((sdfash-sdfa-ss)) -> test
+ * 3. block reference ((sdfash-sdfa-ss)) -> test
  */
 export const formatTaskTitle = (task: AgendaTask) => {
-  return replacePageReference(replaceLinks(task.title, task.rawBlock?.format))
+  return replaceLinks(replacePageReference(replaceBlockReference(task.title)), task.rawBlock?.format)
 
   // return await fillBlockReference(task.title)
 }
