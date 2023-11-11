@@ -54,6 +54,26 @@ export const updateDateInfo = async ({
 }
 
 /**
+ * delete date info
+ */
+export const deleteDateInfo = async (uuid: string) => {
+  const originalBlock = await logseq.Editor.getBlock(uuid)
+  if (!originalBlock) return Promise.reject(new Error('Block not found'))
+
+  const newContent = originalBlock.scheduled
+    ? originalBlock.content
+        .split('\n')
+        .map((line) => {
+          if (line.startsWith('SCHEDULED:')) return ''
+          return line
+        })
+        .filter(Boolean)
+        .join('\n')
+    : originalBlock.content
+  return logseq.Editor.updateBlock(uuid, newContent)
+}
+
+/**
  * update task time log
  */
 export const updateTimeLog = async (

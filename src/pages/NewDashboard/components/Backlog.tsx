@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
+import { ReactSortable } from 'react-sortablejs'
 
 import { navToLogseqBlock } from '@/newHelper/logseq'
 import { categorizeTasksByPage, formatTaskTitle } from '@/newHelper/task'
@@ -14,7 +15,7 @@ import { backlogTasksAtom } from '@/newModel/tasks'
 import LogseqLogo from './LogseqLogo'
 import s from './backlog.module.less'
 
-const Backlog = () => {
+const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
   const taskContainerRef = useRef<HTMLDivElement>(null)
   const [backlogTasks] = useAtom(backlogTasksAtom)
   const { currentGraph } = useAtomValue(logseqAtom)
@@ -23,20 +24,24 @@ const Backlog = () => {
 
   const [filterProjectIds, setFilterProjectIds] = useState<string[]>([])
 
-  const showCategorizedTasks = categorizedTasks.filter((categorizedTask) => {
-    if (filterProjectIds?.length > 0) {
-      return filterProjectIds.includes(categorizedTask.project.id)
-    }
-    return true
-  })
+  const showCategorizedTasks = categorizedTasks
+    .filter((categorizedTask) => {
+      if (filterProjectIds?.length > 0) {
+        return filterProjectIds.includes(categorizedTask.project.id)
+      }
+      return true
+    })
+    .sort((a, b) => {
+      return a.project.originalName.localeCompare(b.project.originalName)
+    })
 
   useEffect(() => {
-    if (taskContainerRef.current) {
+    if (bindCalendar && taskContainerRef.current) {
       new Draggable(taskContainerRef.current, {
         itemSelector: '.droppable-task-element',
       })
     }
-  }, [backlogTasks.length])
+  }, [backlogTasks.length, bindCalendar])
   return (
     <div className={clsx('w-[290px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md', s.backlog)}>
       <div className="h-[44px] flex items-center gap-1.5 relative after:shadow after:absolute after:bottom-0 after:w-full after:h-1">
@@ -76,7 +81,17 @@ const Backlog = () => {
               label: project.project.originalName,
               extra: <span className="text-xs text-gray-400 pr-0.5">{project.tasks.length}</span>,
               children: (
-                <div className="flex flex-col gap-2">
+                <ReactSortable
+                  forceFallback
+                  className="flex flex-col gap-2"
+                  group="planner"
+                  dragClass="dragged-mirror-element"
+                  draggable=".droppable-task-element"
+                  list={project.tasks}
+                  setList={(list) => {
+                    // console.log(`[faiz:] === setList`, list)
+                  }}
+                >
                   {project.tasks.map((task) => {
                     const showTitle = formatTaskTitle(task)
                     return (
@@ -87,6 +102,7 @@ const Backlog = () => {
                           id: task.id,
                           title: showTitle,
                           color: task.project.bgColor,
+                          backlog: true,
                         })}
                       >
                         {showTitle}{' '}
@@ -102,7 +118,7 @@ const Backlog = () => {
                       </div>
                     )
                   })}
-                </div>
+                </ReactSortable>
               ),
               style: {
                 marginBottom: 10,

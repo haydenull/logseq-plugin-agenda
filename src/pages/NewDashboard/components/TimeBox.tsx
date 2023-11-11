@@ -44,7 +44,7 @@ const FULL_CALENDAR_24HOUR_FORMAT = {
   minute: '2-digit',
   hour12: false,
 } as const
-const TimeBox = ({ onChangeType }: { onChangeType: () => void }) => {
+const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const settings = useAtomValue(settingsAtom)
   const calendarRef = useRef<FullCalendar>(null)
   const { updateTaskData, deleteTask, addNewTask } = useAgendaTasks()
