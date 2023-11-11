@@ -1,15 +1,17 @@
 import { ThirdPartyDraggable } from '@fullcalendar/interaction'
-import { Progress, message } from 'antd'
+import { Dropdown, Progress, message } from 'antd'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { BsArchive } from 'react-icons/bs'
 import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { IoAddCircleOutline, IoRepeatOutline } from 'react-icons/io5'
+import { RiDeleteBin4Line } from 'react-icons/ri'
 import { ReactSortable } from 'react-sortablejs'
 
 import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
 import useAgendaTasks from '@/hooks/useAgendaTasks'
-import { updateDateInfo, updateTaskStatus } from '@/newHelper/block'
+import { deleteDateInfo, updateDateInfo, updateTaskStatus } from '@/newHelper/block'
 import { minutesToHHmm } from '@/newHelper/fullCalendar'
 import { navToLogseqBlock } from '@/newHelper/logseq'
 import {
@@ -27,6 +29,7 @@ import type { AgendaTaskWithStart, AgendaTask } from '@/types/task'
 import { cn, genDays, replaceDateInfo } from '@/util/util'
 
 import LogseqLogo from './LogseqLogo'
+import PlannerModal from './PlannerModal'
 import TaskModal from './TaskModal'
 
 export type KanBanItem = AgendaTaskWithStart & {
@@ -72,8 +75,19 @@ const KanBan = (props, ref) => {
     updateTaskStatus(task, status)
     event.stopPropagation()
   }
+  const onDeleteTask = async (taskId: string) => {
+    deleteTask(taskId)
+    deleteTask(taskId)
+  }
+  const onRemoveDate = async (taskId: string) => {
+    updateTaskData(taskId, {
+      allDay: true,
+      start: undefined,
+    })
+    deleteDateInfo(taskId)
+  }
   const scrollToToday = useCallback(() => {
-    const todayDateStr = today.format('MM-DD ddd')
+    const todayDateStr = dayjs().format('MM-DD ddd')
     document.getElementById(`${todayDateStr}`)?.scrollIntoView({ block: 'nearest', inline: 'start' })
     kanBanContainerRef.current?.scrollBy({ left: -30, behavior: 'smooth' })
   }, [])
@@ -128,7 +142,12 @@ const KanBan = (props, ref) => {
                 <span className="text-gray-400">{day.format('MMM DD')}</span>
                 {/* {isToday ? <span className="px-1 py-0.5 text-xs bg-blue-400 rounded text-white">Today</span> : null} */}
               </div>
-              <div>
+              <div className="flex gap-2 items-center">
+                {isToday ? (
+                  <PlannerModal triggerClassName="text-[10px] text-gray-400 hover:text-gray-700 cursor-pointer">
+                    Plan
+                  </PlannerModal>
+                ) : null}
                 {isFuture ? null : (
                   <span
                     className="text-[10px] text-gray-400 hover:text-gray-700 cursor-pointer"
@@ -188,6 +207,7 @@ const KanBan = (props, ref) => {
                 // console.log(`[faiz:] === setList ${day.format('MM-DD ddd')}`, list)
               }}
               onAdd={async (sortableEvent) => {
+                console.log('[faiz:] === kanban onAdd', sortableEvent)
                 const id = sortableEvent?.item?.dataset?.id
                 const task = tasks.find((task) => task.id === id)
                 if (!task || !id) return logseq.UI.showMsg('task id not found', 'error')
@@ -216,7 +236,7 @@ const KanBan = (props, ref) => {
                     className={cn(
                       'bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-pointer group/card',
                       {
-                        'bg-[#edeef0]': task.status === 'done',
+                        'bg-[#edeef0] opacity-80': task.status === 'done',
                         // 循环任务及多天任务不能拖拽
                         'droppable-task-element': !editDisabled && !isMultipleDays,
                       },
@@ -227,58 +247,84 @@ const KanBan = (props, ref) => {
                       duration: minutesToHHmm(estimatedTime),
                       color: task.project.bgColor,
                     })}
-                    onClick={() => setEditTaskModal({ open: true, task })}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex gap-1 items-center">
-                        {task.status === 'done' ? (
-                          <IoIosCheckmarkCircle
-                            className="text-xl cursor-pointer text-gray-300"
-                            onClick={(e) => onClickTaskMark(e, task, 'todo')}
-                          />
-                        ) : (
-                          <IoIosCheckmarkCircleOutline
-                            className="text-gray-300 text-xl cursor-pointer"
-                            onClick={(e) => onClickTaskMark(e, task, 'done')}
-                          />
-                        )}
-                        {task.allDay ? null : (
-                          <span
-                            className="text-[10px] rounded px-1 py-0.5 text-white opacity-70"
-                            style={{
-                              backgroundColor: task.project.bgColor,
-                            }}
-                          >
-                            {task.start.format('HH:mm')}
-                          </span>
-                        )}
-                        {task.rrule || task.recurringPast ? <IoRepeatOutline className="text-gray-400" /> : null}
-                        <div
-                          className="text-gray-300 opacity-0 group-hover/card:opacity-100 transition-opacity cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            navToLogseqBlock(task, currentGraph)
-                          }}
-                        >
-                          <LogseqLogo />
+                    <Dropdown
+                      trigger={['contextMenu']}
+                      menu={{
+                        items: [
+                          editDisabled
+                            ? null
+                            : {
+                                key: 'backlog',
+                                label: 'Move to backlog',
+                                icon: <BsArchive className="!text-sm" />,
+                              },
+                          {
+                            key: 'delete',
+                            label: 'Delete task',
+                            danger: true,
+                            icon: <RiDeleteBin4Line className="!text-base" />,
+                          },
+                        ],
+                        onClick: ({ key }) => {
+                          if (key === 'delete') onDeleteTask(task.id)
+                          if (key === 'backlog') onRemoveDate(task.id)
+                        },
+                      }}
+                    >
+                      <div onClick={() => setEditTaskModal({ open: true, task })}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex gap-1 items-center">
+                            {task.status === 'done' ? (
+                              <IoIosCheckmarkCircle
+                                className="text-xl cursor-pointer text-gray-300"
+                                onClick={(e) => onClickTaskMark(e, task, 'todo')}
+                              />
+                            ) : (
+                              <IoIosCheckmarkCircleOutline
+                                className="text-gray-300 text-xl cursor-pointer"
+                                onClick={(e) => onClickTaskMark(e, task, 'done')}
+                              />
+                            )}
+                            {task.allDay ? null : (
+                              <span
+                                className="text-[10px] rounded px-1 py-0.5 text-white opacity-70"
+                                style={{
+                                  backgroundColor: task.project.bgColor,
+                                }}
+                              >
+                                {task.start.format('HH:mm')}
+                              </span>
+                            )}
+                            {task.rrule || task.recurringPast ? <IoRepeatOutline className="text-gray-400" /> : null}
+                            <div
+                              className="text-gray-300 opacity-0 group-hover/card:opacity-100 transition-opacity cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navToLogseqBlock(task, currentGraph)
+                              }}
+                            >
+                              <LogseqLogo />
+                            </div>
+                          </div>
+                          <div className="bg-gray-100 rounded px-1 py-0.5 text-gray-400 text-[10px]">
+                            {task.status === 'done' ? (
+                              <span>{minutesToHHmm(task.actualTime ?? estimatedTime)} / </span>
+                            ) : null}
+                            {minutesToHHmm(estimatedTime)}
+                          </div>
                         </div>
+                        <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>
+                          {showTitle}
+                        </div>
+                        {task.project.isJournal ? null : (
+                          <div className="text-gray-400 text-xs flex gap-1 items-center">
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: task.project.bgColor }} />
+                            <span>{task.project?.originalName}</span>
+                          </div>
+                        )}
                       </div>
-                      <div className="bg-gray-100 rounded px-1 py-0.5 text-gray-400 text-[10px]">
-                        {task.status === 'done' ? (
-                          <span>{minutesToHHmm(task.actualTime ?? estimatedTime)} / </span>
-                        ) : null}
-                        {minutesToHHmm(estimatedTime)}
-                      </div>
-                    </div>
-                    <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>
-                      {showTitle}
-                    </div>
-                    {task.project.isJournal ? null : (
-                      <div className="text-gray-400 text-xs flex gap-1 items-center">
-                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: task.project.bgColor }} />
-                        <span>{task.project?.originalName}</span>
-                      </div>
-                    )}
+                    </Dropdown>
                   </div>
                 )
               })}
