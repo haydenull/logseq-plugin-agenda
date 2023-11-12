@@ -9,7 +9,6 @@
   },
   "scripts": {
     "dev": "vite --mode web",
-    "start": "vite",
     "build:plugin": "tsc && vite build --mode plugin",
     "build:web": "tsc && vite build --mode web",
     "preview": "vite preview",

@@ -91,7 +91,7 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
         {children}
       </span>
       <FullScreenModal open={open} onClose={() => setOpen(false)}>
-        <div className="w-screen h-screen p-8 flex gap-8 overflow-auto bg-gray-50">
+        <div className="w-screen h-full p-8 flex gap-8 overflow-auto bg-gray-50 pr-[330px]">
           <div className="w-[265px] shrink-0 mt-2 flex flex-col">
             <div className="flex items-center justify-center mb-2">
               <div className="text-2xl relative">
@@ -390,7 +390,7 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
             )
           })}
 
-          <div className="absolute top-0 right-0 h-screen pt-12">
+          <div className="absolute top-0 right-0 h-screen pt-8">
             <Backlog bindCalendar={false} />
           </div>
         </div>

@@ -159,6 +159,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         weekNumbers
         weekNumberClassNames="text-xs"
         defaultTimedEventDuration="00:30"
+        firstDay={1}
         fixedWeekCount={false}
         ref={calendarRef}
         height="100%"
