@@ -1,3 +1,17 @@
+# [3.3.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.2.0...v3.3.0) (2023-11-12)
+
+
+### Bug Fixes
+
+* **agenda2:** :bug: create time task error ([08508c3](https://github.com/haydenull/logseq-plugin-agenda/commit/08508c3e8d53933b1ee987582ba467eb754bd09f))
+
+
+### Features
+
+* **calendar:** :sparkles: supports show time log ([764d279](https://github.com/haydenull/logseq-plugin-agenda/commit/764d279ab310ced62c96fcdfb8cad1e3df24fc0e))
+* **plan:** :sparkles: add overdue panel ([5a63a8f](https://github.com/haydenull/logseq-plugin-agenda/commit/5a63a8fd3635bdcbab6c85c04ecf2e1739b94c22))
+* **plan:** :sparkles: add plan page ([5df1ea0](https://github.com/haydenull/logseq-plugin-agenda/commit/5df1ea020c7f0afe1c5f1030b688b3468b3ee16d))
+
 # [3.2.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.1.0...v3.2.0) (2023-11-10)
 
 
