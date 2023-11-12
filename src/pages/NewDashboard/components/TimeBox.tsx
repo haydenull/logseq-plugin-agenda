@@ -59,16 +59,18 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
     .map((task) =>
       transformAgendaTaskToCalendarEvent(task, {
         showFirstEventInCycleOnly: settings.viewOptions?.showFirstEventInCycleOnly,
+        showTimeLog: settings.viewOptions?.showTimeLog,
       }),
     )
+    .flat()
   const calendarApi = calendarRef.current?.getApi()
 
-  const [editTaskModal, setEditTaskModal] = useState<{
-    open: boolean
-    task?: AgendaTask
-  }>({
-    open: false,
-  })
+  // const [editTaskModal, setEditTaskModal] = useState<{
+  //   open: boolean
+  //   task?: AgendaTask
+  // }>({
+  //   open: false,
+  // })
   const [createTaskModal, setCreateTaskModal] = useState<
     | { open: false }
     | {

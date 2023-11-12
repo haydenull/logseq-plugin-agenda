@@ -223,7 +223,7 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
                   </div>
                 ) : (
                   <>
-                    <TaskModal onOk={addNewTask} info={{ type: 'create', initialData: { startDateVal: today } }}>
+                    <TaskModal onOk={addNewTask} info={{ type: 'create', initialData: { startDateVal: day } }}>
                       <div
                         onClick={() => track('Planner: Add Task Button', { position: 'Today' })}
                         className={cn(
