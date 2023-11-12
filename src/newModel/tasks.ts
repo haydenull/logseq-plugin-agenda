@@ -56,3 +56,15 @@ export const thisMonthTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
     return task.start.isBetween(startDay, endDay, 'day', '(]')
   })
 })
+
+export const overdueTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
+  const allTasks = get(tasksWithStartAtom)
+
+  const today = dayjs()
+  return allTasks.filter((task) => {
+    if (!task.start || task.status === 'done') return false
+    // multiple days task
+    if (task.end) return task.end.isBefore(today, 'day')
+    return task.start.isBefore(today, 'day')
+  })
+})
