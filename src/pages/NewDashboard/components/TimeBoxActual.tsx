@@ -24,7 +24,7 @@ const TimeBoxActual = ({ date }: { date: Dayjs }) => {
   // const { refreshTasks: refreshAllTasks } = useAgendaTasks()
   const [tasksWithStart] = useAtom(tasksWithStartAtom)
   const todayTasks = tasksWithStart.filter((task) => dayjs(task.start).isSame(date, 'day'))
-  const estimatedTasks = todayTasks.map((task) => transformAgendaTaskToCalendarEvent(task))
+  const estimatedTasks = todayTasks.map((task) => transformAgendaTaskToCalendarEvent(task)).flat()
   const actualTasks = todayTasks.map(transformAgendaTimeLogsToCalendarEvents).flat()
   const calendarEvents = [...estimatedTasks, ...actualTasks]
 

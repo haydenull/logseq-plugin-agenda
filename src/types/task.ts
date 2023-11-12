@@ -29,7 +29,7 @@ export type AgendaTask = {
   repeat?: string // from logseq scheduled
   estimatedTime?: number // unit: minute, from agenda drawer estimated
   actualTime?: number // unit: minute
-  timeLogs: TimeLog[] // from logbook
+  timeLogs?: TimeLog[] // from logbook
   subtasks?: AgendaTask[] // children blocks which are task
   notes?: string[] // children blocks which are normal block
   rrule?: RRule

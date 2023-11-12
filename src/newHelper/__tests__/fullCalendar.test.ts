@@ -83,20 +83,22 @@ const DEMO_TASK = {
 describe('helper: fullCalendar', () => {
   test('transformAgendaTaskToCalendarEvent', () => {
     const result = transformAgendaTaskToCalendarEvent(DEMO_TASK)
-    expect(result).toEqual({
-      id: DEMO_TASK.id,
-      title: DEMO_TASK.title,
-      allDay: DEMO_TASK.allDay,
-      start: DEMO_TASK.start.toDate(),
-      end: DEMO_TASK.start.add(DEMO_TASK.estimatedTime as number, 'minute').toDate(),
-      rrule: DEMO_TASK.rrule,
-      editable: true,
-      extendedProps: DEMO_TASK,
-      color: undefined,
-      duration: {
-        minute: 30,
+    expect(result).toEqual([
+      {
+        id: DEMO_TASK.id,
+        title: DEMO_TASK.title,
+        allDay: DEMO_TASK.allDay,
+        start: DEMO_TASK.start.toDate(),
+        end: DEMO_TASK.start.add(DEMO_TASK.estimatedTime as number, 'minute').toDate(),
+        rrule: DEMO_TASK.rrule,
+        editable: true,
+        extendedProps: DEMO_TASK,
+        color: undefined,
+        duration: {
+          minute: 30,
+        },
       },
-    })
+    ])
     expect(1).toBe(1)
   })
   test('minutesToHHmm', () => {

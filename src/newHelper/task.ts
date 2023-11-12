@@ -168,24 +168,23 @@ export const transformBlockToAgendaTask = async (
    * "TODO Agenda new task design\n:LOGBOOK:\nCLOCK: [2023-09-16 Sat 15:35:51]--[2023-09-16 Sat 16:37:57]"
    * => [{ start: Dayjs, end: Dayjs, amount: 120 }]
    */
-  let timeLogs =
-    content
-      .split('\n')
-      .filter((l) => l.startsWith('CLOCK: ['))
-      .map((item) => {
-        // item: CLOCK: [2023-09-16 Sat 15:35:51]--[2023-09-16 Sat 16:37:57] -> [2023-09-1615:35:51, 2023-09-1616:37:57]
-        const [startText, endText] = item.replace(/[a-zA-Z\s\[\]]/g, '').split('--')
-        if (!startText || !endText) return null
-        const start = dayjs(startText, 'YYYY-MM-DDHH:mm:ss')
-        const end = dayjs(endText, 'YYYY-MM-DDHH:mm:ss')
-        return { start, end, amount: end.diff(start, 'minute') }
-      })
-      .filter(Boolean) ?? []
+  const timeLogs = content
+    .split('\n')
+    .filter((l) => l.startsWith('CLOCK: ['))
+    .map((item) => {
+      // item: CLOCK: [2023-09-16 Sat 15:35:51]--[2023-09-16 Sat 16:37:57] -> [2023-09-1615:35:51, 2023-09-1616:37:57]
+      const [startText, endText] = item.replace(/[a-zA-Z\s\[\]]/g, '').split('--')
+      if (!startText || !endText) return null
+      const start = dayjs(startText, 'YYYY-MM-DDHH:mm:ss')
+      const end = dayjs(endText, 'YYYY-MM-DDHH:mm:ss')
+      return { start, end, amount: end.diff(start, 'minute') }
+    })
+    .filter(Boolean)
   // 已完成任务，如果没有设置 timeLogs 则默认使用 estimatedTime
-  if (start && status === 'done' && timeLogs?.length <= 0) {
-    const finalEstimatedTime = estimatedTime ?? _defaultEstimatedTime
-    timeLogs = [{ start, end: start.add(finalEstimatedTime, 'minute'), amount: finalEstimatedTime }]
-  }
+  // if (start && status === 'done' && timeLogs?.length <= 0) {
+  //   const finalEstimatedTime = estimatedTime ?? _defaultEstimatedTime
+  //   timeLogs = [{ start, end: start.add(finalEstimatedTime, 'minute'), amount: finalEstimatedTime }]
+  // }
 
   /**
    * parse done history
