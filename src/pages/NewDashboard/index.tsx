@@ -7,6 +7,7 @@ import useAgendaTasks from '@/hooks/useAgendaTasks'
 import useNewProjects from '@/hooks/useNewProjects'
 import { appAtom } from '@/newModel/app'
 import { logseqAtom } from '@/newModel/logseq'
+import initializeDayjs from '@/register/dayjs'
 import { cn } from '@/util/util'
 
 import Backlog from './components/Backlog'
@@ -26,6 +27,7 @@ const Dashboard = () => {
   const [connectionErrorModal, setConnectionErrorModal] = useState(false)
 
   const loadData = async () => {
+    initializeDayjs(1)
     refreshTasks().catch(() => {
       setConnectionErrorModal(true)
     })
@@ -59,10 +61,11 @@ const Dashboard = () => {
   return (
     <div
       className={cn(
-        "flex w-screen h-screen bg-gray-100 before:absolute before:pointer-events-none before:h-[180px] before:w-[240px] before:left-1/2 before:top-1/2 before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:content-['']  before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40",
+        "flex w-screen h-screen bg-gray-100 before:absolute before:pointer-events-none before:h-[180px] before:w-[240px] before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:content-['']  before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40 before:transition-all",
         {
           'pt-[30px]': import.meta.env.VITE_MODE === 'plugin',
         },
+        app.view === 'calendar' ? 'before:left-1/4 before:top-2/3' : 'before:left-1/2 before:top-1/2',
       )}
     >
       {/* ========== projects sidebar ========== */}

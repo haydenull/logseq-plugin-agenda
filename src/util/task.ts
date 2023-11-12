@@ -40,25 +40,25 @@ export const genTaskTimeLinkText = (
   {
     start,
     end,
-    isAllDay = true,
+    allDay = true,
   }: {
     start: Dayjs
     end: Dayjs
-    isAllDay?: boolean
+    allDay?: boolean
   },
   logseqFormat: AppUserConfigs['preferredFormat'] = 'markdown',
 ) => {
   const url = new URL('agenda://')
   url.searchParams.append('start', '' + start.valueOf())
   url.searchParams.append('end', '' + end.valueOf())
-  if (isAllDay === false) url.searchParams.append('allDay', 'false')
+  if (allDay === false) url.searchParams.append('allDay', 'false')
 
-  const startText = isAllDay ? start.format(DATE_FORMATTER) : start.format(DATE_TIME_FORMATTER)
-  let endText = isAllDay ? end.format(DATE_FORMATTER) : end.format(DATE_TIME_FORMATTER)
+  const startText = allDay ? start.format(DATE_FORMATTER) : start.format(DATE_TIME_FORMATTER)
+  let endText = allDay ? end.format(DATE_FORMATTER) : end.format(DATE_TIME_FORMATTER)
 
   const isSingleDayTask = start.isSame(end, 'day')
-  if (isSingleDayTask && isAllDay) endText = ''
-  if (isSingleDayTask && !isAllDay) endText = end.format('HH:mm')
+  if (isSingleDayTask && allDay) endText = ''
+  if (isSingleDayTask && !allDay) endText = end.format('HH:mm')
 
   const showText = startText + (endText ? ` - ${endText}` : '')
   const time = logseqFormat === 'org' ? `>[[#${url.toString()}][${showText}]]` : `>[${showText}](#${url.toString()})`

@@ -3,6 +3,8 @@ import { Button } from 'antd'
 import React, { useState } from 'react'
 import { createPortal } from 'react-dom'
 
+import { cn } from '@/util/util'
+
 const FullScreenModal = ({
   open,
   children,
@@ -14,9 +16,13 @@ const FullScreenModal = ({
 }) => {
   if (!open) return null
   return createPortal(
-    <div className="w-screen h-screen fixed top-0 left-0 z-50 bg-gray-100">
+    <div
+      className={cn('w-screen h-screen fixed top-0 left-0 z-50 bg-gray-50', {
+        'pt-[30px]': import.meta.env.VITE_MODE === 'plugin',
+      })}
+    >
       {children}
-      <div className="absolute right-2 top-2">
+      <div className={cn('absolute right-2', import.meta.env.VITE_MODE === 'plugin' ? 'top-[38px]' : 'top-2')}>
         <Button icon={<CloseOutlined />} onClick={onClose}>
           Exit
         </Button>

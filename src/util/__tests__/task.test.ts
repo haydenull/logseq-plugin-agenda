@@ -37,7 +37,7 @@ describe('util/task.ts', () => {
           {
             start,
             end: sameDayEnd,
-            isAllDay: true,
+            allDay: true,
           },
           'markdown',
         ),
@@ -49,7 +49,7 @@ describe('util/task.ts', () => {
           {
             start,
             end: sameDayEnd,
-            isAllDay: true,
+            allDay: true,
           },
           'org',
         ),
@@ -61,7 +61,7 @@ describe('util/task.ts', () => {
           {
             start,
             end: sameDayEnd,
-            isAllDay: false,
+            allDay: false,
           },
           'markdown',
         ),
@@ -75,7 +75,7 @@ describe('util/task.ts', () => {
           {
             start,
             end: notSameDayEnd,
-            isAllDay: true,
+            allDay: true,
           },
           'markdown',
         ),
@@ -87,7 +87,7 @@ describe('util/task.ts', () => {
           {
             start,
             end: notSameDayEnd,
-            isAllDay: false,
+            allDay: false,
           },
           'markdown',
         ),
