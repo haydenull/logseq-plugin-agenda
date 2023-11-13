@@ -1,3 +1,10 @@
+## [3.3.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.3.0...v3.3.1) (2023-11-13)
+
+
+### Bug Fixes
+
+* **backlog:** :bug: some blocks without pages cause blank calendar ([f2bac58](https://github.com/haydenull/logseq-plugin-agenda/commit/f2bac5888efb4732e80f89a18734e46534aa3688))
+
 # [3.3.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.2.0...v3.3.0) (2023-11-12)
 
 
