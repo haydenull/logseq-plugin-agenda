@@ -32,7 +32,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
       return true
     })
     .sort((a, b) => {
-      return a.project.originalName.localeCompare(b.project.originalName)
+      return a.project.originalName?.localeCompare(b.project.originalName)
     })
 
   useEffect(() => {
