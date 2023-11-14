@@ -1,4 +1,4 @@
-import { Analytics } from '@vercel/analytics/react'
+// import { Analytics } from '@vercel/analytics/react'
 import { Modal, message } from 'antd'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useState } from 'react'
@@ -80,7 +80,7 @@ const Dashboard = () => {
       {/* ========== Toolbar ======== */}
       {/* <div></div> */}
 
-      <Analytics />
+      {/* <Analytics /> */}
       <Modal
         open={connectionErrorModal}
         title="Connection Error"
