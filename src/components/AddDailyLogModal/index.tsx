@@ -51,6 +51,7 @@ const AddDailyLogModal: React.FC<{
 }> = ({ visible, onCancel }) => {
   const { t } = useTranslation()
   const { dailyLogTagList = [], logKey, weekHourStart = 0, weekHourEnd = 24 } = getInitialSettings()
+  const timeRulerRef = React.useRef<HTMLDivElement>(null)
 
   /** 时间轴开始时刻 */
   const rulerStartTime = weekHourStart
@@ -84,7 +85,7 @@ const AddDailyLogModal: React.FC<{
     })
   }, [])
   useEffect(() => {
-    const el = document.querySelector('#time-ruler')
+    const el = timeRulerRef.current
     if (!el) return
     const at = new AnyTouch(el, { preventDefault: false })
     at.use(pan, { threshold: 0 })
@@ -104,7 +105,7 @@ const AddDailyLogModal: React.FC<{
       at.off('pandown')
       at.off('panend')
     }
-  }, [])
+  }, [timeRulerRef.current])
 
   return (
     <Drawer
@@ -134,7 +135,7 @@ const AddDailyLogModal: React.FC<{
         <div className="mt-3 flex flex-row">
           {/*======= time ruler selector start ====== */}
           <div
-            id="time-ruler"
+            ref={timeRulerRef}
             className={classNames(
               s.rulerContainer,
               'bg-primary relative rounded cursor-pointer select-none ml-11 description-text',
