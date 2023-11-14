@@ -1,3 +1,10 @@
+## [3.3.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.3.2...v3.3.3) (2023-11-14)
+
+
+### Bug Fixes
+
+* :bug: can't open plugin ([fcdfe7f](https://github.com/haydenull/logseq-plugin-agenda/commit/fcdfe7f2b85ec23ff8e16981f745965c2e78c102))
+
 ## [3.3.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.3.1...v3.3.2) (2023-11-14)
 
 
