@@ -1,3 +1,10 @@
+## [3.3.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.3.1...v3.3.2) (2023-11-14)
+
+
+### Bug Fixes
+
+* **agenda2:** :bug: can't create daily log from sidebar ([98ac1b3](https://github.com/haydenull/logseq-plugin-agenda/commit/98ac1b3e56d3bbfa2fc23d3aa2fcd6a7f54f6c34))
+
 ## [3.3.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.3.0...v3.3.1) (2023-11-13)
 
 
