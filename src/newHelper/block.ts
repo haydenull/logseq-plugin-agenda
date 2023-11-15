@@ -10,7 +10,7 @@ import {
   SCHEDULED_DATETIME_FORMATTER,
   SCHEDULED_DATE_FORMATTER,
 } from '@/constants/agenda'
-import type { AgendaTask, CreateAgendaTask } from '@/types/task'
+import type { AgendaTask, AgendaTaskObjective, CreateAgendaTask } from '@/types/task'
 import { moveBlockToNewPage, updateBlock } from '@/util/logseq'
 
 import { secondsToHHmmss } from './fullCalendar'
@@ -303,7 +303,7 @@ export function genDurationString(minutes: number): string {
   return durationString
 }
 
-type AgendaDrawer = { estimated?: number; end?: Dayjs }
+type AgendaDrawer = { estimated?: number; end?: Dayjs; objective?: AgendaTaskObjective }
 /**
  * parse agenda drawer
  */
@@ -325,6 +325,18 @@ export function parseAgendaDrawer(blockContent: string): AgendaDrawer | null {
     ? properties.reduce((acc, cur) => {
         if (cur[0] === 'estimated') return { ...acc, estimated: parseDurationString(cur[1]) }
         if (cur[0] === 'end') return { ...acc, end: dayjs(cur[1], DATE_FORMATTER) }
+        if (cur[0] === 'objective') {
+          // week-2023-46
+          const [type, year, number] = cur[1].split('-')
+          return {
+            ...acc,
+            objective: {
+              type: type as AgendaTaskObjective['type'],
+              year: Number(year),
+              number: Number(number),
+            },
+          }
+        }
         return { ...acc, [cur[0]]: cur[1] }
       }, {} as AgendaDrawer)
     : null

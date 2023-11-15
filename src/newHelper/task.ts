@@ -162,6 +162,8 @@ export const transformBlockToAgendaTask = async (
   const _defaultEstimatedTime = DEFAULT_ESTIMATED_TIME
   // end
   const end = agendaDrawer?.end
+  // objective
+  const objective = agendaDrawer?.objective
 
   /**
    * parse logbook
@@ -233,6 +235,7 @@ export const transformBlockToAgendaTask = async (
     notes: [],
     rrule,
     doneHistory,
+    objective,
     rawBlock: block,
   }
 }

@@ -177,6 +177,12 @@ html, body {
 *::-webkit-scrollbar-thumb:hover {
   background-color: var(--ls-description-text-color);
 }
+// hide scroll bar
+.hide-scroll-bar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
 
 body:not(.agenda3) {
   a {
