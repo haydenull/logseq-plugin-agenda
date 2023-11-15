@@ -15,6 +15,11 @@ export type AgendaTaskPage = {
   journalDay?: number
   properties?: Record<string, string>
 }
+export type AgendaTaskObjective = {
+  type: 'week' | 'month'
+  year: number
+  number: number
+}
 export type TimeLog = { start: Dayjs; end: Dayjs; amount: number /** unit: minute */ }
 export type AgendaTask = {
   id: string // uuid
@@ -35,11 +40,17 @@ export type AgendaTask = {
   rrule?: RRule
   doneHistory?: Dayjs[] // recurrence done history
   recurringPast?: boolean // is recurring past task
+  // from agenda drawer objective
+  objective?: AgendaTaskObjective
   rawBlock: BlockFromQuery // raw block entity
 }
 
 export type AgendaTaskWithStart = AgendaTask & {
   start: Dayjs
+}
+
+export type AgendaObjective = AgendaTask & {
+  objective: AgendaTaskObjective
 }
 
 export type CreateAgendaTask = { projectId?: string } & Overwrite<

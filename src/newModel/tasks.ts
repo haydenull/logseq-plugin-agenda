@@ -1,17 +1,24 @@
 import dayjs from 'dayjs'
 import { atom } from 'jotai'
 
-import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
+import type { AgendaObjective, AgendaTask, AgendaTaskWithStart } from '@/types/task'
 
 export const agendaTasksAtom = atom<AgendaTask[]>([])
 
+// task
 export const tasksWithStartAtom = atom<AgendaTaskWithStart[]>((get) => {
   const allTasks = get(agendaTasksAtom)
-  return allTasks.filter((task) => task.start) as AgendaTaskWithStart[]
+  return allTasks.filter((task) => task.start && !task.objective) as AgendaTaskWithStart[]
 })
+// backlog
 export const backlogTasksAtom = atom<AgendaTask[]>((get) => {
   const allTasks = get(agendaTasksAtom)
-  return allTasks.filter((task) => task.status === 'todo' && !task.start)
+  return allTasks.filter((task) => task.status === 'todo' && !task.start && !task.objective)
+})
+// objective
+export const agendaObjectivesAtom = atom<AgendaObjective[]>((get) => {
+  const allTasks = get(agendaTasksAtom)
+  return allTasks.filter((task) => task.objective) as AgendaObjective[]
 })
 
 export const recentTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
@@ -66,5 +73,26 @@ export const overdueTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
     // multiple days task
     if (task.end) return task.end.isBefore(today, 'day')
     return task.start.isBefore(today, 'day')
+  })
+})
+
+export const thisWeekObjectivesAtom = atom<AgendaObjective[]>((get) => {
+  const today = dayjs()
+  const yearNumber = today.year()
+  const weekNumber = today.isoWeek()
+  const allObjectives = get(agendaObjectivesAtom)
+  return allObjectives.filter(({ objective }) => {
+    const { type, year, number } = objective
+    return type === 'week' && year === yearNumber && number === weekNumber
+  })
+})
+export const thisMonthObjectivesAtom = atom<AgendaObjective[]>((get) => {
+  const today = dayjs()
+  const yearNumber = today.year()
+  const monthNumber = today.month() + 1
+  const allObjectives = get(agendaObjectivesAtom)
+  return allObjectives.filter(({ objective }) => {
+    const { type, year, number } = objective
+    return type === 'month' && year === yearNumber && number === monthNumber
   })
 })
