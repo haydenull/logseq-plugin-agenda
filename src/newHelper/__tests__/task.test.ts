@@ -91,7 +91,7 @@ export const DEMO_TASK = {
 
 describe('helper: task', () => {
   test('transformBlockToAgendaTask', async () => {
-    expect(await transformBlockToAgendaTask(DEMO_BLOCK, DEMO_FAVORITE_PAGES)).toEqual(DEMO_TASK)
+    expect(await transformBlockToAgendaTask(DEMO_BLOCK, DEMO_FAVORITE_PAGES, {})).toEqual(DEMO_TASK)
   })
   test('separateTasksInDay', async () => {
     const tasks: AgendaTaskWithStart[] = [

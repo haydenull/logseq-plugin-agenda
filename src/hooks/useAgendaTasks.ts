@@ -1,17 +1,20 @@
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
+import { useCallback } from 'react'
 
 import { getAgendaTasks } from '@/newHelper/task'
+import { settingsAtom } from '@/newModel/settings'
 import { agendaTasksAtom } from '@/newModel/tasks'
 import type { AgendaTask } from '@/types/task'
 
 const useAgendaTasks = () => {
+  const settings = useAtomValue(settingsAtom)
   const [tasks, setTasks] = useAtom(agendaTasksAtom)
 
-  const refreshTasks = () => {
-    return getAgendaTasks().then((res) => {
+  const refreshTasks = useCallback(() => {
+    return getAgendaTasks(settings).then((res) => {
       setTasks(res)
     })
-  }
+  }, [settings])
 
   // When using, please do not forget to modify corresponding block
   const updateTaskData = (id: string, data: Partial<AgendaTask>) => {

@@ -252,7 +252,7 @@ const KanBan = (props, ref) => {
                       trigger={['contextMenu']}
                       menu={{
                         items: [
-                          editDisabled
+                          editDisabled || task.project.isJournal
                             ? null
                             : {
                                 key: 'backlog',
