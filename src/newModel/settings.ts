@@ -1,6 +1,9 @@
 import { atom } from 'jotai'
 
 export type Settings = {
+  general?: {
+    useJournalDayAsSchedule?: boolean
+  }
   ics?: {
     repo?: string
     token?: string

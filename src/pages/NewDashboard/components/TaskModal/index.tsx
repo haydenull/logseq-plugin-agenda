@@ -1,5 +1,6 @@
 import { Button, Calendar, Input, type InputRef, Modal, Popover, Popconfirm, DatePicker, message, Select } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
+import { useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { BsCalendar4Event, BsCalendar4Range, BsClipboard, BsClock, BsClockHistory } from 'react-icons/bs'
 import { RiDeleteBin4Line } from 'react-icons/ri'
@@ -10,6 +11,7 @@ import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda
 import { deleteTask } from '@/newHelper/block'
 import { type BlockFromQuery, transformBlockToAgendaTask } from '@/newHelper/task'
 import { track } from '@/newHelper/umami'
+import { settingsAtom } from '@/newModel/settings'
 import type { AgendaTask, TimeLog } from '@/types/task'
 
 import ProjectSelect from '../ProjectSelect'
@@ -46,6 +48,7 @@ const TaskModal = ({
   const _open = children ? internalOpen : open
   const [mode, setMode] = useState<'Normal' | 'Advanced'>('Normal')
   const titleInputRef = React.useRef<InputRef>(null)
+  const settings = useAtomValue(settingsAtom)
 
   const createHookResult = useCreate(info.type === 'create' ? info.initialData : null)
   const editHookResult = useEdit(info.type === 'edit' ? info.initialTaskData : null)
@@ -87,6 +90,7 @@ const TaskModal = ({
         },
       } as unknown as BlockFromQuery,
       favoritePages,
+      settings,
     )
     onOk?.(task)
     setInternalOpen(false)

@@ -1,7 +1,7 @@
 // import { Analytics } from '@vercel/analytics/react'
 import { Modal, message } from 'antd'
 import { useAtomValue, useSetAtom } from 'jotai'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import useAgendaTasks from '@/hooks/useAgendaTasks'
 import useNewProjects from '@/hooks/useNewProjects'
@@ -26,7 +26,7 @@ const Dashboard = () => {
   const { refreshProjects } = useNewProjects()
   const [connectionErrorModal, setConnectionErrorModal] = useState(false)
 
-  const loadData = async () => {
+  const loadData = useCallback(() => {
     initializeDayjs(1)
     refreshTasks().catch(() => {
       setConnectionErrorModal(true)
@@ -35,7 +35,7 @@ const Dashboard = () => {
     // logseq.App.getCurrentGraph().then((res) => {
     //   console.log('getUserConfigs', res)
     // })
-  }
+  }, [refreshTasks])
   // get tasks and projects
   useEffect(() => {
     const handleWindowFocus = () => {
@@ -50,7 +50,7 @@ const Dashboard = () => {
     return () => {
       window.removeEventListener('focus', handleWindowFocus)
     }
-  }, [])
+  }, [loadData])
   // set logseq app and user info
   useEffect(() => {
     logseq.App.getCurrentGraph().then((graph) => {

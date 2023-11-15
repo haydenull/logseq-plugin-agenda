@@ -26,6 +26,10 @@ import s from './settingsModal.module.less'
 // ]
 const tabs = [
   {
+    key: 'general',
+    label: 'General Settings',
+  },
+  {
     key: 'viewOptions',
     label: 'View Options',
   },
@@ -40,7 +44,7 @@ const tabs = [
 ] as const
 const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
   const [open, setOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['key']>('viewOptions')
+  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['key']>('general')
   const { settings, setSettings } = useSettings()
 
   const icsUrl = `https://agenda-ics.haydenhayden.com?repo=${settings.ics?.repo}&token=${settings.ics?.token}`
@@ -131,6 +135,24 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
                   onChange={(e) => onChange('viewOptions.hideCompleted', e.target.checked)}
                 >
                   Hide Completed Tasks
+                </Checkbox>
+              </div>
+            </div>
+          </>
+        )
+      case 'general':
+        return (
+          <>
+            <div className="h-14 pl-4 flex items-center font-semibold text-lg border-b">General Settings</div>
+            <div className="px-4 mt-4 pb-8">
+              <div className="mt-4 flex flex-col gap-1">
+                <Checkbox
+                  checked={settings.general?.useJournalDayAsSchedule}
+                  onChange={(e) => onChange('general.useJournalDayAsSchedule', e.target.checked)}
+                >
+                  <Tooltip title="When the task in the journal is not scheduled, use the date of the journal as the task date.">
+                    Use Journal As Schedule
+                  </Tooltip>
                 </Checkbox>
               </div>
             </div>

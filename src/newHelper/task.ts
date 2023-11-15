@@ -4,6 +4,7 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { RRule as RRuleClass } from 'rrule'
 
 import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
+import type { Settings } from '@/newModel/settings'
 import type { KanBanItem } from '@/pages/NewDashboard/components/KanBan'
 import type { RRule } from '@/types/fullcalendar'
 import type { AgendaTask, AgendaTaskWithStart, AgendaTaskPage } from '@/types/task'
@@ -34,7 +35,7 @@ export type BlockFromQuery = BlockEntity & {
   page: AgendaTaskPage
   repeated?: boolean
 }
-export const getAgendaTasks = async () => {
+export const getAgendaTasks = async (settings: Settings) => {
   const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
   let blocks = (await logseq.DB.datascriptQuery(`
   [:find (pull
@@ -95,7 +96,7 @@ export const getAgendaTasks = async () => {
       })),
     }
 
-    const task = await transformBlockToAgendaTask(_block as unknown as BlockFromQuery, favoritePages)
+    const task = await transformBlockToAgendaTask(_block as unknown as BlockFromQuery, favoritePages, settings)
     const recurringPastTasks: AgendaTask[] =
       task.doneHistory?.map((pastTaskEnd) => {
         const { estimatedTime = DEFAULT_ESTIMATED_TIME } = task
@@ -124,7 +125,9 @@ export const getAgendaTasks = async () => {
 export const transformBlockToAgendaTask = async (
   block: BlockFromQuery,
   favoritePages: string[],
+  settings: Settings,
 ): Promise<AgendaTask> => {
+  const { general = {} } = settings
   const { uuid, marker, content, scheduled: scheduledNumber, deadline: deadlineNumber, properties, page } = block
 
   const title = content.split('\n')[0]?.replace(marker, '')?.trim()
@@ -140,6 +143,8 @@ export const transformBlockToAgendaTask = async (
     const time = / (\d{2}:\d{2})[ >]/.exec(dateString!)?.[1] || null
     if (time) allDay = false
     start = time ? dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm') : dayjs('' + scheduledNumber, 'YYYYMMDD')
+  } else if (page.isJournal && general?.useJournalDayAsSchedule) {
+    start = dayjs(String(page.journalDay), 'YYYYMMDD')
   }
 
   // parse DEADLINE

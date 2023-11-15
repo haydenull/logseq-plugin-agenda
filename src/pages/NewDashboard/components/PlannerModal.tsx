@@ -112,7 +112,7 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
             </div>
             <ReactSortable
               forceFallback // 该属性如果不加就无法与 fullcalendar 交互
-              className={cn('flex flex-col gap-2 flex-1 overflow-y-auto', {
+              className={cn('flex flex-col gap-2 flex-1 overflow-y-auto hide-scroll-bar', {
                 'pb-28': todayTasks.length === 0,
               })}
               group="planner"
@@ -141,7 +141,7 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
                       trigger={['contextMenu']}
                       menu={{
                         items: [
-                          editDisabled
+                          editDisabled || task.project.isJournal
                             ? null
                             : {
                                 key: 'backlog',
@@ -379,7 +379,7 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
                               trigger={['contextMenu']}
                               menu={{
                                 items: [
-                                  editDisabled
+                                  editDisabled || task.project.isJournal
                                     ? null
                                     : {
                                         key: 'backlog',
