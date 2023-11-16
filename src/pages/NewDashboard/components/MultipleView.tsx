@@ -11,6 +11,7 @@ import { type App, appAtom } from '@/newModel/app'
 import { cn } from '@/util/util'
 
 import Calendar, { type CalendarView, type CalendarHandle } from './Calendar'
+import Filter from './Filter'
 import KanBan, { type KanBanHandle } from './KanBan'
 import SettingsModal from './SettingsModal'
 import UploadIcs from './UploadIcs'
@@ -107,6 +108,7 @@ const MultipleView = ({ className }: { className?: string }) => {
             // fix windows tabs 闪烁问题
             className="min-w-[166px]"
           />
+          <Filter />
           <UploadIcs className="text-lg cursor-pointer" />
           <SettingsModal>
             <FiSettings className="text-lg cursor-pointer" onClick={() => track('Settings Button')} />

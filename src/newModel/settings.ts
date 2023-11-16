@@ -13,5 +13,13 @@ export type Settings = {
     showFirstEventInCycleOnly?: boolean
     showTimeLog?: boolean
   }
+  filters?: Filter[]
+  selectedFilters?: string[]
 }
 export const settingsAtom = atom<Settings>({ viewOptions: { showTimeLog: false } })
+
+export type Filter = {
+  id: string
+  name: string
+  query: string
+}
