@@ -1,3 +1,12 @@
+# [3.4.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.3.3...v3.4.0) (2023-11-16)
+
+
+### Features
+
+* :sparkles: supports journal as schedule ([0627174](https://github.com/haydenull/logseq-plugin-agenda/commit/062717476bf88b318c677f57909ff2291491f614))
+* **plan:** :sparkles: optimize style ([662db2d](https://github.com/haydenull/logseq-plugin-agenda/commit/662db2dc2ab0875c70cabe10d50a30021f01d0c2))
+* **plan:** :sparkles: supports show objective ([ac076de](https://github.com/haydenull/logseq-plugin-agenda/commit/ac076de9daf3e0928fbda7240cb79a4774e42559))
+
 ## [3.3.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.3.2...v3.3.3) (2023-11-14)
 
 
