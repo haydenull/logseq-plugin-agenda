@@ -3,14 +3,14 @@ import { useAtom } from 'jotai'
 import { clone, set } from 'lodash-es'
 import { useEffect } from 'react'
 
-import { type Settings, settingsAtom } from '@/newModel/settings'
+import { type Settings, settingsAtom, type Filter } from '@/newModel/settings'
 
 const isPlugin = import.meta.env.VITE_MODE === 'plugin'
 const useSettings = () => {
   const [settings, setAtomSettings] = useAtom(settingsAtom)
   const { set: setLocalStorage, value: valueLocalStorage } = useLocalStorageValue<Settings>('settings')
 
-  const setSettings = (key: string, value: string | boolean | undefined) => {
+  const setSettings = (key: string, value: string | boolean | undefined | Filter[] | string[]) => {
     const newSettings = set(clone(settings), key, value)
     setAtomSettings(newSettings)
     if (isPlugin) {

@@ -3,11 +3,14 @@ import { Button, Checkbox, Input, Menu, Modal, Tooltip, Typography, message } fr
 import type { MenuProps } from 'antd'
 import copy from 'copy-to-clipboard'
 import { useState } from 'react'
+import { RiDeleteBin4Line, RiEdit2Line } from 'react-icons/ri'
 
 import logo from '@/assets/logo.png'
 import useSettings from '@/hooks/useSettings'
+import type { Filter } from '@/newModel/settings'
 import { cn } from '@/util/util'
 
+import EditFilterModal from './EditFilterModal'
 import s from './settingsModal.module.less'
 
 // type MenuItem = Required<MenuProps>['items'][number]
@@ -34,6 +37,10 @@ const tabs = [
     label: 'View Options',
   },
   {
+    key: 'filters',
+    label: 'Filters',
+  },
+  {
     key: 'shareAgenda',
     label: 'Share Agenda',
   },
@@ -49,7 +56,7 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
 
   const icsUrl = `https://agenda-ics.haydenhayden.com?repo=${settings.ics?.repo}&token=${settings.ics?.token}`
 
-  const onChange = (key: string, value: string | boolean | undefined) => {
+  const onChange = (key: string, value: string | boolean | undefined | Filter[]) => {
     setSettings(key, value)
   }
   const onClickCopyIcsUrl = () => {
@@ -67,6 +74,7 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
   }
 
   const renderForm = () => {
+    const oldFilters = settings.filters ?? []
     switch (activeTab) {
       case 'shareAgenda':
         return (
@@ -151,9 +159,56 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
                   onChange={(e) => onChange('general.useJournalDayAsSchedule', e.target.checked)}
                 >
                   <Tooltip title="When the task in the journal is not scheduled, use the date of the journal as the task date.">
-                    Use Journal As Schedule
+                    Use Journal Day As Schedule
                   </Tooltip>
                 </Checkbox>
+              </div>
+            </div>
+          </>
+        )
+      case 'filters':
+        return (
+          <>
+            <div className="h-14 pl-4 flex items-center font-semibold text-lg border-b">Filters</div>
+            <div className="px-4 mt-4 pb-8">
+              <div className="mt-4 flex flex-col gap-1">
+                <EditFilterModal type="create" onOk={(filter) => onChange('filters', oldFilters.concat(filter))}>
+                  <Button>Create Filter</Button>
+                </EditFilterModal>
+                <div className="mt-4 flex flex-col gap-2">
+                  {settings.filters?.map((filter) => (
+                    <div
+                      key={filter.id}
+                      className="flex items-center justify-between w-[300px] border rounded px-4 py-1.5"
+                    >
+                      <span>{filter.name}</span>
+                      <div className="flex gap-3">
+                        <EditFilterModal
+                          type="edit"
+                          key={filter.id}
+                          initialValues={filter}
+                          onOk={(newFilter) =>
+                            onChange(
+                              'filters',
+                              oldFilters.map((f) => (f.id === filter.id ? newFilter : f)),
+                            )
+                          }
+                        >
+                          <RiEdit2Line className="cursor-pointer" />
+                        </EditFilterModal>
+                        <RiDeleteBin4Line
+                          className="cursor-pointer text-red-500"
+                          onClick={() =>
+                            onChange(
+                              'filters',
+                              oldFilters.filter((f) => f.id !== filter.id),
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </>
