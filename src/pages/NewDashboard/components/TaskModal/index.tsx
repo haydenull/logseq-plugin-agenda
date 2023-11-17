@@ -1,4 +1,16 @@
-import { Button, Calendar, Input, type InputRef, Modal, Popover, Popconfirm, DatePicker, message, Select } from 'antd'
+import {
+  Button,
+  Calendar,
+  Input,
+  type InputRef,
+  Modal,
+  Popover,
+  Popconfirm,
+  DatePicker,
+  message,
+  Select,
+  notification,
+} from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
@@ -9,7 +21,7 @@ import DurationSelect from '@/components/TaskModal/components/DurationSelect'
 import TimeSelect from '@/components/TaskModal/components/TimeSelect'
 import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda'
 import { deleteTask } from '@/newHelper/block'
-import { type BlockFromQuery, transformBlockToAgendaTask } from '@/newHelper/task'
+import { type BlockFromQuery, transformBlockToAgendaTask, retrieveFilteredBlocks } from '@/newHelper/task'
 import { track } from '@/newHelper/umami'
 import { settingsAtom } from '@/newModel/settings'
 import type { AgendaTask, TimeLog } from '@/types/task'
@@ -92,7 +104,23 @@ const TaskModal = ({
       favoritePages,
       settings,
     )
-    onOk?.(task)
+
+    const filters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
+    const filterBlocks = await retrieveFilteredBlocks(filters)
+    if (settings.selectedFilters?.length) {
+      const filterBlockIds = filterBlocks.map((block) => block.uuid)
+      if (filterBlockIds.includes(block.uuid)) {
+        onOk?.(task)
+      } else {
+        notification.info({
+          message: 'Operation successful but task is hidden',
+          description: 'Task was hidden because it dose not match any of your filters.',
+          duration: 0,
+        })
+      }
+    } else {
+      onOk?.(task)
+    }
     setInternalOpen(false)
   }
   const handleDelete = async () => {

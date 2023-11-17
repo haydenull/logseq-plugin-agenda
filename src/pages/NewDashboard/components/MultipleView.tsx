@@ -1,6 +1,6 @@
 import { LeftOutlined, RightOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons'
 import { Avatar, Button, Segmented, Tabs } from 'antd'
-import { useAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
 import { FiPower, FiSettings, FiX, FiXCircle } from 'react-icons/fi'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
@@ -8,6 +8,7 @@ import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
 import i18n from '@/locales/i18n'
 import { track } from '@/newHelper/umami'
 import { type App, appAtom } from '@/newModel/app'
+import { settingsAtom } from '@/newModel/settings'
 import { cn } from '@/util/util'
 
 import Calendar, { type CalendarView, type CalendarHandle } from './Calendar'
@@ -39,6 +40,7 @@ const MultipleView = ({ className }: { className?: string }) => {
   const kanbanRef = useRef<KanBanHandle>(null)
   const calendarRef = useRef<CalendarHandle>(null)
   const [app, setApp] = useAtom(appAtom)
+  const settings = useAtomValue(settingsAtom)
 
   const [calendarTitle, setCalendarTitle] = useState('')
 
@@ -109,8 +111,8 @@ const MultipleView = ({ className }: { className?: string }) => {
             className="min-w-[166px]"
           />
           <Filter />
-          <UploadIcs className="text-lg cursor-pointer" />
-          <SettingsModal>
+          {settings.ics?.repo && settings.ics?.token ? <UploadIcs className="text-lg cursor-pointer" /> : null}
+          <SettingsModal initialTab="general">
             <FiSettings className="text-lg cursor-pointer" onClick={() => track('Settings Button')} />
           </SettingsModal>
           {import.meta.env.VITE_MODE === 'plugin' ? (

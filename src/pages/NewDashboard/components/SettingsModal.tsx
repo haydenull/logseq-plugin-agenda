@@ -59,7 +59,7 @@ const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; i
 
   const icsUrl = `https://agenda-ics.haydenhayden.com?repo=${settings.ics?.repo}&token=${settings.ics?.token}`
 
-  const onChange = (key: string, value: string | boolean | undefined | Filter[]) => {
+  const onChange = (key: string, value: string | boolean | undefined | Filter[] | string[]) => {
     setSettings(key, value)
   }
   const onClickCopyIcsUrl = () => {
@@ -78,6 +78,7 @@ const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; i
 
   const renderForm = () => {
     const oldFilters = settings.filters ?? []
+    const oldSelectedFilters = settings.selectedFilters ?? []
     switch (finalActiveTab) {
       case 'shareAgenda':
         return (
@@ -201,12 +202,16 @@ const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; i
                         </EditFilterModal>
                         <RiDeleteBin4Line
                           className="cursor-pointer text-red-500"
-                          onClick={() =>
+                          onClick={() => {
                             onChange(
                               'filters',
                               oldFilters.filter((f) => f.id !== filter.id),
                             )
-                          }
+                            onChange(
+                              'selectedFilters',
+                              oldSelectedFilters.filter((id) => id !== filter.id),
+                            )
+                          }}
                         />
                       </div>
                     </div>

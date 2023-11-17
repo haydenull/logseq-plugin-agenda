@@ -11,7 +11,7 @@ import { ReactSortable } from 'react-sortablejs'
 
 import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
 import useAgendaTasks from '@/hooks/useAgendaTasks'
-import { deleteDateInfo, updateDateInfo, updateTaskStatus } from '@/newHelper/block'
+import { deleteDateInfo, updateDateInfo, updateTaskStatus, deleteTask as deleteTaskBlock } from '@/newHelper/block'
 import { minutesToHHmm } from '@/newHelper/fullCalendar'
 import { navToLogseqBlock } from '@/newHelper/logseq'
 import {
@@ -77,7 +77,7 @@ const KanBan = (props, ref) => {
   }
   const onDeleteTask = async (taskId: string) => {
     deleteTask(taskId)
-    deleteTask(taskId)
+    deleteTaskBlock(taskId)
   }
   const onRemoveDate = async (taskId: string) => {
     updateTaskData(taskId, {

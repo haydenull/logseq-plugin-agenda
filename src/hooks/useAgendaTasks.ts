@@ -11,6 +11,7 @@ const useAgendaTasks = () => {
   const [tasks, setTasks] = useAtom(agendaTasksAtom)
 
   const refreshTasks = useCallback(() => {
+    if (settings.isInitialized === false) return Promise.resolve()
     return getAgendaTasks(settings).then((res) => {
       setTasks(res)
     })
