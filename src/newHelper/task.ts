@@ -4,7 +4,7 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { RRule as RRuleClass } from 'rrule'
 
 import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
-import type { Settings } from '@/newModel/settings'
+import type { Filter, Settings } from '@/newModel/settings'
 import type { KanBanItem } from '@/pages/NewDashboard/components/KanBan'
 import type { RRule } from '@/types/fullcalendar'
 import type { AgendaTask, AgendaTaskWithStart, AgendaTaskPage } from '@/types/task'
@@ -73,6 +73,15 @@ export const getAgendaTasks = async (settings: Settings) => {
   `)) as BlockFromQuery[]
   if (!blocks || blocks?.length === 0) return []
   blocks = blocks.flat()
+
+  const filters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
+  const filterBlocks = await retrieveFilteredBlocks(filters)
+  console.log('[faiz:] === filterBlocks', filterBlocks)
+
+  if (settings.selectedFilters?.length) {
+    const filterBlockIds = filterBlocks.map((block) => block.uuid)
+    blocks = blocks.filter((block) => filterBlockIds.includes(block.uuid))
+  }
   const promiseList: Promise<AgendaTask[]>[] = blocks.map(async (block) => {
     const _block = {
       ...block,
@@ -422,4 +431,19 @@ export const formatTaskTitle = (task: AgendaTask) => {
   return replaceLinks(replacePageReference(replaceBlockReference(task.title)), task.rawBlock?.format)
 
   // return await fillBlockReference(task.title)
+}
+
+export const execQuery = async (query: string): Promise<BlockEntity[] | null> => {
+  if (query.startsWith('(')) {
+    return logseq.DB.q(query)
+  }
+  return logseq.DB.datascriptQuery(query)
+}
+
+export const retrieveFilteredBlocks = async (filters: Filter[]): Promise<BlockEntity[]> => {
+  const list = filters.map((filter) => {
+    return execQuery(filter.query)
+  })
+  const result = await Promise.all(list)
+  return result.flat().filter(Boolean)
 }

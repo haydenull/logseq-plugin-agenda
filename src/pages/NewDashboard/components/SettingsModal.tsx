@@ -49,10 +49,13 @@ const tabs = [
     label: 'About',
   },
 ] as const
-const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
+type Tab = (typeof tabs)[number]['key']
+const defaultTab = 'general'
+const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; initialTab?: Tab }) => {
   const [open, setOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['key']>('general')
+  const [activeTab, setActiveTab] = useState<Tab>()
   const { settings, setSettings } = useSettings()
+  const finalActiveTab = activeTab ? activeTab : initialTab ?? defaultTab
 
   const icsUrl = `https://agenda-ics.haydenhayden.com?repo=${settings.ics?.repo}&token=${settings.ics?.token}`
 
@@ -75,7 +78,7 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
 
   const renderForm = () => {
     const oldFilters = settings.filters ?? []
-    switch (activeTab) {
+    switch (finalActiveTab) {
       case 'shareAgenda':
         return (
           <>
@@ -266,7 +269,7 @@ const SettingsModal = ({ children }: { children?: React.ReactNode }) => {
               <div
                 key={tab.key}
                 className={cn('cursor-pointer hover:bg-gray-200 rounded p-2 mt-1', {
-                  'bg-gray-200': tab.key === activeTab,
+                  'bg-gray-200': tab.key === finalActiveTab,
                 })}
                 onClick={() => setActiveTab(tab.key)}
               >
