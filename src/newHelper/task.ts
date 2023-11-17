@@ -76,7 +76,6 @@ export const getAgendaTasks = async (settings: Settings) => {
 
   const filters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
   const filterBlocks = await retrieveFilteredBlocks(filters)
-  console.log('[faiz:] === filterBlocks', filterBlocks)
 
   if (settings.selectedFilters?.length) {
     const filterBlockIds = filterBlocks.map((block) => block.uuid)
@@ -445,5 +444,5 @@ export const retrieveFilteredBlocks = async (filters: Filter[]): Promise<BlockEn
     return execQuery(filter.query)
   })
   const result = await Promise.all(list)
-  return result.flat().filter(Boolean)
+  return result.flat(Infinity).filter(Boolean) as BlockEntity[]
 }

@@ -1,6 +1,7 @@
 import { atom } from 'jotai'
 
 export type Settings = {
+  isInitialized: boolean
   general?: {
     useJournalDayAsSchedule?: boolean
   }
@@ -16,7 +17,7 @@ export type Settings = {
   filters?: Filter[]
   selectedFilters?: string[]
 }
-export const settingsAtom = atom<Settings>({ viewOptions: { showTimeLog: false } })
+export const settingsAtom = atom<Settings>({ isInitialized: false, viewOptions: { showTimeLog: false } })
 
 export type Filter = {
   id: string

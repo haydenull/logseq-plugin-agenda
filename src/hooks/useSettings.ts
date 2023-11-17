@@ -11,24 +11,29 @@ const useSettings = () => {
   const { set: setLocalStorage, value: valueLocalStorage } = useLocalStorageValue<Settings>('settings')
 
   const setSettings = (key: string, value: string | boolean | undefined | Filter[] | string[]) => {
-    const newSettings = set(clone(settings), key, value)
-    setAtomSettings(newSettings)
-    if (isPlugin) {
-      const oldSettings = logseq.settings ?? {}
-      logseq.updateSettings({
-        ...oldSettings,
-        ...newSettings,
-      })
-    } else {
-      setLocalStorage(newSettings)
-    }
+    setAtomSettings((oldSettings) => {
+      const newSettings = set(clone(oldSettings), key, value)
+      if (isPlugin) {
+        if (Array.isArray(value)) {
+          // clear old settings, issue: https://github.com/logseq/logseq/issues/4447
+          const _newSettings = set(clone(oldSettings), key, null)
+          logseq.updateSettings(_newSettings)
+        }
+        logseq.updateSettings(newSettings)
+      } else {
+        setLocalStorage(newSettings)
+      }
+      return newSettings
+    })
   }
   // initial settings
   useEffect(() => {
+    const base: Settings = { isInitialized: true }
     if (isPlugin) {
-      setAtomSettings((logseq.settings as Settings) ?? {})
+      const _settings = (logseq.settings as unknown as Settings) ?? {}
+      setAtomSettings(_settings ? { ..._settings, isInitialized: true } : base)
     } else {
-      setAtomSettings(valueLocalStorage ?? {})
+      setAtomSettings(valueLocalStorage ? { ...valueLocalStorage, isInitialized: true } : base)
     }
   }, [])
   return {

@@ -28,8 +28,12 @@ const Dashboard = () => {
 
   const loadData = useCallback(() => {
     initializeDayjs(1)
-    refreshTasks().catch(() => {
-      setConnectionErrorModal(true)
+    refreshTasks().catch((error) => {
+      console.error('retrieve tasks failed', error)
+      if (import.meta.env.VITE_MODE === 'plugin') {
+        return setConnectionErrorModal(true)
+      }
+      message.error('retrieve tasks failed')
     })
     refreshProjects()
     // logseq.App.getCurrentGraph().then((res) => {
