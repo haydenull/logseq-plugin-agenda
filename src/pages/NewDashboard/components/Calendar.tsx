@@ -6,7 +6,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
-import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 
 import useAgendaTasks from '@/hooks/useAgendaTasks'
@@ -14,6 +14,7 @@ import { genDurationString, updateDateInfo } from '@/newHelper/block'
 import { transformAgendaTaskToCalendarEvent } from '@/newHelper/fullCalendar'
 import { formatTaskTitle } from '@/newHelper/task'
 import { track } from '@/newHelper/umami'
+import { appAtom } from '@/newModel/app'
 import { settingsAtom } from '@/newModel/settings'
 import { tasksWithStartAtom } from '@/newModel/tasks'
 import type { CalendarEvent } from '@/types/fullcalendar'
@@ -46,6 +47,7 @@ type CalendarProps = { onCalendarTitleChange: (title: string) => void }
 const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   // const [currentView, setCurrentView] = useState<CalendarView>('dayGridMonth')
   const calendarRef = useRef<FullCalendar>(null)
+  const app = useAtomValue(appAtom)
   const { updateTaskData, deleteTask, addNewTask } = useAgendaTasks()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
   const settings = useAtomValue(settingsAtom)
@@ -141,6 +143,15 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       },
     }
   })
+
+  useEffect(() => {
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current?.getApi()
+      setTimeout(() => {
+        calendarApi.updateSize()
+      }, 300) // The duration here needs to be longer than the sidebar animation duration.
+    }
+  }, [app.rightSidebarFolded])
 
   return (
     <div

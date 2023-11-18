@@ -2,6 +2,7 @@ import { LeftOutlined, RightOutlined, SettingOutlined, UserOutlined } from '@ant
 import { Avatar, Button, Segmented, Tabs } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
+import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai'
 import { FiPower, FiSettings, FiX, FiXCircle } from 'react-icons/fi'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
 
@@ -54,9 +55,9 @@ const MultipleView = ({ className }: { className?: string }) => {
   }
 
   return (
-    <div className={cn('flex flex-col px-2 py-1 flex-1 w-0 z-0', className)}>
+    <div className={cn('flex flex-col pl-2 py-1 flex-1 w-0 z-0 relative', className)}>
       {/* ========= View Actions ========= */}
-      <div className="border-b flex justify-between w-full py-1 items-center">
+      <div className="border-b flex justify-between w-full py-1 items-center pr-2">
         <div className="flex items-center">
           {app.view === 'calendar' ? (
             <div className="mr-1">
@@ -102,7 +103,7 @@ const MultipleView = ({ className }: { className?: string }) => {
             activeKey={app.view}
             items={VIEWS}
             onChange={(key) => {
-              setApp({ view: key as App['view'] })
+              setApp((_app) => ({ ..._app, view: key as App['view'] }))
               track('View Change', { view: key })
             }}
             // renderTabBar={(props, DefaultTabBar) => <DefaultTabBar />}
@@ -126,6 +127,15 @@ const MultipleView = ({ className }: { className?: string }) => {
         ) : (
           <Calendar ref={calendarRef} onCalendarTitleChange={setCalendarTitle} />
         )}
+      </div>
+      {/* folded option bar */}
+      <div className="w-[16px] h-full absolute right-0 top-0 flex items-center z-10 opacity-0 hover:opacity-100 transition-opacity">
+        <div
+          className="bg-[#f0f0f0] h-[50px] w-full rounded-tl rounded-bl flex items-center text-gray-400 hover:bg-gray-200 cursor-pointer border-l border-t border-b"
+          onClick={() => setApp((_app) => ({ ..._app, rightSidebarFolded: !_app.rightSidebarFolded }))}
+        >
+          {app.rightSidebarFolded ? <AiOutlineLeft /> : <AiOutlineRight />}
+        </div>
       </div>
     </div>
   )

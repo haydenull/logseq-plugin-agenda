@@ -2,6 +2,7 @@ import { Dropdown, message } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { useState } from 'react'
+import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai'
 import { BsArchive } from 'react-icons/bs'
 import { GoGoal } from 'react-icons/go'
 import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline } from 'react-icons/io'
@@ -37,6 +38,7 @@ import TaskModal from './TaskModal'
 const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNode; triggerClassName?: string }) => {
   const today = dayjs()
   const [open, setOpen] = useState(false)
+  const [backlogFolded, setBacklogFolded] = useState(false)
   const [editTaskModal, setEditTaskModal] = useState<{
     open: boolean
     task?: AgendaTask
@@ -95,14 +97,23 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
     })
     deleteDateInfo(taskId)
   }
+  const onClickClose = () => {
+    setOpen(false)
+    setBacklogFolded(false)
+  }
 
   return (
     <>
       <span className={triggerClassName} onClick={() => setOpen(true)}>
         {children}
       </span>
-      <FullScreenModal open={open} onClose={() => setOpen(false)}>
-        <div className="w-screen h-full px-3 pt-8 pb-1 flex gap-3 overflow-auto bg-gray-50 pr-[330px]">
+      <FullScreenModal open={open} onClose={onClickClose}>
+        <div
+          className={cn(
+            'w-screen h-full px-3 pt-8 pb-1 flex gap-3 overflow-auto bg-gray-50',
+            backlogFolded ? 'pr-3' : 'pr-[300px]',
+          )}
+        >
           {/* Overdue */}
           <div className="w-[281px] shrink-0 mt-2 flex flex-col bg-gray-300 px-2 py-2 rounded-md">
             <div className="flex items-center justify-center mb-2">
@@ -467,8 +478,24 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
             )
           })}
 
-          <div className="absolute top-0 right-0 h-screen pt-8">
+          <div
+            className={cn('absolute top-0 right-0 h-screen pt-8 transition-all', backlogFolded ? 'w-0' : 'w-[290px]')}
+          >
             <Backlog bindCalendar={false} />
+          </div>
+
+          <div
+            className={cn(
+              'w-[16px] h-full absolute top-0 flex items-center z-10 opacity-0 hover:opacity-100 transition-all',
+              backlogFolded ? 'right-0' : 'right-[290px]',
+            )}
+          >
+            <div
+              className="bg-[#f0f0f0] h-[50px] w-full rounded-tl rounded-bl flex items-center text-gray-400 hover:bg-gray-200 cursor-pointer border-l border-t border-b"
+              onClick={() => setBacklogFolded((folded) => !folded)}
+            >
+              {backlogFolded ? <AiOutlineLeft /> : <AiOutlineRight />}
+            </div>
           </div>
         </div>
       </FullScreenModal>

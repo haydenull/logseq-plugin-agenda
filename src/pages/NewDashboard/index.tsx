@@ -73,13 +73,15 @@ const Dashboard = () => {
       )}
     >
       {/* ========== projects sidebar ========== */}
-      <ProjectSidebar className="hidden" />
+      {/* <ProjectSidebar className="hidden" /> */}
 
       {/* ========== Multiple View ========= */}
       <MultipleView className="flex-1" />
 
       {/* ========== Sidebar ========= */}
-      {app.view === 'calendar' ? <Backlog /> : <TimeBox onChangeType={() => setTimeBoxType('actual')} />}
+      <div className={cn('transition-all', app.rightSidebarFolded ? 'w-0' : 'w-[290px]')}>
+        {app.view === 'calendar' ? <Backlog /> : <TimeBox onChangeType={() => setTimeBoxType('actual')} />}
+      </div>
 
       {/* ========== Toolbar ======== */}
       {/* <div></div> */}
