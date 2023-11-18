@@ -22,7 +22,7 @@ const FullScreenModal = ({
       })}
     >
       {children}
-      <div className={cn('absolute right-2', import.meta.env.VITE_MODE === 'plugin' ? 'top-[38px]' : 'top-2')}>
+      <div className={cn('absolute right-2', import.meta.env.VITE_MODE === 'plugin' ? 'top-[34px]' : 'top-1')}>
         <Button icon={<CloseOutlined />} onClick={onClose}>
           Exit
         </Button>

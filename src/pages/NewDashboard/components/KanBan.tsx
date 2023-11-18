@@ -124,6 +124,7 @@ const KanBan = (props, ref) => {
         const dateStr = day.format('MM-DD ddd')
         const columnTasks = tasksInDay.get(day.format(DATE_FORMATTER_FOR_KEY)) || []
         const isToday = day.isSame(today, 'day')
+        const isTomorrow = day.isSame(today.add(1, 'day'), 'day')
         const isFuture = day.isAfter(today, 'day')
         const doneTasks = columnTasks.filter((task) => task.status === 'done')
         const undoneTasks = columnTasks.filter((task) => task.status !== 'done')
@@ -144,7 +145,18 @@ const KanBan = (props, ref) => {
               </div>
               <div className="flex gap-2 items-center">
                 {isToday ? (
-                  <PlannerModal triggerClassName="text-[10px] text-gray-400 hover:text-gray-700 cursor-pointer">
+                  <PlannerModal
+                    type="today"
+                    triggerClassName="text-[10px] text-gray-400 hover:text-gray-700 cursor-pointer"
+                  >
+                    Plan
+                  </PlannerModal>
+                ) : null}
+                {isTomorrow ? (
+                  <PlannerModal
+                    type="tomorrow"
+                    triggerClassName="text-[10px] text-gray-400 hover:text-gray-700 cursor-pointer"
+                  >
                     Plan
                   </PlannerModal>
                 ) : null}

@@ -41,6 +41,14 @@ export const todayTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
     return task.start.isSame(today, 'day')
   })
 })
+export const tomorrowTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
+  const allTasks = get(tasksWithStartAtom)
+
+  const tomorrow = dayjs().add(1, 'day')
+  return allTasks.filter((task) => {
+    return task.start.isSame(tomorrow, 'day')
+  })
+})
 
 export const thisWeekTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const allTasks = get(tasksWithStartAtom)
@@ -52,6 +60,18 @@ export const thisWeekTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
     return task.start.isBetween(startDay, endDay, 'day', '(]')
   })
 })
+export const thisWeekExcludeTomorrowTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
+  const allTasks = get(tasksWithStartAtom)
+
+  const today = dayjs()
+  const tomorrow = today.add(1, 'day')
+  const startDay = tomorrow
+  const endDay = today.endOf('week')
+  if (startDay.isSameOrAfter(endDay, 'day')) return []
+  return allTasks.filter((task) => {
+    return task.start.isBetween(startDay, endDay, 'day', '(]')
+  })
+})
 
 export const thisMonthTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const allTasks = get(tasksWithStartAtom)
@@ -59,6 +79,18 @@ export const thisMonthTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const today = dayjs()
   const startDay = today.endOf('week')
   const endDay = today.endOf('month')
+  return allTasks.filter((task) => {
+    return task.start.isBetween(startDay, endDay, 'day', '(]')
+  })
+})
+export const thisMonthExcludeTomorrowTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
+  const allTasks = get(tasksWithStartAtom)
+
+  const today = dayjs()
+  const tomorrow = today.add(1, 'day')
+  const startDay = tomorrow
+  const endDay = today.endOf('month')
+  if (startDay.isSameOrAfter(endDay, 'day')) return []
   return allTasks.filter((task) => {
     return task.start.isBetween(startDay, endDay, 'day', '(]')
   })
