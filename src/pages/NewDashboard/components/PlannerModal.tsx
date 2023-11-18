@@ -21,11 +21,14 @@ import { logseqAtom } from '@/newModel/logseq'
 import {
   backlogTasksAtom,
   overdueTasksAtom,
+  thisMonthExcludeTomorrowTasksAtom,
   thisMonthObjectivesAtom,
   thisMonthTasksAtom,
+  thisWeekExcludeTomorrowTasksAtom,
   thisWeekObjectivesAtom,
   thisWeekTasksAtom,
   todayTasksAtom,
+  tomorrowTasksAtom,
 } from '@/newModel/tasks'
 import type { AgendaObjective, AgendaTask, AgendaTaskWithStart } from '@/types/task'
 import { cn, replaceDateInfo } from '@/util/util'
@@ -35,7 +38,15 @@ import FullScreenModal from './FullScreenModal'
 import LogseqLogo from './LogseqLogo'
 import TaskModal from './TaskModal'
 
-const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNode; triggerClassName?: string }) => {
+const PlannerModal = ({
+  children,
+  triggerClassName,
+  type,
+}: {
+  children: React.ReactNode
+  triggerClassName?: string
+  type: 'today' | 'tomorrow'
+}) => {
   const today = dayjs()
   const [open, setOpen] = useState(false)
   const [backlogFolded, setBacklogFolded] = useState(false)
@@ -49,24 +60,33 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
   const backlogTasks = useAtomValue(backlogTasksAtom)
   const { currentGraph } = useAtomValue(logseqAtom)
   const todayTasks = useAtomValue(todayTasksAtom)
+  const tomorrowTasks = useAtomValue(tomorrowTasksAtom)
   const thisWeekTasks = useAtomValue(thisWeekTasksAtom)
   const thisMonthTasks = useAtomValue(thisMonthTasksAtom)
+  const thisWeekExcludeTomorrowTasks = useAtomValue(thisWeekExcludeTomorrowTasksAtom)
+  const thisMonthExcludeTomorrowTasks = useAtomValue(thisMonthExcludeTomorrowTasksAtom)
   const overdueTasks = useAtomValue(overdueTasksAtom)
-  const tasks = [...todayTasks, ...thisWeekTasks, ...thisMonthTasks]
+  const tasks =
+    type === 'today'
+      ? [...todayTasks, ...thisWeekTasks, ...thisMonthTasks]
+      : [...todayTasks, ...tomorrowTasks, ...thisWeekExcludeTomorrowTasks, ...thisMonthExcludeTomorrowTasks]
 
   const thisWeekObjectives = useAtomValue(thisWeekObjectivesAtom)
   const thisMonthObjectives = useAtomValue(thisMonthObjectivesAtom)
 
-  const cycles = ['today', 'week', 'month'] as const
+  const cycles =
+    type === 'today' ? (['today', 'week', 'month'] as const) : (['today', 'tomorrow', 'week', 'month'] as const)
   const dayMap = {
     today,
+    tomorrow: today.add(1, 'day'),
     week: today.endOf('week'),
     month: today.endOf('month'),
   }
   const tasksInCycle = {
     today: todayTasks,
-    week: thisWeekTasks,
-    month: thisMonthTasks,
+    tomorrow: tomorrowTasks,
+    week: type === 'today' ? thisWeekTasks : thisWeekExcludeTomorrowTasks,
+    month: type === 'tomorrow' ? thisMonthTasks : thisMonthExcludeTomorrowTasks,
   }
   const objectivesInCycle = {
     week: thisWeekObjectives,
@@ -520,8 +540,8 @@ const PlannerModal = ({ children, triggerClassName }: { children: React.ReactNod
   )
 }
 
-function getCycleText(day: Dayjs, cycle: 'today' | 'week' | 'month') {
-  if (cycle === 'today') return day.format('MMM DD, ddd')
+function getCycleText(day: Dayjs, cycle: 'today' | 'tomorrow' | 'week' | 'month') {
+  if (cycle === 'today' || cycle === 'tomorrow') return day.format('MMM DD, ddd')
   if (cycle === 'week') return 'W' + day.isoWeek()
   if (cycle === 'month') return day.format('MMMM')
   return ''
