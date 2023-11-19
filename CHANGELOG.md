@@ -1,3 +1,10 @@
+# [3.6.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.5.0...v3.6.0) (2023-11-19)
+
+
+### Features
+
+* :sparkles: supports input tag ([6569928](https://github.com/haydenull/logseq-plugin-agenda/commit/656992879215d453528a37c7590b9bc39b68d10c))
+
 # [3.5.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.4.0...v3.5.0) (2023-11-19)
 
 
