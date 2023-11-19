@@ -4,7 +4,7 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useState } from 'react'
 
 import useAgendaTasks from '@/hooks/useAgendaTasks'
-import useNewProjects from '@/hooks/useNewProjects'
+import usePages from '@/hooks/usePages'
 import { appAtom } from '@/newModel/app'
 import { logseqAtom } from '@/newModel/logseq'
 import initializeDayjs from '@/register/dayjs'
@@ -23,7 +23,7 @@ const Dashboard = () => {
   const app = useAtomValue(appAtom)
   const setLogseq = useSetAtom(logseqAtom)
   const { refreshTasks } = useAgendaTasks()
-  const { refreshProjects } = useNewProjects()
+  const { refreshPages } = usePages()
   const [connectionErrorModal, setConnectionErrorModal] = useState(false)
 
   const loadData = useCallback(() => {
@@ -35,7 +35,7 @@ const Dashboard = () => {
       }
       message.error('retrieve tasks failed')
     })
-    refreshProjects()
+    refreshPages()
     // logseq.App.getCurrentGraph().then((res) => {
     //   console.log('getUserConfigs', res)
     // })
