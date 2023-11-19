@@ -1,3 +1,15 @@
+# [3.5.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.4.0...v3.5.0) (2023-11-19)
+
+
+### Features
+
+* :sparkles: replace project with page ([9782fd4](https://github.com/haydenull/logseq-plugin-agenda/commit/9782fd4d736c24da16a7a8c85e098803bcf2e700))
+* :sparkles: support for collapsible sidebar with click ([683bc17](https://github.com/haydenull/logseq-plugin-agenda/commit/683bc17bf0846ad262dc84998cb56cc4a9e882c1))
+* **filter:** :sparkles: add filter dropdown ([2a48a48](https://github.com/haydenull/logseq-plugin-agenda/commit/2a48a48afce5172bcec67e04cbe2e7944c78365b))
+* **filter:** :sparkles: filter tasks ([7f0a513](https://github.com/haydenull/logseq-plugin-agenda/commit/7f0a513a6c11712a12f625f54dd247c64a4d0535))
+* **filter:** :sparkles: supports filter ([8fadb1d](https://github.com/haydenull/logseq-plugin-agenda/commit/8fadb1d0e175dfe33691cd20afd163795361e6e9))
+* **plan:** :sparkles: add tomorrow column ([8595a07](https://github.com/haydenull/logseq-plugin-agenda/commit/8595a07e95911a942354d3cfc6b705a111167f29))
+
 # [3.4.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.3.3...v3.4.0) (2023-11-16)
 
 
