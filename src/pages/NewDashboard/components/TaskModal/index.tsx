@@ -26,7 +26,8 @@ import { track } from '@/newHelper/umami'
 import { settingsAtom } from '@/newModel/settings'
 import type { AgendaTask, TimeLog } from '@/types/task'
 
-import ProjectSelect from '../ProjectSelect'
+import PageIcon from '../PageIcon'
+import PageSelect from '../ProjectSelect'
 import TimeLogComponent from './TimeLog'
 import useCreate, { type CreateTaskForm } from './useCreate'
 import useEdit from './useEdit'
@@ -318,14 +319,15 @@ const TaskModal = ({
         ) : null}
         {/* ========= Actual Time End ========= */}
 
-        {/* ========= Project Start ========= */}
+        {/* ========= Page Start ========= */}
         <div className="flex my-2">
           <div className="w-[160px] text-gray-400 flex gap-1 items-center">
-            <BsClipboard /> Project
+            {/* <BsClipboard /> Page */}
+            <PageIcon /> Page
           </div>
-          <ProjectSelect value={formData.projectId} onChange={(val) => updateFormData({ projectId: val })} />
+          <PageSelect value={formData.projectId} onChange={(val) => updateFormData({ projectId: val })} />
         </div>
-        {/* ========= Project End ========= */}
+        {/* ========= Page End ========= */}
 
         {/* <Divider className="!m-0" orientation="center" orientationMargin={0} dashed>
           <Button
