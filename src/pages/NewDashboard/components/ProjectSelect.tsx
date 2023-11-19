@@ -2,14 +2,14 @@ import { Select } from 'antd'
 
 import useNewProjects from '@/hooks/useNewProjects'
 
-const ProjectSelect = ({ value, onChange }: { value?: string; onChange?: (value: string) => void }) => {
+const PageSelect = ({ value, onChange }: { value?: string; onChange?: (value: string) => void }) => {
   const { favoriteProjects, normalProjects, journalProjects } = useNewProjects()
   const projects = [...favoriteProjects, ...normalProjects, ...journalProjects]
   return (
     <Select
       showSearch
       allowClear
-      placeholder="Select a project"
+      placeholder="Select a page"
       bordered={false}
       suffixIcon={null}
       value={value}
@@ -30,4 +30,4 @@ const ProjectSelect = ({ value, onChange }: { value?: string; onChange?: (value:
   )
 }
 
-export default ProjectSelect
+export default PageSelect

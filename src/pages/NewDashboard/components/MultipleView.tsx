@@ -111,7 +111,7 @@ const MultipleView = ({ className }: { className?: string }) => {
             // fix windows tabs 闪烁问题
             className="min-w-[166px]"
           />
-          <Filter />
+          {settings.filters?.length ? <Filter /> : null}
           {settings.ics?.repo && settings.ics?.token ? <UploadIcs className="text-lg cursor-pointer" /> : null}
           <SettingsModal initialTab="general">
             <FiSettings className="text-lg cursor-pointer" onClick={() => track('Settings Button')} />

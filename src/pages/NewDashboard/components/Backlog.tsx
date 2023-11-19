@@ -55,7 +55,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
           suffixIcon={null}
           className="w-[160px]"
           maxTagCount="responsive"
-          placeholder="Filters"
+          placeholder="Filter by page"
           mode="multiple"
           optionFilterProp="label"
           popupClassName="min-w-[300px]"
