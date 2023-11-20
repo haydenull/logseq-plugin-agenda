@@ -1,3 +1,11 @@
+## [3.6.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.0...v3.6.1) (2023-11-20)
+
+
+### Bug Fixes
+
+* :bug: when the web client fails to connect to logseq, no prompt pop up. ([ed40053](https://github.com/haydenull/logseq-plugin-agenda/commit/ed400539833bc24af503026b835669311deb7331))
+* **plan:** :bug: error in retrieving monthly task list data on the plan page ([bddc487](https://github.com/haydenull/logseq-plugin-agenda/commit/bddc48733c3fb2168914e6b680ce57e6873f2068))
+
 # [3.6.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.5.0...v3.6.0) (2023-11-19)
 
 
