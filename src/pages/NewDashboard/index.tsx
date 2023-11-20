@@ -30,7 +30,7 @@ const Dashboard = () => {
     initializeDayjs(1)
     refreshTasks().catch((error) => {
       console.error('retrieve tasks failed', error)
-      if (import.meta.env.VITE_MODE === 'plugin') {
+      if (import.meta.env.VITE_MODE === 'web') {
         return setConnectionErrorModal(true)
       }
       message.error('retrieve tasks failed')

@@ -194,7 +194,7 @@ async function renderApp(isVersion3 = false) {
   togglePomodoro(false)
   toggleAppTransparent(false)
   let defaultRoute = ''
-  const page = await logseq.Editor.getCurrentPage()
+  const page = await logseq.Editor.getCurrentPage().catch((err) => console.error(err))
   const { projectList = [] } = getInitialSettings()
   if (projectList.some((project) => Boolean(project.id) && project.id === page?.originalName)) {
     defaultRoute = `project/${encodeURIComponent(page?.originalName)}`
