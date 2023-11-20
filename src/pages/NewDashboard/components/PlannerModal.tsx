@@ -86,7 +86,7 @@ const PlannerModal = ({
     today: todayTasks,
     tomorrow: tomorrowTasks,
     week: type === 'today' ? thisWeekTasks : thisWeekExcludeTomorrowTasks,
-    month: type === 'tomorrow' ? thisMonthTasks : thisMonthExcludeTomorrowTasks,
+    month: type === 'today' ? thisMonthTasks : thisMonthExcludeTomorrowTasks,
   }
   const objectivesInCycle = {
     week: thisWeekObjectives,

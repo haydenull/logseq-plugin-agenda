@@ -67,7 +67,7 @@ export const thisWeekExcludeTomorrowTasksAtom = atom<AgendaTaskWithStart[]>((get
   const tomorrow = today.add(1, 'day')
   const startDay = tomorrow
   const endDay = today.endOf('week')
-  if (startDay.isSameOrAfter(endDay, 'day')) return []
+  if (tomorrow.isSameOrAfter(endDay, 'day')) return []
   return allTasks.filter((task) => {
     return task.start.isBetween(startDay, endDay, 'day', '(]')
   })
@@ -88,7 +88,8 @@ export const thisMonthExcludeTomorrowTasksAtom = atom<AgendaTaskWithStart[]>((ge
 
   const today = dayjs()
   const tomorrow = today.add(1, 'day')
-  const startDay = tomorrow
+  let startDay = today.endOf('week')
+  if (tomorrow.isAfter(startDay)) startDay = tomorrow
   const endDay = today.endOf('month')
   if (startDay.isSameOrAfter(endDay, 'day')) return []
   return allTasks.filter((task) => {
