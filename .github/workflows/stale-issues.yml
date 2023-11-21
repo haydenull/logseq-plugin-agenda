@@ -1,0 +1,50 @@
+name: Stale Issues Policy
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run at 00:00 UTC every day
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write  # for actions/stale to close stale issues
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - name: '🧹 Mark & close stale issues'
+        uses: actions/stale@v8.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-label: 'automatic-stale'
+          close-issue-label: 'automatic-closing'
+          exempt-issue-labels: 'enhancement, feature-request, upstream'
+          stale-issue-message:
+            Hi There! 👋
+            
+            This issue has been marked as stale due to inactivity for 60 days.
+            
+            We would like to inquire if you still have the same problem or if it has been resolved.
+            
+            If you need further assistance, please feel free to respond to this comment within the next 7 days. Otherwise, the issue will be automatically closed.
+
+            We appreciate your understanding and would like to express our gratitude for your contribution to Agenda. Thank you for your support. 🙏
+            
+      - name: '🧹 Close stale awaiting response issues'
+        uses: actions/stale@v8.0.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-issue-stale: 40
+          stale-issue-label: 'automatic-stale'
+          close-issue-label: 'automatic-closing'
+          only-labels: 'awaiting response'
+          stale-issue-message:
+            Hi There! 👋
+            
+            This issue has been marked as stale due to inactivity for 60 days.
+            
+            We would like to inquire if you still have the same problem or if it has been resolved.
+            
+            If you need further assistance, please feel free to respond to this comment within the next 7 days. Otherwise, the issue will be automatically closed.
+
+            We appreciate your understanding and would like to express our gratitude for your contribution to Agenda. Thank you for your support. 🙏
