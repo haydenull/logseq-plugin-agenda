@@ -1,3 +1,10 @@
+## [3.6.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.1...v3.6.2) (2023-11-21)
+
+
+### Bug Fixes
+
+* **share:** :bug: display error message when upload failed ([3f5fc17](https://github.com/haydenull/logseq-plugin-agenda/commit/3f5fc1723cf531c63207aba96ad6236da617cfa0))
+
 ## [3.6.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.0...v3.6.1) (2023-11-20)
 
 
