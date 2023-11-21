@@ -1,5 +1,5 @@
 import { useRequest } from 'ahooks'
-import { message } from 'antd'
+import { message, notification } from 'antd'
 import { createEvents, type EventAttributes } from 'ics'
 import { useAtomValue } from 'jotai'
 import { FiUploadCloud } from 'react-icons/fi'
@@ -32,7 +32,11 @@ const UploadIcs = ({ className }: { className?: string }) => {
       doUpload({ file: value, repo, token })
         .then(() => message.success('🎉 Upload success'))
         .catch((err) => {
-          message.error(err.message || 'Upload failed')
+          notification.error({
+            message: 'Upload failed',
+            description: err.message,
+            duration: 0,
+          })
           console.error('update ics failed', err)
         })
     })
