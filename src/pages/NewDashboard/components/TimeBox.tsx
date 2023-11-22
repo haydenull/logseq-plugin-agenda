@@ -18,7 +18,7 @@ import { transformAgendaTaskToCalendarEvent } from '@/newHelper/fullCalendar'
 import { formatTaskTitle } from '@/newHelper/task'
 import { track } from '@/newHelper/umami'
 import { settingsAtom } from '@/newModel/settings'
-import { tasksWithStartAtom } from '@/newModel/tasks'
+import { recentTasksAtom } from '@/newModel/tasks'
 import type { CalendarEvent } from '@/types/fullcalendar'
 import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
@@ -48,14 +48,9 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const settings = useAtomValue(settingsAtom)
   const calendarRef = useRef<FullCalendar>(null)
   const { updateTaskData, deleteTask, addNewTask } = useAgendaTasks()
-  const tasksWithStart = useAtomValue(tasksWithStartAtom)
+  const recentTasks = useAtomValue(recentTasksAtom)
   const now = dayjs()
-  const todayTasks = tasksWithStart.filter((task) => {
-    const startDay = dayjs(task.start)
-    return task.rrule ? startDay.isSameOrBefore(now, 'day') : startDay.isSame(now, 'day')
-  })
-  const calendarEvents = todayTasks
-    ?.filter(({ allDay }) => allDay === false)
+  const calendarEvents = recentTasks
     .map((task) =>
       transformAgendaTaskToCalendarEvent(task, {
         showFirstEventInCycleOnly: settings.viewOptions?.showFirstEventInCycleOnly,
