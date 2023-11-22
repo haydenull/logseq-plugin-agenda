@@ -19,7 +19,7 @@ jobs:
           stale-issue-label: 'automatic-stale'
           close-issue-label: 'automatic-closing'
           exempt-issue-labels: 'enhancement, feature-request, upstream, hold'
-          stale-issue-message:
+          stale-issue-message: |
             Hi There! 👋
             
             This issue has been marked as stale due to inactivity for 60 days.
@@ -38,7 +38,7 @@ jobs:
           stale-issue-label: 'automatic-stale'
           close-issue-label: 'automatic-closing'
           only-labels: 'awaiting response'
-          stale-issue-message:
+          stale-issue-message: |
             Hi There! 👋
             
             This issue has been marked as stale due to inactivity for 60 days.
