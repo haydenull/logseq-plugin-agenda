@@ -1,9 +1,8 @@
-import { LeftOutlined, RightOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons'
-import { Avatar, Button, Segmented, Tabs } from 'antd'
+import { LeftOutlined, RightOutlined } from '@ant-design/icons'
+import { Button, Segmented, Tabs } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
-import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai'
-import { FiPower, FiSettings, FiX, FiXCircle } from 'react-icons/fi'
+import { FiSettings, FiXCircle } from 'react-icons/fi'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
 
 import i18n from '@/locales/i18n'
@@ -127,15 +126,6 @@ const MultipleView = ({ className }: { className?: string }) => {
         ) : (
           <Calendar ref={calendarRef} onCalendarTitleChange={setCalendarTitle} />
         )}
-      </div>
-      {/* folded option bar */}
-      <div className="w-[16px] h-full absolute right-0 top-0 flex items-center z-10 opacity-0 hover:opacity-100 transition-opacity">
-        <div
-          className="bg-[#f0f0f0] h-[50px] w-full rounded-tl rounded-bl flex items-center text-gray-400 hover:bg-gray-200 cursor-pointer border-l border-t border-b"
-          onClick={() => setApp((_app) => ({ ..._app, rightSidebarFolded: !_app.rightSidebarFolded }))}
-        >
-          {app.rightSidebarFolded ? <AiOutlineLeft /> : <AiOutlineRight />}
-        </div>
       </div>
     </div>
   )

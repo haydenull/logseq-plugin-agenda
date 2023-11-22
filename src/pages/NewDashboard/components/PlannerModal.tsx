@@ -499,22 +499,23 @@ const PlannerModal = ({
           })}
 
           <div
-            className={cn('absolute top-0 right-0 h-screen pt-8 transition-all', backlogFolded ? 'w-0' : 'w-[290px]')}
-          >
-            <Backlog bindCalendar={false} />
-          </div>
-
-          <div
             className={cn(
-              'w-[16px] h-full absolute top-0 flex items-center z-10 opacity-0 hover:opacity-100 transition-all',
-              backlogFolded ? 'right-0' : 'right-[290px]',
+              'absolute top-0 right-0 h-screen pt-8 transition-all group/backlog',
+              backlogFolded ? 'w-0' : 'w-[290px]',
             )}
           >
+            <Backlog bindCalendar={false} />
             <div
-              className="bg-[#f0f0f0] h-[50px] w-full rounded-tl rounded-bl flex items-center text-gray-400 hover:bg-gray-200 cursor-pointer border-l border-t border-b"
-              onClick={() => setBacklogFolded((folded) => !folded)}
+              className={cn(
+                'w-[16px] h-full absolute -left-[16px] top-0 flex items-center z-10 opacity-0 group-hover/backlog:opacity-100 transition-all',
+              )}
             >
-              {backlogFolded ? <AiOutlineLeft /> : <AiOutlineRight />}
+              <div
+                className="bg-[#f0f0f0] h-[50px] w-full rounded-tl rounded-bl flex items-center text-gray-400 hover:bg-gray-200 cursor-pointer border-l border-t border-b"
+                onClick={() => setBacklogFolded((folded) => !folded)}
+              >
+                {backlogFolded ? <AiOutlineLeft /> : <AiOutlineRight />}
+              </div>
             </div>
           </div>
         </div>
