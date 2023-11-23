@@ -1,3 +1,11 @@
+## [3.6.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.2...v3.6.3) (2023-11-23)
+
+
+### Bug Fixes
+
+* :bug: optimize sidebar collapsing. ([d261a85](https://github.com/haydenull/logseq-plugin-agenda/commit/d261a85c057869af292a75f783b56c3d24176b72))
+* **timebox:** :bug: show time log of all day task ([adb50ad](https://github.com/haydenull/logseq-plugin-agenda/commit/adb50ad0ee0c80ba284b331d0dfb51d5395f03c5))
+
 ## [3.6.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.1...v3.6.2) (2023-11-21)
 
 
