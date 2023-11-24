@@ -107,8 +107,6 @@ const MultipleView = ({ className }: { className?: string }) => {
             }}
             // renderTabBar={(props, DefaultTabBar) => <DefaultTabBar />}
             tabBarStyle={{ height: '36px', margin: 0 }}
-            // fix windows tabs 闪烁问题
-            className="min-w-[166px]"
           />
           {settings.filters?.length ? <Filter /> : null}
           {settings.ics?.repo && settings.ics?.token ? <UploadIcs className="text-lg cursor-pointer" /> : null}

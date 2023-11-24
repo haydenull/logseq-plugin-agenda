@@ -117,7 +117,7 @@ if (import.meta.env.VITE_MODE === 'web') {
     // ===== logseq plugin model end =====
     // ========== show or hide app start =========
     logseq.App.registerUIItem('toolbar', {
-      key: 'Agenda2',
+      key: 'Agenda2-Legacy',
       template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
     })
     logseq.App.registerUIItem('toolbar', {
