@@ -1,3 +1,10 @@
+## [3.6.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.3...v3.6.4) (2023-11-24)
+
+
+### Bug Fixes
+
+* :bug: bump antd, fix Tabs blinking ([d5788ad](https://github.com/haydenull/logseq-plugin-agenda/commit/d5788ad2a7dbf7e6c0d5810026cfbb8613a59dbd))
+
 ## [3.6.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.2...v3.6.3) (2023-11-23)
 
 
