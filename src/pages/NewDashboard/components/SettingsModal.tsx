@@ -183,7 +183,8 @@ const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; i
                   {settings.filters?.map((filter) => (
                     <div
                       key={filter.id}
-                      className="flex items-center justify-between w-[300px] border rounded px-4 py-1.5"
+                      className="flex items-center justify-between w-[300px] border rounded px-4 py-1.5 text-white"
+                      style={{ backgroundColor: filter.color }}
                     >
                       <span>{filter.name}</span>
                       <div className="flex gap-3">
@@ -201,7 +202,7 @@ const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; i
                           <RiEdit2Line className="cursor-pointer" />
                         </EditFilterModal>
                         <RiDeleteBin4Line
-                          className="cursor-pointer text-red-500"
+                          className="cursor-pointer "
                           onClick={() => {
                             onChange(
                               'filters',

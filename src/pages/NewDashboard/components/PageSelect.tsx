@@ -2,8 +2,17 @@ import { Select } from 'antd'
 
 import usePages from '@/hooks/usePages'
 
-const PageSelect = ({ value, onChange }: { value?: string; onChange?: (value: string) => void }) => {
+const PageSelect = ({
+  value,
+  onChange,
+  showPageColor = true,
+}: {
+  value?: string
+  onChange?: (value: string) => void
+  showPageColor?: boolean
+}) => {
   const { allPages: pages } = usePages()
+
   return (
     <Select
       showSearch
@@ -20,7 +29,9 @@ const PageSelect = ({ value, onChange }: { value?: string; onChange?: (value: st
       {pages.map((project) => (
         <Select.Option key={project.id} value={project.id} label={project.originalName}>
           <div className="flex flex-row items-center gap-1">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: project.bgColor }}></span>
+            {showPageColor ? (
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: project.bgColor }}></span>
+            ) : null}
             {project.originalName}
           </div>
         </Select.Option>

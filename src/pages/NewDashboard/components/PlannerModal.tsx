@@ -18,6 +18,7 @@ import { navToLogseqBlock } from '@/newHelper/logseq'
 import { formatTaskTitle } from '@/newHelper/task'
 import { track } from '@/newHelper/umami'
 import { logseqAtom } from '@/newModel/logseq'
+import { settingsAtom } from '@/newModel/settings'
 import {
   backlogTasksAtom,
   overdueTasksAtom,
@@ -35,6 +36,7 @@ import { cn, replaceDateInfo } from '@/util/util'
 
 import Backlog from './Backlog'
 import FullScreenModal from './FullScreenModal'
+import Group from './Group'
 import LogseqLogo from './LogseqLogo'
 import TaskModal from './TaskModal'
 
@@ -56,6 +58,9 @@ const PlannerModal = ({
   }>({
     open: false,
   })
+
+  const settings = useAtomValue(settingsAtom)
+  const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
 
   const backlogTasks = useAtomValue(backlogTasksAtom)
   const { currentGraph } = useAtomValue(logseqAtom)
@@ -203,7 +208,8 @@ const PlannerModal = ({
                               <span
                                 className="text-[10px] rounded px-1 py-0.5 text-white opacity-70"
                                 style={{
-                                  backgroundColor: task.project.bgColor,
+                                  backgroundColor:
+                                    groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
                                 }}
                               >
                                 {task.start.format('HH:mm')}
@@ -230,12 +236,7 @@ const PlannerModal = ({
                         <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>
                           {showTitle}
                         </div>
-                        {task.project.isJournal ? null : (
-                          <div className="text-gray-400 text-xs flex gap-1 items-center">
-                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: task.project.bgColor }} />
-                            <span>{task.project?.originalName}</span>
-                          </div>
-                        )}
+                        <Group task={task} type={groupType} />
                       </div>
                     </Dropdown>
                   </div>
@@ -370,15 +371,7 @@ const PlannerModal = ({
                               >
                                 {showTitle}
                               </div>
-                              {objective.project.isJournal ? null : (
-                                <div className="text-gray-400 text-xs flex gap-1 items-center">
-                                  <span
-                                    className="w-2 h-2 rounded-full"
-                                    style={{ backgroundColor: objective.project.bgColor }}
-                                  />
-                                  <span>{objective.project?.originalName}</span>
-                                </div>
-                              )}
+                              <Group task={objective} type={groupType} />
                             </div>
                           </div>
                         )
@@ -403,7 +396,7 @@ const PlannerModal = ({
                               id: task.id,
                               title: showTitle,
                               duration: minutesToHHmm(estimatedTime),
-                              color: task.project.bgColor,
+                              color: groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
                             })}
                           >
                             <Dropdown
@@ -448,7 +441,8 @@ const PlannerModal = ({
                                       <span
                                         className="text-[10px] rounded px-1 py-0.5 text-white opacity-70"
                                         style={{
-                                          backgroundColor: task.project.bgColor,
+                                          backgroundColor:
+                                            groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
                                         }}
                                       >
                                         {task.start.format('HH:mm')}
@@ -477,15 +471,7 @@ const PlannerModal = ({
                                 <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>
                                   {showTitle}
                                 </div>
-                                {task.project.isJournal ? null : (
-                                  <div className="text-gray-400 text-xs flex gap-1 items-center">
-                                    <span
-                                      className="w-2 h-2 rounded-full"
-                                      style={{ backgroundColor: task.project.bgColor }}
-                                    />
-                                    <span>{task.project?.originalName}</span>
-                                  </div>
-                                )}
+                                <Group task={task} type={groupType} />
                               </div>
                             </Dropdown>
                           </div>

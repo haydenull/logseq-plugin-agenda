@@ -8,9 +8,11 @@ import { padZero } from '@/util/util'
  */
 export const transformAgendaTaskToCalendarEvent = (
   task: AgendaTaskWithStart,
-  options: { showFirstEventInCycleOnly?: boolean; showTimeLog?: boolean } = {},
+  options: { showFirstEventInCycleOnly?: boolean; showTimeLog?: boolean; groupType: 'filter' | 'page' } = {
+    groupType: 'page',
+  },
 ): CalendarEvent[] => {
-  const { showFirstEventInCycleOnly = false, showTimeLog = false } = options
+  const { showFirstEventInCycleOnly = false, showTimeLog = false, groupType } = options
   const { estimatedTime = DEFAULT_ESTIMATED_TIME, timeLogs = [], status, actualTime } = task
   const spanTime = status === 'done' && actualTime && showTimeLog ? actualTime : estimatedTime
   const rrule: CalendarEvent['rrule'] =
@@ -29,7 +31,7 @@ export const transformAgendaTaskToCalendarEvent = (
       end: log.end.toDate(),
       extendedProps: task,
       editable: false,
-      color: task.project.bgColor,
+      color: groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
     }))
   }
   return [
@@ -47,7 +49,7 @@ export const transformAgendaTaskToCalendarEvent = (
       // 只有时间点事件才能传 duration
       duration: task.allDay ? undefined : { minute: spanTime },
       editable: !(task.recurringPast || task.rrule),
-      color: task.project.bgColor,
+      color: groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
     },
   ]
 }

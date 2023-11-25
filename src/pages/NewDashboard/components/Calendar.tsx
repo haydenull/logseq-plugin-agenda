@@ -51,6 +51,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   const { updateTaskData, deleteTask, addNewTask } = useAgendaTasks()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
   const settings = useAtomValue(settingsAtom)
+  const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const showTasks = tasksWithStart?.filter((task) =>
     settings.viewOptions?.hideCompleted ? task.status === 'todo' : true,
   )
@@ -60,6 +61,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       transformAgendaTaskToCalendarEvent(task, {
         showFirstEventInCycleOnly: settings.viewOptions?.showFirstEventInCycleOnly,
         showTimeLog: settings.viewOptions?.showTimeLog,
+        groupType,
       }),
     )
     .flat()

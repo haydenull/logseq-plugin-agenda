@@ -2,6 +2,7 @@ import { type Dayjs } from 'dayjs'
 import type { Overwrite } from 'utility-types'
 
 import { type BlockFromQuery } from '@/newHelper/task'
+import { type Filter } from '@/newModel/settings'
 
 import type { RRule } from './fullcalendar'
 import type { AgendaProject } from './project'
@@ -31,6 +32,7 @@ export type AgendaTask = {
   deadline?: Dayjs // logseq deadline
   project: AgendaProject // logseq page
   label?: AgendaTaskPage // logseq page
+  filters?: Filter[]
   repeat?: string // from logseq scheduled
   estimatedTime?: number // unit: minute, from agenda drawer estimated
   actualTime?: number // unit: minute
