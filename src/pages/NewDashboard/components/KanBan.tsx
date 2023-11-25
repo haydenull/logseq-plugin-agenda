@@ -71,6 +71,10 @@ const KanBan = (props, ref) => {
     updateTaskData(task.id, {
       ...task,
       status,
+      rawBlock: {
+        ...task.rawBlock,
+        marker: status === 'todo' ? 'TODO' : 'DONE',
+      },
     })
     updateTaskStatus(task, status)
     event.stopPropagation()

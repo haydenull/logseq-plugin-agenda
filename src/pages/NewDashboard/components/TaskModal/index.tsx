@@ -4,18 +4,22 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { BsCalendar4Event, BsCalendar4Range, BsClock, BsClockHistory } from 'react-icons/bs'
-import { RiDeleteBin4Line } from 'react-icons/ri'
+import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
+import { RiCheckboxBlankCircleLine, RiDeleteBin4Line } from 'react-icons/ri'
 
 import DurationSelect from '@/components/TaskModal/components/DurationSelect'
 import TimeSelect from '@/components/TaskModal/components/TimeSelect'
 import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda'
 import usePages from '@/hooks/usePages'
-import { deleteTask } from '@/newHelper/block'
+import { deleteTask, updateTaskStatus } from '@/newHelper/block'
+import { navToLogseqBlock } from '@/newHelper/logseq'
 import { type BlockFromQuery, transformBlockToAgendaTask, retrieveFilteredBlocks } from '@/newHelper/task'
 import { track } from '@/newHelper/umami'
+import { logseqAtom } from '@/newModel/logseq'
 import { settingsAtom } from '@/newModel/settings'
 import type { AgendaTask, TimeLog } from '@/types/task'
 
+import LogseqLogo from '../LogseqLogo'
 import PageIcon from '../PageIcon'
 import PageSelect from '../PageSelect'
 import TimeLogComponent from './TimeLog'
@@ -53,6 +57,7 @@ const TaskModal = ({
   const titleInputRef = React.useRef<MentionsRef>(null)
   const [titleTagSearchText, setTitleTagSearchText] = useState('')
   const settings = useAtomValue(settingsAtom)
+  const { currentGraph } = useAtomValue(logseqAtom)
   const { allPages: pages, refreshPages } = usePages()
 
   const createHookResult = useCreate(info.type === 'create' ? info.initialData : null)
@@ -160,6 +165,22 @@ const TaskModal = ({
     refreshPages()
     message.success('Page created')
   }
+  const onSwitchTaskStatus = async (status: AgendaTask['status']) => {
+    if (editDisabled) return message.error('Please modify the status of the recurring task in logseq.')
+    if (info.type !== 'edit') return
+
+    await updateTaskStatus(info.initialTaskData, status)
+    onOk?.({
+      ...info.initialTaskData,
+      status,
+      rawBlock: {
+        ...info.initialTaskData.rawBlock,
+        marker: status === 'todo' ? 'TODO' : 'DONE',
+      },
+    })
+    onCancel?.()
+    setInternalOpen(false)
+  }
   useEffect(() => {
     // 增加延时，否则二次打开无法自动聚焦
     if (_open) setTimeout(() => titleInputRef.current?.focus(), 0)
@@ -181,33 +202,68 @@ const TaskModal = ({
         okText={info.type === 'create' ? 'Add Task' : 'Save'}
         onOk={handleOk}
         afterClose={reset}
-        footer={[
-          info.type === 'edit' ? (
-            <Popconfirm
-              key="delete"
-              title="Delete the task"
-              description="Are you sure to delete this task?"
-              onConfirm={handleDelete}
-            >
-              <Button danger>Delete</Button>
-            </Popconfirm>
-          ) : null,
-          <Button key="cancel" onClick={handleCancel}>
-            Cancel
-          </Button>,
-          <Button key="ok" type="primary" onClick={handleOk} disabled={editDisabled}>
-            {info.type === 'create' ? 'Add Task' : 'Save'}
-          </Button>,
-        ]}
+        footer={
+          <div className="flex items-center justify-between">
+            <div>
+              {info.type === 'edit' && info.initialTaskData.status === 'todo' ? (
+                <Button
+                  className="inline-flex items-center px-2"
+                  icon={<IoIosCheckmarkCircleOutline className="text-base" />}
+                  disabled={editDisabled}
+                  onClick={() => onSwitchTaskStatus('done')}
+                >
+                  Complete
+                </Button>
+              ) : null}
+              {info.type === 'edit' && info.initialTaskData.status === 'done' ? (
+                <Button
+                  className="inline-flex items-center px-2"
+                  disabled={editDisabled}
+                  icon={<RiCheckboxBlankCircleLine />}
+                  onClick={() => onSwitchTaskStatus('todo')}
+                >
+                  Incomplete
+                </Button>
+              ) : null}
+              {info.type === 'edit' ? (
+                <Popconfirm
+                  key="delete"
+                  title="Delete the task"
+                  description="Are you sure to delete this task?"
+                  onConfirm={handleDelete}
+                >
+                  <Button
+                    className="hover:!text-red-500 hover:!border-red-500 inline-flex items-center px-2"
+                    icon={<RiDeleteBin4Line />}
+                  >
+                    Delete
+                  </Button>
+                </Popconfirm>
+              ) : null}
+              {info.type === 'edit' ? (
+                <Button
+                  className="inline-flex items-center justify-center text-gray-400"
+                  shape="circle"
+                  icon={<LogseqLogo />}
+                  onClick={() => {
+                    navToLogseqBlock(info.initialTaskData, currentGraph)
+                    onCancel?.()
+                    setInternalOpen(false)
+                  }}
+                />
+              ) : null}
+            </div>
+            <div>
+              <Button key="cancel" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button key="ok" type="primary" onClick={handleOk} disabled={editDisabled}>
+                {info.type === 'create' ? 'Add Task' : 'Save'}
+              </Button>
+            </div>
+          </div>
+        }
       >
-        {/* <Input
-          ref={titleInputRef}
-          bordered={false}
-          placeholder="Title"
-          className="!text-2xl !px-0"
-          value={formData.title}
-          onChange={(e) => updateFormData({ title: e.target.value })}
-        /> */}
         <Mentions
           autoFocus
           ref={titleInputRef}
