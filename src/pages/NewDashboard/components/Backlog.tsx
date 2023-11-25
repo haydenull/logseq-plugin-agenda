@@ -10,6 +10,7 @@ import { ReactSortable } from 'react-sortablejs'
 import { navToLogseqBlock } from '@/newHelper/logseq'
 import { categorizeTasksByPage, formatTaskTitle } from '@/newHelper/task'
 import { logseqAtom } from '@/newModel/logseq'
+import { settingsAtom } from '@/newModel/settings'
 import { backlogTasksAtom } from '@/newModel/tasks'
 
 import LogseqLogo from './LogseqLogo'
@@ -21,6 +22,8 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
   const { currentGraph } = useAtomValue(logseqAtom)
   const categorizedTasks = categorizeTasksByPage(backlogTasks)
   const projects = categorizedTasks.map(({ project }) => project)
+  const settings = useAtomValue(settingsAtom)
+  const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
 
   const [filterProjectIds, setFilterProjectIds] = useState<string[]>([])
 
@@ -101,7 +104,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
                         data-event={JSON.stringify({
                           id: task.id,
                           title: showTitle,
-                          color: task.project.bgColor,
+                          color: groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
                           backlog: true,
                         })}
                       >

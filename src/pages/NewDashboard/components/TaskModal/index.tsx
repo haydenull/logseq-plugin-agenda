@@ -60,6 +60,8 @@ const TaskModal = ({
   const { currentGraph } = useAtomValue(logseqAtom)
   const { allPages: pages, refreshPages } = usePages()
 
+  const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
+
   const createHookResult = useCreate(info.type === 'create' ? info.initialData : null)
   const editHookResult = useEdit(info.type === 'edit' ? info.initialTaskData : null)
   const {
@@ -108,7 +110,13 @@ const TaskModal = ({
     if (settings.selectedFilters?.length) {
       const filterBlockIds = filterBlocks.map((block) => block.uuid)
       if (filterBlockIds.includes(block.uuid)) {
-        onOk?.(task)
+        const filters = filterBlocks
+          .filter((filterBlock) => filterBlock.uuid === block.uuid)
+          .map((filterBlock) => filterBlock.filter)
+        onOk?.({
+          ...task,
+          filters,
+        })
       } else {
         notification.info({
           message: 'Operation successful but task is hidden',
@@ -394,7 +402,11 @@ const TaskModal = ({
             {/* <BsClipboard /> Page */}
             <PageIcon /> Page
           </div>
-          <PageSelect value={formData.projectId} onChange={(val) => updateFormData({ projectId: val })} />
+          <PageSelect
+            showPageColor={groupType === 'page'}
+            value={formData.projectId}
+            onChange={(val) => updateFormData({ projectId: val })}
+          />
         </div>
         {/* ========= Page End ========= */}
 

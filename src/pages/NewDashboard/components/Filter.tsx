@@ -50,7 +50,10 @@ const Filter = () => {
                       )}
                       onClick={() => onClickItem(filter)}
                     >
-                      {filter.name}
+                      <div className="flex gap-1 items-center">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: filter.color }}></span>
+                        {filter.name}
+                      </div>
                       <IoMdCheckmark className={cn('invisible', { visible: isSelected })} />
                     </div>
                   )

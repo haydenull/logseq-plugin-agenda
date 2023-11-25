@@ -28,6 +28,7 @@ import { recentTasksAtom } from '@/newModel/tasks'
 import type { AgendaTaskWithStart, AgendaTask } from '@/types/task'
 import { cn, genDays, replaceDateInfo } from '@/util/util'
 
+import Group from './Group'
 import LogseqLogo from './LogseqLogo'
 import PlannerModal from './PlannerModal'
 import TaskModal from './TaskModal'
@@ -56,6 +57,8 @@ const KanBan = (props, ref) => {
   const tasksInDay = separateTasksInDay(tasks)
   const days = getRecentDays()
   const today = dayjs()
+
+  const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
 
   const app = useAtomValue(appAtom)
 
@@ -261,7 +264,7 @@ const KanBan = (props, ref) => {
                       id: task.id,
                       title: showTitle,
                       duration: minutesToHHmm(estimatedTime),
-                      color: task.project.bgColor,
+                      color: groupType === 'page' ? task.project.bgColor : task?.filters?.[0]?.color,
                     })}
                   >
                     <Dropdown
@@ -306,7 +309,8 @@ const KanBan = (props, ref) => {
                               <span
                                 className="text-[10px] rounded px-1 py-0.5 text-white opacity-70"
                                 style={{
-                                  backgroundColor: task.project.bgColor,
+                                  backgroundColor:
+                                    groupType === 'page' ? task.project.bgColor : task?.filters?.[0]?.color,
                                 }}
                               >
                                 {task.start.format('HH:mm')}
@@ -333,12 +337,7 @@ const KanBan = (props, ref) => {
                         <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>
                           {showTitle}
                         </div>
-                        {task.project.isJournal ? null : (
-                          <div className="text-gray-400 text-xs flex gap-1 items-center">
-                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: task.project.bgColor }} />
-                            <span>{task.project?.originalName}</span>
-                          </div>
-                        )}
+                        <Group task={task} type={groupType} />
                       </div>
                     </Dropdown>
                   </div>

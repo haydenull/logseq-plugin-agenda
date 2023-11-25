@@ -35,6 +35,9 @@ export type BlockFromQuery = BlockEntity & {
   page: AgendaTaskPage
   repeated?: boolean
 }
+export type BlockFromQueryWithFilters = BlockFromQuery & {
+  filters?: Filter[]
+}
 export const getAgendaTasks = async (settings: Settings) => {
   const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
   let blocks = (await logseq.DB.datascriptQuery(`
@@ -70,16 +73,25 @@ export const getAgendaTasks = async (settings: Settings) => {
     :where
     [?block :block/marker ?marker]
     [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
-  `)) as BlockFromQuery[]
+  `)) as BlockFromQueryWithFilters[]
   if (!blocks || blocks?.length === 0) return []
   blocks = blocks.flat()
 
   const filters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
-  const filterBlocks = await retrieveFilteredBlocks(filters)
 
   if (settings.selectedFilters?.length) {
+    const filterBlocks = await retrieveFilteredBlocks(filters)
     const filterBlockIds = filterBlocks.map((block) => block.uuid)
-    blocks = blocks.filter((block) => filterBlockIds.includes(block.uuid))
+    blocks = blocks
+      .filter((block) => filterBlockIds.includes(block.uuid))
+      .map((block) => {
+        return {
+          ...block,
+          filters: filterBlocks
+            .filter((filterBlock) => filterBlock.uuid === block.uuid)
+            .map((filterBlock) => filterBlock.filter),
+        }
+      })
   }
   const promiseList: Promise<AgendaTask[]>[] = blocks.map(async (block) => {
     const _block = {
@@ -136,7 +148,16 @@ export const transformBlockToAgendaTask = async (
   settings: Settings,
 ): Promise<AgendaTask> => {
   const { general = {} } = settings
-  const { uuid, marker, content, scheduled: scheduledNumber, deadline: deadlineNumber, properties, page } = block
+  const {
+    uuid,
+    marker,
+    content,
+    scheduled: scheduledNumber,
+    deadline: deadlineNumber,
+    properties,
+    page,
+    filters,
+  } = block
 
   const title = content.split('\n')[0]?.replace(marker, '')?.trim()
 
@@ -240,6 +261,7 @@ export const transformBlockToAgendaTask = async (
     estimatedTime,
     actualTime,
     project: transformPageToProject(page, favoritePages),
+    filters,
     timeLogs,
     // TODO: read from logseq
     // label: page,
@@ -439,10 +461,17 @@ export const execQuery = async (query: string): Promise<BlockEntity[] | null> =>
   return logseq.DB.datascriptQuery(query)
 }
 
-export const retrieveFilteredBlocks = async (filters: Filter[]): Promise<BlockEntity[]> => {
-  const list = filters.map((filter) => {
-    return execQuery(filter.query)
+type BlockEntityWithFilter = BlockEntity & {
+  filter: Filter
+}
+export const retrieveFilteredBlocks = async (filters: Filter[]): Promise<BlockEntityWithFilter[]> => {
+  const list = filters.map(async (filter) => {
+    const blocks = await execQuery(filter.query)
+    return blocks?.flat(Infinity)?.map((block) => ({
+      ...block,
+      filter,
+    }))
   })
   const result = await Promise.all(list)
-  return result.flat(Infinity).filter(Boolean) as BlockEntity[]
+  return result.flat(Infinity).filter(Boolean) as BlockEntityWithFilter[]
 }

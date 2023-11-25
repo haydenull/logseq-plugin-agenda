@@ -46,6 +46,7 @@ const FULL_CALENDAR_24HOUR_FORMAT = {
 } as const
 const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const settings = useAtomValue(settingsAtom)
+  const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)
   const { updateTaskData, deleteTask, addNewTask } = useAgendaTasks()
   const recentTasks = useAtomValue(recentTasksAtom)
@@ -55,6 +56,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
       transformAgendaTaskToCalendarEvent(task, {
         showFirstEventInCycleOnly: settings.viewOptions?.showFirstEventInCycleOnly,
         showTimeLog: settings.viewOptions?.showTimeLog,
+        groupType,
       }),
     )
     .flat()
