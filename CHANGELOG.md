@@ -1,3 +1,16 @@
+# [3.7.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.4...v3.7.0) (2023-11-25)
+
+
+### Bug Fixes
+
+* :bug: change tabs compoent to fix blinking ([7ff9c9d](https://github.com/haydenull/logseq-plugin-agenda/commit/7ff9c9dabe94614def0e94843a2cbb5e5c872a33))
+
+
+### Features
+
+* :sparkles: support nav to block in task modal ([de92e38](https://github.com/haydenull/logseq-plugin-agenda/commit/de92e382eb9e61bac56b2239bba2c430a9b49daa))
+* **filter:** :sparkles: supports set color ([d8322d9](https://github.com/haydenull/logseq-plugin-agenda/commit/d8322d970e224b5d461066c4a202832de240372f))
+
 ## [3.6.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.3...v3.6.4) (2023-11-24)
 
 
