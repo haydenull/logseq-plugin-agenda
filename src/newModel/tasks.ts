@@ -79,6 +79,7 @@ export const thisMonthTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const today = dayjs()
   const startDay = today.endOf('week')
   const endDay = today.endOf('month')
+  if (startDay.isSameOrAfter(endDay, 'day')) return []
   return allTasks.filter((task) => {
     return task.start.isBetween(startDay, endDay, 'day', '(]')
   })
