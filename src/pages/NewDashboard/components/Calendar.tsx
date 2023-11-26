@@ -21,6 +21,7 @@ import type { CalendarEvent } from '@/types/fullcalendar'
 import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
+import { type CalendarView } from './CalendarOperation'
 import TaskModal from './TaskModal'
 import { type CreateTaskForm } from './TaskModal/useCreate'
 import s from './calendar.module.less'
@@ -37,7 +38,6 @@ type FullCalendarEventInfo = {
   el: HTMLElement
   jsEvent: MouseEvent
 }
-export type CalendarView = 'dayGridMonth' | 'dayGridWeek' | 'timeGridWeek'
 const FULL_CALENDAR_24HOUR_FORMAT = {
   hour: '2-digit',
   minute: '2-digit',
@@ -191,7 +191,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         //   center: 'title',
         //   right: 'dayGridMonth,timeGridWeek',
         // }}
-        initialView="dayGridMonth"
+        initialView={app.calendarView}
         dayHeaderClassNames="!border-x-0"
         plugins={[timeGridPlugin, interactionPlugin, dayGridPlugin, rrulePlugin]}
         eventTimeFormat={FULL_CALENDAR_24HOUR_FORMAT}

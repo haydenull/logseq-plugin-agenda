@@ -16,13 +16,11 @@ const CALENDAR_OPTIONS = [
   { value: CALENDAR_VIEWS.timeGridWeek, label: 'Week' },
 ]
 
-const CalendarOperation = ({ onChange }: { onChange: (view: CalendarView) => void }) => {
-  const [activeView, setActiveView] = useState<CalendarView>(CALENDAR_VIEWS.dayGridMonth)
+const CalendarOperation = ({ value, onChange }: { value: CalendarView; onChange: (view: CalendarView) => void }) => {
   const { settings, setSettings } = useSettings()
   const [open, setOpen] = useState(false)
 
   const onClickItem = (view: CalendarView) => {
-    setActiveView(view)
     onChange(view)
     setOpen(false)
   }
@@ -38,7 +36,7 @@ const CalendarOperation = ({ onChange }: { onChange: (view: CalendarView) => voi
           <div className="bg-white rounded-md shadow-lg">
             <div className="border-b py-2 px-2 flex flex-col gap-1">
               {CALENDAR_OPTIONS.map((view) => {
-                const isSelected = activeView === view.value
+                const isSelected = value === view.value
                 return (
                   <div
                     key={view.value}
@@ -77,7 +75,7 @@ const CalendarOperation = ({ onChange }: { onChange: (view: CalendarView) => voi
         )
       }}
     >
-      <Button className="!bg-transparent">Month</Button>
+      <Button className="!bg-transparent">{CALENDAR_OPTIONS.find((view) => view.value === value)?.label}</Button>
     </Dropdown>
   )
 }

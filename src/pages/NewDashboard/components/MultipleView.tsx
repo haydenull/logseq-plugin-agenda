@@ -11,8 +11,8 @@ import { type App, appAtom } from '@/newModel/app'
 import { settingsAtom } from '@/newModel/settings'
 import { cn } from '@/util/util'
 
-import Calendar, { type CalendarView, type CalendarHandle } from './Calendar'
-import CalendarOperation from './CalendarOperation'
+import Calendar, { type CalendarHandle } from './Calendar'
+import CalendarOperation, { type CalendarView } from './CalendarOperation'
 import Filter from './Filter'
 import KanBan, { type KanBanHandle } from './KanBan'
 import SettingsModal from './SettingsModal'
@@ -111,8 +111,10 @@ const MultipleView = ({ className }: { className?: string }) => {
           /> */}
           {app.view === 'calendar' ? (
             <CalendarOperation
+              value={app.calendarView}
               onChange={(view) => {
                 calendarRef.current?.changeView(view as CalendarView)
+                setApp((_app) => ({ ..._app, calendarView: view }))
                 track('Calendar View Change', { calendarView: view })
               }}
             />
