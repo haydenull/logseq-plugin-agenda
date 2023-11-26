@@ -41,7 +41,7 @@ jobs:
           stale-issue-message: |
             Hi There! 👋
             
-            This issue has been marked as stale due to inactivity for 60 days.
+            This issue has been marked as stale due to inactivity for 40 days.
             
             We would like to inquire if you still have the same problem or if it has been resolved.
             
