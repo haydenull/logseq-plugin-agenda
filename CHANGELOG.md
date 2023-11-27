@@ -1,3 +1,12 @@
+## [3.7.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.7.0...v3.7.1) (2023-11-27)
+
+
+### Bug Fixes
+
+* **calendar:** :bug: keep the calendar view from previous time ([f2051a1](https://github.com/haydenull/logseq-plugin-agenda/commit/f2051a18418b13cc4e03448d2c1d0145e82ecdca))
+* **plan:** :bug: the tasks for the last week and the monthly tasks are overlapping. ([831ab2f](https://github.com/haydenull/logseq-plugin-agenda/commit/831ab2f03a7754d688961bf38dea5fe4ff94e2a4))
+* **timebox:** :bug: error date in the header ([a6247d1](https://github.com/haydenull/logseq-plugin-agenda/commit/a6247d1f3e4a34c7fc916f191abd8eddcf86e10f))
+
 # [3.7.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.6.4...v3.7.0) (2023-11-25)
 
 
