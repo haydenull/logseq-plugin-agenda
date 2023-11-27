@@ -1,3 +1,10 @@
+## [3.7.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.7.1...v3.7.2) (2023-11-27)
+
+
+### Bug Fixes
+
+* **timebox:** :bug: distinguish the style of the header between today and other dates. ([8e6a0a5](https://github.com/haydenull/logseq-plugin-agenda/commit/8e6a0a5aced5b0fe9b47539fb6b5ab045f5e97e1))
+
 ## [3.7.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.7.0...v3.7.1) (2023-11-27)
 
 
