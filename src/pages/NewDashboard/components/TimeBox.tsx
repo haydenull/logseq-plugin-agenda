@@ -61,7 +61,6 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
       }),
     )
     .flat()
-  const calendarApi = calendarRef.current?.getApi()
 
   // const [editTaskModal, setEditTaskModal] = useState<{
   //   open: boolean
@@ -103,6 +102,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
     })
   }
   const onEventScheduleUpdate = (info: unknown) => {
+    const calendarApi = calendarRef.current?.getApi()
     const _info = info as FullCalendarEventInfo
     console.log('[faiz:] === eventResize', _info)
     const { start, end, id: blockUUID, extendedProps: task } = _info.event
@@ -139,6 +139,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   }
 
   const onClickNav = (action: 'prev' | 'next' | 'today') => {
+    const calendarApi = calendarRef.current?.getApi()
     if (action === 'today') {
       calendarApi?.today()
     } else if (action === 'prev') {
@@ -292,10 +293,13 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
             scrollTime: now.subtract(1, 'hour').format('HH:mm:ss'),
             dayHeaderContent: (date) => {
               const day = dayjs(date.date)
+              const isToday = day.isSame(now, 'day')
               return (
                 <div className="flex gap-1 text-gray-500">
                   {day.format('ddd')}
-                  <span className="w-6 h-6 bg-blue-400 rounded text-white">{day.format('DD')}</span>
+                  <span className={cn('w-6 h-6  rounded ', { 'text-white bg-blue-400': isToday })}>
+                    {day.format('DD')}
+                  </span>
                 </div>
               )
             },
