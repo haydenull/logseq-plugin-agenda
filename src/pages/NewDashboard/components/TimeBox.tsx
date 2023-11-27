@@ -1,8 +1,9 @@
+import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { Dropdown } from 'antd'
+import { Button, Dropdown } from 'antd'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
@@ -137,17 +138,38 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
     }
   }
 
+  const onClickNav = (action: 'prev' | 'next' | 'today') => {
+    if (action === 'today') {
+      calendarApi?.today()
+    } else if (action === 'prev') {
+      calendarApi?.prev()
+    } else if (action === 'next') {
+      calendarApi?.next()
+    }
+    track('TimeBox: Click Nav Button', { action })
+  }
+
   return (
     <div
-      className={cn('w-[290px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md', s.fullCalendarTimeBox)}
+      className={cn(
+        'w-[290px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md group/root',
+        s.fullCalendarTimeBox,
+      )}
       style={{
         // @ts-expect-error define fullcalendar css variables
         '--fc-border-color': '#ebebeb',
       }}
     >
-      <div className="h-[44px] flex items-center">
+      <div className="h-[44px] flex items-center justify-between group">
         <div className="flex gap-1.5  items-center px-2 py-1 cursor-default">
           <MdSchedule className="text-lg" /> Time Box
+        </div>
+        <div className="flex mr-4 opacity-0 group-hover/root:opacity-100 transition-opacity">
+          <Button size="small" type="text" icon={<LeftOutlined />} onClick={() => onClickNav('prev')} />
+          <Button size="small" type="text" onClick={() => onClickNav('today')}>
+            Today
+          </Button>
+          <Button size="small" type="text" icon={<RightOutlined />} onClick={() => onClickNav('next')} />
         </div>
       </div>
       <FullCalendar
@@ -268,12 +290,15 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
             slotDuration: '00:15:00',
             slotLabelInterval: '01:00',
             scrollTime: now.subtract(1, 'hour').format('HH:mm:ss'),
-            dayHeaderContent: (
-              <div className="flex gap-1 text-gray-500">
-                {now.format('ddd')}
-                <span className="w-6 h-6 bg-blue-400 rounded text-white">{now.format('DD')}</span>
-              </div>
-            ),
+            dayHeaderContent: (date) => {
+              const day = dayjs(date.date)
+              return (
+                <div className="flex gap-1 text-gray-500">
+                  {day.format('ddd')}
+                  <span className="w-6 h-6 bg-blue-400 rounded text-white">{day.format('DD')}</span>
+                </div>
+              )
+            },
           },
         }}
       />
