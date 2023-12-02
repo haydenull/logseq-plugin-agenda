@@ -1,4 +1,4 @@
-import type { FREQ_ENUM_MAP } from '@/newHelper/task'
+import type { FREQ_ENUM_MAP } from '@/Agenda3/helpers/task'
 
 import type { AgendaTaskWithStart } from './task'
 

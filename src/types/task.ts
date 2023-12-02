@@ -1,8 +1,8 @@
 import { type Dayjs } from 'dayjs'
 import type { Overwrite } from 'utility-types'
 
-import { type BlockFromQuery } from '@/newHelper/task'
-import { type Filter } from '@/newModel/settings'
+import { type BlockFromQuery } from '@/Agenda3/helpers/task'
+import { type Filter } from '@/Agenda3/models/settings'
 
 import type { RRule } from './fullcalendar'
 import type { AgendaProject } from './project'

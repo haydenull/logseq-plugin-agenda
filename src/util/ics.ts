@@ -1,7 +1,7 @@
 import type { Dayjs } from 'dayjs'
 import { type EventAttributes } from 'ics'
 
-import { formatTaskTitle, getRRuleInstance } from '@/newHelper/task'
+import { formatTaskTitle, getRRuleInstance } from '@/Agenda3/helpers/task'
 import type { AgendaTaskWithStart } from '@/types/task'
 
 export const transformAgendaTaskToICSEvent = (task: AgendaTaskWithStart, graphName: string): EventAttributes => {

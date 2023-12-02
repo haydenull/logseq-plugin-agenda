@@ -25,10 +25,10 @@ import initializeTodoist from '@/register/todoist'
 import { getInitialSettings, initializeSettings } from '@/util/baseInfo'
 import { listenEsc, log, managePluginTheme, setPluginTheme, toggleAppTransparent } from '@/util/util'
 
-import NewMainApp from './apps/NewMainApp'
+import { track } from './Agenda3/helpers/umami'
+import Agenda3App from './apps/Agenda3App'
 import TaskListApp from './apps/TaskListApp'
 import i18n from './locales/i18n'
-import { track } from './newHelper/umami'
 import './style/index.less'
 
 echarts.use([
@@ -212,7 +212,7 @@ async function renderApp(isVersion3 = false) {
 
   root = createRoot(document.getElementById('root')!)
   root.render(
-    <React.StrictMode>{isVersion3 ? <NewMainApp /> : <MainApp defaultRoute={defaultRoute} />}</React.StrictMode>,
+    <React.StrictMode>{isVersion3 ? <Agenda3App /> : <MainApp defaultRoute={defaultRoute} />}</React.StrictMode>,
   )
 }
 
