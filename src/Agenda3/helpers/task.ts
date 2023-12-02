@@ -3,9 +3,9 @@ import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import dayjs, { type Dayjs } from 'dayjs'
 import { RRule as RRuleClass } from 'rrule'
 
-import type { KanBanItem } from '@/Agenda3/components/KanBan'
+import type { KanBanItem } from '@/Agenda3/components/kanban/KanBan'
 import type { Filter, Settings } from '@/Agenda3/models/settings'
-import { DEFAULT_ESTIMATED_TIME, recentDaysRange } from '@/constants/agenda'
+import { DEFAULT_ESTIMATED_TIME, getRecentDaysRange } from '@/constants/agenda'
 import type { RRule } from '@/types/fullcalendar'
 import type { AgendaTask, AgendaTaskWithStart, AgendaTaskPage } from '@/types/task'
 import { fillBlockReference } from '@/util/schedule'
@@ -370,7 +370,7 @@ export const transformTasksToKanbanTasks = (
       // show recurring task
       if (task.rrule) {
         const rruleInstance = getRRuleInstance(showFirstEventInCycleOnly ? { ...task.rrule, count: 1 } : task.rrule)
-        const [startDay, endDay] = recentDaysRange
+        const [startDay, endDay] = getRecentDaysRange()
         const dates = rruleInstance.between(startDay.toDate(), endDay.add(1, 'day').toDate())
         return dates.map((date) => {
           return {

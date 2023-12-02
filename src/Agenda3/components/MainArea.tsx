@@ -12,10 +12,10 @@ import i18n from '@/locales/i18n'
 import { cn } from '@/util/util'
 
 import Filter from './Filter'
-import KanBan, { type KanBanHandle } from './KanBan'
 import UploadIcs from './UploadIcs'
 import Calendar, { type CalendarHandle } from './calendar/Calendar'
 import CalendarOperation, { type CalendarView } from './calendar/CalendarAdvancedOperation'
+import KanBan, { type KanBanHandle } from './kanban/KanBan'
 import SettingsModal from './modals/SettingsModal'
 
 const VIEWS = [
