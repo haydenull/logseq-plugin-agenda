@@ -1,5 +1,6 @@
+import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin from '@fullcalendar/interaction'
+import interactionPlugin, { type EventReceiveArg, type EventResizeDoneArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -7,37 +8,23 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import { IoIosCheckmarkCircle } from 'react-icons/io'
 
 import { genDurationString, updateDateInfo } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
-import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import { appAtom } from '@/Agenda3/models/app'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { tasksWithStartAtom } from '@/Agenda3/models/tasks'
-import type { CalendarEvent } from '@/types/fullcalendar'
-import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
+import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
 import TaskModal from '../modals/TaskModal'
 import { type CreateTaskForm } from '../modals/TaskModal/useCreate'
 import { type CalendarView } from './CalendarAdvancedOperation'
+import TheCalendarEvent from './TheCalendarEvent'
 import s from './calendar.module.less'
 
-type FullCalendarEventInfo = {
-  event: CalendarEvent
-  oldEvent: CalendarEvent
-  relatedEvents: unknown[]
-  revert: () => void
-  newResource: unknown
-  oldResource: unknown
-  delta: unknown
-  view: unknown
-  el: HTMLElement
-  jsEvent: MouseEvent
-}
 const FULL_CALENDAR_24HOUR_FORMAT = {
   hour: '2-digit',
   minute: '2-digit',
@@ -82,19 +69,15 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
     open: false,
   })
 
-  const onEventClick = (info: unknown) => {
-    const _info = info as FullCalendarEventInfo
-    // const editDisabled = _info.event.extendedProps?.rrule || _info.event.extendedProps?.recurringPast
-    // if (editDisabled) return message.error('Please modify the recurring task in the logseq.')
+  const onEventClick = (info: EventClickArg) => {
     setEditTaskModal({
       open: true,
-      task: _info.event.extendedProps,
+      task: info.event.extendedProps as AgendaTaskWithStart,
     })
   }
-  const onEventScheduleUpdate = (info: unknown) => {
+  const onEventScheduleUpdate = (info: EventResizeDoneArg | EventReceiveArg | EventDropArg) => {
     // const calendarApi = calendarRef.current?.getApi()
-    const _info = info as FullCalendarEventInfo
-    const { start, end, id: blockUUID, allDay, extendedProps } = _info.event
+    const { start, end, id: blockUUID, allDay, extendedProps } = info.event
     const startDay = dayjs(start)
     // const estimatedTime = dayjs(end).diff(start, 'minute')
     const endDay = dayjs(end).subtract(1, 'day')
@@ -123,9 +106,31 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       // 其他天移动到今天的 timebox，需要对应移动 kanban
     } catch (error) {
       logseq.UI.showMsg('resize failed')
-      _info.revert()
+      info.revert()
       console.error('[Agenda3] calendar resize failed', error)
     }
+  }
+  const onSelect = (info: DateSelectArg) => {
+    if (info.allDay) {
+      const endDay = dayjs(info.end).subtract(1, 'day')
+      const startDay = dayjs(info.start)
+      const isMultipleDay = info.end ? !endDay.isSame(startDay, 'day') : false
+      return setCreateTaskModal({
+        open: true,
+        initialData: {
+          startDateVal: startDay,
+          endDateVal: isMultipleDay ? endDay : undefined,
+        },
+      })
+    }
+    setCreateTaskModal({
+      open: true,
+      initialData: {
+        startDateVal: dayjs(info.start),
+        startTime: dayjs(info.start).format('HH:mm'),
+        estimatedTime: genDurationString(dayjs(info.end).diff(info.start, 'minute')),
+      },
+    })
   }
 
   useImperativeHandle(ref, () => {
@@ -221,84 +226,9 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         }}
         select={(info) => {
           track('Calendar: Select Event', { calendarView: info.view.type })
-          if (info.allDay) {
-            const endDay = dayjs(info.end).subtract(1, 'day')
-            const startDay = dayjs(info.start)
-            const isMultipleDay = info.end ? !endDay.isSame(startDay, 'day') : false
-            return setCreateTaskModal({
-              open: true,
-              initialData: {
-                startDateVal: startDay,
-                endDateVal: isMultipleDay ? endDay : undefined,
-              },
-            })
-          }
-          setCreateTaskModal({
-            open: true,
-            initialData: {
-              startDateVal: dayjs(info.start),
-              startTime: dayjs(info.start).format('HH:mm'),
-              estimatedTime: genDurationString(dayjs(info.end).diff(info.start, 'minute')),
-            },
-          })
+          onSelect(info)
         }}
-        eventContent={(info) => {
-          const taskData = info.event.extendedProps
-          const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaTask) : info.event.title
-          const isShowTimeText =
-            info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 50
-          const isSmallHeight =
-            info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 20
-          const isDone = taskData?.status === 'done'
-          let element: React.ReactNode | null = null
-          switch (info.view.type) {
-            case 'dayGridMonth':
-            case 'dayGridWeek':
-              element = (
-                <div
-                  className={clsx('flex items-center gap-1 w-full px-0.5 relative cursor-pointer', {
-                    'opacity-60 line-through': isDone,
-                    'font-semibold': !isDone,
-                  })}
-                  title={showTitle}
-                >
-                  {info.event.allDay ? null : (
-                    <span
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{ backgroundColor: info.event.backgroundColor }}
-                    />
-                  )}
-                  <span className="truncate flex-1">{showTitle}</span>
-                  {isDone ? (
-                    <IoIosCheckmarkCircle
-                      className={cn('absolute right-0', info.event.allDay ? 'text-white' : 'text-green-500')}
-                    />
-                  ) : null}
-                </div>
-              )
-              break
-            case 'timeGridWeek':
-              element = (
-                <div className={clsx('h-full relative cursor-pointer', { 'opacity-70': isDone })}>
-                  <div
-                    className={clsx('truncate', {
-                      'line-through': isDone,
-                      'font-semibold': !isDone,
-                      'text-[10px]': isSmallHeight,
-                    })}
-                  >
-                    {showTitle}
-                  </div>
-                  {isShowTimeText ? <div className="text-xs text-gray-200">{info.timeText}</div> : null}
-                  {isDone ? <IoIosCheckmarkCircle className="absolute right-0 top-0.5" /> : null}
-                </div>
-              )
-              break
-            default:
-              element = null
-          }
-          return element
-        }}
+        eventContent={(info) => <TheCalendarEvent info={info} />}
         views={{
           timeGridWeek: {
             // dayMaxEvents: true,

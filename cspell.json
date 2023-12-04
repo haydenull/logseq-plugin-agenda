@@ -1,6 +1,7 @@
 {
   "words": [
     "DATETIME",
+    "daygrid",
     "DDHH",
     "dtstart",
     "fullcalendar",
