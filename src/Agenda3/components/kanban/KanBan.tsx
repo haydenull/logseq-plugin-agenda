@@ -52,7 +52,15 @@ const KanBan = (props, ref) => {
       {days.map((day) => {
         const dateStr = day.format('MM-DD ddd')
         const columnTasks = tasksInDay.get(day.format(DATE_FORMATTER_FOR_KEY)) || []
-        return <Column key={dateStr} ref={(el) => (columnRefs.current[dateStr] = el)} day={day} tasks={columnTasks} />
+        return (
+          <Column
+            key={dateStr}
+            ref={(el) => (columnRefs.current[dateStr] = el)}
+            day={day}
+            tasks={columnTasks}
+            allKanbanItems={tasks}
+          />
+        )
       })}
     </div>
   )

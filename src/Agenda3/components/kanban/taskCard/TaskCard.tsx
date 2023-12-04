@@ -61,57 +61,55 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
   }
 
   return (
-    <>
-      <div
-        className={cn('bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-pointer group/card', {
-          'bg-[#edeef0] opacity-80': task.status === 'done',
-          // 循环任务及多天任务不能拖拽
-          'droppable-task-element': !editDisabled && !isMultipleDays,
-        })}
-        data-event={JSON.stringify({
-          id: task.id,
-          title: showTitle,
-          duration: minutesToHHmm(estimatedTime),
-          color: groupType === 'page' ? task.project.bgColor : task?.filters?.[0]?.color,
-        })}
-      >
-        <Dropdown
-          trigger={['contextMenu']}
-          menu={{
-            items: [
-              editDisabled || task.project.isJournal
-                ? null
-                : {
-                    key: 'backlog',
-                    label: 'Move to backlog',
-                    icon: <BsArchive className="!text-sm" />,
-                  },
-              {
-                key: 'delete',
-                label: 'Delete task',
-                danger: true,
-                icon: <RiDeleteBin4Line className="!text-base" />,
-              },
-            ],
-            onClick: ({ key }) => {
-              if (key === 'delete') onDeleteTask(task.id)
-              if (key === 'backlog') onRemoveDate(task.id)
+    <div
+      className={cn('bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-pointer group/card', {
+        'bg-[#edeef0] opacity-80': task.status === 'done',
+        // 循环任务及多天任务不能拖拽
+        'droppable-task-element': !editDisabled && !isMultipleDays,
+      })}
+      data-event={JSON.stringify({
+        id: task.id,
+        title: showTitle,
+        duration: minutesToHHmm(estimatedTime),
+        color: groupType === 'page' ? task.project.bgColor : task?.filters?.[0]?.color,
+      })}
+      data-id={task.id}
+    >
+      <Dropdown
+        trigger={['contextMenu']}
+        menu={{
+          items: [
+            editDisabled || task.project.isJournal
+              ? null
+              : {
+                  key: 'backlog',
+                  label: 'Move to backlog',
+                  icon: <BsArchive className="!text-sm" />,
+                },
+            {
+              key: 'delete',
+              label: 'Delete task',
+              danger: true,
+              icon: <RiDeleteBin4Line className="!text-base" />,
             },
-          }}
-        >
-          <div onClick={() => setEditTaskModal({ open: true, task })}>
-            {/* ========= Toolbar ========= */}
-            <Toolbar task={task} groupType={groupType} onClickMark={onClickTaskMark} />
+          ],
+          onClick: ({ key }) => {
+            if (key === 'delete') onDeleteTask(task.id)
+            if (key === 'backlog') onRemoveDate(task.id)
+          },
+        }}
+      >
+        <div onClick={() => setEditTaskModal({ open: true, task })}>
+          {/* ========= Toolbar ========= */}
+          <Toolbar task={task} groupType={groupType} onClickMark={onClickTaskMark} />
 
-            {/* ========= Title ========= */}
-            <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>{showTitle}</div>
+          {/* ========= Title ========= */}
+          <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>{showTitle}</div>
 
-            {/* ========= Group(page or filter) Name ========= */}
-            <Group task={task} type={groupType} />
-          </div>
-        </Dropdown>
-      </div>
-
+          {/* ========= Group(page or filter) Name ========= */}
+          <Group task={task} type={groupType} />
+        </div>
+      </Dropdown>
       {/* ========== Edit Task Modal ========== */}
       {editTaskModal.task ? (
         <TaskModal
@@ -129,7 +127,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           }}
         />
       ) : null}
-    </>
+    </div>
   )
 }
 

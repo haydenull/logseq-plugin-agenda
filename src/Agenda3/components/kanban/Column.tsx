@@ -16,10 +16,11 @@ import { cn, replaceDateInfo } from '@/util/util'
 
 import AddTaskCard from './AddTaskCard'
 import ColumnTitle from './ColumnTitle'
+import type { KanBanItem } from './KanBan'
 import TaskCard from './taskCard/TaskCard'
 
-export type ColumnProps = { day: Dayjs; tasks: AgendaTaskWithStart[] }
-const Column = ({ day, tasks }: ColumnProps, ref) => {
+export type ColumnProps = { day: Dayjs; tasks: AgendaTaskWithStart[]; allKanbanItems: KanBanItem[] }
+const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
   const columnContainerRef = useRef<HTMLDivElement>(null)
   // bind draggable
   const hadBindDropRef = useRef(false)
@@ -45,7 +46,7 @@ const Column = ({ day, tasks }: ColumnProps, ref) => {
   const onAddTaskByDrag = async (sortableEvent) => {
     console.log('[faiz:] === kanban onAdd', sortableEvent)
     const id = sortableEvent?.item?.dataset?.id
-    const task = tasks.find((task) => task.id === id)
+    const task = allKanbanItems.find((task) => task.id === id)
     if (!task || !id) return logseq.UI.showMsg('task id not found', 'error')
     let startDay = day
     // remain time info
