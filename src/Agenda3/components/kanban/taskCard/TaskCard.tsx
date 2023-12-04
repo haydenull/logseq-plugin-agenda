@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 import { RiDeleteBin4Line } from 'react-icons/ri'
 
-import { deleteDateInfo, updateTaskStatus, deleteTask as deleteTaskBlock } from '@/Agenda3/helpers/block'
+import { deleteBlockDateInfo, updateBlockTaskStatus, deleteTaskBlock } from '@/Agenda3/helpers/block'
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
 import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
@@ -45,7 +45,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
         marker: status === 'todo' ? 'TODO' : 'DONE',
       },
     })
-    updateTaskStatus(task, status)
+    updateBlockTaskStatus(task, status)
     event.stopPropagation()
   }
   const onDeleteTask = async (taskId: string) => {
@@ -57,7 +57,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
       allDay: true,
       start: undefined,
     })
-    deleteDateInfo(taskId)
+    deleteBlockDateInfo(taskId)
   }
 
   return (

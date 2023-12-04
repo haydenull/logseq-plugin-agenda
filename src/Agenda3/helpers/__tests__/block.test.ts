@@ -6,10 +6,10 @@ import {
   generateTimeLogText,
   parseAgendaDrawer,
   parseDurationString,
-  updateAgendaDrawer,
-  updateScheduled,
-  updateTimeLogText,
-  updateTitle,
+  updateBlockAgendaDrawer,
+  updateBlockScheduled,
+  updateBlockTimeLogText,
+  updateBlockTaskTitle,
 } from '../block'
 
 const DEMO_AGENDA_DRAWER = `:AGENDA:
@@ -46,7 +46,7 @@ describe('helper: block', () => {
     expect(parseAgendaDrawer(DEMO_AGENDA_DRAWER_NULL)).toEqual(null)
   })
   test('updateAgendaDrawer', () => {
-    expect(updateAgendaDrawer(`TODO test\n${DEMO_AGENDA_DRAWER}`, { estimated: 80 })).toEqual(
+    expect(updateBlockAgendaDrawer(`TODO test\n${DEMO_AGENDA_DRAWER}`, { estimated: 80 })).toEqual(
       `TODO test\n:AGENDA:\nestimated: 1h20m\n:END:`,
     )
     // expect(updateAgendaDrawer(`TODO test\n${DEMO_AGENDA_DRAWER}`, { estimated: 30 })).toEqual(`TODO test\n`)
@@ -54,7 +54,7 @@ describe('helper: block', () => {
   test('updateScheduled', () => {
     const start = dayjs('2023-09-24 19:00', 'YYYYMMDD HH:mm')
     expect(
-      updateScheduled(
+      updateBlockScheduled(
         `TODO test\nSCHEDULED: <2023-09-24 Sun 19:00>\n:LOGBOOK:\nCLOCK: [2023-09-24 Sun 19:30:00]--[2023-09-24 Sun 20:00:00] =>  00:30:00\n:END:`,
         {
           start,
@@ -65,7 +65,7 @@ describe('helper: block', () => {
       `TODO test\nSCHEDULED: <2023-09-24 Sun>\n:LOGBOOK:\nCLOCK: [2023-09-24 Sun 19:30:00]--[2023-09-24 Sun 20:00:00] =>  00:30:00\n:END:`,
     )
     expect(
-      updateScheduled(
+      updateBlockScheduled(
         `TODO test\n:LOGBOOK:\nCLOCK: [2023-09-24 Sun 19:30:00]--[2023-09-24 Sun 20:00:00] =>  00:30:00\n:END:`,
         {
           start,
@@ -76,7 +76,7 @@ describe('helper: block', () => {
       `TODO test\n:LOGBOOK:\nCLOCK: [2023-09-24 Sun 19:30:00]--[2023-09-24 Sun 20:00:00] =>  00:30:00\n:END:\nSCHEDULED: <2023-09-24 Sun>`,
     )
     expect(
-      updateScheduled(
+      updateBlockScheduled(
         `TODO test\nSCHEDULED: <2023-09-24 Sun 19:00>\n:LOGBOOK:\nCLOCK: [2023-09-24 Sun 19:30:00]--[2023-09-24 Sun 20:00:00] =>  00:30:00\n:END:`,
         {
           start,
@@ -87,20 +87,20 @@ describe('helper: block', () => {
       `TODO test\nSCHEDULED: <2023-09-24 Sun 19:00>\n:LOGBOOK:\nCLOCK: [2023-09-24 Sun 19:30:00]--[2023-09-24 Sun 20:00:00] =>  00:30:00\n:END:`,
     )
     expect(
-      updateScheduled(
+      updateBlockScheduled(
         `TODO test\nSCHEDULED: <2023-09-24 Sun 19:00>\n:LOGBOOK:\nCLOCK: [2023-09-24 Sun 19:30:00]--[2023-09-24 Sun 20:00:00] =>  00:30:00\n:END:`,
         {},
       ),
     ).toEqual(`TODO test\n:LOGBOOK:\nCLOCK: [2023-09-24 Sun 19:30:00]--[2023-09-24 Sun 20:00:00] =>  00:30:00\n:END:`)
   })
   test('updateTitle', () => {
-    expect(updateTitle(`TODO test\nSCHEDULED: <2023-09-24 Sun 19:00>`, 'new title', 'todo')).toEqual(
+    expect(updateBlockTaskTitle(`TODO test\nSCHEDULED: <2023-09-24 Sun 19:00>`, 'new title', 'todo')).toEqual(
       `TODO new title\nSCHEDULED: <2023-09-24 Sun 19:00>`,
     )
   })
   test('updateTimeLogText', () => {
     expect(
-      updateTimeLogText(
+      updateBlockTimeLogText(
         `TODO test\nSCHEDULED: <2023-09-24 Sun 19:00>\n:LOGBOOK:\nCLOCK: [2023-09-24 Sun 19:30:00]--[2023-09-24 Sun 20:00:00] =>  00:30:00\n:END:`,
         [
           {

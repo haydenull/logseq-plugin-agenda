@@ -13,7 +13,7 @@ import { cn } from '@/util/util'
 
 import Backlog from './components/Backlog'
 import MultipleView from './components/MainArea'
-import TimeBox from './components/TimeBox'
+import TimeBox from './components/timebox/TimeBox'
 
 // import TimeBoxActual from './components/TimeBoxActual'
 

@@ -11,10 +11,10 @@ import { RiDeleteBin4Line } from 'react-icons/ri'
 import { ReactSortable } from 'react-sortablejs'
 
 import {
-  deleteDateInfo,
-  updateDateInfo,
-  updateTaskStatus,
-  deleteTask as deleteTaskBlock,
+  deleteBlockDateInfo,
+  updateBlockDateInfo,
+  updateBlockTaskStatus,
+  deleteTaskBlock,
 } from '@/Agenda3/helpers/block'
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
@@ -113,7 +113,7 @@ const PlannerModal = ({
       ...task,
       status,
     })
-    updateTaskStatus(task, status)
+    updateBlockTaskStatus(task, status)
     event.stopPropagation()
   }
   const onDeleteTask = async (taskId: string) => {
@@ -125,7 +125,7 @@ const PlannerModal = ({
       allDay: true,
       start: undefined,
     })
-    deleteDateInfo(taskId)
+    deleteBlockDateInfo(taskId)
   }
   const onClickClose = () => {
     setOpen(false)
@@ -318,7 +318,7 @@ const PlannerModal = ({
                           startDay = replaceDateInfo(task.start, day)
                         }
                         updateTaskData(id, { start: startDay })
-                        updateDateInfo({
+                        updateBlockDateInfo({
                           uuid: id,
                           start: startDay,
                           allDay: task.allDay,

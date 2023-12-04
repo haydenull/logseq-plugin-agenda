@@ -18,7 +18,7 @@ import { secondsToHHmmss } from './fullCalendar'
 /**
  * change task date and estimated time
  */
-export const updateDateInfo = async ({
+export const updateBlockDateInfo = async ({
   uuid,
   allDay,
   start,
@@ -46,7 +46,7 @@ export const updateDateInfo = async ({
         .join('\n')
     : `${originalBlock.content}\n${scheduledText}`
   // update estimated time and end date
-  const newContent2 = updateAgendaDrawer(newContent, {
+  const newContent2 = updateBlockAgendaDrawer(newContent, {
     estimated: estimatedTime,
     end,
   })
@@ -56,7 +56,7 @@ export const updateDateInfo = async ({
 /**
  * delete date info
  */
-export const deleteDateInfo = async (uuid: string) => {
+export const deleteBlockDateInfo = async (uuid: string) => {
   const originalBlock = await logseq.Editor.getBlock(uuid)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
@@ -76,7 +76,7 @@ export const deleteDateInfo = async (uuid: string) => {
 /**
  * update task time log
  */
-export const updateTimeLog = async (
+export const updateBlockTimeLog = async (
   uuid: string,
   info: {
     start: Dayjs
@@ -113,7 +113,7 @@ export const updateTimeLog = async (
 /**
  * add task time log
  */
-export const addTimeLog = async (
+export const addBlockTimeLog = async (
   uuid: string,
   info: {
     start: Dayjs
@@ -142,7 +142,7 @@ export const addTimeLog = async (
 /**
  * delete task time log
  */
-export const deleteTimeLog = async (uuid: string, index: number) => {
+export const deleteBlogTimeLog = async (uuid: string, index: number) => {
   const originalBlock = await logseq.Editor.getBlock(uuid)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
@@ -209,10 +209,10 @@ export const updateTaskBlock = async (taskInfo: AgendaTask & { projectId?: strin
   const originalBlock = await logseq.Editor.getBlock(id)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
-  const content1 = updateTitle(originalBlock.content, title, status)
-  const content2 = updateScheduled(content1, { start, allDay })
-  const content3 = updateAgendaDrawer(content2, { estimated: estimatedTime, end })
-  const content4 = updateTimeLogText(content3, timeLogs)
+  const content1 = updateBlockTaskTitle(originalBlock.content, title, status)
+  const content2 = updateBlockScheduled(content1, { start, allDay })
+  const content3 = updateBlockAgendaDrawer(content2, { estimated: estimatedTime, end })
+  const content4 = updateBlockTimeLogText(content3, timeLogs)
   await updateBlock(id, content4)
 
   const page = await logseq.Editor.getPage(originalBlock.page.id)
@@ -233,7 +233,7 @@ export const updateTaskBlock = async (taskInfo: AgendaTask & { projectId?: strin
 /**
  * toggle task status
  */
-export const updateTaskStatus = async (taskInfo: AgendaTask, status: AgendaTask['status']) => {
+export const updateBlockTaskStatus = async (taskInfo: AgendaTask, status: AgendaTask['status']) => {
   const todoTag = status === 'done' ? 'DONE' : 'TODO'
   const rawTodoTag = taskInfo.rawBlock.marker
   if (!rawTodoTag) return message.error('This is not a todo block')
@@ -245,7 +245,7 @@ export const updateTaskStatus = async (taskInfo: AgendaTask, status: AgendaTask[
 /**
  * delete task
  */
-export const deleteTask = async (uuid: string) => {
+export const deleteTaskBlock = async (uuid: string) => {
   return logseq.Editor.removeBlock(uuid)
 }
 
@@ -368,7 +368,7 @@ export function genAgendaDrawerText(drawer: AgendaDrawer): string {
 /**
  * update agenda drawer
  */
-export function updateAgendaDrawer(blockContent: string, drawer: AgendaDrawer) {
+export function updateBlockAgendaDrawer(blockContent: string, drawer: AgendaDrawer) {
   // const _drawer = drawer
   // if (!drawer.estimated || drawer.estimated === DEFAULT_ESTIMATED_TIME) delete _drawer.estimated
   const newText = genAgendaDrawerText(drawer)
@@ -378,7 +378,7 @@ export function updateAgendaDrawer(blockContent: string, drawer: AgendaDrawer) {
 /**
  * updateScheduled
  */
-export function updateScheduled(blockContent: string, { start, allDay }: { start?: Dayjs; allDay?: boolean }) {
+export function updateBlockScheduled(blockContent: string, { start, allDay }: { start?: Dayjs; allDay?: boolean }) {
   const scheduleText = start
     ? `SCHEDULED: <${start.format(allDay ? SCHEDULED_DATE_FORMATTER : SCHEDULED_DATETIME_FORMATTER)}>`
     : null
@@ -399,7 +399,7 @@ export function updateScheduled(blockContent: string, { start, allDay }: { start
 /**
  * update title
  */
-export function updateTitle(blockContent: string, title: string, status: 'done' | 'todo') {
+export function updateBlockTaskTitle(blockContent: string, title: string, status: 'done' | 'todo') {
   const todoTag = status === 'done' ? 'DONE' : 'TODO'
   return blockContent
     .split('\n')
@@ -412,7 +412,7 @@ export function updateTitle(blockContent: string, title: string, status: 'done' 
 /**
  * update time log
  */
-export function updateTimeLogText(blockContent: string, timeLogs: { start: Dayjs; end: Dayjs }[] = []) {
+export function updateBlockTimeLogText(blockContent: string, timeLogs: { start: Dayjs; end: Dayjs }[] = []) {
   const matches = blockContent.match(LOGBOOK_REGEX)
   const extractedText = matches ? matches[1].trim() : ''
   const otherLog = extractedText

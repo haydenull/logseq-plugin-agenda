@@ -7,7 +7,7 @@ import { BsCalendar4Event, BsCalendar4Range, BsClock, BsClockHistory } from 'rea
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { RiCheckboxBlankCircleLine, RiDeleteBin4Line } from 'react-icons/ri'
 
-import { deleteTask, updateTaskStatus } from '@/Agenda3/helpers/block'
+import { deleteTaskBlock, updateBlockTaskStatus } from '@/Agenda3/helpers/block'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { type BlockFromQuery, transformBlockToAgendaTask, retrieveFilteredBlocks } from '@/Agenda3/helpers/task'
 import { track } from '@/Agenda3/helpers/umami'
@@ -131,7 +131,7 @@ const TaskModal = ({
   }
   const handleDelete = async () => {
     if (info.type === 'edit') {
-      await deleteTask(info.initialTaskData.id)
+      await deleteTaskBlock(info.initialTaskData.id)
       onDelete?.(info.initialTaskData.id)
       setInternalOpen(false)
     }
@@ -177,7 +177,7 @@ const TaskModal = ({
     if (editDisabled) return message.error('Please modify the status of the recurring task in logseq.')
     if (info.type !== 'edit') return
 
-    await updateTaskStatus(info.initialTaskData, status)
+    await updateBlockTaskStatus(info.initialTaskData, status)
     onOk?.({
       ...info.initialTaskData,
       status,

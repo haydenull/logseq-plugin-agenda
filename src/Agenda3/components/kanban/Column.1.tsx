@@ -11,10 +11,10 @@ import { RiDeleteBin4Line } from 'react-icons/ri'
 import { ReactSortable } from 'react-sortablejs'
 
 import {
-  deleteDateInfo,
-  updateDateInfo,
-  updateTaskStatus,
-  deleteTask as deleteTaskBlock,
+  deleteBlockDateInfo,
+  updateBlockDateInfo,
+  updateBlockTaskStatus,
+  deleteTaskBlock,
 } from '@/Agenda3/helpers/block'
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
@@ -76,7 +76,7 @@ export const Column = ({ day, tasks }: ColumnProps, ref) => {
         marker: status === 'todo' ? 'TODO' : 'DONE',
       },
     })
-    updateTaskStatus(task, status)
+    updateBlockTaskStatus(task, status)
     event.stopPropagation()
   }
   const onDeleteTask = async (taskId: string) => {
@@ -88,7 +88,7 @@ export const Column = ({ day, tasks }: ColumnProps, ref) => {
       allDay: true,
       start: undefined,
     })
-    deleteDateInfo(taskId)
+    deleteBlockDateInfo(taskId)
   }
 
   useImperativeHandle(ref, () => ({
@@ -180,7 +180,7 @@ export const Column = ({ day, tasks }: ColumnProps, ref) => {
               startDay = replaceDateInfo(task.start, day)
             }
             updateTaskData(id, { start: startDay })
-            updateDateInfo({
+            updateBlockDateInfo({
               uuid: id,
               start: startDay,
               allDay: task.allDay,

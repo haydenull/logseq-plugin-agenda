@@ -3,29 +3,25 @@ import interactionPlugin from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
 import rrulePlugin from '@fullcalendar/rrule'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import { Button, Dropdown } from 'antd'
-import clsx from 'clsx'
+import { Button } from 'antd'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
-import { IoIosCheckmarkCircle } from 'react-icons/io'
 import { MdSchedule } from 'react-icons/md'
-import { RiDeleteBin4Line, RiInboxUnarchiveLine } from 'react-icons/ri'
 
-import { deleteTask as deleteTaskBlock, genDurationString, updateDateInfo } from '@/Agenda3/helpers/block'
+import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
-import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { recentTasksAtom } from '@/Agenda3/models/tasks'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { CalendarEvent } from '@/types/fullcalendar'
-import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
-import TaskModal from './modals/TaskModal'
-import { type CreateTaskForm } from './modals/TaskModal/useCreate'
+import TaskModal from '../modals/TaskModal'
+import { type CreateTaskForm } from '../modals/TaskModal/useCreate'
+import TheCalendarEvent from './TheCalendarEvent'
 import s from './timebox.module.less'
 
 type FullCalendarEventInfo = {
@@ -49,7 +45,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)
-  const { updateTaskData, deleteTask, addNewTask } = useAgendaTasks()
+  const { updateTaskData, addNewTask } = useAgendaTasks()
   const recentTasks = useAtomValue(recentTasksAtom)
   const now = dayjs()
   const calendarEvents = recentTasks
@@ -85,22 +81,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   //     task: _info.event.extendedProps,
   //   })
   // }
-  const onDeleteTask = async (taskId: string) => {
-    deleteTask(taskId)
-    deleteTaskBlock(taskId)
-  }
-  const onRemoveTime = async (info: unknown) => {
-    const _info = info as FullCalendarEventInfo
-    updateTaskData(_info.event.id, {
-      allDay: true,
-    })
-    updateDateInfo({
-      uuid: _info.event.id,
-      allDay: true,
-      start: _info.event.extendedProps.start,
-      estimatedTime: _info.event.extendedProps.estimatedTime,
-    })
-  }
+
   const onEventScheduleUpdate = (info: unknown) => {
     const calendarApi = calendarRef.current?.getApi()
     const _info = info as FullCalendarEventInfo
@@ -116,7 +97,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
         allDay: false,
         estimatedTime,
       })
-      updateDateInfo({
+      updateBlockDateInfo({
         uuid: blockUUID,
         start: startDay,
         estimatedTime,
@@ -221,67 +202,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
           })
           track('Time Box: Select Event')
         }}
-        eventContent={(info) => {
-          const taskData = info.event.extendedProps
-          const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaTask) : info.event.title
-          const isShowTimeText =
-            info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 20
-          const isSmallHeight =
-            info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 10
-          const isDone = taskData?.status === 'done'
-          return (
-            <TaskModal
-              info={{
-                type: 'edit',
-                initialTaskData: taskData as AgendaTaskWithStart,
-              }}
-              onOk={(taskInfo) => {
-                updateTaskData(taskData.id, taskInfo)
-              }}
-              onDelete={(taskId) => {
-                deleteTask(taskId)
-              }}
-            >
-              <Dropdown
-                trigger={['contextMenu']}
-                menu={{
-                  items: [
-                    {
-                      key: 'remove',
-                      label: 'Remove from timebox',
-                      icon: <RiInboxUnarchiveLine className="!text-base" />,
-                    },
-                    {
-                      key: 'delete',
-                      label: 'Delete task',
-                      danger: true,
-                      icon: <RiDeleteBin4Line className="!text-base" />,
-                    },
-                  ],
-                  onClick: ({ key }) => {
-                    if (key === 'delete') onDeleteTask(info.event.id)
-                    if (key === 'remove') onRemoveTime(info)
-                  },
-                }}
-              >
-                <div className={clsx('h-full', { 'opacity-60': isDone })}>
-                  <div
-                    className={clsx('truncate flex items-center relative', {
-                      'line-through': isDone,
-                      'font-semibold': !isDone,
-                      'text-[10px]': isSmallHeight,
-                    })}
-                    title={showTitle}
-                  >
-                    {showTitle}
-                    {isDone ? <IoIosCheckmarkCircle className="text-white absolute right-0" /> : null}
-                  </div>
-                  {isShowTimeText ? <div className="text-xs text-gray-100">{info.timeText}</div> : null}
-                </div>
-              </Dropdown>
-            </TaskModal>
-          )
-        }}
+        eventContent={(info) => <TheCalendarEvent info={info} />}
         views={{
           timeGridOneDay: {
             type: 'timeGrid',

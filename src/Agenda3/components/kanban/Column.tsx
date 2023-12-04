@@ -6,7 +6,7 @@ import { useEffect, useImperativeHandle, useRef } from 'react'
 import React from 'react'
 import { ReactSortable } from 'react-sortablejs'
 
-import { updateDateInfo } from '@/Agenda3/helpers/block'
+import { updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import { appAtom } from '@/Agenda3/models/app'
@@ -53,7 +53,7 @@ const Column = ({ day, tasks }: ColumnProps, ref) => {
       startDay = replaceDateInfo(task.start, day)
     }
     updateTaskData(id, { start: startDay })
-    updateDateInfo({
+    updateBlockDateInfo({
       uuid: id,
       start: startDay,
       allDay: task.allDay,

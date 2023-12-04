@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
-import { genDurationString, updateDateInfo } from '@/Agenda3/helpers/block'
+import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
@@ -90,7 +90,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
     }
     try {
       updateTaskData(blockUUID, dateInfo)
-      updateDateInfo({
+      updateBlockDateInfo({
         ...dateInfo,
         uuid: blockUUID,
       })
