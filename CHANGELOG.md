@@ -1,3 +1,15 @@
+# [3.8.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.7.2...v3.8.0) (2023-12-06)
+
+
+### Bug Fixes
+
+* [skip ci] add data-id to TaskCard ([5e89cc1](https://github.com/haydenull/logseq-plugin-agenda/commit/5e89cc168758390ddb377d2c9069ea2f94f65b42))
+
+
+### Features
+
+* filter supports drag and drop sorting ([caafae2](https://github.com/haydenull/logseq-plugin-agenda/commit/caafae2cce0efeaf499426044bbcb4da6c005526))
+
 ## [3.7.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.7.1...v3.7.2) (2023-11-27)
 
 
