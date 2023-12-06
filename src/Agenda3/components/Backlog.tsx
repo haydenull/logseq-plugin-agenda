@@ -1,7 +1,6 @@
 import { CaretRightOutlined } from '@ant-design/icons'
 import { Draggable } from '@fullcalendar/interaction'
 import { Collapse, Empty, Select } from 'antd'
-import clsx from 'clsx'
 import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
@@ -12,6 +11,7 @@ import { categorizeTasksByPage, formatTaskTitle } from '@/Agenda3/helpers/task'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { backlogTasksAtom } from '@/Agenda3/models/tasks'
+import { cn } from '@/util/util'
 
 import s from './backlog.module.less'
 import LogseqLogo from './icons/LogseqLogo'
@@ -46,7 +46,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
     }
   }, [backlogTasks.length, bindCalendar])
   return (
-    <div className={clsx('w-[290px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md', s.backlog)}>
+    <div className={cn('w-[290px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md', s.backlog)}>
       <div className="h-[44px] flex items-center gap-1.5 relative after:shadow after:absolute after:bottom-0 after:w-full after:h-1">
         <BsArchive /> Backlog
         <Select
@@ -67,7 +67,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
         />
       </div>
       <div
-        className={clsx('flex flex-col gap-2 flex-1 overflow-auto pt-2', {
+        className={cn('flex flex-col gap-2 flex-1 overflow-auto pt-2', {
           'justify-center': showCategorizedTasks?.length <= 0,
         })}
         ref={taskContainerRef}

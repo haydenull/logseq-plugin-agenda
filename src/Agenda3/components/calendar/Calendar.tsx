@@ -23,6 +23,7 @@ import TaskModal from '../modals/TaskModal'
 import { type CreateTaskForm } from '../modals/TaskModal/useCreate'
 import { type CalendarView } from './CalendarAdvancedOperation'
 import TheCalendarEvent from './TheCalendarEvent'
+import WeekNumber from './WeekNumber'
 import s from './calendar.module.less'
 
 const FULL_CALENDAR_24HOUR_FORMAT = {
@@ -175,7 +176,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         selectable
         dayMaxEventRows // allow "more" link when too many events
         weekNumbers
-        weekNumberClassNames="text-xs"
+        weekNumberContent={({ num }) => <WeekNumber weekNumber={num} />}
         defaultTimedEventDuration="00:30"
         firstDay={1}
         fixedWeekCount={false}
@@ -225,6 +226,9 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
           track('Calendar: Click Event', { calendarView: info.view.type })
         }}
         select={(info) => {
+          // prevent click week number to create task
+          // @ts-expect-error type correctly
+          if (info.jsEvent?.target?.className?.includes('faiz-week-number')) return
           track('Calendar: Select Event', { calendarView: info.view.type })
           onSelect(info)
         }}

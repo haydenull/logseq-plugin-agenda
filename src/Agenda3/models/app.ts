@@ -6,9 +6,11 @@ export type App = {
   view: 'tasks' | 'calendar'
   rightSidebarFolded: boolean
   calendarView: CalendarView
+  sidebarType: 'timebox' | 'backlog' | 'objective'
 }
 export const appAtom = atom<App>({
   view: 'tasks',
   rightSidebarFolded: false,
   calendarView: 'dayGridMonth',
+  sidebarType: 'timebox',
 })

@@ -1,8 +1,7 @@
 // import { Analytics } from '@vercel/analytics/react'
 import { Modal, message } from 'antd'
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useState } from 'react'
-import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai'
 
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import usePages from '@/Agenda3/hooks/usePages'
@@ -11,17 +10,15 @@ import { logseqAtom } from '@/Agenda3/models/logseq'
 import initializeDayjs from '@/register/dayjs'
 import { cn } from '@/util/util'
 
-import Backlog from './components/Backlog'
 import MultipleView from './components/MainArea'
-import TimeBox from './components/timebox/TimeBox'
+import Sidebar from './components/Sidebar'
 import useSettings from './hooks/useSettings'
 
 // import TimeBoxActual from './components/TimeBoxActual'
 
 export type TimeBoxType = 'estimated' | 'actual'
 const Dashboard = () => {
-  const [timeBoxType, setTimeBoxType] = useState<TimeBoxType>('estimated')
-  const [app, setApp] = useAtom(appAtom)
+  const app = useAtomValue(appAtom)
   // 需要初始化 settings
   const { initializeSettings } = useSettings()
   const setLogseq = useSetAtom(logseqAtom)
@@ -86,18 +83,7 @@ const Dashboard = () => {
       <MultipleView className="flex-1" />
 
       {/* ========== Sidebar ========= */}
-      <div className={cn('transition-all group/sidebar relative', app.rightSidebarFolded ? 'w-0' : 'w-[290px]')}>
-        {app.view === 'calendar' ? <Backlog /> : <TimeBox onChangeType={() => setTimeBoxType('actual')} />}
-        {/* folded option bar */}
-        <div className="w-[16px] h-full absolute -left-[16px] top-0 flex items-center z-10 opacity-0 group-hover/sidebar:opacity-100 transition-opacity">
-          <div
-            className="bg-[#f0f0f0] h-[50px] w-full rounded-tl rounded-bl flex items-center text-gray-400 hover:bg-gray-200 cursor-pointer border-l border-t border-b"
-            onClick={() => setApp((_app) => ({ ..._app, rightSidebarFolded: !_app.rightSidebarFolded }))}
-          >
-            {app.rightSidebarFolded ? <AiOutlineLeft /> : <AiOutlineRight />}
-          </div>
-        </div>
-      </div>
+      <Sidebar />
 
       {/* ========== Toolbar ======== */}
       {/* <div></div> */}

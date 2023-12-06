@@ -53,6 +53,14 @@ const MultipleView = ({ className }: { className?: string }) => {
     }
     track('Today Button', { view: app.view })
   }
+  const onClickAppViewChange = (view) => {
+    const _view = view as App['view']
+    setApp((_app) => {
+      const _sidebarType = _view === 'tasks' ? 'timebox' : 'backlog'
+      return { ..._app, view: _view, sidebarType: _sidebarType }
+    })
+    track('View Change', { view: view })
+  }
 
   return (
     <div className={cn('flex flex-col pl-2 py-1 flex-1 w-0 z-0 relative', className)}>
@@ -119,15 +127,7 @@ const MultipleView = ({ className }: { className?: string }) => {
               }}
             />
           ) : null}
-          <Segmented
-            defaultValue={app.view}
-            className="!bg-gray-200"
-            options={VIEWS}
-            onChange={(view) => {
-              setApp((_app) => ({ ..._app, view: view as App['view'] }))
-              track('View Change', { view: view })
-            }}
-          />
+          <Segmented defaultValue={app.view} className="!bg-gray-200" options={VIEWS} onChange={onClickAppViewChange} />
           {settings.filters?.length ? <Filter /> : null}
           {settings.ics?.repo && settings.ics?.token ? <UploadIcs className="text-lg cursor-pointer" /> : null}
           <SettingsModal initialTab="general">
