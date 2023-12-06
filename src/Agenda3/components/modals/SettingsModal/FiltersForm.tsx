@@ -1,5 +1,6 @@
 import { Button } from 'antd'
 import { RiDeleteBin4Line, RiEdit2Line } from 'react-icons/ri'
+import { ReactSortable } from 'react-sortablejs'
 
 import useSettings from '@/Agenda3/hooks/useSettings'
 import type { Filter } from '@/Agenda3/models/settings'
@@ -23,45 +24,52 @@ const FiltersForm = () => {
           <EditFilterModal type="create" onOk={(filter) => onChange('filters', oldFilters.concat(filter))}>
             <Button>Create Filter</Button>
           </EditFilterModal>
-          <div className="mt-4 flex flex-col gap-2">
-            {settings.filters?.map((filter) => (
-              <div
-                key={filter.id}
-                className="flex items-center justify-between w-[300px] border rounded px-4 py-1.5 text-white"
-                style={{ backgroundColor: filter.color }}
-              >
-                <span>{filter.name}</span>
-                <div className="flex gap-3">
-                  <EditFilterModal
-                    type="edit"
-                    key={filter.id}
-                    initialValues={filter}
-                    onOk={(newFilter) =>
-                      onChange(
-                        'filters',
-                        oldFilters.map((f) => (f.id === filter.id ? newFilter : f)),
-                      )
-                    }
-                  >
-                    <RiEdit2Line className="cursor-pointer" />
-                  </EditFilterModal>
-                  <RiDeleteBin4Line
-                    className="cursor-pointer "
-                    onClick={() => {
-                      onChange(
-                        'filters',
-                        oldFilters.filter((f) => f.id !== filter.id),
-                      )
-                      onChange(
-                        'selectedFilters',
-                        oldSelectedFilters.filter((id) => id !== filter.id),
-                      )
-                    }}
-                  />
+          {settings.filters?.length ? (
+            <ReactSortable
+              animation={80}
+              className="mt-4"
+              list={settings.filters}
+              setList={(newFilters) => onChange('filters', newFilters)}
+            >
+              {settings.filters?.map((filter) => (
+                <div
+                  key={filter.id}
+                  className="flex items-center justify-between mb-2 w-[300px] border rounded px-4 py-1.5 text-white"
+                  style={{ backgroundColor: filter.color }}
+                >
+                  <span>{filter.name}</span>
+                  <div className="flex gap-3">
+                    <EditFilterModal
+                      type="edit"
+                      key={filter.id}
+                      initialValues={filter}
+                      onOk={(newFilter) =>
+                        onChange(
+                          'filters',
+                          oldFilters.map((f) => (f.id === filter.id ? newFilter : f)),
+                        )
+                      }
+                    >
+                      <RiEdit2Line className="cursor-pointer" />
+                    </EditFilterModal>
+                    <RiDeleteBin4Line
+                      className="cursor-pointer "
+                      onClick={() => {
+                        onChange(
+                          'filters',
+                          oldFilters.filter((f) => f.id !== filter.id),
+                        )
+                        onChange(
+                          'selectedFilters',
+                          oldSelectedFilters.filter((id) => id !== filter.id),
+                        )
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </ReactSortable>
+          ) : null}
         </div>
       </div>
     </>

@@ -1,7 +1,6 @@
 import { useLocalStorageValue } from '@react-hookz/web'
 import { useAtom } from 'jotai'
 import { clone, set } from 'lodash-es'
-import { useEffect } from 'react'
 
 import { type Settings, settingsAtom, type Filter } from '@/Agenda3/models/settings'
 
@@ -26,8 +25,8 @@ const useSettings = () => {
       return newSettings
     })
   }
-  // initial settings
-  useEffect(() => {
+  // initialize settings
+  const initializeSettings = () => {
     const base: Settings = { isInitialized: true }
     if (isPlugin) {
       const _settings = (logseq.settings as unknown as Settings) ?? {}
@@ -35,10 +34,11 @@ const useSettings = () => {
     } else {
       setAtomSettings(valueLocalStorage ? { ...valueLocalStorage, isInitialized: true } : base)
     }
-  }, [])
+  }
   return {
     settings,
     setSettings,
+    initializeSettings,
   }
 }
 

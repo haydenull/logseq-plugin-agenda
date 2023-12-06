@@ -14,6 +14,7 @@ import { cn } from '@/util/util'
 import Backlog from './components/Backlog'
 import MultipleView from './components/MainArea'
 import TimeBox from './components/timebox/TimeBox'
+import useSettings from './hooks/useSettings'
 
 // import TimeBoxActual from './components/TimeBoxActual'
 
@@ -21,6 +22,8 @@ export type TimeBoxType = 'estimated' | 'actual'
 const Dashboard = () => {
   const [timeBoxType, setTimeBoxType] = useState<TimeBoxType>('estimated')
   const [app, setApp] = useAtom(appAtom)
+  // 需要初始化 settings
+  const { initializeSettings } = useSettings()
   const setLogseq = useSetAtom(logseqAtom)
   const { refreshTasks } = useAgendaTasks()
   const { refreshPages } = usePages()
@@ -55,6 +58,10 @@ const Dashboard = () => {
       window.removeEventListener('focus', handleWindowFocus)
     }
   }, [loadData])
+  // initialize settings
+  useEffect(() => {
+    initializeSettings()
+  }, [])
   // set logseq app and user info
   useEffect(() => {
     logseq.App.getCurrentGraph().then((graph) => {
