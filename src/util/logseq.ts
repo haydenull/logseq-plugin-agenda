@@ -263,7 +263,5 @@ export const navToPage = async (block: BlockEntity) => {
  * fixed block uuid
  */
 export const fixedBlockUUID = async (blockUUID: string) => {
-  const isFixed = await logseq.Editor.getBlockProperty(blockUUID, 'id')
-  if (isFixed) return
-  logseq.Editor.upsertBlockProperty(blockUUID, 'id', blockUUID)
+  return logseq.Editor.upsertBlockProperty(blockUUID, 'id', blockUUID)
 }

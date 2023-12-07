@@ -29,16 +29,13 @@ const TodayTaskModal: React.FC<{
     }
   }
   const onClickOk = async () => {
-    const blockList: BlockEntity[] = []
-    for (let i = 0; i < value.length; i++) {
-      const block = await getBlockData({ uuid: value[i] })
-      await fixedBlockUUID(value[i])
-      blockList.push(block)
-    }
-    logseq.Editor.insertBatchBlock(
+    const blockUUIDList: string[] = value
+    const fixedBlockPromises = blockUUIDList.map(fixedBlockUUID)
+    await Promise.all(fixedBlockPromises)
+    await logseq.Editor.insertBatchBlock(
       uuid,
-      blockList.map((block) => ({
-        content: `((${block?.uuid}))`,
+      blockUUIDList.map((_uuid) => ({
+        content: `((${_uuid}))`,
       })),
       {
         before: false,
