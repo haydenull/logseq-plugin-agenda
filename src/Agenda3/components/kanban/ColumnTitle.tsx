@@ -1,7 +1,7 @@
 import { message } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
 
-import PlannerModal from '../modals/PlannerModal'
+import PlannerModal from '../modals/PlannerModal/PlannerModal'
 
 const ColumnTitle = ({ day }: { day: Dayjs }) => {
   const today = dayjs()

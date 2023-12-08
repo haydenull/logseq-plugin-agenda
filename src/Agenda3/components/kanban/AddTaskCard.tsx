@@ -16,7 +16,7 @@ const AddTaskCard = ({
 }: {
   day: Dayjs
   isGray: boolean
-  actualTime: number
+  actualTime?: number
   estimatedTime: number
 }) => {
   const isToday = day.isSame(dayjs(), 'day')
@@ -39,9 +39,13 @@ const AddTaskCard = ({
             Add a task
           </span>
         </div>
-        <div className="bg-gray-200 rounded text-xs px-1 py-0.5 text-[10px]">
-          {minutesToHHmm(actualTime)} / {minutesToHHmm(estimatedTime)}
-        </div>
+        {actualTime ? (
+          <div className="bg-gray-200 rounded text-xs px-1 py-0.5 text-[10px]">
+            {minutesToHHmm(actualTime)} / {minutesToHHmm(estimatedTime)}
+          </div>
+        ) : (
+          <div className="bg-gray-200 rounded text-xs px-1 py-0.5 text-[10px]">{minutesToHHmm(estimatedTime)}</div>
+        )}
       </div>
     </TaskModal>
   )
