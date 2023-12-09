@@ -2,19 +2,19 @@ import { useAtomValue } from 'jotai'
 import React, { useState } from 'react'
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai'
 
+import { thisMonthObjectivesAtom, thisWeekObjectivesAtom } from '@/Agenda3/models/objectives'
 import {
   backlogTasksAtom,
   overdueTasksAtom,
   thisMonthExcludeTomorrowTasksAtom,
-  thisMonthObjectivesAtom,
   thisMonthTasksAtom,
   thisWeekExcludeTomorrowTasksAtom,
-  thisWeekObjectivesAtom,
   thisWeekTasksAtom,
   todayTasksAtom,
   tomorrowTasksAtom,
 } from '@/Agenda3/models/tasks'
-import type { AgendaObjective, AgendaTaskWithStart } from '@/types/task'
+import type { AgendaObjective } from '@/types/objective'
+import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
 import Backlog from '../../Backlog'

@@ -7,7 +7,7 @@ import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import type { AgendaObjective } from '@/types/task'
+import type { AgendaObjective } from '@/types/objective'
 import { cn } from '@/util/util'
 
 import Group from '../../Group'

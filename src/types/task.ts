@@ -5,6 +5,7 @@ import { type BlockFromQuery } from '@/Agenda3/helpers/task'
 import { type Filter } from '@/Agenda3/models/settings'
 
 import type { RRule } from './fullcalendar'
+import type { AgendaTaskObjective } from './objective'
 import type { AgendaProject } from './project'
 
 // full calendar event object https://fullcalendar.io/docs/event-object
@@ -15,11 +16,6 @@ export type AgendaTaskPage = {
   isJournal: boolean
   journalDay?: number
   properties?: Record<string, string>
-}
-export type AgendaTaskObjective = {
-  type: 'week' | 'month'
-  year: number
-  number: number
 }
 export type TimeLog = { start: Dayjs; end: Dayjs; amount: number /** unit: minute */ }
 export type AgendaTask = {
@@ -49,10 +45,6 @@ export type AgendaTask = {
 
 export type AgendaTaskWithStart = AgendaTask & {
   start: Dayjs
-}
-
-export type AgendaObjective = AgendaTask & {
-  objective: AgendaTaskObjective
 }
 
 export type CreateAgendaTask = { projectId?: string } & Overwrite<

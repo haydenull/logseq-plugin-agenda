@@ -10,7 +10,8 @@ import {
   SCHEDULED_DATETIME_FORMATTER,
   SCHEDULED_DATE_FORMATTER,
 } from '@/constants/agenda'
-import type { AgendaTask, AgendaTaskObjective, CreateAgendaTask } from '@/types/task'
+import type { AgendaTaskObjective } from '@/types/objective'
+import type { AgendaTask, CreateAgendaTask } from '@/types/task'
 import { moveBlockToNewPage, updateBlock } from '@/util/logseq'
 
 import { secondsToHHmmss } from './fullCalendar'
