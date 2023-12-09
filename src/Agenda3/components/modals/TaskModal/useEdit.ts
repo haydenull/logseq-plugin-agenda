@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { object, string, optional, special, type Output, safeParse, array, number } from 'valibot'
 
 import { genDurationString, parseDurationString, updateTaskBlock } from '@/Agenda3/helpers/block'
-import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { AgendaTask } from '@/types/task'
 
 import { genStart } from './useCreate'

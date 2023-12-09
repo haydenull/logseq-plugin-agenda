@@ -90,11 +90,11 @@
     "tailwindcss-animate": "^1.0.7",
     "tinycolor2": "^1.6.0",
     "tui-calendar": "^1.15.3",
-    "valibot": "^0.17.0"
+    "valibot": "^0.23.0"
   },
   "devDependencies": {
     "@ant-design/cssinjs": "^1.17.0",
-    "@haydenull/fabric": "^0.2.4",
+    "@haydenull/fabric": "^0.2.5",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",

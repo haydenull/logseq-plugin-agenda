@@ -7,6 +7,7 @@ import localeData from 'dayjs/plugin/localeData'
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import updateLocale from 'dayjs/plugin/updateLocale'
 import utc from 'dayjs/plugin/utc'
+import weekOfYear from 'dayjs/plugin/weekOfYear'
 import weekday from 'dayjs/plugin/weekday'
 
 dayjs.extend(weekday)
@@ -18,6 +19,7 @@ dayjs.extend(updateLocale)
 dayjs.extend(utc)
 dayjs.extend(quarterOfYear)
 dayjs.extend(isoWeek)
+dayjs.extend(weekOfYear) // Use plugin
 
 const initializeDayjs = (weekStartDay: 0 | 1) => {
   dayjs.updateLocale('en', {

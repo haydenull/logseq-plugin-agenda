@@ -163,7 +163,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
 
   return (
     <div
-      className={cn('h-full flex flex-col', s.fullCalendar)}
+      className={cn('flex h-full flex-col', s.fullCalendar)}
       style={{
         // @ts-expect-error define fullcalendar css variables
         '--fc-border-color': '#e5e5e5',
@@ -176,7 +176,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         selectable
         dayMaxEventRows // allow "more" link when too many events
         weekNumbers
-        weekNumberContent={({ num }) => <WeekNumber weekNumber={num} />}
+        weekNumberContent={({ num, date }) => <WeekNumber weekNumber={num} date={date} />}
         defaultTimedEventDuration="00:30"
         firstDay={1}
         fixedWeekCount={false}
@@ -243,13 +243,13 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
               const isWeekend = day.day() === 6 || day.day() === 0
               return (
                 <div
-                  className={clsx('flex gap-1 h-[34px] items-center', isWeekend ? 'text-gray-400' : 'text-gray-700')}
+                  className={clsx('flex h-[34px] items-center gap-1', isWeekend ? 'text-gray-400' : 'text-gray-700')}
                 >
                   {day.format('ddd')}
                   <span
                     className={cn(
-                      'w-6 h-6 items-center flex justify-center',
-                      date.isToday ? 'bg-blue-400 rounded text-white' : '',
+                      'flex h-6 w-6 items-center justify-center',
+                      date.isToday ? 'rounded bg-blue-400 text-white' : '',
                     )}
                   >
                     {day.format('DD')}

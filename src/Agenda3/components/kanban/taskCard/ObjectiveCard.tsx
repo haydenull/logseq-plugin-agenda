@@ -24,34 +24,34 @@ const ObjectiveCard = ({ objective }: { objective: AgendaObjective }) => {
     <div
       key={objective.id}
       className={cn(
-        'bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-pointer group/card relative overflow-hidden shrink-0',
+        'group/card relative shrink-0 cursor-pointer overflow-hidden whitespace-pre-wrap rounded-md bg-white p-2 shadow',
         {
           'bg-[#edeef0] opacity-80': objective.status === 'done',
         },
       )}
     >
       <GoGoal
-        className={cn('absolute text-8xl -right-3 top-1 text-gray-100', {
+        className={cn('absolute -right-3 top-1 text-8xl text-gray-100', {
           'text-[#e2e3e6]': objective.status === 'done',
         })}
       />
       <div className="relative">
         <div className="flex items-center justify-between">
-          <div className="flex gap-1 items-center">
+          <div className="flex items-center gap-1">
             {objective.status === 'done' ? (
               <IoIosCheckmarkCircle
-                className="text-xl cursor-pointer text-gray-300"
+                className="cursor-pointer text-xl text-gray-300"
                 // onClick={(e) => onClickTaskMark(e, task, 'todo')}
               />
             ) : (
               <IoIosCheckmarkCircleOutline
-                className="text-gray-300 text-xl cursor-pointer"
+                className="cursor-pointer text-xl text-gray-300"
                 // onClick={(e) => onClickTaskMark(e, task, 'done')}
               />
             )}
 
             <div
-              className="text-gray-300 opacity-0 group-hover/card:opacity-100 transition-opacity cursor-pointer"
+              className="cursor-pointer text-gray-300 opacity-0 transition-opacity group-hover/card:opacity-100"
               onClick={(e) => {
                 e.stopPropagation()
                 navToLogseqBlock(objective, currentGraph)
@@ -62,7 +62,7 @@ const ObjectiveCard = ({ objective }: { objective: AgendaObjective }) => {
           </div>
         </div>
         <div
-          className={cn('text-gray-600 my-0.5', {
+          className={cn('my-0.5 text-gray-600', {
             'line-through': objective.status === 'done',
           })}
         >

@@ -5,19 +5,19 @@ import { type App, appAtom } from '@/Agenda3/models/app'
 import { cn } from '@/util/util'
 
 import Backlog from './Backlog'
-import ObjectiveBoard from './ObjectiveBoard'
+import ObjectiveBoard from './objectiveBoard/ObjectiveBoard'
 import TimeBox from './timebox/TimeBox'
 
 const Sidebar = () => {
   const [app, setApp] = useAtom(appAtom)
 
   return (
-    <div className={cn('transition-all group/sidebar relative', app.rightSidebarFolded ? 'w-0' : 'w-[290px]')}>
+    <div className={cn('group/sidebar relative transition-all', app.rightSidebarFolded ? 'w-0' : 'w-[290px]')}>
       <SidebarContent sidebarType={app.sidebarType} />
       {/* folded option bar */}
-      <div className="w-[16px] h-full absolute -left-[16px] top-0 flex items-center z-10 opacity-0 group-hover/sidebar:opacity-100 transition-opacity">
+      <div className="absolute -left-[16px] top-0 z-10 flex h-full w-[16px] items-center opacity-0 transition-opacity group-hover/sidebar:opacity-100">
         <div
-          className="bg-[#f0f0f0] h-[50px] w-full rounded-tl rounded-bl flex items-center text-gray-400 hover:bg-gray-200 cursor-pointer border-l border-t border-b"
+          className="flex h-[50px] w-full cursor-pointer items-center rounded-tl rounded-bl border-l border-t border-b bg-[#f0f0f0] text-gray-400 hover:bg-gray-200"
           onClick={() => setApp((_app) => ({ ..._app, rightSidebarFolded: !_app.rightSidebarFolded }))}
         >
           {app.rightSidebarFolded ? <AiOutlineLeft /> : <AiOutlineRight />}

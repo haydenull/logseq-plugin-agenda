@@ -6,6 +6,7 @@
     "dtstart",
     "fullcalendar",
     "kanban",
+    "picklist",
     "rrule",
     "sortablejs",
     "timeblock",

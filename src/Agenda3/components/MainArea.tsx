@@ -63,28 +63,16 @@ const MultipleView = ({ className }: { className?: string }) => {
   }
 
   return (
-    <div className={cn('flex flex-col pl-2 py-1 flex-1 w-0 z-0 relative', className)}>
+    <div className={cn('relative z-0 flex w-0 flex-1 flex-col py-1 pl-2', className)}>
       {/* ========= View Actions ========= */}
-      <div className="border-b flex justify-between w-full py-1 items-center pr-2">
+      <div className="flex w-full items-center justify-between border-b py-1 pr-2">
         <div className="flex items-center">
           {app.view === 'calendar' ? (
             <div className="mr-1">
-              {/* <Segmented
-                options={[
-                  { value: 'dayGridMonth', label: 'Month' },
-                  // { value: 'dayGridWeek', label: '2 Weeks' },
-                  { value: 'timeGridWeek', label: 'Week' },
-                ]}
-                className="!bg-gray-200 !mr-3"
-                onChange={(view) => {
-                  calendarRef.current?.changeView(view as CalendarView)
-                  track('Calendar View Change', { calendarView: view })
-                }}
-              /> */}
               <Button
                 icon={<LeftOutlined />}
                 shape="circle"
-                className="!bg-transparent mr-1"
+                className="mr-1 !bg-transparent"
                 onClick={() => {
                   calendarRef.current?.prev()
                   track('Calendar Previous Button')
@@ -104,19 +92,9 @@ const MultipleView = ({ className }: { className?: string }) => {
           <Button className="!bg-transparent" shape="round" onClick={onClickToday}>
             Today
           </Button>
-          {app.view === 'calendar' ? <h1 className="ml-3 font-medium text-xl">{calendarTitle}</h1> : null}
+          {app.view === 'calendar' ? <h1 className="ml-3 text-xl font-medium">{calendarTitle}</h1> : null}
         </div>
         <div className="flex items-center gap-3">
-          {/* <Tabs
-            activeKey={app.view}
-            items={VIEWS}
-            onChange={(key) => {
-              setApp((_app) => ({ ..._app, view: key as App['view'] }))
-              track('View Change', { view: key })
-            }}
-            // renderTabBar={(props, DefaultTabBar) => <DefaultTabBar />}
-            tabBarStyle={{ height: '36px', margin: 0 }}
-          /> */}
           {app.view === 'calendar' ? (
             <CalendarOperation
               value={app.calendarView}
@@ -129,16 +107,16 @@ const MultipleView = ({ className }: { className?: string }) => {
           ) : null}
           <Segmented defaultValue={app.view} className="!bg-gray-200" options={VIEWS} onChange={onClickAppViewChange} />
           {settings.filters?.length ? <Filter /> : null}
-          {settings.ics?.repo && settings.ics?.token ? <UploadIcs className="text-lg cursor-pointer" /> : null}
+          {settings.ics?.repo && settings.ics?.token ? <UploadIcs className="cursor-pointer text-lg" /> : null}
           <SettingsModal initialTab="general">
-            <FiSettings className="text-lg cursor-pointer" onClick={() => track('Settings Button')} />
+            <FiSettings className="cursor-pointer text-lg" onClick={() => track('Settings Button')} />
           </SettingsModal>
           {import.meta.env.VITE_MODE === 'plugin' ? (
-            <FiXCircle className="text-lg cursor-pointer" onClick={() => logseq.hideMainUI()} />
+            <FiXCircle className="cursor-pointer text-lg" onClick={() => logseq.hideMainUI()} />
           ) : null}
         </div>
       </div>
-      <div className="flex-1 h-0">
+      <div className="h-0 flex-1">
         {app.view === 'tasks' ? (
           <KanBan ref={kanbanRef} />
         ) : (
