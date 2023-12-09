@@ -1,8 +1,10 @@
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Segmented } from 'antd'
+import dayjs from 'dayjs'
 import { useAtom, useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
 import { FiSettings, FiXCircle } from 'react-icons/fi'
+import { GoGoal } from 'react-icons/go'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
 
 import { track } from '@/Agenda3/helpers/umami'
@@ -61,6 +63,20 @@ const MultipleView = ({ className }: { className?: string }) => {
     })
     track('View Change', { view: view })
   }
+  const onClickGoal = () => {
+    const type = calendarRef.current?.getView() === 'dayGridMonth' ? 'month' : 'week'
+    const date = calendarRef.current?.getDate()
+    const day = dayjs(date)
+    setApp((_app) => ({
+      ..._app,
+      sidebarType: 'objective',
+      objectivePeriod: {
+        type,
+        number: type === 'month' ? day.month() + 1 : day.week(),
+        year: day.year(),
+      },
+    }))
+  }
 
   return (
     <div className={cn('relative z-0 flex w-0 flex-1 flex-col py-1 pl-2', className)}>
@@ -92,7 +108,14 @@ const MultipleView = ({ className }: { className?: string }) => {
           <Button className="!bg-transparent" shape="round" onClick={onClickToday}>
             Today
           </Button>
-          {app.view === 'calendar' ? <h1 className="ml-3 text-xl font-medium">{calendarTitle}</h1> : null}
+          {app.view === 'calendar' ? (
+            <h1 className="ml-3 flex items-center gap-1 text-xl font-medium">
+              {calendarTitle}
+              <div className="cursor-pointer text-gray-400 hover:text-gray-700" onClick={onClickGoal}>
+                <GoGoal />
+              </div>
+            </h1>
+          ) : null}
         </div>
         <div className="flex items-center gap-3">
           {app.view === 'calendar' ? (

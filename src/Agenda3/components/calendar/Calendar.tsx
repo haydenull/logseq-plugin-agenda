@@ -146,6 +146,12 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       changeView: (view: CalendarView) => {
         calendarApi?.changeView(view)
       },
+      getView: () => {
+        return calendarApi?.view.type
+      },
+      getDate: () => {
+        return calendarApi?.getDate()
+      },
       navToday: () => {
         calendarApi?.today()
       },
@@ -297,6 +303,8 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
 export type CalendarHandle = {
   prev: () => void
   next: () => void
+  getView: () => CalendarView
+  getDate: () => Date
   changeView: (view: CalendarView) => void
   navToday: () => void
 }

@@ -16,7 +16,10 @@ const WeekNumber = ({ weekNumber, date }: { weekNumber: number; date: Date }) =>
     }))
   }
   return (
-    <div onClick={onClick} className="faiz-week-number flex cursor-pointer items-center gap-1 text-xs">
+    <div
+      onClick={onClick}
+      className="faiz-week-number flex cursor-pointer items-center gap-1 text-xs hover:text-gray-900"
+    >
       W{weekNumber}
       <GoGoal />
     </div>
