@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { useState } from 'react'
 
+import { createObjectiveBlock } from '@/Agenda3/helpers/block'
 import type { AgendaTaskObjective } from '@/types/objective'
 
 export type CreateObjectiveForm = {
@@ -38,15 +39,12 @@ const useCreate = (initialData: Partial<CreateObjectiveForm> | null) => {
   }
 
   const create = async () => {
-    // const block = await createObjectiveBlock({
-    //   title: formData.title,
-    //   period: formData.period,
-    // })
-    // if (!block) {
-    //   logseq.UI.showMsg('Failed to create objective block')
-    //   throw new Error('Failed to create objective block')
-    // }
-    // return block
+    const block = await createObjectiveBlock(formData)
+    if (!block) {
+      logseq.UI.showMsg('Failed to create objective block')
+      throw new Error('Failed to create objective block')
+    }
+    return block
   }
   const reset = () => {
     setFormData(_initialData)

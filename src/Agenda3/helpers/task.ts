@@ -31,7 +31,7 @@ const FREQ_MAP = {
 
 export type BlockFromQuery = BlockEntity & {
   marker: 'TODO' | 'DOING' | 'NOW' | 'LATER' | 'WAITING' | 'DONE' | 'CANCELED'
-  deadline: number
+  deadline?: number
   page: AgendaTaskPage
   repeated?: boolean
 }
@@ -116,7 +116,7 @@ export const getAgendaTasks = async (settings: Settings) => {
       })),
     }
 
-    const task = await transformBlockToAgendaTask(_block as unknown as BlockFromQuery, favoritePages, settings)
+    const task = await transformBlockToAgendaTask(_block as unknown as BlockFromQuery, settings, favoritePages)
     const recurringPastTasks: AgendaTask[] =
       task.doneHistory?.map((pastTaskEnd) => {
         const { estimatedTime = DEFAULT_ESTIMATED_TIME } = task
@@ -144,9 +144,10 @@ export const getAgendaTasks = async (settings: Settings) => {
  */
 export const transformBlockToAgendaTask = async (
   block: BlockFromQuery,
-  favoritePages: string[],
   settings: Settings,
+  favoritePages?: string[],
 ): Promise<AgendaTask> => {
+  const _favoritePages = (favoritePages ?? (await logseq.App.getCurrentGraphFavorites())) || []
   const { general = {} } = settings
   const {
     uuid,
@@ -250,6 +251,17 @@ export const transformBlockToAgendaTask = async (
     if (_rrule) rrule = _rrule
   }
 
+  // filters
+  let _filters: Filter[] = filters ?? []
+  if (settings.selectedFilters?.length && !filters?.length) {
+    const settingsFilters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
+    const filterBlocks = await retrieveFilteredBlocks(settingsFilters)
+    const belongFilters = filterBlocks
+      .filter((filterBlock) => filterBlock.uuid === block.uuid)
+      .map((filterBlock) => filterBlock.filter)
+    _filters = belongFilters
+  }
+
   return {
     id: uuid,
     status,
@@ -260,8 +272,8 @@ export const transformBlockToAgendaTask = async (
     deadline,
     estimatedTime,
     actualTime,
-    project: transformPageToProject(page, favoritePages),
-    filters,
+    project: transformPageToProject(page, _favoritePages),
+    filters: _filters,
     timeLogs,
     // TODO: read from logseq
     // label: page,

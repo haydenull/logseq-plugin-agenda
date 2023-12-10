@@ -7,10 +7,11 @@ import { BsCalendar4Event, BsCalendar4Range, BsClock, BsClockHistory } from 'rea
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { RiCheckboxBlankCircleLine, RiDeleteBin4Line } from 'react-icons/ri'
 
-import { deleteTaskBlock, updateBlockTaskStatus } from '@/Agenda3/helpers/block'
+import { deleteTaskBlock, transformBlockToBlockFromQuery, updateBlockTaskStatus } from '@/Agenda3/helpers/block'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { type BlockFromQuery, transformBlockToAgendaTask, retrieveFilteredBlocks } from '@/Agenda3/helpers/task'
 import { track } from '@/Agenda3/helpers/umami'
+import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import usePages from '@/Agenda3/hooks/usePages'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
@@ -62,6 +63,8 @@ const TaskModal = ({
 
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
 
+  const { deleteTask } = useAgendaTasks()
+
   const createHookResult = useCreate(info.type === 'create' ? info.initialData : null)
   const editHookResult = useEdit(info.type === 'edit' ? info.initialTaskData : null)
   const {
@@ -86,51 +89,14 @@ const TaskModal = ({
   }
   const handleOk = async () => {
     track(`Task Modal: Ok Button`, { type: info.type })
-    const block = await action()
-    if (!block) return message.error('Failed to create/edit task block')
-    const page = await logseq.Editor.getPage(block?.page?.id ?? block?.page)
-    if (!page) return message.error('Failed to find page')
-    const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
-    const task = await transformBlockToAgendaTask(
-      {
-        ...block,
-        page: {
-          ...page,
-          originalName: page.originalName,
-          journalDay: page.journalDay,
-          isJournal: page?.['journal?'],
-        },
-      } as unknown as BlockFromQuery,
-      favoritePages,
-      settings,
-    )
-
-    const filters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
-    const filterBlocks = await retrieveFilteredBlocks(filters)
-    if (settings.selectedFilters?.length) {
-      const filterBlockIds = filterBlocks.map((block) => block.uuid)
-      if (filterBlockIds.includes(block.uuid)) {
-        const filters = filterBlocks
-          .filter((filterBlock) => filterBlock.uuid === block.uuid)
-          .map((filterBlock) => filterBlock.filter)
-        onOk?.({
-          ...task,
-          filters,
-        })
-      } else {
-        notification.info({
-          message: 'Operation successful but task is hidden',
-          description: 'Task was hidden because it dose not match any of your filters.',
-          duration: 0,
-        })
-      }
-    } else {
-      onOk?.(task)
-    }
+    const task = await action()
+    if (!task) return message.error('Failed to create task')
+    onOk?.(task)
     setInternalOpen(false)
   }
   const handleDelete = async () => {
     if (info.type === 'edit') {
+      deleteTask(info.initialTaskData.id)
       await deleteTaskBlock(info.initialTaskData.id)
       onDelete?.(info.initialTaskData.id)
       setInternalOpen(false)
@@ -241,7 +207,7 @@ const TaskModal = ({
                   onConfirm={handleDelete}
                 >
                   <Button
-                    className="hover:!text-red-500 hover:!border-red-500 inline-flex items-center px-2"
+                    className="inline-flex items-center px-2 hover:!border-red-500 hover:!text-red-500"
                     icon={<RiDeleteBin4Line />}
                   >
                     Delete
@@ -275,7 +241,7 @@ const TaskModal = ({
         <Mentions
           autoFocus
           ref={titleInputRef}
-          className="!text-2xl !px-0 !border-0 !shadow-none"
+          className="!border-0 !px-0 !text-2xl !shadow-none"
           placeholder="Title"
           prefix="#"
           options={pages.map((page) => ({ value: page.originalName, label: page.originalName, key: page.id }))}
@@ -290,11 +256,11 @@ const TaskModal = ({
         />
         {/* ========== Start Date Start ========= */}
         {formData.endDateVal ? (
-          <div className="flex my-2">
-            <div className="w-[160px] text-gray-400 flex gap-1 items-center">
+          <div className="my-2 flex">
+            <div className="flex w-[160px] items-center gap-1 text-gray-400">
               <BsCalendar4Range /> Date Range
             </div>
-            <div className="flex items-center group gap-1">
+            <div className="group flex items-center gap-1">
               <DatePicker.RangePicker
                 allowClear={false}
                 bordered={false}
@@ -304,17 +270,17 @@ const TaskModal = ({
                 onChange={(val: [Dayjs, Dayjs]) => val && updateFormData({ startDateVal: val[0], endDateVal: val[1] })}
               />
               <BsCalendar4Event
-                className="text-gray-400 invisible group-hover:visible cursor-pointer"
+                className="invisible cursor-pointer text-gray-400 group-hover:visible"
                 onClick={() => handleSwitchRangeMode('date')}
               />
             </div>
           </div>
         ) : (
-          <div className="flex my-2">
-            <div className="w-[160px] text-gray-400 flex gap-1 items-center">
+          <div className="my-2 flex">
+            <div className="flex w-[160px] items-center gap-1 text-gray-400">
               <BsCalendar4Event /> Start Date
             </div>
-            <div className="flex items-center group gap-1">
+            <div className="group flex items-center gap-1">
               <Popover
                 trigger={['click']}
                 arrow={false}
@@ -335,7 +301,7 @@ const TaskModal = ({
                   </div>
                 }
               >
-                <div className="hover:bg-gray-100 px-3 py-1 rounded cursor-pointer">
+                <div className="cursor-pointer rounded px-3 py-1 hover:bg-gray-100">
                   {formData.startDateVal && start ? (
                     start.format(showStartTimeFormatter)
                   ) : (
@@ -344,7 +310,7 @@ const TaskModal = ({
                 </div>
               </Popover>
               <BsCalendar4Range
-                className="text-gray-400 invisible group-hover:visible cursor-pointer"
+                className="invisible cursor-pointer text-gray-400 group-hover:visible"
                 onClick={() => handleSwitchRangeMode('range')}
               />
             </div>
@@ -353,8 +319,8 @@ const TaskModal = ({
         {/* ========= Start Date End ========= */}
 
         {/* ========= Estimated Time Start ========= */}
-        <div className="flex my-2">
-          <div className="w-[160px] text-gray-400 flex gap-1 items-center">
+        <div className="my-2 flex">
+          <div className="flex w-[160px] items-center gap-1 text-gray-400">
             <BsClock /> Estimated Time
           </div>
           <DurationSelect
@@ -369,24 +335,24 @@ const TaskModal = ({
         {/* ========= Actual Time Start ========= */}
         {info.type === 'edit' ? (
           <div className="flex items-start">
-            <div className="w-[160px] text-gray-400 flex gap-1 items-center h-[32px]">
+            <div className="flex h-[32px] w-[160px] items-center gap-1 text-gray-400">
               <BsClockHistory /> Actual Time
             </div>
             <div>
-              <div className="px-3 py-1 flex gap-2 items-center cursor-pointer h-[32px]">
+              <div className="flex h-[32px] cursor-pointer items-center gap-2 px-3 py-1">
                 {formData.actualTime}
                 <div className="text-xs text-gray-400 hover:text-gray-800" onClick={addDefaultTimeLog}>
                   (Add a log)
                 </div>
               </div>
               {editHookResult.formData.timeLogs?.map((timeLog, index) => (
-                <div key={index} className="group flex items-center w-[220px] justify-between">
+                <div key={index} className="group flex w-[220px] items-center justify-between">
                   <TimeLogComponent
                     value={{ start: timeLog.start, end: timeLog.end, amount: timeLog.amount }}
                     onChange={(newTimeLog) => updateTimeLog(index, newTimeLog)}
                   />
                   <RiDeleteBin4Line
-                    className="hidden group-hover:block text-red-300 hover:text-red-500 cursor-pointer"
+                    className="hidden cursor-pointer text-red-300 hover:text-red-500 group-hover:block"
                     onClick={() => deleteTimeLog(index)}
                   />
                 </div>
@@ -397,8 +363,8 @@ const TaskModal = ({
         {/* ========= Actual Time End ========= */}
 
         {/* ========= Page Start ========= */}
-        <div className="flex my-2">
-          <div className="w-[160px] text-gray-400 flex gap-1 items-center">
+        <div className="my-2 flex">
+          <div className="flex w-[160px] items-center gap-1 text-gray-400">
             {/* <BsClipboard /> Page */}
             <PageIcon /> Page
           </div>

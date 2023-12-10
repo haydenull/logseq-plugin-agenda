@@ -134,7 +134,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   return (
     <div
       className={cn(
-        'w-[290px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md group/root',
+        'group/root flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md',
         s.fullCalendarTimeBox,
       )}
       style={{
@@ -142,11 +142,11 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
         '--fc-border-color': '#ebebeb',
       }}
     >
-      <div className="h-[44px] flex items-center justify-between group">
-        <div className="flex gap-1.5  items-center px-2 py-1 cursor-default">
+      <div className="group flex h-[44px] items-center justify-between">
+        <div className="flex cursor-default  items-center gap-1.5 px-2 py-1">
           <MdSchedule className="text-lg" /> Time Box
         </div>
-        <div className="flex mr-4 opacity-0 group-hover/root:opacity-100 transition-opacity">
+        <div className="mr-4 flex opacity-0 transition-opacity group-hover/root:opacity-100">
           <Button size="small" type="text" icon={<LeftOutlined />} onClick={() => onClickNav('prev')} />
           <Button size="small" type="text" onClick={() => onClickNav('today')}>
             Today
@@ -218,7 +218,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
               return (
                 <div className="flex gap-1 text-gray-500">
                   {day.format('ddd')}
-                  <span className={cn('w-6 h-6  rounded ', { 'text-white bg-blue-400': isToday })}>
+                  <span className={cn('h-6 w-6  rounded ', { 'bg-blue-400 text-white': isToday })}>
                     {day.format('DD')}
                   </span>
                 </div>
@@ -246,8 +246,8 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
       {createTaskModal.open ? (
         <TaskModal
           open={createTaskModal.open}
-          onOk={(task) => {
-            addNewTask(task)
+          onOk={() => {
+            // addNewTask(task)
             setCreateTaskModal({ open: false })
           }}
           onCancel={() => setCreateTaskModal({ open: false })}

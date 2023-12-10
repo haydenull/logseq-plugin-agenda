@@ -1,9 +1,18 @@
-import { message } from 'antd'
+import { message, notification } from 'antd'
 import dayjs, { isDayjs, type Dayjs } from 'dayjs'
+import { useAtomValue } from 'jotai'
 import { useState } from 'react'
 import { object, string, optional, special, type Output, safeParse, array, number } from 'valibot'
 
-import { genDurationString, parseDurationString, updateTaskBlock } from '@/Agenda3/helpers/block'
+import {
+  genDurationString,
+  parseDurationString,
+  transformBlockToBlockFromQuery,
+  updateTaskBlock,
+} from '@/Agenda3/helpers/block'
+import { transformBlockToAgendaTask } from '@/Agenda3/helpers/task'
+import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import { settingsAtom } from '@/Agenda3/models/settings'
 import type { AgendaTask } from '@/types/task'
 
 import { genStart } from './useCreate'
@@ -30,6 +39,8 @@ const editFormSchema = object({
 type EditTaskForm = Output<typeof editFormSchema>
 type EditTaskFormNoValidation = Partial<EditTaskForm>
 const useEdit = (initialTask: AgendaTask | null) => {
+  const settings = useAtomValue(settingsAtom)
+  const { updateTaskData } = useAgendaTasks()
   const initialFormData = {
     title: initialTask?.title || '',
     startDateVal: initialTask?.start,
@@ -81,7 +92,23 @@ const useEdit = (initialTask: AgendaTask | null) => {
       actualTime: undefined,
       projectId: result.output.projectId,
     })
-    return logseq.Editor.getBlock(initialTask.id)
+    const block = await transformBlockToBlockFromQuery(await logseq.Editor.getBlock(initialTask.id))
+    if (!block) {
+      message.error('Failed to edit task block')
+      throw new Error('Failed to edit task block')
+    }
+    const task = await transformBlockToAgendaTask(block, settings)
+    const isFilterMode = (settings.selectedFilters || [])?.length > 0
+    if (!isFilterMode || (isFilterMode && (task.filters ?? []).length > 0)) {
+      updateTaskData(task.id, task)
+    } else {
+      notification.info({
+        message: 'Edit successful but task is hidden',
+        description: 'Task was hidden because it dose not match any of your filters.',
+        duration: 0,
+      })
+    }
+    return task
   }
 
   return {

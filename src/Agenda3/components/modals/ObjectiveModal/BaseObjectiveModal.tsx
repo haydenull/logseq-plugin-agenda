@@ -28,7 +28,7 @@ export const ObjectiveModal = ({ children, formData, updateFormData, action }: O
   return (
     <>
       <span onClick={() => setOpen(true)}>{children}</span>
-      <Modal className="!w-[620px]" open={open} onCancel={() => setOpen(false)}>
+      <Modal className="!w-[620px]" open={open} onCancel={() => setOpen(false)} onOk={action}>
         <Input
           className="!border-0 !px-0 !text-2xl !shadow-none"
           placeholder="Objective Title"

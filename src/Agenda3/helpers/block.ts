@@ -1,7 +1,9 @@
+import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { message } from 'antd'
 import { format } from 'date-fns'
 import dayjs, { type Dayjs } from 'dayjs'
 
+import { type CreateObjectiveForm } from '@/Agenda3/components/modals/ObjectiveModal/CreateObjectiveModal/useCreate'
 import {
   AGENDA_DRAWER_REGEX,
   DATE_FORMATTER,
@@ -15,6 +17,7 @@ import type { AgendaTask, CreateAgendaTask } from '@/types/task'
 import { moveBlockToNewPage, updateBlock } from '@/util/logseq'
 
 import { secondsToHHmmss } from './fullCalendar'
+import type { BlockFromQuery } from './task'
 
 /**
  * change task date and estimated time
@@ -358,6 +361,8 @@ export function genAgendaDrawerText(drawer: AgendaDrawer): string {
         valueText = genDurationString(originalVal)
       } else if (key === 'end') {
         valueText = originalVal.format(DATE_FORMATTER)
+      } else if (key === 'objective') {
+        valueText = `${originalVal.type}-${originalVal.year}-${originalVal.number}`
       }
       return `${key}: ${valueText}`
     })
@@ -441,4 +446,41 @@ export async function createTodayJournalPage() {
   const journalPage = await logseq.Editor.createPage(journalName, {}, { journal: true })
   if (!journalPage) return Promise.reject(new Error('Failed to create journal page'))
   return journalPage
+}
+
+/**
+ * create objective block
+ */
+export const createObjectiveBlock = async (objective: CreateObjectiveForm) => {
+  const { title, objective: objectiveInfo } = objective
+  const AGENDA_DRAWER = genAgendaDrawerText({
+    objective: objectiveInfo,
+  })
+  const content = [`TODO ${title}`, AGENDA_DRAWER].filter(Boolean).join('\n')
+  const block = await logseq.Editor.insertBlock((await createTodayJournalPage()).uuid, content, {
+    isPageBlock: true,
+    customUUID: await logseq.Editor.newBlockUUID(),
+  })
+  if (!block) return Promise.reject(new Error('Failed to create objective block'))
+  return logseq.Editor.getBlock(block.uuid)
+}
+
+/**
+ * transform normal block to BlockFromQuery
+ */
+export const transformBlockToBlockFromQuery = async (block: BlockEntity | null): Promise<BlockFromQuery | null> => {
+  if (!block) return null
+  const page = await logseq.Editor.getPage(block?.page?.id ?? block?.page)
+  if (!page) return null
+
+  return {
+    ...block,
+    marker: block.marker,
+    page: {
+      ...page,
+      originalName: page.originalName,
+      journalDay: page.journalDay,
+      isJournal: page?.['journal?'],
+    },
+  }
 }

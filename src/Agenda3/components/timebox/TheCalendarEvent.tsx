@@ -40,12 +40,12 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
         type: 'edit',
         initialTaskData: taskData as AgendaTaskWithStart,
       }}
-      onOk={(taskInfo) => {
-        updateTaskData(taskData.id, taskInfo)
-      }}
-      onDelete={(taskId) => {
-        deleteTask(taskId)
-      }}
+      // onOk={(taskInfo) => {
+      //   updateTaskData(taskData.id, taskInfo)
+      // }}
+      // onDelete={(taskId) => {
+      //   deleteTask(taskId)
+      // }}
     >
       <Dropdown
         trigger={['contextMenu']}
@@ -71,7 +71,7 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
       >
         <div className={cn('h-full', { 'opacity-60': isDone })}>
           <div
-            className={cn('truncate flex items-center relative', {
+            className={cn('relative flex items-center truncate', {
               'line-through': isDone,
               'font-semibold': !isDone,
               'text-[10px]': isSmallHeight,
@@ -79,7 +79,7 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
             title={showTitle}
           >
             {showTitle}
-            {isDone ? <IoIosCheckmarkCircle className="text-white absolute right-0" /> : null}
+            {isDone ? <IoIosCheckmarkCircle className="absolute right-0 text-white" /> : null}
           </div>
           {isShowTimeText ? <div className="text-xs text-gray-100">{info.timeText}</div> : null}
         </div>

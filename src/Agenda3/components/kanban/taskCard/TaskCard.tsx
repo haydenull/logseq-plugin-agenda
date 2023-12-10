@@ -62,7 +62,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
 
   return (
     <div
-      className={cn('bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-pointer group/card', {
+      className={cn('group/card cursor-pointer whitespace-pre-wrap rounded-md bg-white p-2 hover:shadow', {
         'bg-[#edeef0] opacity-80': task.status === 'done',
         // 循环任务及多天任务不能拖拽
         'droppable-task-element': !editDisabled && !isMultipleDays,
@@ -104,7 +104,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           <Toolbar task={task} groupType={groupType} onClickMark={onClickTaskMark} />
 
           {/* ========= Title ========= */}
-          <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>{showTitle}</div>
+          <div className={cn('my-0.5 text-gray-600', { 'line-through': task.status === 'done' })}>{showTitle}</div>
 
           {/* ========= Group(page or filter) Name ========= */}
           <Group task={task} type={groupType} />
@@ -116,13 +116,13 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           key={editTaskModal.task.id}
           open={editTaskModal.open}
           info={{ type: 'edit', initialTaskData: editTaskModal.task }}
-          onOk={(taskInfo) => {
-            updateTaskData(editTaskModal.task!.id, taskInfo)
+          onOk={() => {
+            // updateTaskData(editTaskModal.task!.id, taskInfo)
             setEditTaskModal({ open: false })
           }}
           onCancel={() => setEditTaskModal({ open: false })}
-          onDelete={(taskId) => {
-            deleteTask(taskId)
+          onDelete={() => {
+            // deleteTask(taskId)
             setEditTaskModal({ open: false })
           }}
         />

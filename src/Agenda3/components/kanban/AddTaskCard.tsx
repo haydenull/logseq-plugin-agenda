@@ -3,7 +3,6 @@ import { IoAddCircleOutline } from 'react-icons/io5'
 
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import { cn } from '@/util/util'
 
 import TaskModal from '../modals/TaskModal'
@@ -20,14 +19,13 @@ const AddTaskCard = ({
   estimatedTime: number
 }) => {
   const isToday = day.isSame(dayjs(), 'day')
-  const { addNewTask } = useAgendaTasks()
 
   return (
-    <TaskModal onOk={addNewTask} info={{ type: 'create', initialData: { startDateVal: day } }}>
+    <TaskModal info={{ type: 'create', initialData: { startDateVal: day } }}>
       <div
         onClick={() => track('KanBan: Add Task Button', { today: String(isToday) })}
         className={cn(
-          'bg-white rounded-md p-2 my-2 text-gray-400 text-sm flex items-center hover:shadow cursor-pointer group justify-between',
+          'group my-2 flex cursor-pointer items-center justify-between rounded-md bg-white p-2 text-sm text-gray-400 hover:shadow',
           {
             'bg-[#edeef0]': isGray,
           },
@@ -35,16 +33,16 @@ const AddTaskCard = ({
       >
         <div className="flex items-center gap-1">
           <IoAddCircleOutline />
-          <span className={cn('group-hover:opacity-100 transition-opacity', { 'opacity-0': !isToday })}>
+          <span className={cn('transition-opacity group-hover:opacity-100', { 'opacity-0': !isToday })}>
             Add a task
           </span>
         </div>
         {actualTime ? (
-          <div className="bg-gray-200 rounded text-xs px-1 py-0.5 text-[10px]">
+          <div className="rounded bg-gray-200 px-1 py-0.5 text-xs text-[10px]">
             {minutesToHHmm(actualTime)} / {minutesToHHmm(estimatedTime)}
           </div>
         ) : (
-          <div className="bg-gray-200 rounded text-xs px-1 py-0.5 text-[10px]">{minutesToHHmm(estimatedTime)}</div>
+          <div className="rounded bg-gray-200 px-1 py-0.5 text-xs text-[10px]">{minutesToHHmm(estimatedTime)}</div>
         )}
       </div>
     </TaskModal>
