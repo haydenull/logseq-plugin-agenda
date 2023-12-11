@@ -45,7 +45,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)
-  const { updateTaskData, addNewTask } = useAgendaTasks()
+  const { updateTaskDate } = useAgendaTasks()
   const recentTasks = useAtomValue(recentTasksAtom)
   const now = dayjs()
   const calendarEvents = recentTasks
@@ -92,13 +92,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
     // 原本没有设置 estimatedTime 时，除非新的预估时间不等于默认预估时间，否则仍不修改 estimatedTime
     const estimatedTime = task.estimatedTime || span !== DEFAULT_ESTIMATED_TIME ? span : undefined
     try {
-      updateTaskData(blockUUID, {
-        start: startDay,
-        allDay: false,
-        estimatedTime,
-      })
-      updateBlockDateInfo({
-        uuid: blockUUID,
+      updateTaskDate(blockUUID, {
         start: startDay,
         estimatedTime,
         allDay: false,
@@ -227,27 +221,10 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
           },
         }}
       />
-      {/* {editTaskModal.task ? (
-        <TaskModal
-          key={editTaskModal.task.id}
-          open={editTaskModal.open}
-          info={{ type: 'edit', initialTaskData: editTaskModal.task }}
-          onOk={(taskInfo) => {
-            updateTaskData(editTaskModal.task!.id, taskInfo)
-            setEditTaskModal({ open: false })
-          }}
-          onCancel={() => setEditTaskModal({ open: false })}
-          onDelete={(taskId) => {
-            deleteTask(taskId)
-            setEditTaskModal({ open: false })
-          }}
-        />
-      ) : null} */}
       {createTaskModal.open ? (
         <TaskModal
           open={createTaskModal.open}
           onOk={() => {
-            // addNewTask(task)
             setCreateTaskModal({ open: false })
           }}
           onCancel={() => setCreateTaskModal({ open: false })}

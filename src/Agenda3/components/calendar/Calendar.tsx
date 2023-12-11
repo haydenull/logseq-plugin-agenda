@@ -36,7 +36,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   // const [currentView, setCurrentView] = useState<CalendarView>('dayGridMonth')
   const calendarRef = useRef<FullCalendar>(null)
   const app = useAtomValue(appAtom)
-  const { updateTaskData } = useAgendaTasks()
+  const { updateTaskDate } = useAgendaTasks()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
@@ -90,11 +90,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       allDay,
     }
     try {
-      updateTaskData(blockUUID, dateInfo)
-      updateBlockDateInfo({
-        ...dateInfo,
-        uuid: blockUUID,
-      })
+      updateTaskDate(blockUUID, dateInfo)
       // const event = calendarApi?.getEventById(blockUUID)
       // if (event) {
       //   event.setProp('extendedProps', {
@@ -276,11 +272,9 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
             initialTaskData: editTaskModal.task,
           }}
           onOk={() => {
-            // updateTaskData(taskInfo.id, taskInfo)
             setEditTaskModal({ open: false })
           }}
           onDelete={() => {
-            // deleteTask(taskId)
             setEditTaskModal({ open: false })
           }}
         />
@@ -289,7 +283,6 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         <TaskModal
           open={createTaskModal.open}
           onOk={() => {
-            // addNewTask(task)
             setCreateTaskModal({ open: false })
           }}
           onCancel={() => setCreateTaskModal({ open: false })}

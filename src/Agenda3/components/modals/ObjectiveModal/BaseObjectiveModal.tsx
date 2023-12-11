@@ -3,8 +3,8 @@ import React, { useState } from 'react'
 import { BsCalendar4Event } from 'react-icons/bs'
 
 import type { CreateTaskForm } from '../TaskModal/useCreate'
-import { type CreateObjectiveForm } from './CreateObjectiveModal/useCreate'
-import { type EditObjectiveForm } from './EditObjectiveModal/useEdit'
+import { type CreateObjectiveForm } from './CreateObjectiveModal'
+import { type EditObjectiveForm } from './EditObjectiveModal'
 import PeriodPicker from './PeriodPicker'
 
 type ObjectiveModalProps =

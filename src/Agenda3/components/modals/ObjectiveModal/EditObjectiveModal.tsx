@@ -1,7 +1,10 @@
+import React from 'react'
 import { useState } from 'react'
 import { type Output, number, object, string, picklist } from 'valibot'
 
 import type { AgendaObjective } from '@/types/objective'
+
+import { ObjectiveModal } from './BaseObjectiveModal'
 
 const editFormSchema = object({
   title: string(),
@@ -13,7 +16,11 @@ const editFormSchema = object({
 })
 export type EditObjectiveForm = Output<typeof editFormSchema>
 
-const useEdit = (initialData: AgendaObjective) => {
+type EditObjectiveModalProps = {
+  children: React.ReactNode
+  initialData: AgendaObjective
+}
+const EditObjectiveModal = ({ children, initialData }: EditObjectiveModalProps) => {
   const _initialData = { title: initialData.title, objective: initialData.objective }
   const [formData, setFormData] = useState<EditObjectiveForm>(_initialData)
 
@@ -39,7 +46,11 @@ const useEdit = (initialData: AgendaObjective) => {
     setFormData(_initialData)
   }
 
-  return { formData, updateFormData, edit, reset }
+  return (
+    <ObjectiveModal type="edit" formData={formData} updateFormData={updateFormData} action={edit}>
+      {children}
+    </ObjectiveModal>
+  )
 }
 
-export default useEdit
+export default EditObjectiveModal

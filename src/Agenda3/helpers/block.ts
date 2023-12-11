@@ -3,7 +3,7 @@ import { message } from 'antd'
 import { format } from 'date-fns'
 import dayjs, { type Dayjs } from 'dayjs'
 
-import { type CreateObjectiveForm } from '@/Agenda3/components/modals/ObjectiveModal/CreateObjectiveModal/useCreate'
+import { type CreateObjectiveForm } from '@/Agenda3/components/modals/ObjectiveModal/CreateObjectiveModal'
 import {
   AGENDA_DRAWER_REGEX,
   DATE_FORMATTER,
@@ -14,7 +14,7 @@ import {
 } from '@/constants/agenda'
 import type { AgendaTaskObjective } from '@/types/objective'
 import type { AgendaTask, CreateAgendaTask } from '@/types/task'
-import { moveBlockToNewPage, updateBlock } from '@/util/logseq'
+import { updateBlock } from '@/util/logseq'
 
 import { secondsToHHmmss } from './fullCalendar'
 import type { BlockFromQuery } from './task'

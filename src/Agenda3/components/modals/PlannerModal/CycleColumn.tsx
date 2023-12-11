@@ -40,21 +40,21 @@ const CycleColumn = ({
     return acc + (task.estimatedTime ?? DEFAULT_ESTIMATED_TIME)
   }, 0)
 
-  const { updateTaskData } = useAgendaTasks()
+  const { updateTaskDate } = useAgendaTasks()
 
   return (
-    <div className="w-[281px] shrink-0 mt-2 flex flex-col bg-gray-300 px-2 py-2 rounded-md">
+    <div className="mt-2 flex w-[281px] shrink-0 flex-col rounded-md bg-gray-300 px-2 py-2">
       <div className="flex justify-center">
-        <div className="text-2xl relative">
+        <div className="relative text-2xl">
           <span className="uppercase">{cycle}</span>
-          <span className="text-gray-500 text-[10px] absolute w-[100px] -right-[104px] top-1">
+          <span className="absolute -right-[104px] top-1 w-[100px] text-[10px] text-gray-500">
             {getCycleText(day, cycle)}
           </span>
         </div>
       </div>
 
       {(cycle === 'week' && isTodayLastDayOfWeek) || (cycle === 'month' && isTodayLastDayOfMonth) ? (
-        <div className="text-center text-gray-500 mt-1">
+        <div className="mt-1 text-center text-gray-500">
           Today is the last day of {cycle}, do not forget to review your tasks.
         </div>
       ) : (
@@ -62,7 +62,7 @@ const CycleColumn = ({
           <AddTaskCard day={day} isGray={false} estimatedTime={estimatedTime} />
           <ReactSortable
             forceFallback // 该属性如果不加就无法与 fullcalendar 交互
-            className={cn('flex flex-col gap-2 flex-1 overflow-y-auto hide-scroll-bar')}
+            className={cn('hide-scroll-bar flex flex-1 flex-col gap-2 overflow-y-auto')}
             group="planner"
             dragClass="dragged-mirror-element"
             draggable=".droppable-task-element"
@@ -79,9 +79,7 @@ const CycleColumn = ({
               if (task.allDay === false && task.start) {
                 startDay = replaceDateInfo(task.start, day)
               }
-              updateTaskData(id, { start: startDay })
-              updateBlockDateInfo({
-                uuid: id,
+              updateTaskDate(id, {
                 start: startDay,
                 allDay: task.allDay,
               })

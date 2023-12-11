@@ -81,34 +81,21 @@ const useEdit = (initialTask: AgendaTask | null) => {
       throw new Error('Failed to edit task block')
     }
     const estimatedTime = result.output.estimatedTime
-    await updateTaskBlock({
-      ...initialTask,
-      ...result.output,
-      allDay,
-      start,
-      end: result.output.endDateVal,
-      estimatedTime: estimatedTime ? parseDurationString(estimatedTime) : undefined,
-      // actual time is generated from time logs
-      actualTime: undefined,
-      projectId: result.output.projectId,
+    return updateTaskData({
+      type: 'task',
+      id: initialTask.id,
+      data: {
+        ...initialTask,
+        ...result.output,
+        allDay,
+        start,
+        end: result.output.endDateVal,
+        estimatedTime: estimatedTime ? parseDurationString(estimatedTime) : undefined,
+        // actual time is generated from time logs
+        actualTime: undefined,
+        projectId: result.output.projectId,
+      },
     })
-    const block = await transformBlockToBlockFromQuery(await logseq.Editor.getBlock(initialTask.id))
-    if (!block) {
-      message.error('Failed to edit task block')
-      throw new Error('Failed to edit task block')
-    }
-    const task = await transformBlockToAgendaTask(block, settings)
-    const isFilterMode = (settings.selectedFilters || [])?.length > 0
-    if (!isFilterMode || (isFilterMode && (task.filters ?? []).length > 0)) {
-      updateTaskData(task.id, task)
-    } else {
-      notification.info({
-        message: 'Edit successful but task is hidden',
-        description: 'Task was hidden because it dose not match any of your filters.',
-        duration: 0,
-      })
-    }
-    return task
   }
 
   return {

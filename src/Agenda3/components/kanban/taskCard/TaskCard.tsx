@@ -37,26 +37,27 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
 
   const onClickTaskMark = (event: React.MouseEvent, task: AgendaTask, status: AgendaTask['status']) => {
     if (task.rrule) return message.error('Please modify the status of the recurring task in logseq.')
-    updateTaskData(task.id, {
-      ...task,
-      status,
-      rawBlock: {
-        ...task.rawBlock,
-        marker: status === 'todo' ? 'TODO' : 'DONE',
-      },
-    })
+    // TODO: hook 增加修改 mark 的方法
+    // updateTaskData(task.id, {
+    //   ...task,
+    //   status,
+    //   rawBlock: {
+    //     ...task.rawBlock,
+    //     marker: status === 'todo' ? 'TODO' : 'DONE',
+    //   },
+    // })
     updateBlockTaskStatus(task, status)
     event.stopPropagation()
   }
   const onDeleteTask = async (taskId: string) => {
     deleteTask(taskId)
-    deleteTaskBlock(taskId)
   }
   const onRemoveDate = async (taskId: string) => {
-    updateTaskData(taskId, {
-      allDay: true,
-      start: undefined,
-    })
+    // TODO: hook 增加移除日期的方法
+    // updateTaskData(taskId, {
+    //   allDay: true,
+    //   start: undefined,
+    // })
     deleteBlockDateInfo(taskId)
   }
 
@@ -117,12 +118,10 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           open={editTaskModal.open}
           info={{ type: 'edit', initialTaskData: editTaskModal.task }}
           onOk={() => {
-            // updateTaskData(editTaskModal.task!.id, taskInfo)
             setEditTaskModal({ open: false })
           }}
           onCancel={() => setEditTaskModal({ open: false })}
           onDelete={() => {
-            // deleteTask(taskId)
             setEditTaskModal({ open: false })
           }}
         />

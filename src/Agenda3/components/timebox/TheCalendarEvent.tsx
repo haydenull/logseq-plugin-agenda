@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 import { RiDeleteBin4Line, RiInboxUnarchiveLine } from 'react-icons/ri'
 
-import { deleteTaskBlock, updateBlockDateInfo } from '@/Agenda3/helpers/block'
+import { updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
@@ -13,17 +13,12 @@ import { cn } from '@/util/util'
 import TaskModal from '../modals/TaskModal'
 
 const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
-  const { updateTaskData, deleteTask } = useAgendaTasks()
+  const { updateTaskDate, deleteTask } = useAgendaTasks()
   const onDeleteTask = async (taskId: string) => {
     deleteTask(taskId)
-    deleteTaskBlock(taskId)
   }
   const onRemoveTime = async (info: EventContentArg) => {
-    updateTaskData(info.event.id, {
-      allDay: true,
-    })
-    updateBlockDateInfo({
-      uuid: info.event.id,
+    updateTaskDate(info.event.id, {
       allDay: true,
       start: info.event.extendedProps.start,
       estimatedTime: info.event.extendedProps.estimatedTime,
@@ -40,12 +35,6 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
         type: 'edit',
         initialTaskData: taskData as AgendaTaskWithStart,
       }}
-      // onOk={(taskInfo) => {
-      //   updateTaskData(taskData.id, taskInfo)
-      // }}
-      // onDelete={(taskId) => {
-      //   deleteTask(taskId)
-      // }}
     >
       <Dropdown
         trigger={['contextMenu']}

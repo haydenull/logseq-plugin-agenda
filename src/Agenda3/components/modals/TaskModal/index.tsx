@@ -97,7 +97,6 @@ const TaskModal = ({
   const handleDelete = async () => {
     if (info.type === 'edit') {
       deleteTask(info.initialTaskData.id)
-      await deleteTaskBlock(info.initialTaskData.id)
       onDelete?.(info.initialTaskData.id)
       setInternalOpen(false)
     }
