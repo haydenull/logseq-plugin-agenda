@@ -36,7 +36,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   // const [currentView, setCurrentView] = useState<CalendarView>('dayGridMonth')
   const calendarRef = useRef<FullCalendar>(null)
   const app = useAtomValue(appAtom)
-  const { updateTaskDate } = useAgendaTasks()
+  const { updateTask } = useAgendaTasks()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
@@ -90,7 +90,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       allDay,
     }
     try {
-      updateTaskDate(blockUUID, dateInfo)
+      updateTask({ type: 'task-date', id: blockUUID, data: dateInfo })
       // const event = calendarApi?.getEventById(blockUUID)
       // if (event) {
       //   event.setProp('extendedProps', {

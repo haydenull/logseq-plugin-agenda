@@ -41,7 +41,7 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
     return acc + (task.actualTime ?? task.estimatedTime ?? DEFAULT_ESTIMATED_TIME)
   }, 0)
 
-  const { updateTaskDate } = useAgendaTasks()
+  const { updateTask } = useAgendaTasks()
 
   const onAddTaskByDrag = async (sortableEvent) => {
     console.log('[faiz:] === kanban onAdd', sortableEvent)
@@ -53,9 +53,13 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
     if (task.allDay === false) {
       startDay = replaceDateInfo(task.start, day)
     }
-    updateTaskDate(id, {
-      start: startDay,
-      allDay: task.allDay,
+    updateTask({
+      type: 'task-date',
+      id,
+      data: {
+        start: startDay,
+        allDay: task.allDay,
+      },
     })
     track('KanBan: Drag Task')
   }

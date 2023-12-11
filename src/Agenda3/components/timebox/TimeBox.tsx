@@ -45,7 +45,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)
-  const { updateTaskDate } = useAgendaTasks()
+  const { updateTask } = useAgendaTasks()
   const recentTasks = useAtomValue(recentTasksAtom)
   const now = dayjs()
   const calendarEvents = recentTasks
@@ -92,10 +92,14 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
     // 原本没有设置 estimatedTime 时，除非新的预估时间不等于默认预估时间，否则仍不修改 estimatedTime
     const estimatedTime = task.estimatedTime || span !== DEFAULT_ESTIMATED_TIME ? span : undefined
     try {
-      updateTaskDate(blockUUID, {
-        start: startDay,
-        estimatedTime,
-        allDay: false,
+      updateTask({
+        type: 'task-date',
+        id: blockUUID,
+        data: {
+          start: startDay,
+          estimatedTime,
+          allDay: false,
+        },
       })
       const event = calendarApi?.getEventById(blockUUID)
       if (event) {

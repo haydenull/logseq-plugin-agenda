@@ -33,32 +33,18 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
   const estimatedTime = task.estimatedTime ?? DEFAULT_ESTIMATED_TIME
   const showTitle = formatTaskTitle(task)
 
-  const { updateTaskData, deleteTask } = useAgendaTasks()
+  const { updateTask, deleteTask } = useAgendaTasks()
 
   const onClickTaskMark = (event: React.MouseEvent, task: AgendaTask, status: AgendaTask['status']) => {
     if (task.rrule) return message.error('Please modify the status of the recurring task in logseq.')
-    // TODO: hook 增加修改 mark 的方法
-    // updateTaskData(task.id, {
-    //   ...task,
-    //   status,
-    //   rawBlock: {
-    //     ...task.rawBlock,
-    //     marker: status === 'todo' ? 'TODO' : 'DONE',
-    //   },
-    // })
-    updateBlockTaskStatus(task, status)
+    updateTask({ type: 'task-status', id: task.id, data: status })
     event.stopPropagation()
   }
   const onDeleteTask = async (taskId: string) => {
     deleteTask(taskId)
   }
   const onRemoveDate = async (taskId: string) => {
-    // TODO: hook 增加移除日期的方法
-    // updateTaskData(taskId, {
-    //   allDay: true,
-    //   start: undefined,
-    // })
-    deleteBlockDateInfo(taskId)
+    updateTask({ type: 'task-remove-date', id: taskId, data: null })
   }
 
   return (

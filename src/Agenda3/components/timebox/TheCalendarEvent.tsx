@@ -4,7 +4,6 @@ import dayjs from 'dayjs'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 import { RiDeleteBin4Line, RiInboxUnarchiveLine } from 'react-icons/ri'
 
-import { updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
@@ -13,15 +12,19 @@ import { cn } from '@/util/util'
 import TaskModal from '../modals/TaskModal'
 
 const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
-  const { updateTaskDate, deleteTask } = useAgendaTasks()
+  const { updateTask, deleteTask } = useAgendaTasks()
   const onDeleteTask = async (taskId: string) => {
     deleteTask(taskId)
   }
   const onRemoveTime = async (info: EventContentArg) => {
-    updateTaskDate(info.event.id, {
-      allDay: true,
-      start: info.event.extendedProps.start,
-      estimatedTime: info.event.extendedProps.estimatedTime,
+    updateTask({
+      type: 'task-date',
+      id: info.event.id,
+      data: {
+        allDay: true,
+        start: info.event.extendedProps.start,
+        estimatedTime: info.event.extendedProps.estimatedTime,
+      },
     })
   }
   const taskData = info.event.extendedProps

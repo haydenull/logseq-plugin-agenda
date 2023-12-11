@@ -40,7 +40,7 @@ type EditTaskForm = Output<typeof editFormSchema>
 type EditTaskFormNoValidation = Partial<EditTaskForm>
 const useEdit = (initialTask: AgendaTask | null) => {
   const settings = useAtomValue(settingsAtom)
-  const { updateTaskData } = useAgendaTasks()
+  const { updateTask } = useAgendaTasks()
   const initialFormData = {
     title: initialTask?.title || '',
     startDateVal: initialTask?.start,
@@ -81,7 +81,7 @@ const useEdit = (initialTask: AgendaTask | null) => {
       throw new Error('Failed to edit task block')
     }
     const estimatedTime = result.output.estimatedTime
-    return updateTaskData({
+    return updateTask({
       type: 'task',
       id: initialTask.id,
       data: {

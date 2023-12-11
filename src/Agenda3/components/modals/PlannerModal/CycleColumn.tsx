@@ -40,7 +40,7 @@ const CycleColumn = ({
     return acc + (task.estimatedTime ?? DEFAULT_ESTIMATED_TIME)
   }, 0)
 
-  const { updateTaskDate } = useAgendaTasks()
+  const { updateTask } = useAgendaTasks()
 
   return (
     <div className="mt-2 flex w-[281px] shrink-0 flex-col rounded-md bg-gray-300 px-2 py-2">
@@ -79,10 +79,7 @@ const CycleColumn = ({
               if (task.allDay === false && task.start) {
                 startDay = replaceDateInfo(task.start, day)
               }
-              updateTaskDate(id, {
-                start: startDay,
-                allDay: task.allDay,
-              })
+              updateTask({ type: 'task-date', id, data: { start: startDay, allDay: task.allDay } })
               track('KanBan: Drag Task')
             }}
           >

@@ -54,7 +54,8 @@ export const updateBlockDateInfo = async ({
     estimated: estimatedTime,
     end,
   })
-  return logseq.Editor.updateBlock(uuid, newContent2)
+  await logseq.Editor.updateBlock(uuid, newContent2)
+  return logseq.Editor.getBlock(uuid)
 }
 
 /**
@@ -74,7 +75,8 @@ export const deleteBlockDateInfo = async (uuid: string) => {
         .filter(Boolean)
         .join('\n')
     : originalBlock.content
-  return logseq.Editor.updateBlock(uuid, newContent)
+  await logseq.Editor.updateBlock(uuid, newContent)
+  return logseq.Editor.getBlock(uuid)
 }
 
 /**
@@ -240,10 +242,14 @@ export const updateTaskBlock = async (taskInfo: AgendaTask & { projectId?: strin
 export const updateBlockTaskStatus = async (taskInfo: AgendaTask, status: AgendaTask['status']) => {
   const todoTag = status === 'done' ? 'DONE' : 'TODO'
   const rawTodoTag = taskInfo.rawBlock.marker
-  if (!rawTodoTag) return message.error('This is not a todo block')
+  if (!rawTodoTag) {
+    message.error('This is not a todo block')
+    return null
+  }
   const reg = new RegExp(`^${rawTodoTag}`)
   const newContent = taskInfo.rawBlock.content.replace(reg, todoTag)
-  return logseq.Editor.updateBlock(taskInfo.rawBlock.uuid, newContent)
+  await logseq.Editor.updateBlock(taskInfo.rawBlock.uuid, newContent)
+  return logseq.Editor.getBlock(taskInfo.rawBlock.uuid)
 }
 
 /**
