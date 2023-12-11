@@ -12,7 +12,7 @@ import {
   SCHEDULED_DATETIME_FORMATTER,
   SCHEDULED_DATE_FORMATTER,
 } from '@/constants/agenda'
-import type { AgendaTaskObjective } from '@/types/objective'
+import type { AgendaObjective, AgendaTaskObjective } from '@/types/objective'
 import type { AgendaTask, CreateAgendaTask } from '@/types/task'
 import { updateBlock } from '@/util/logseq'
 
@@ -455,23 +455,6 @@ export async function createTodayJournalPage() {
 }
 
 /**
- * create objective block
- */
-export const createObjectiveBlock = async (objective: CreateObjectiveForm) => {
-  const { title, objective: objectiveInfo } = objective
-  const AGENDA_DRAWER = genAgendaDrawerText({
-    objective: objectiveInfo,
-  })
-  const content = [`TODO ${title}`, AGENDA_DRAWER].filter(Boolean).join('\n')
-  const block = await logseq.Editor.insertBlock((await createTodayJournalPage()).uuid, content, {
-    isPageBlock: true,
-    customUUID: await logseq.Editor.newBlockUUID(),
-  })
-  if (!block) return Promise.reject(new Error('Failed to create objective block'))
-  return logseq.Editor.getBlock(block.uuid)
-}
-
-/**
  * transform normal block to BlockFromQuery
  */
 export const transformBlockToBlockFromQuery = async (block: BlockEntity | null): Promise<BlockFromQuery | null> => {
@@ -489,4 +472,34 @@ export const transformBlockToBlockFromQuery = async (block: BlockEntity | null):
       isJournal: page?.['journal?'],
     },
   }
+}
+
+/**
+ * create objective block
+ */
+export const createObjectiveBlock = async (objective: CreateObjectiveForm) => {
+  const { title, objective: objectiveInfo } = objective
+  const AGENDA_DRAWER = genAgendaDrawerText({
+    objective: objectiveInfo,
+  })
+  const content = [`TODO ${title}`, AGENDA_DRAWER].filter(Boolean).join('\n')
+  const block = await logseq.Editor.insertBlock((await createTodayJournalPage()).uuid, content, {
+    isPageBlock: true,
+    customUUID: await logseq.Editor.newBlockUUID(),
+  })
+  if (!block) return Promise.reject(new Error('Failed to create objective block'))
+  return logseq.Editor.getBlock(block.uuid)
+}
+/**
+ * update objective block
+ */
+export const updateObjectiveBlock = async (objective: AgendaObjective) => {
+  const { id, title, objective: objectiveInfo, status } = objective
+  const originalBlock = await logseq.Editor.getBlock(id)
+  if (!originalBlock) return Promise.reject(new Error('Block not found'))
+
+  const content1 = updateBlockTaskTitle(originalBlock.content, title, status)
+  const content2 = updateBlockAgendaDrawer(content1, { objective: objectiveInfo })
+  await updateBlock(id, content2)
+  return logseq.Editor.getBlock(id)
 }

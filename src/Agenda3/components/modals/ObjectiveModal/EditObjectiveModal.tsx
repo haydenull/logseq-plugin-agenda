@@ -2,9 +2,11 @@ import React from 'react'
 import { useState } from 'react'
 import { type Output, number, object, string, picklist } from 'valibot'
 
+import { updateBlockTaskStatus } from '@/Agenda3/helpers/block'
+import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import type { AgendaObjective } from '@/types/objective'
 
-import { ObjectiveModal } from './BaseObjectiveModal'
+import { BaseObjectiveModal } from './BaseObjectiveModal'
 
 const editFormSchema = object({
   title: string(),
@@ -24,32 +26,44 @@ const EditObjectiveModal = ({ children, initialData }: EditObjectiveModalProps) 
   const _initialData = { title: initialData.title, objective: initialData.objective }
   const [formData, setFormData] = useState<EditObjectiveForm>(_initialData)
 
+  const { updateTask, deleteTask } = useAgendaTasks()
+
   const updateFormData = (data: Partial<EditObjectiveForm>) => {
     setFormData((_data) => ({
       ..._data,
       ...data,
     }))
   }
-
   const edit = async () => {
-    // const block = await editObjectiveBlock({
-    //   title: formData.title,
-    //   period: formData.period,
-    // })
-    // if (!block) {
-    //   logseq.UI.showMsg('Failed to create objective block')
-    //   throw new Error('Failed to create objective block')
-    // }
-    // return block
+    return updateTask({
+      type: 'objective',
+      id: initialData.id,
+      data: formData,
+    })
   }
-  const reset = () => {
-    setFormData(_initialData)
+  const handleDelete = () => {
+    deleteTask(initialData.id)
+  }
+  const handleSwitchStatus = async (status: 'todo' | 'done') => {
+    return updateTask({
+      type: 'objective-status',
+      id: initialData.id,
+      data: status,
+    })
   }
 
   return (
-    <ObjectiveModal type="edit" formData={formData} updateFormData={updateFormData} action={edit}>
+    <BaseObjectiveModal
+      type="edit"
+      initialObjective={initialData}
+      formData={formData}
+      updateFormData={updateFormData}
+      action={edit}
+      onDelete={handleDelete}
+      onSwitchObjectiveStatus={handleSwitchStatus}
+    >
       {children}
-    </ObjectiveModal>
+    </BaseObjectiveModal>
   )
 }
 

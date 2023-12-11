@@ -6,6 +6,7 @@ import { cn } from '@/util/util'
 import { appAtom } from '../../models/app'
 import { agendaObjectivesAtom } from '../../models/objectives'
 import ObjectiveCard from '../kanban/taskCard/ObjectiveCard'
+import EditObjectiveModal from '../modals/ObjectiveModal/EditObjectiveModal'
 import AddObjectiveCard from './AddObjectiveCard'
 
 const ObjectiveBoard = () => {

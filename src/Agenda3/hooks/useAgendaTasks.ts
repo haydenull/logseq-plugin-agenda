@@ -7,6 +7,7 @@ import { useCallback } from 'react'
 import { getAgendaTasks, transformBlockToAgendaTask } from '@/Agenda3/helpers/task'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { agendaTasksAtom } from '@/Agenda3/models/tasks'
+import type { AgendaObjective } from '@/types/objective'
 import type { AgendaTask, CreateAgendaTask } from '@/types/task'
 
 import type { CreateObjectiveForm } from '../components/modals/ObjectiveModal/CreateObjectiveModal'
@@ -19,6 +20,7 @@ import {
   transformBlockToBlockFromQuery,
   updateBlockDateInfo,
   updateBlockTaskStatus,
+  updateObjectiveBlock,
   updateTaskBlock,
 } from '../helpers/block'
 
@@ -58,8 +60,12 @@ const useAgendaTasks = () => {
       | {
           type: 'objective'
           id: string
-          data: AgendaTask & { projectId?: string }
-          // data: Partial<EditObjectiveForm>
+          data: Partial<EditObjectiveForm>
+        }
+      | {
+          type: 'objective-status'
+          id: string
+          data: AgendaTask['status']
         },
   ) => {
     const { type, id, data } = params
@@ -80,10 +86,18 @@ const useAgendaTasks = () => {
         })
         break
       case 'task-status':
+      case 'objective-status':
         rawBlock = await updateBlockTaskStatus(task, data)
         break
       case 'task-remove-date':
         rawBlock = await deleteBlockDateInfo(id)
+        break
+      case 'objective':
+        // 如果执行到这个分支，说明 task.objective 一定存在
+        rawBlock = await updateObjectiveBlock({
+          ...task,
+          ...data,
+        } as AgendaObjective)
         break
       default:
         break

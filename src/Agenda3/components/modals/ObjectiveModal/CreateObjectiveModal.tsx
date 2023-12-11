@@ -1,3 +1,7 @@
+/**
+ * 创建目标的弹窗
+ * 基于 BaseObjectiveModal 组件
+ */
 import dayjs from 'dayjs'
 import React from 'react'
 import { useState } from 'react'
@@ -5,7 +9,7 @@ import { useState } from 'react'
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
 import type { AgendaTaskObjective } from '@/types/objective'
 
-import { ObjectiveModal } from './BaseObjectiveModal'
+import { BaseObjectiveModal } from './BaseObjectiveModal'
 
 export type CreateObjectiveForm = {
   title: string
@@ -42,9 +46,9 @@ const CreateObjectiveModal = ({ children, initialData }: CreateObjectiveModalPro
   }
 
   return (
-    <ObjectiveModal type="create" formData={formData} updateFormData={updateFormData} action={create}>
+    <BaseObjectiveModal type="create" formData={formData} updateFormData={updateFormData} action={create}>
       {children}
-    </ObjectiveModal>
+    </BaseObjectiveModal>
   )
 }
 
