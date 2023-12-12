@@ -8,7 +8,7 @@ import { ReactSortable } from 'react-sortablejs'
 
 import { updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { track } from '@/Agenda3/helpers/umami'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { appAtom } from '@/Agenda3/models/app'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { AgendaTaskWithStart } from '@/types/task'
@@ -41,7 +41,7 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
     return acc + (task.actualTime ?? task.estimatedTime ?? DEFAULT_ESTIMATED_TIME)
   }, 0)
 
-  const { updateTask } = useAgendaTasks()
+  const { updateEntity } = useAgendaEntities()
 
   const onAddTaskByDrag = async (sortableEvent) => {
     console.log('[faiz:] === kanban onAdd', sortableEvent)
@@ -53,7 +53,7 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
     if (task.allDay === false) {
       startDay = replaceDateInfo(task.start, day)
     }
-    updateTask({
+    updateEntity({
       type: 'task-date',
       id,
       data: {

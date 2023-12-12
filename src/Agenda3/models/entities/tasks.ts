@@ -1,19 +1,14 @@
 import dayjs from 'dayjs'
 import { atom } from 'jotai'
 
-import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
+import type { AgendaTaskWithStart } from '@/types/task'
 
-export const agendaTasksAtom = atom<AgendaTask[]>([])
+import { agendaEntitiesAtom } from './entities'
 
 // task
 export const tasksWithStartAtom = atom<AgendaTaskWithStart[]>((get) => {
-  const allTasks = get(agendaTasksAtom)
+  const allTasks = get(agendaEntitiesAtom)
   return allTasks.filter((task) => task.start && !task.objective) as AgendaTaskWithStart[]
-})
-// backlog
-export const backlogTasksAtom = atom<AgendaTask[]>((get) => {
-  const allTasks = get(agendaTasksAtom)
-  return allTasks.filter((task) => task.status === 'todo' && !task.start && !task.objective)
 })
 export const recentTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const allTasks = get(tasksWithStartAtom)

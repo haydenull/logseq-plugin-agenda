@@ -5,19 +5,20 @@ import { IoIosCheckmarkCircle } from 'react-icons/io'
 import { RiDeleteBin4Line, RiInboxUnarchiveLine } from 'react-icons/ri'
 
 import { formatTaskTitle } from '@/Agenda3/helpers/task'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
-import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import type { AgendaEntity } from '@/types/entity'
+import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
 import TaskModal from '../modals/TaskModal'
 
 const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
-  const { updateTask, deleteTask } = useAgendaTasks()
+  const { updateEntity, deleteEntity } = useAgendaEntities()
   const onDeleteTask = async (taskId: string) => {
-    deleteTask(taskId)
+    deleteEntity(taskId)
   }
   const onRemoveTime = async (info: EventContentArg) => {
-    updateTask({
+    updateEntity({
       type: 'task-date',
       id: info.event.id,
       data: {
@@ -28,7 +29,7 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
     })
   }
   const taskData = info.event.extendedProps
-  const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaTask) : info.event.title
+  const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaEntity) : info.event.title
   const isShowTimeText = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 20
   const isSmallHeight = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 10
   const isDone = taskData?.status === 'done'

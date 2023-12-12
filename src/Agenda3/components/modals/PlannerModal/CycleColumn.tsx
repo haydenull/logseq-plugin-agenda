@@ -4,10 +4,11 @@ import { ReactSortable } from 'react-sortablejs'
 
 import { updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { track } from '@/Agenda3/helpers/umami'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
+import type { AgendaEntity } from '@/types/entity'
 import type { AgendaObjective } from '@/types/objective'
-import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
+import type { AgendaTaskWithStart } from '@/types/task'
 import { cn, replaceDateInfo } from '@/util/util'
 
 import AddTaskCard from '../../kanban/AddTaskCard'
@@ -23,7 +24,7 @@ const CycleColumn = ({
   cycle: 'today' | 'tomorrow' | 'week' | 'month'
   tasks: AgendaTaskWithStart[]
   objectives: AgendaObjective[]
-  allTasks: AgendaTask[]
+  allTasks: AgendaEntity[]
 }) => {
   const today = dayjs()
   const dayMap = {
@@ -40,7 +41,7 @@ const CycleColumn = ({
     return acc + (task.estimatedTime ?? DEFAULT_ESTIMATED_TIME)
   }, 0)
 
-  const { updateTask } = useAgendaTasks()
+  const { updateEntity } = useAgendaEntities()
 
   return (
     <div className="mt-2 flex w-[281px] shrink-0 flex-col rounded-md bg-gray-300 px-2 py-2">
@@ -79,7 +80,7 @@ const CycleColumn = ({
               if (task.allDay === false && task.start) {
                 startDay = replaceDateInfo(task.start, day)
               }
-              updateTask({ type: 'task-date', id, data: { start: startDay, allDay: task.allDay } })
+              updateEntity({ type: 'task-date', id, data: { start: startDay, allDay: task.allDay } })
               track('KanBan: Drag Task')
             }}
           >

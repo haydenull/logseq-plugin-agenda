@@ -3,11 +3,11 @@ import { atom } from 'jotai'
 
 import type { AgendaObjective } from '@/types/objective'
 
-import { agendaTasksAtom } from './tasks'
+import { agendaEntitiesAtom } from './entities'
 
 // objective
 export const agendaObjectivesAtom = atom<AgendaObjective[]>((get) => {
-  const allTasks = get(agendaTasksAtom)
+  const allTasks = get(agendaEntitiesAtom)
   return allTasks.filter((task) => task.objective) as AgendaObjective[]
 })
 

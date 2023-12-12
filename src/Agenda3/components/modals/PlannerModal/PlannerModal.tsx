@@ -2,9 +2,9 @@ import { useAtomValue } from 'jotai'
 import React, { useState } from 'react'
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai'
 
-import { thisMonthObjectivesAtom, thisWeekObjectivesAtom } from '@/Agenda3/models/objectives'
+import { backlogsAtom } from '@/Agenda3/models/entities/backlogs'
+import { thisMonthObjectivesAtom, thisWeekObjectivesAtom } from '@/Agenda3/models/entities/objectives'
 import {
-  backlogTasksAtom,
   overdueTasksAtom,
   thisMonthExcludeTomorrowTasksAtom,
   thisMonthTasksAtom,
@@ -12,7 +12,7 @@ import {
   thisWeekTasksAtom,
   todayTasksAtom,
   tomorrowTasksAtom,
-} from '@/Agenda3/models/tasks'
+} from '@/Agenda3/models/entities/tasks'
 import type { AgendaObjective } from '@/types/objective'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
@@ -34,7 +34,7 @@ const PlannerModal = ({
   const [open, setOpen] = useState(false)
   const [backlogFolded, setBacklogFolded] = useState(false)
 
-  const backlogTasks = useAtomValue(backlogTasksAtom)
+  const backlogTasks = useAtomValue(backlogsAtom)
   const todayTasks = useAtomValue(todayTasksAtom)
   const tomorrowTasks = useAtomValue(tomorrowTasksAtom)
   const thisWeekTasks = useAtomValue(thisWeekTasksAtom)
@@ -78,7 +78,7 @@ const PlannerModal = ({
       <FullScreenModal open={open} onClose={onClickClose}>
         <div
           className={cn(
-            'w-screen h-full px-3 pt-8 pb-1 flex gap-3 overflow-auto bg-gray-50',
+            'flex h-full w-screen gap-3 overflow-auto bg-gray-50 px-3 pt-8 pb-1',
             backlogFolded ? 'pr-3' : 'pr-[300px]',
           )}
         >
@@ -102,18 +102,18 @@ const PlannerModal = ({
           {/* sidebar */}
           <div
             className={cn(
-              'absolute top-0 right-0 h-screen pt-8 transition-all group/backlog',
+              'group/backlog absolute top-0 right-0 h-screen pt-8 transition-all',
               backlogFolded ? 'w-0' : 'w-[290px]',
             )}
           >
             <Backlog bindCalendar={false} />
             <div
               className={cn(
-                'w-[16px] h-full absolute -left-[16px] top-0 flex items-center z-10 opacity-0 group-hover/backlog:opacity-100 transition-all',
+                'absolute -left-[16px] top-0 z-10 flex h-full w-[16px] items-center opacity-0 transition-all group-hover/backlog:opacity-100',
               )}
             >
               <div
-                className="bg-[#f0f0f0] h-[50px] w-full rounded-tl rounded-bl flex items-center text-gray-400 hover:bg-gray-200 cursor-pointer border-l border-t border-b"
+                className="flex h-[50px] w-full cursor-pointer items-center rounded-tl rounded-bl border-l border-t border-b bg-[#f0f0f0] text-gray-400 hover:bg-gray-200"
                 onClick={() => setBacklogFolded((folded) => !folded)}
               >
                 {backlogFolded ? <AiOutlineLeft /> : <AiOutlineRight />}

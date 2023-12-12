@@ -2,13 +2,13 @@ import { DatePicker, Select } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useState } from 'react'
 
-import type { AgendaTaskObjective } from '@/types/objective'
+import type { AgendaEntityObjective } from '@/types/objective'
 
 type PeriodPickerProps = {
-  onChange?: (objective: AgendaTaskObjective) => void
-  initialValue?: AgendaTaskObjective
+  onChange?: (objective: AgendaEntityObjective) => void
+  initialValue?: AgendaEntityObjective
 }
-type PeriodType = AgendaTaskObjective['type']
+type PeriodType = AgendaEntityObjective['type']
 
 const PeriodPicker = ({ onChange, initialValue }: PeriodPickerProps) => {
   const [type, setType] = useState<PeriodType>(initialValue?.type || 'week')
@@ -24,7 +24,7 @@ const PeriodPicker = ({ onChange, initialValue }: PeriodPickerProps) => {
 
   const emitOnChange = (newType: PeriodType, newDate: Dayjs | null) => {
     if (newDate) {
-      const objective: AgendaTaskObjective = {
+      const objective: AgendaEntityObjective = {
         type: newType,
         year: newDate.year(),
         number: newType === 'week' ? newDate.week() : newDate.month() + 1,

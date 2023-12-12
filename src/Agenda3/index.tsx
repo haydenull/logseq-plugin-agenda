@@ -3,7 +3,7 @@ import { Modal, message } from 'antd'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useCallback, useEffect, useState } from 'react'
 
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import usePages from '@/Agenda3/hooks/usePages'
 import { appAtom } from '@/Agenda3/models/app'
 import { logseqAtom } from '@/Agenda3/models/logseq'
@@ -22,13 +22,13 @@ const Dashboard = () => {
   // 需要初始化 settings
   const { initializeSettings } = useSettings()
   const setLogseq = useSetAtom(logseqAtom)
-  const { refreshTasks } = useAgendaTasks()
+  const { refreshEntities } = useAgendaEntities()
   const { refreshPages } = usePages()
   const [connectionErrorModal, setConnectionErrorModal] = useState(false)
 
   const loadData = useCallback(() => {
     initializeDayjs(1)
-    refreshTasks().catch((error) => {
+    refreshEntities().catch((error) => {
       console.error('retrieve tasks failed', error)
       if (import.meta.env.VITE_MODE === 'web') {
         return setConnectionErrorModal(true)
@@ -39,7 +39,7 @@ const Dashboard = () => {
     // logseq.App.getCurrentGraph().then((res) => {
     //   console.log('getUserConfigs', res)
     // })
-  }, [refreshTasks])
+  }, [refreshEntities])
   // get tasks and projects
   useEffect(() => {
     const handleWindowFocus = () => {
@@ -69,7 +69,7 @@ const Dashboard = () => {
   return (
     <div
       className={cn(
-        "flex w-screen h-screen bg-gray-100 before:absolute before:pointer-events-none before:h-[180px] before:w-[240px] before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:content-['']  before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40 before:transition-all",
+        "flex h-screen w-screen bg-gray-100 before:pointer-events-none before:absolute before:h-[180px] before:w-[240px] before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:transition-all  before:content-[''] before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40",
         {
           'pt-[30px]': import.meta.env.VITE_MODE === 'plugin',
         },

@@ -12,9 +12,9 @@ import { MdSchedule } from 'react-icons/md'
 import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import { recentTasksAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import { recentTasksAtom } from '@/Agenda3/models/tasks'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { CalendarEvent } from '@/types/fullcalendar'
 import { cn } from '@/util/util'
@@ -45,7 +45,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)
-  const { updateTask } = useAgendaTasks()
+  const { updateEntity } = useAgendaEntities()
   const recentTasks = useAtomValue(recentTasksAtom)
   const now = dayjs()
   const calendarEvents = recentTasks
@@ -92,7 +92,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
     // 原本没有设置 estimatedTime 时，除非新的预估时间不等于默认预估时间，否则仍不修改 estimatedTime
     const estimatedTime = task.estimatedTime || span !== DEFAULT_ESTIMATED_TIME ? span : undefined
     try {
-      updateTask({
+      updateEntity({
         type: 'task-date',
         id: blockUUID,
         data: {

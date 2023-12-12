@@ -6,14 +6,14 @@ import dayjs from 'dayjs'
 import React from 'react'
 import { useState } from 'react'
 
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
-import type { AgendaTaskObjective } from '@/types/objective'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import type { AgendaEntityObjective } from '@/types/objective'
 
 import { BaseObjectiveModal } from './BaseObjectiveModal'
 
 export type CreateObjectiveForm = {
   title: string
-  objective: AgendaTaskObjective
+  objective: AgendaEntityObjective
 }
 type CreateObjectiveModalProps = {
   children: React.ReactNode
@@ -32,7 +32,7 @@ const CreateObjectiveModal = ({ children, initialData }: CreateObjectiveModalPro
   }
   const [formData, setFormData] = useState<CreateObjectiveForm>(_initialData)
 
-  const { addNewTask } = useAgendaTasks()
+  const { addNewEntity } = useAgendaEntities()
 
   const updateFormData = (data: Partial<CreateObjectiveForm>) => {
     setFormData((_data) => ({
@@ -42,7 +42,7 @@ const CreateObjectiveModal = ({ children, initialData }: CreateObjectiveModalPro
   }
 
   const create = async () => {
-    return addNewTask({ type: 'objective', data: formData })
+    return addNewEntity({ type: 'objective', data: formData })
   }
 
   return (

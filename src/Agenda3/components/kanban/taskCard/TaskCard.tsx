@@ -4,13 +4,14 @@ import { useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 import { RiDeleteBin4Line } from 'react-icons/ri'
 
-import { deleteBlockDateInfo, updateBlockTaskStatus, deleteTaskBlock } from '@/Agenda3/helpers/block'
+import { deleteBlockDateInfo, updateBlockTaskStatus, deleteEntityBlock } from '@/Agenda3/helpers/block'
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
 import { formatTaskTitle } from '@/Agenda3/helpers/task'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
-import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
+import type { AgendaEntity } from '@/types/entity'
+import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
 import Group from '../../Group'
@@ -23,7 +24,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
 
   const [editTaskModal, setEditTaskModal] = useState<{
     open: boolean
-    task?: AgendaTask
+    task?: AgendaEntity
   }>({
     open: false,
   })
@@ -33,18 +34,18 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
   const estimatedTime = task.estimatedTime ?? DEFAULT_ESTIMATED_TIME
   const showTitle = formatTaskTitle(task)
 
-  const { updateTask, deleteTask } = useAgendaTasks()
+  const { updateEntity, deleteEntity } = useAgendaEntities()
 
-  const onClickTaskMark = (event: React.MouseEvent, task: AgendaTask, status: AgendaTask['status']) => {
+  const onClickTaskMark = (event: React.MouseEvent, task: AgendaEntity, status: AgendaEntity['status']) => {
     if (task.rrule) return message.error('Please modify the status of the recurring task in logseq.')
-    updateTask({ type: 'task-status', id: task.id, data: status })
+    updateEntity({ type: 'task-status', id: task.id, data: status })
     event.stopPropagation()
   }
   const onDeleteTask = async (taskId: string) => {
-    deleteTask(taskId)
+    deleteEntity(taskId)
   }
   const onRemoveDate = async (taskId: string) => {
-    updateTask({ type: 'task-remove-date', id: taskId, data: null })
+    updateEntity({ type: 'task-remove-date', id: taskId, data: null })
   }
 
   return (

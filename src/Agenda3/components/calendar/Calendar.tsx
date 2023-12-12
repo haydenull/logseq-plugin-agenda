@@ -12,10 +12,10 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } f
 import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { appAtom } from '@/Agenda3/models/app'
+import { tasksWithStartAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import { tasksWithStartAtom } from '@/Agenda3/models/tasks'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
@@ -36,7 +36,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   // const [currentView, setCurrentView] = useState<CalendarView>('dayGridMonth')
   const calendarRef = useRef<FullCalendar>(null)
   const app = useAtomValue(appAtom)
-  const { updateTask } = useAgendaTasks()
+  const { updateEntity } = useAgendaEntities()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
@@ -90,7 +90,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       allDay,
     }
     try {
-      updateTask({ type: 'task-date', id: blockUUID, data: dateInfo })
+      updateEntity({ type: 'task-date', id: blockUUID, data: dateInfo })
       // const event = calendarApi?.getEventById(blockUUID)
       // if (event) {
       //   event.setProp('extendedProps', {

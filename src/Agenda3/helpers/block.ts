@@ -12,8 +12,9 @@ import {
   SCHEDULED_DATETIME_FORMATTER,
   SCHEDULED_DATE_FORMATTER,
 } from '@/constants/agenda'
-import type { AgendaObjective, AgendaTaskObjective } from '@/types/objective'
-import type { AgendaTask, CreateAgendaTask } from '@/types/task'
+import type { AgendaEntity } from '@/types/entity'
+import type { AgendaObjective, AgendaEntityObjective } from '@/types/objective'
+import type { CreateAgendaTask } from '@/types/task'
 import { updateBlock } from '@/util/logseq'
 
 import { secondsToHHmmss } from './fullCalendar'
@@ -210,7 +211,7 @@ export function generateTimeLogText({ start, end }: { start: Dayjs; end: Dayjs }
 /**
  * update task
  */
-export const updateTaskBlock = async (taskInfo: AgendaTask & { projectId?: string }) => {
+export const updateTaskBlock = async (taskInfo: AgendaEntity & { projectId?: string }) => {
   const { id, title, allDay, start, end, estimatedTime, status, timeLogs, projectId } = taskInfo
   const originalBlock = await logseq.Editor.getBlock(id)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
@@ -239,7 +240,7 @@ export const updateTaskBlock = async (taskInfo: AgendaTask & { projectId?: strin
 /**
  * toggle task status
  */
-export const updateBlockTaskStatus = async (taskInfo: AgendaTask, status: AgendaTask['status']) => {
+export const updateBlockTaskStatus = async (taskInfo: AgendaEntity, status: AgendaEntity['status']) => {
   const todoTag = status === 'done' ? 'DONE' : 'TODO'
   const rawTodoTag = taskInfo.rawBlock.marker
   if (!rawTodoTag) {
@@ -255,7 +256,7 @@ export const updateBlockTaskStatus = async (taskInfo: AgendaTask, status: Agenda
 /**
  * delete task
  */
-export const deleteTaskBlock = async (uuid: string) => {
+export const deleteEntityBlock = async (uuid: string) => {
   return logseq.Editor.removeBlock(uuid)
 }
 
@@ -313,7 +314,7 @@ export function genDurationString(minutes: number): string {
   return durationString
 }
 
-type AgendaDrawer = { estimated?: number; end?: Dayjs; objective?: AgendaTaskObjective }
+type AgendaDrawer = { estimated?: number; end?: Dayjs; objective?: AgendaEntityObjective }
 /**
  * parse agenda drawer
  */
@@ -341,7 +342,7 @@ export function parseAgendaDrawer(blockContent: string): AgendaDrawer | null {
           return {
             ...acc,
             objective: {
-              type: type as AgendaTaskObjective['type'],
+              type: type as AgendaEntityObjective['type'],
               year: Number(year),
               number: Number(number),
             },

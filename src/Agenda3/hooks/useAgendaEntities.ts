@@ -4,11 +4,11 @@ import { type Dayjs } from 'dayjs'
 import { useAtom, useAtomValue } from 'jotai'
 import { useCallback } from 'react'
 
-import { getAgendaTasks, transformBlockToAgendaTask } from '@/Agenda3/helpers/task'
+import { getAgendaEntities, transformBlockToAgendaEntity } from '@/Agenda3/helpers/task'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import { agendaTasksAtom } from '@/Agenda3/models/tasks'
+import type { AgendaEntity } from '@/types/entity'
 import type { AgendaObjective } from '@/types/objective'
-import type { AgendaTask, CreateAgendaTask } from '@/types/task'
+import type { AgendaTaskWithStart, CreateAgendaTask } from '@/types/task'
 
 import type { CreateObjectiveForm } from '../components/modals/ObjectiveModal/CreateObjectiveModal'
 import type { EditObjectiveForm } from '../components/modals/ObjectiveModal/EditObjectiveModal'
@@ -16,31 +16,32 @@ import {
   createObjectiveBlock,
   createTaskBlock,
   deleteBlockDateInfo,
-  deleteTaskBlock,
+  deleteEntityBlock,
   transformBlockToBlockFromQuery,
   updateBlockDateInfo,
   updateBlockTaskStatus,
   updateObjectiveBlock,
   updateTaskBlock,
 } from '../helpers/block'
+import { agendaEntitiesAtom } from '../models/entities/entities'
 
-const useAgendaTasks = () => {
+const useAgendaEntities = () => {
   const settings = useAtomValue(settingsAtom)
-  const [tasks, setTasks] = useAtom(agendaTasksAtom)
+  const [entities, setEntities] = useAtom(agendaEntitiesAtom)
 
-  const refreshTasks = useCallback(() => {
+  const refreshEntities = useCallback(() => {
     if (settings.isInitialized === false) return Promise.resolve()
-    return getAgendaTasks(settings).then((res) => {
-      setTasks(res)
+    return getAgendaEntities(settings).then((res) => {
+      setEntities(res)
     })
   }, [settings])
 
-  const updateTask = async (
+  const updateEntity = async (
     params:
       | {
           type: 'task'
           id: string
-          data: AgendaTask & { projectId?: string }
+          data: AgendaTaskWithStart & { projectId?: string }
         }
       | {
           type: 'task-date'
@@ -50,7 +51,7 @@ const useAgendaTasks = () => {
       | {
           type: 'task-status'
           id: string
-          data: AgendaTask['status']
+          data: AgendaTaskWithStart['status']
         }
       | {
           type: 'task-remove-date'
@@ -65,11 +66,11 @@ const useAgendaTasks = () => {
       | {
           type: 'objective-status'
           id: string
-          data: AgendaTask['status']
+          data: AgendaObjective['status']
         },
   ) => {
     const { type, id, data } = params
-    const task = tasks.find((task) => task.id === id)
+    const task = entities.find((task) => task.id === id)
     if (!task) {
       message.error('Task not found')
       throw new Error('Task not found')
@@ -108,7 +109,7 @@ const useAgendaTasks = () => {
       throw new Error('Failed to edit block')
     }
 
-    const newTask = await transformBlockToAgendaTask(block, settings)
+    const newTask = await transformBlockToAgendaEntity(block, settings)
     const isFilterMode = (settings.selectedFilters || [])?.length > 0
     if (isFilterMode && (newTask.filters ?? []).length === 0) {
       const message = type.startsWith('task')
@@ -124,7 +125,7 @@ const useAgendaTasks = () => {
       })
       return false
     }
-    setTasks((_tasks) => {
+    setEntities((_tasks) => {
       return _tasks.map((task) => {
         if (task.id === id) {
           return { ...task, ...newTask }
@@ -135,12 +136,12 @@ const useAgendaTasks = () => {
     return newTask
   }
 
-  const deleteTask = (id: string) => {
-    deleteTaskBlock(id)
-    setTasks((_tasks) => _tasks.filter((task) => task.id !== id))
+  const deleteEntity = (id: string) => {
+    deleteEntityBlock(id)
+    setEntities((_tasks) => _tasks.filter((task) => task.id !== id))
   }
 
-  const addNewTask = async (
+  const addNewEntity = async (
     params:
       | { type: 'task'; data: CreateAgendaTask }
       | {
@@ -156,7 +157,7 @@ const useAgendaTasks = () => {
       message.error('Failed to create block')
       throw new Error('Failed to create block')
     }
-    const newTask = await transformBlockToAgendaTask(block, settings)
+    const newTask = await transformBlockToAgendaEntity(block, settings)
     const isFilterMode = (settings.selectedFilters || [])?.length > 0
     if (isFilterMode && (newTask.filters ?? []).length === 0) {
       const message =
@@ -174,11 +175,17 @@ const useAgendaTasks = () => {
       })
       return false
     }
-    setTasks((_tasks) => _tasks.concat(newTask))
+    setEntities((_tasks) => _tasks.concat(newTask))
     return newTask
   }
 
-  return { tasks, refreshTasks, updateTask, addNewTask, deleteTask }
+  return {
+    entities,
+    refreshEntities,
+    updateEntity,
+    addNewEntity,
+    deleteEntity,
+  }
 }
 
-export default useAgendaTasks
+export default useAgendaEntities

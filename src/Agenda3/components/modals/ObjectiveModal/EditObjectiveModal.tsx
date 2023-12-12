@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { type Output, number, object, string, picklist } from 'valibot'
 
 import { updateBlockTaskStatus } from '@/Agenda3/helpers/block'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import type { AgendaObjective } from '@/types/objective'
 
 import { BaseObjectiveModal } from './BaseObjectiveModal'
@@ -26,7 +26,7 @@ const EditObjectiveModal = ({ children, initialData }: EditObjectiveModalProps) 
   const _initialData = { title: initialData.title, objective: initialData.objective }
   const [formData, setFormData] = useState<EditObjectiveForm>(_initialData)
 
-  const { updateTask, deleteTask } = useAgendaTasks()
+  const { updateEntity, deleteEntity } = useAgendaEntities()
 
   const updateFormData = (data: Partial<EditObjectiveForm>) => {
     setFormData((_data) => ({
@@ -35,17 +35,17 @@ const EditObjectiveModal = ({ children, initialData }: EditObjectiveModalProps) 
     }))
   }
   const edit = async () => {
-    return updateTask({
+    return updateEntity({
       type: 'objective',
       id: initialData.id,
       data: formData,
     })
   }
   const handleDelete = () => {
-    deleteTask(initialData.id)
+    deleteEntity(initialData.id)
   }
   const handleSwitchStatus = async (status: 'todo' | 'done') => {
-    return updateTask({
+    return updateEntity({
       type: 'objective-status',
       id: initialData.id,
       data: status,

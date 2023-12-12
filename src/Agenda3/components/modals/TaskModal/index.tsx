@@ -8,18 +8,19 @@ import { GoGoal } from 'react-icons/go'
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { RiCheckboxBlankCircleLine, RiDeleteBin4Line } from 'react-icons/ri'
 
-import { deleteTaskBlock, transformBlockToBlockFromQuery, updateBlockTaskStatus } from '@/Agenda3/helpers/block'
+import { deleteEntityBlock, transformBlockToBlockFromQuery, updateBlockTaskStatus } from '@/Agenda3/helpers/block'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
-import { type BlockFromQuery, transformBlockToAgendaTask, retrieveFilteredBlocks } from '@/Agenda3/helpers/task'
+import { type BlockFromQuery, transformBlockToAgendaEntity, retrieveFilteredBlocks } from '@/Agenda3/helpers/task'
 import { track } from '@/Agenda3/helpers/umami'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import usePages from '@/Agenda3/hooks/usePages'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import DurationSelect from '@/components/TaskModal/components/DurationSelect'
 import TimeSelect from '@/components/TaskModal/components/TimeSelect'
 import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda'
-import type { AgendaTask, TimeLog } from '@/types/task'
+import type { AgendaEntity } from '@/types/entity'
+import type { TimeLog } from '@/types/task'
 
 import ObjectiveSelect from '../../forms/ObjectiveSelect'
 import PageSelect from '../../forms/PageSelect'
@@ -40,7 +41,7 @@ const TaskModal = ({
 }: {
   open?: boolean
   onCancel?: () => void
-  onOk?: (task: AgendaTask) => void
+  onOk?: (task: AgendaEntity) => void
   onDelete?: (taskId: string) => void
   children?: React.ReactNode
   triggerClassName?: string
@@ -51,7 +52,7 @@ const TaskModal = ({
       }
     | {
         type: 'edit'
-        initialTaskData: AgendaTask
+        initialTaskData: AgendaEntity
       }
 }) => {
   const [internalOpen, setInternalOpen] = useState(false)
@@ -65,7 +66,7 @@ const TaskModal = ({
 
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
 
-  const { deleteTask } = useAgendaTasks()
+  const { deleteEntity } = useAgendaEntities()
 
   const createHookResult = useCreate(info.type === 'create' ? info.initialData : null)
   const editHookResult = useEdit(info.type === 'edit' ? info.initialTaskData : null)
@@ -98,7 +99,7 @@ const TaskModal = ({
   }
   const handleDelete = async () => {
     if (info.type === 'edit') {
-      deleteTask(info.initialTaskData.id)
+      deleteEntity(info.initialTaskData.id)
       onDelete?.(info.initialTaskData.id)
       setInternalOpen(false)
     }
@@ -140,7 +141,7 @@ const TaskModal = ({
     refreshPages()
     message.success('Page created')
   }
-  const onSwitchTaskStatus = async (status: AgendaTask['status']) => {
+  const onSwitchTaskStatus = async (status: AgendaEntity['status']) => {
     if (editDisabled) return message.error('Please modify the status of the recurring task in logseq.')
     if (info.type !== 'edit') return
 

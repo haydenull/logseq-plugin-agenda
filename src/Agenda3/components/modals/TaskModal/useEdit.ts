@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { object, string, optional, special, type Output, safeParse, array, number } from 'valibot'
 
 import { genDurationString, parseDurationString } from '@/Agenda3/helpers/block'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
-import type { AgendaTask } from '@/types/task'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import type { AgendaEntity } from '@/types/entity'
 
 import { genStart } from './useCreate'
 
@@ -31,8 +31,8 @@ const editFormSchema = object({
 })
 type EditTaskForm = Output<typeof editFormSchema>
 type EditTaskFormNoValidation = Partial<EditTaskForm>
-const useEdit = (initialTask: AgendaTask | null) => {
-  const { updateTask } = useAgendaTasks()
+const useEdit = (initialTask: AgendaEntity | null) => {
+  const { updateEntity } = useAgendaEntities()
   const initialFormData = {
     title: initialTask?.title || '',
     startDateVal: initialTask?.start,
@@ -72,8 +72,9 @@ const useEdit = (initialTask: AgendaTask | null) => {
       console.error('edit error', result)
       throw new Error('Failed to edit task block')
     }
+    if (!start) return
     const estimatedTime = result.output.estimatedTime
-    return updateTask({
+    return updateEntity({
       type: 'task',
       id: initialTask.id,
       data: {

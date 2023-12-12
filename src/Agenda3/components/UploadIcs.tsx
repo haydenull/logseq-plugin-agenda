@@ -6,8 +6,8 @@ import { FiUploadCloud } from 'react-icons/fi'
 
 import { track } from '@/Agenda3/helpers/umami'
 import useSettings from '@/Agenda3/hooks/useSettings'
+import { tasksWithStartAtom } from '@/Agenda3/models/entities/tasks'
 import { logseqAtom } from '@/Agenda3/models/logseq'
-import { tasksWithStartAtom } from '@/Agenda3/models/tasks'
 import { uploadIcsHttp } from '@/services/ics'
 import { transformAgendaTaskToICSEvent } from '@/util/ics'
 import { cn } from '@/util/util'
@@ -47,7 +47,7 @@ const UploadIcs = ({ className }: { className?: string }) => {
     <div className="relative">
       <FiUploadCloud className={cn('text-lg', className)} onClick={onClickUpload} />
       {loading ? (
-        <span className="animate-pulse absolute w-2 h-2 rounded-full bg-orange-500 top-0 right-0"></span>
+        <span className="absolute top-0 right-0 h-2 w-2 animate-pulse rounded-full bg-orange-500"></span>
       ) : null}
     </div>
   )

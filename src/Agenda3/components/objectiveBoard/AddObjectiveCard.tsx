@@ -1,11 +1,11 @@
 import { IoAddCircleOutline } from 'react-icons/io5'
 
-import type { AgendaTaskObjective } from '@/types/objective'
+import type { AgendaEntityObjective } from '@/types/objective'
 import { cn } from '@/util/util'
 
 import CreateObjectiveModal from '../modals/ObjectiveModal/CreateObjectiveModal'
 
-const AddObjectiveCard = ({ period }: { period: AgendaTaskObjective }) => {
+const AddObjectiveCard = ({ period }: { period: AgendaEntityObjective }) => {
   return (
     <CreateObjectiveModal initialData={{ objective: period }}>
       <div

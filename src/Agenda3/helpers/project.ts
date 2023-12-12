@@ -1,6 +1,6 @@
 import { BACKGROUND_COLOR, DEFAULT_BG_COLOR_NAME } from '@/constants/agenda'
+import type { AgendaEntityPage } from '@/types/entity'
 import type { AgendaProject } from '@/types/project'
-import type { AgendaTaskPage } from '@/types/task'
 
 export const getAllProjects = async () => {
   const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
@@ -25,7 +25,7 @@ export const getAllProjects = async () => {
   ].filter(Boolean)
 }
 
-export const transformPageToProject = (page: AgendaTaskPage, favoritePages: string[]): AgendaProject => {
+export const transformPageToProject = (page: AgendaEntityPage, favoritePages: string[]): AgendaProject => {
   // query 查询的 properties 属性名为原始值
   // getAllPage 查询的 properties 属性名为会转为驼峰
   const originalColor = page.properties?.['agenda-color'] || page.properties?.agendaColor

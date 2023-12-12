@@ -2,7 +2,7 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { useState } from 'react'
 
 import { parseDurationString } from '@/Agenda3/helpers/block'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { replaceTimeInfo } from '@/util/util'
 
 export type CreateTaskForm = {
@@ -16,7 +16,7 @@ export type CreateTaskForm = {
   objectiveId?: string
 }
 const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
-  const { addNewTask } = useAgendaTasks()
+  const { addNewEntity } = useAgendaEntities()
   const _initialData = initialData
     ? {
         title: initialData.title ?? '',
@@ -38,7 +38,7 @@ const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
     }))
   }
   const create = async () => {
-    return addNewTask({
+    return addNewEntity({
       type: 'task',
       data: {
         allDay,

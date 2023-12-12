@@ -1,11 +1,11 @@
-import type { AgendaTask } from './task'
+import type { AgendaEntity } from './entity'
 
-export type AgendaTaskObjective = {
+export type AgendaEntityObjective = {
   type: 'week' | 'month'
   year: number
   number: number
 }
 
-export type AgendaObjective = AgendaTask & {
-  objective: AgendaTaskObjective
+export type AgendaObjective = AgendaEntity & {
+  objective: AgendaEntityObjective
 }

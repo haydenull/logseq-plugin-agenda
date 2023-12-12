@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest'
 
 import type { AgendaTaskWithStart } from '@/types/task'
 
-import { type BlockFromQuery, transformBlockToAgendaTask, separateTasksInDay } from '../task'
+import { type BlockFromQuery, transformBlockToAgendaEntity, separateTasksInDay } from '../task'
 
 const DEMO_FAVORITE_PAGES = []
 export const DEMO_BLOCK = {

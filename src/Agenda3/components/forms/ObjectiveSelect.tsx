@@ -5,7 +5,7 @@ import { Select } from 'antd'
 import type { Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
 
-import { agendaObjectivesAtom } from '@/Agenda3/models/objectives'
+import { agendaObjectivesAtom } from '@/Agenda3/models/entities/objectives'
 
 const ObjectiveSelect = ({
   date,
