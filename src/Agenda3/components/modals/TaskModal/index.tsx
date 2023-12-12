@@ -4,6 +4,7 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { BsCalendar4Event, BsCalendar4Range, BsClock, BsClockHistory } from 'react-icons/bs'
+import { GoGoal } from 'react-icons/go'
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { RiCheckboxBlankCircleLine, RiDeleteBin4Line } from 'react-icons/ri'
 
@@ -20,6 +21,7 @@ import TimeSelect from '@/components/TaskModal/components/TimeSelect'
 import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda'
 import type { AgendaTask, TimeLog } from '@/types/task'
 
+import ObjectiveSelect from '../../forms/ObjectiveSelect'
 import PageSelect from '../../forms/PageSelect'
 import LogseqLogo from '../../icons/LogseqLogo'
 import PageIcon from '../../icons/PageIcon'
@@ -360,6 +362,19 @@ const TaskModal = ({
           </div>
         ) : null}
         {/* ========= Actual Time End ========= */}
+
+        {/* ========= Objective Start ========= */}
+        <div className="my-2 flex">
+          <div className="flex w-[160px] items-center gap-1 text-gray-400">
+            <GoGoal /> Objective
+          </div>
+          <ObjectiveSelect
+            date={formData.startDateVal ?? dayjs()}
+            value={formData.objectiveId}
+            onChange={(val) => updateFormData({ objectiveId: val })}
+          />
+        </div>
+        {/* ========= Objective End ========= */}
 
         {/* ========= Page Start ========= */}
         <div className="my-2 flex">

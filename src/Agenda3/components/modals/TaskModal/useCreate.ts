@@ -13,6 +13,7 @@ export type CreateTaskForm = {
   estimatedTime?: string
   actualTime?: string
   projectId?: string
+  objectiveId?: string
 }
 const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
   const { addNewTask } = useAgendaTasks()

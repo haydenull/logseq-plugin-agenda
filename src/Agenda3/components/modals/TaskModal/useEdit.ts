@@ -1,18 +1,10 @@
-import { message, notification } from 'antd'
+import { message } from 'antd'
 import dayjs, { isDayjs, type Dayjs } from 'dayjs'
-import { useAtomValue } from 'jotai'
 import { useState } from 'react'
 import { object, string, optional, special, type Output, safeParse, array, number } from 'valibot'
 
-import {
-  genDurationString,
-  parseDurationString,
-  transformBlockToBlockFromQuery,
-  updateTaskBlock,
-} from '@/Agenda3/helpers/block'
-import { transformBlockToAgendaTask } from '@/Agenda3/helpers/task'
+import { genDurationString, parseDurationString } from '@/Agenda3/helpers/block'
 import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
-import { settingsAtom } from '@/Agenda3/models/settings'
 import type { AgendaTask } from '@/types/task'
 
 import { genStart } from './useCreate'
@@ -35,11 +27,11 @@ const editFormSchema = object({
     ),
   ),
   projectId: optional(string()),
+  objectiveId: optional(string()),
 })
 type EditTaskForm = Output<typeof editFormSchema>
 type EditTaskFormNoValidation = Partial<EditTaskForm>
 const useEdit = (initialTask: AgendaTask | null) => {
-  const settings = useAtomValue(settingsAtom)
   const { updateTask } = useAgendaTasks()
   const initialFormData = {
     title: initialTask?.title || '',

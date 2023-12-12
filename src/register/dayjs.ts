@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
 import isBetween from 'dayjs/plugin/isBetween'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
@@ -22,7 +23,11 @@ dayjs.extend(isoWeek)
 dayjs.extend(weekOfYear) // Use plugin
 
 const initializeDayjs = (weekStartDay: 0 | 1) => {
-  dayjs.updateLocale('en', {
+  dayjs.locale('zh-cn')
+  // dayjs.updateLocale('en', {
+  //   weekStart: weekStartDay,
+  // })
+  dayjs.updateLocale('zh-cn', {
     weekStart: weekStartDay,
   })
 }
