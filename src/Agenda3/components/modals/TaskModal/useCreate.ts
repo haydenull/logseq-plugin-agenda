@@ -13,7 +13,7 @@ export type CreateTaskForm = {
   estimatedTime?: string
   actualTime?: string
   projectId?: string
-  objectiveId?: string
+  bindObjectiveId?: string
 }
 const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
   const { addNewEntity } = useAgendaEntities()

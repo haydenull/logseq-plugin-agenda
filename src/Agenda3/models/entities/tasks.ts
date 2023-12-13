@@ -4,11 +4,20 @@ import { atom } from 'jotai'
 import type { AgendaTaskWithStart } from '@/types/task'
 
 import { agendaEntitiesAtom } from './entities'
+import { agendaObjectivesAtom } from './objectives'
 
 // task
 export const tasksWithStartAtom = atom<AgendaTaskWithStart[]>((get) => {
-  const allTasks = get(agendaEntitiesAtom)
-  return allTasks.filter((task) => task.start && !task.objective) as AgendaTaskWithStart[]
+  const allEntities = get(agendaEntitiesAtom)
+  const allObjectives = get(agendaObjectivesAtom)
+  return allEntities
+    .filter((entity) => entity.start && !entity.objective)
+    .map((task) => {
+      return {
+        ...task,
+        bindObjective: allObjectives.find((objective) => objective.id === task.bindObjectiveId),
+      }
+    }) as AgendaTaskWithStart[]
 })
 export const recentTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const allTasks = get(tasksWithStartAtom)

@@ -6,6 +6,7 @@ import { object, string, optional, special, type Output, safeParse, array, numbe
 import { genDurationString, parseDurationString } from '@/Agenda3/helpers/block'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import type { AgendaEntity } from '@/types/entity'
+import type { AgendaTaskWithStart } from '@/types/task'
 
 import { genStart } from './useCreate'
 
@@ -27,11 +28,11 @@ const editFormSchema = object({
     ),
   ),
   projectId: optional(string()),
-  objectiveId: optional(string()),
+  bindObjectiveId: optional(string()),
 })
 type EditTaskForm = Output<typeof editFormSchema>
 type EditTaskFormNoValidation = Partial<EditTaskForm>
-const useEdit = (initialTask: AgendaEntity | null) => {
+const useEdit = (initialTask: AgendaTaskWithStart | null) => {
   const { updateEntity } = useAgendaEntities()
   const initialFormData = {
     title: initialTask?.title || '',
@@ -42,6 +43,7 @@ const useEdit = (initialTask: AgendaEntity | null) => {
     actualTime: initialTask?.actualTime ? genDurationString(initialTask.actualTime) : undefined,
     timeLogs: initialTask?.timeLogs || [],
     projectId: initialTask?.project?.id,
+    bindObjectiveId: initialTask?.bindObjectiveId,
   }
   const [formData, setFormData] = useState<EditTaskFormNoValidation>(initialFormData)
 
@@ -88,7 +90,8 @@ const useEdit = (initialTask: AgendaEntity | null) => {
         actualTime: undefined,
         projectId: result.output.projectId,
       },
-    })
+      // 因为这里必定有 start， 所以类型是 AgendaTaskWithStart
+    }) as Promise<AgendaTaskWithStart>
   }
 
   return {

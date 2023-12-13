@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 import { RiDeleteBin4Line } from 'react-icons/ri'
 
-import { deleteBlockDateInfo, updateBlockTaskStatus, deleteEntityBlock } from '@/Agenda3/helpers/block'
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
 import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
@@ -24,7 +23,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
 
   const [editTaskModal, setEditTaskModal] = useState<{
     open: boolean
-    task?: AgendaEntity
+    task?: AgendaTaskWithStart
   }>({
     open: false,
   })

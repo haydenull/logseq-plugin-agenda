@@ -72,8 +72,8 @@ const useAgendaEntities = () => {
     const { type, id, data } = params
     const task = entities.find((task) => task.id === id)
     if (!task) {
-      message.error('Task not found')
-      throw new Error('Task not found')
+      message.error('Entity not found')
+      throw new Error('Entity not found')
     }
     let rawBlock: BlockEntity | null = null
     switch (type) {

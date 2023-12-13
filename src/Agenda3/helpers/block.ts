@@ -14,7 +14,7 @@ import {
 } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
 import type { AgendaObjective, AgendaEntityObjective } from '@/types/objective'
-import type { CreateAgendaTask } from '@/types/task'
+import type { AgendaTaskWithStart, CreateAgendaTask } from '@/types/task'
 import { updateBlock } from '@/util/logseq'
 
 import { secondsToHHmmss } from './fullCalendar'
@@ -211,14 +211,18 @@ export function generateTimeLogText({ start, end }: { start: Dayjs; end: Dayjs }
 /**
  * update task
  */
-export const updateTaskBlock = async (taskInfo: AgendaEntity & { projectId?: string }) => {
-  const { id, title, allDay, start, end, estimatedTime, status, timeLogs, projectId } = taskInfo
+export const updateTaskBlock = async (taskInfo: AgendaTaskWithStart & { projectId?: string }) => {
+  const { id, title, allDay, start, end, estimatedTime, status, timeLogs, projectId, bindObjectiveId } = taskInfo
   const originalBlock = await logseq.Editor.getBlock(id)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
   const content1 = updateBlockTaskTitle(originalBlock.content, title, status)
   const content2 = updateBlockScheduled(content1, { start, allDay })
-  const content3 = updateBlockAgendaDrawer(content2, { estimated: estimatedTime, end })
+  const content3 = updateBlockAgendaDrawer(content2, {
+    estimated: estimatedTime,
+    end,
+    bindObjectiveId,
+  })
   const content4 = updateBlockTimeLogText(content3, timeLogs)
   await updateBlock(id, content4)
 
@@ -314,7 +318,7 @@ export function genDurationString(minutes: number): string {
   return durationString
 }
 
-type AgendaDrawer = { estimated?: number; end?: Dayjs; objective?: AgendaEntityObjective }
+type AgendaDrawer = { estimated?: number; end?: Dayjs; objective?: AgendaEntityObjective; bindObjectiveId?: string }
 /**
  * parse agenda drawer
  */
@@ -348,6 +352,7 @@ export function parseAgendaDrawer(blockContent: string): AgendaDrawer | null {
             },
           }
         }
+        if (cur[0] === 'bindObjectiveId') return { ...acc, bindObjectiveId: cur[1] }
         return { ...acc, [cur[0]]: cur[1] }
       }, {} as AgendaDrawer)
     : null
@@ -370,6 +375,8 @@ export function genAgendaDrawerText(drawer: AgendaDrawer): string {
         valueText = originalVal.format(DATE_FORMATTER)
       } else if (key === 'objective') {
         valueText = `${originalVal.type}-${originalVal.year}-${originalVal.number}`
+      } else if (key === 'bindObjectiveId') {
+        valueText = originalVal
       }
       return `${key}: ${valueText}`
     })

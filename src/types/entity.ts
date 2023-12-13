@@ -29,8 +29,9 @@ export type AgendaEntity = {
   doneHistory?: Dayjs[] // recurrence done history
   recurringPast?: boolean // is recurring past task
 
-  // from agenda drawer objective
+  /** only Objective Entity has: from agenda drawer objective */
   objective?: AgendaEntityObjective
+  /** which Objective Entity bind of */
   bindObjectiveId?: string // from agenda drawer objectiveId
   rawBlock: BlockFromQuery // raw block entity
 }

@@ -1,4 +1,4 @@
-import { Button, Calendar, Modal, Popover, Popconfirm, DatePicker, message, notification, Mentions } from 'antd'
+import { Button, Calendar, Modal, Popover, Popconfirm, DatePicker, message, Mentions } from 'antd'
 import type { MentionsRef } from 'antd/es/mentions'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
@@ -8,9 +8,8 @@ import { GoGoal } from 'react-icons/go'
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { RiCheckboxBlankCircleLine, RiDeleteBin4Line } from 'react-icons/ri'
 
-import { deleteEntityBlock, transformBlockToBlockFromQuery, updateBlockTaskStatus } from '@/Agenda3/helpers/block'
+import { updateBlockTaskStatus } from '@/Agenda3/helpers/block'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
-import { type BlockFromQuery, transformBlockToAgendaEntity, retrieveFilteredBlocks } from '@/Agenda3/helpers/task'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import usePages from '@/Agenda3/hooks/usePages'
@@ -20,7 +19,7 @@ import DurationSelect from '@/components/TaskModal/components/DurationSelect'
 import TimeSelect from '@/components/TaskModal/components/TimeSelect'
 import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
-import type { TimeLog } from '@/types/task'
+import type { AgendaTaskWithStart, TimeLog } from '@/types/task'
 
 import ObjectiveSelect from '../../forms/ObjectiveSelect'
 import PageSelect from '../../forms/PageSelect'
@@ -41,7 +40,7 @@ const TaskModal = ({
 }: {
   open?: boolean
   onCancel?: () => void
-  onOk?: (task: AgendaEntity) => void
+  onOk?: () => void
   onDelete?: (taskId: string) => void
   children?: React.ReactNode
   triggerClassName?: string
@@ -52,7 +51,7 @@ const TaskModal = ({
       }
     | {
         type: 'edit'
-        initialTaskData: AgendaEntity
+        initialTaskData: AgendaTaskWithStart
       }
 }) => {
   const [internalOpen, setInternalOpen] = useState(false)
@@ -94,7 +93,7 @@ const TaskModal = ({
     track(`Task Modal: Ok Button`, { type: info.type })
     const task = await action()
     if (!task) return message.error('Failed to create task')
-    onOk?.(task)
+    onOk?.()
     setInternalOpen(false)
   }
   const handleDelete = async () => {
@@ -146,14 +145,7 @@ const TaskModal = ({
     if (info.type !== 'edit') return
 
     await updateBlockTaskStatus(info.initialTaskData, status)
-    onOk?.({
-      ...info.initialTaskData,
-      status,
-      rawBlock: {
-        ...info.initialTaskData.rawBlock,
-        marker: status === 'todo' ? 'TODO' : 'DONE',
-      },
-    })
+    onOk?.()
     onCancel?.()
     setInternalOpen(false)
   }
@@ -371,8 +363,8 @@ const TaskModal = ({
           </div>
           <ObjectiveSelect
             date={formData.startDateVal ?? dayjs()}
-            value={formData.objectiveId}
-            onChange={(val) => updateFormData({ objectiveId: val })}
+            value={formData.bindObjectiveId}
+            onChange={(val) => updateFormData({ bindObjectiveId: val })}
           />
         </div>
         {/* ========= Objective End ========= */}
