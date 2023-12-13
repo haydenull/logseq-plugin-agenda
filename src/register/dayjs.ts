@@ -23,13 +23,13 @@ dayjs.extend(isoWeek)
 dayjs.extend(weekOfYear) // Use plugin
 
 const initializeDayjs = (weekStartDay: 0 | 1) => {
-  dayjs.locale('zh-cn')
-  // dayjs.updateLocale('en', {
-  //   weekStart: weekStartDay,
-  // })
-  dayjs.updateLocale('zh-cn', {
+  // dayjs.locale('zh-cn')
+  dayjs.updateLocale('en', {
     weekStart: weekStartDay,
   })
+  // dayjs.updateLocale('zh-cn', {
+  //   weekStart: weekStartDay,
+  // })
 }
 
 export default initializeDayjs

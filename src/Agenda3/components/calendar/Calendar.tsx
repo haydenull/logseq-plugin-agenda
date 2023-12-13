@@ -1,4 +1,6 @@
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+import enLocale from '@fullcalendar/core/locales/en-gb'
+import esLocale from '@fullcalendar/core/locales/es'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { type EventReceiveArg, type EventResizeDoneArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
@@ -184,6 +186,8 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         fixedWeekCount={false}
         ref={calendarRef}
         height="100%"
+        // locales={[esLocale]}
+        // locale={enLocale}
         events={[
           ...calendarEvents,
           // {

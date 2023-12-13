@@ -18,7 +18,7 @@ const ObjectiveSelect = ({
 }) => {
   const allObjectives = useAtomValue(agendaObjectivesAtom)
 
-  const weekNumber = date.week()
+  const weekNumber = date.isoWeek()
   const monthNumber = date.month() + 1
   const yearNumber = date.year()
 

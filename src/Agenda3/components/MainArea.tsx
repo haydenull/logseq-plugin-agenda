@@ -72,7 +72,7 @@ const MultipleView = ({ className }: { className?: string }) => {
       sidebarType: 'objective',
       objectivePeriod: {
         type,
-        number: type === 'month' ? day.month() + 1 : day.week(),
+        number: type === 'month' ? day.month() + 1 : day.isoWeek(),
         year: day.year(),
       },
     }))

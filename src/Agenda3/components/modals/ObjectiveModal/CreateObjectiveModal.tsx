@@ -27,7 +27,7 @@ const CreateObjectiveModal = ({ children, initialData }: CreateObjectiveModalPro
       ({
         type: 'week',
         year: dayjs().year(),
-        number: dayjs().week(),
+        number: dayjs().isoWeek(),
       } as const),
   }
   const [formData, setFormData] = useState<CreateObjectiveForm>(_initialData)

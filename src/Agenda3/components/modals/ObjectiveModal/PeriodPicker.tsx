@@ -27,7 +27,7 @@ const PeriodPicker = ({ onChange, initialValue }: PeriodPickerProps) => {
       const objective: AgendaEntityObjective = {
         type: newType,
         year: newDate.year(),
-        number: newType === 'week' ? newDate.week() : newDate.month() + 1,
+        number: newType === 'week' ? newDate.isoWeek() : newDate.month() + 1,
       }
       onChange && onChange(objective)
     }
