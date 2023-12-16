@@ -3,6 +3,7 @@ import { useAtomValue } from 'jotai'
 import { useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 import { RiDeleteBin4Line } from 'react-icons/ri'
+import { VscDebugConsole } from 'react-icons/vsc'
 
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
 import { formatTaskTitle } from '@/Agenda3/helpers/task'
@@ -66,6 +67,13 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
         trigger={['contextMenu']}
         menu={{
           items: [
+            import.meta.env.DEV
+              ? {
+                  key: 'console',
+                  label: 'Console task',
+                  icon: <VscDebugConsole className="!text-base" />,
+                }
+              : null,
             editDisabled || task.project.isJournal
               ? null
               : {
@@ -83,6 +91,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           onClick: ({ key }) => {
             if (key === 'delete') onDeleteTask(task.id)
             if (key === 'backlog') onRemoveDate(task.id)
+            if (key === 'console') console.log(task)
           },
         }}
       >

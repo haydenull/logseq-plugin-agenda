@@ -26,6 +26,7 @@ const Toolbar = ({
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-1">
+        {/* Check Marker */}
         {task.status === 'done' ? (
           <IoIosCheckmarkCircle
             className="cursor-pointer text-xl text-gray-300"
@@ -37,6 +38,7 @@ const Toolbar = ({
             onClick={(e) => onClickMark(e, task, 'done')}
           />
         )}
+        {/* Timer */}
         {task.allDay ? null : (
           <span
             className="rounded px-1 py-0.5 text-[10px] text-white opacity-70"
@@ -47,7 +49,13 @@ const Toolbar = ({
             {task.start.format('HH:mm')}
           </span>
         )}
+        {/* Recurring icon */}
         {task.rrule || task.recurringPast ? <IoRepeatOutline className="text-gray-400" /> : null}
+        {/* Objective icon */}
+        {task.bindObjective ? (
+          <div className="rounded bg-gray-100 px-1 py-0.5 text-[10px] text-gray-400">{task.bindObjective?.title}</div>
+        ) : null}
+        {/* Logseq icon */}
         <div
           className="cursor-pointer text-gray-300 opacity-0 transition-opacity group-hover/card:opacity-100"
           onClick={(e) => {

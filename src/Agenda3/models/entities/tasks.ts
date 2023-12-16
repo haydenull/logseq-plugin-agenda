@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { atom } from 'jotai'
 
+import { RECENT_DAYS_RANGE } from '@/constants/agenda'
 import type { AgendaTaskWithStart } from '@/types/task'
 
 import { agendaEntitiesAtom } from './entities'
@@ -23,8 +24,9 @@ export const recentTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const allTasks = get(tasksWithStartAtom)
 
   const today = dayjs()
-  const startDay = today.subtract(7, 'day')
-  const endDay = today.add(14, 'day')
+  const [rangeStart, rangeEnd] = RECENT_DAYS_RANGE
+  const startDay = today.subtract(rangeStart, 'day')
+  const endDay = today.add(rangeEnd, 'day')
   return allTasks.filter((task) => {
     if (!task.start) return false
     return task.start.isBetween(startDay, endDay, 'day', '[]')
