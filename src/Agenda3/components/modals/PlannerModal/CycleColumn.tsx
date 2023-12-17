@@ -2,18 +2,18 @@ import dayjs, { type Dayjs } from 'dayjs'
 import React from 'react'
 import { ReactSortable } from 'react-sortablejs'
 
-import { updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
-import type { AgendaObjective } from '@/types/objective'
+import type { AgendaObjectiveWithTasks } from '@/types/objective'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { cn, replaceDateInfo } from '@/util/util'
 
 import AddTaskCard from '../../kanban/AddTaskCard'
 import ObjectiveCard from '../../kanban/taskCard/ObjectiveCard'
 import TaskCard from '../../kanban/taskCard/TaskCard'
+import AddObjectiveCard from '../../objectiveBoard/AddObjectiveCard'
 
 const CycleColumn = ({
   cycle,
@@ -23,7 +23,7 @@ const CycleColumn = ({
 }: {
   cycle: 'today' | 'tomorrow' | 'week' | 'month'
   tasks: AgendaTaskWithStart[]
-  objectives: AgendaObjective[]
+  objectives: AgendaObjectiveWithTasks[]
   allTasks: AgendaEntity[]
 }) => {
   const today = dayjs()
@@ -53,6 +53,13 @@ const CycleColumn = ({
           </span>
         </div>
       </div>
+
+      {cycle === 'week' ? (
+        <AddObjectiveCard period={{ type: 'week', year: today.year(), number: today.isoWeek() }} />
+      ) : null}
+      {objectives.map((objective) => (
+        <ObjectiveCard key={objective.id} objective={objective} />
+      ))}
 
       {(cycle === 'week' && isTodayLastDayOfWeek) || (cycle === 'month' && isTodayLastDayOfMonth) ? (
         <div className="mt-1 text-center text-gray-500">
@@ -84,9 +91,6 @@ const CycleColumn = ({
               track('KanBan: Drag Task')
             }}
           >
-            {objectives.map((objective) => (
-              <ObjectiveCard key={objective.id} objective={objective} />
-            ))}
             {tasks.map((task) => (
               <TaskCard key={task.id} task={task} />
             ))}

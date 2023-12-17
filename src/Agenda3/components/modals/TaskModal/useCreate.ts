@@ -47,6 +47,7 @@ const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
         title: formData.title,
         estimatedTime: formData.estimatedTime ? parseDurationString(formData.estimatedTime) : undefined,
         projectId: formData.projectId,
+        bindObjectiveId: formData.bindObjectiveId,
       },
     })
   }

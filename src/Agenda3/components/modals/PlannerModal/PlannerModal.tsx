@@ -13,7 +13,7 @@ import {
   todayTasksAtom,
   tomorrowTasksAtom,
 } from '@/Agenda3/models/entities/tasks'
-import type { AgendaObjective } from '@/types/objective'
+import type { AgendaObjectiveWithTasks } from '@/types/objective'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
@@ -87,7 +87,7 @@ const PlannerModal = ({
           {/* Cycle */}
           {cycles.map((cycle) => {
             const cycleTasks: AgendaTaskWithStart[] = tasksInCycle[cycle]
-            const cycleObjectives: AgendaObjective[] = objectivesInCycle[cycle] ?? []
+            const cycleObjectives: AgendaObjectiveWithTasks[] = objectivesInCycle[cycle] ?? []
             return (
               <CycleColumn
                 key={cycle}

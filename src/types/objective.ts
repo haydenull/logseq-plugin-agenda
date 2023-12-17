@@ -9,3 +9,6 @@ export type AgendaEntityObjective = {
 export type AgendaObjective = AgendaEntity & {
   objective: AgendaEntityObjective
 }
+export type AgendaObjectiveWithTasks = AgendaObjective & {
+  tasks: AgendaEntity[]
+}

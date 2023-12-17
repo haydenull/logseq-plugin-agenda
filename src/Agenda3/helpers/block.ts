@@ -172,11 +172,12 @@ export const deleteBlogTimeLog = async (uuid: string, index: number) => {
  * create task
  */
 export const createTaskBlock = async (taskInfo: CreateAgendaTask) => {
-  const { title, allDay, start, end, estimatedTime, projectId } = taskInfo
+  const { title, allDay, start, end, estimatedTime, projectId, bindObjectiveId } = taskInfo
 
   const AGENDA_DRAWER = genAgendaDrawerText({
     estimated: estimatedTime,
     end,
+    bindObjectiveId,
   })
   // const
   const content = [

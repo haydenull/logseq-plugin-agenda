@@ -111,9 +111,9 @@ const MultipleView = ({ className }: { className?: string }) => {
           {app.view === 'calendar' ? (
             <h1 className="ml-3 flex items-center gap-1 text-xl font-medium">
               {calendarTitle}
-              <div className="cursor-pointer text-gray-400 hover:text-gray-700" onClick={onClickGoal}>
+              {/* <div className="cursor-pointer text-gray-400 hover:text-gray-700" onClick={onClickGoal}>
                 <GoGoal />
-              </div>
+              </div> */}
             </h1>
           ) : null}
         </div>

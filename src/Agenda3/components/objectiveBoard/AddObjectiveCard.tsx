@@ -15,7 +15,7 @@ const AddObjectiveCard = ({ period }: { period: AgendaEntityObjective }) => {
       >
         <div className="flex items-center gap-1">
           <IoAddCircleOutline />
-          <span className={cn('transition-opacity group-hover:opacity-100')}>Add a objective</span>
+          <span className={cn('transition-opacity group-hover:opacity-100')}>Add an objective</span>
         </div>
       </div>
     </CreateObjectiveModal>

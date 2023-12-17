@@ -1,4 +1,6 @@
+import { Tooltip } from 'antd'
 import { useAtomValue } from 'jotai'
+import { GoGoal } from 'react-icons/go'
 import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline } from 'react-icons/io'
 import { IoRepeatOutline } from 'react-icons/io5'
 
@@ -50,10 +52,12 @@ const Toolbar = ({
           </span>
         )}
         {/* Recurring icon */}
-        {task.rrule || task.recurringPast ? <IoRepeatOutline className="text-gray-400" /> : null}
+        {task.rrule || task.recurringPast ? <IoRepeatOutline className="text-gray-300" /> : null}
         {/* Objective icon */}
         {task.bindObjective ? (
-          <div className="rounded bg-gray-100 px-1 py-0.5 text-[10px] text-gray-400">{task.bindObjective?.title}</div>
+          <Tooltip title={task.bindObjective.title}>
+            <GoGoal className="text-gray-300" />
+          </Tooltip>
         ) : null}
         {/* Logseq icon */}
         <div

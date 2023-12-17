@@ -200,6 +200,8 @@ export const transformBlockToAgendaEntity = async (
   const end = agendaDrawer?.end
   // objective
   const objective = agendaDrawer?.objective
+  // bindObjectiveId
+  const bindObjectiveId = agendaDrawer?.bindObjectiveId
 
   /**
    * parse logbook
@@ -284,6 +286,7 @@ export const transformBlockToAgendaEntity = async (
     rrule,
     doneHistory,
     objective,
+    bindObjectiveId,
     rawBlock: block,
   }
 }

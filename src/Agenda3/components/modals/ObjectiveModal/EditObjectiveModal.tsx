@@ -29,6 +29,7 @@ const EditObjectiveModal = ({ children, initialData }: EditObjectiveModalProps) 
   const { updateEntity, deleteEntity } = useAgendaEntities()
 
   const updateFormData = (data: Partial<EditObjectiveForm>) => {
+    console.log('[faiz:] === updateFormData', data)
     setFormData((_data) => ({
       ..._data,
       ...data,

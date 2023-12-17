@@ -1,20 +1,21 @@
 import { useAtomValue } from 'jotai'
 import React from 'react'
 import { GoGoal } from 'react-icons/go'
-import { IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline } from 'react-icons/io'
+import { IoIosCheckmark, IoIosCheckmarkCircle, IoIosCheckmarkCircleOutline } from 'react-icons/io'
+import { IoCheckmark } from 'react-icons/io5'
 
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import type { AgendaObjective } from '@/types/objective'
+import type { AgendaObjectiveWithTasks } from '@/types/objective'
 import { cn } from '@/util/util'
 
 import Group from '../../Group'
 import LogseqLogo from '../../icons/LogseqLogo'
 import EditObjectiveModal from '../../modals/ObjectiveModal/EditObjectiveModal'
 
-const ObjectiveCard = ({ objective }: { objective: AgendaObjective }) => {
+const ObjectiveCard = ({ objective }: { objective: AgendaObjectiveWithTasks }) => {
   const { currentGraph } = useAtomValue(logseqAtom)
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
@@ -70,6 +71,19 @@ const ObjectiveCard = ({ objective }: { objective: AgendaObjective }) => {
             {showTitle}
           </div>
           <Group task={objective} type={groupType} />
+          {objective.tasks ? (
+            <>
+              <div className="mt-2 border-t border-gray-100"></div>
+              <div>
+                {objective.tasks.map((task) => (
+                  <div key={task.id} className="flex items-center gap-1">
+                    <IoCheckmark className={cn(task.status === 'done' ? 'text-green-500' : 'text-gray-400')} />
+                    <span>{formatTaskTitle(task)}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
     </EditObjectiveModal>
