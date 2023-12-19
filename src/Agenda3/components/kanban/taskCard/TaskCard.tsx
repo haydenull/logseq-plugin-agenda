@@ -6,7 +6,6 @@ import { RiDeleteBin4Line } from 'react-icons/ri'
 import { VscDebugConsole } from 'react-icons/vsc'
 
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
-import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
@@ -32,7 +31,6 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
   const editDisabled = task.rrule || task.recurringPast
   const isMultipleDays = task.allDay && task.end
   const estimatedTime = task.estimatedTime ?? DEFAULT_ESTIMATED_TIME
-  const showTitle = formatTaskTitle(task)
 
   const { updateEntity, deleteEntity } = useAgendaEntities()
 
@@ -57,7 +55,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
       })}
       data-event={JSON.stringify({
         id: task.id,
-        title: showTitle,
+        title: task.showTitle,
         duration: minutesToHHmm(estimatedTime),
         color: groupType === 'page' ? task.project.bgColor : task?.filters?.[0]?.color,
       })}
@@ -100,7 +98,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           <Toolbar task={task} groupType={groupType} onClickMark={onClickTaskMark} />
 
           {/* ========= Title ========= */}
-          <div className={cn('my-0.5 text-gray-600', { 'line-through': task.status === 'done' })}>{showTitle}</div>
+          <div className={cn('my-0.5 text-gray-600', { 'line-through': task.status === 'done' })}>{task.showTitle}</div>
 
           {/* ========= Group(page or filter) Name ========= */}
           <Group task={task} type={groupType} />

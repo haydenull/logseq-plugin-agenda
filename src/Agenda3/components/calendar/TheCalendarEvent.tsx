@@ -2,13 +2,11 @@ import type { EventContentArg } from '@fullcalendar/core'
 import dayjs from 'dayjs'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 
-import { formatTaskTitle } from '@/Agenda3/helpers/task'
-import type { AgendaEntity } from '@/types/entity'
 import { cn } from '@/util/util'
 
 const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
   const taskData = info.event.extendedProps
-  const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaEntity) : info.event.title
+  const showTitle = taskData?.id ? taskData.showTitle : info.event.title
   const isShowTimeText = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 50
   const isSmallHeight = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 20
   const isDone = taskData?.status === 'done'

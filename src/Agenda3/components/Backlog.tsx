@@ -96,19 +96,18 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
                   }}
                 >
                   {project.tasks.map((task) => {
-                    const showTitle = formatTaskTitle(task)
                     return (
                       <div
                         key={task.id}
                         className="droppable-task-element group cursor-move break-all rounded border bg-[#f9fafb] px-2 py-2 text-sm text-gray-600"
                         data-event={JSON.stringify({
                           id: task.id,
-                          title: showTitle,
+                          title: task.showTitle,
                           color: groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
                           backlog: true,
                         })}
                       >
-                        {showTitle}{' '}
+                        {task.showTitle}{' '}
                         <span
                           className="inline-block cursor-pointer text-gray-300 opacity-0 transition-opacity group-hover:opacity-100"
                           onClick={(e) => {

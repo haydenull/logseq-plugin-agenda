@@ -1,13 +1,13 @@
 import type { Dayjs } from 'dayjs'
 import { type EventAttributes } from 'ics'
 
-import { formatTaskTitle, getRRuleInstance } from '@/Agenda3/helpers/task'
+import { getRRuleInstance } from '@/Agenda3/helpers/task'
 import type { AgendaTaskWithStart } from '@/types/task'
 
 export const transformAgendaTaskToICSEvent = (task: AgendaTaskWithStart, graphName: string): EventAttributes => {
-  const { start, allDay, end, estimatedTime, project, rawBlock } = task
+  const { start, allDay, end, estimatedTime, project, rawBlock, showTitle } = task
   let common: Pick<EventAttributes, 'start' | 'title' | 'calName' | 'recurrenceRule' | 'productId' | 'description'> = {
-    title: formatTaskTitle(task),
+    title: showTitle,
     start: genDateArray(start, allDay),
     calName: 'Agenda',
     productId: 'haydenull/ics',

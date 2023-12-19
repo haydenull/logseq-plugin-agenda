@@ -159,9 +159,11 @@ export const transformBlockToAgendaEntity = async (
     properties,
     page,
     filters,
+    format,
   } = block
 
   const title = content.split('\n')[0]?.replace(marker, '')?.trim()
+  const showTitle = await formatTaskTitle(title, format)
 
   let allDay = true
   // parse SCHEDULED
@@ -269,6 +271,7 @@ export const transformBlockToAgendaEntity = async (
     id: uuid,
     status,
     title,
+    showTitle,
     start,
     end,
     allDay,
@@ -454,8 +457,16 @@ function replacePageReference(text: string) {
  * replace block reference
  * ((some-id-id)) -> block reference
  */
-function replaceBlockReference(text: string) {
-  return text.replace(/\(\(([\w-]+)\)\)/g, 'block')
+async function replaceBlockReference(text: string): Promise<string> {
+  const blockIds = Array.from(text.matchAll(/\(\(([\w-]+)\)\)/g)).map((match) => match[1])
+  const blockContents = await Promise.all(blockIds.map((uuid) => logseq.Editor.getBlock(uuid)))
+  blockContents.forEach((content, index) => {
+    if (content) {
+      const firstLine = content.content.split('\n')[0]
+      text = text.replace(`((${blockIds[index]}))`, firstLine)
+    }
+  })
+  return text
 }
 
 /**
@@ -464,8 +475,8 @@ function replaceBlockReference(text: string) {
  * 2. page reference [[test]] -> test
  * 3. block reference ((sdfash-sdfa-ss)) -> test
  */
-export const formatTaskTitle = (task: AgendaEntity) => {
-  return replaceLinks(replacePageReference(replaceBlockReference(task.title)), task.rawBlock?.format)
+export const formatTaskTitle = async (title: string, format: BlockEntity['format']) => {
+  return replaceLinks(replacePageReference(await replaceBlockReference(title)), format)
 
   // return await fillBlockReference(task.title)
 }

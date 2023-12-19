@@ -11,6 +11,7 @@ import type { TimeLog } from './task'
 export type AgendaEntity = {
   id: string // uuid
   title: string
+  showTitle: string
   status: 'todo' | 'done'
   allDay: boolean
   start?: Dayjs // logseq scheduled

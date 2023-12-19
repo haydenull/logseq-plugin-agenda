@@ -4,7 +4,6 @@ import dayjs from 'dayjs'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 import { RiDeleteBin4Line, RiInboxUnarchiveLine } from 'react-icons/ri'
 
-import { formatTaskTitle } from '@/Agenda3/helpers/task'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import type { AgendaEntity } from '@/types/entity'
 import type { AgendaTaskWithStart } from '@/types/task'
@@ -29,7 +28,7 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
     })
   }
   const taskData = info.event.extendedProps
-  const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaEntity) : info.event.title
+  const showTitle = taskData?.id ? (taskData as AgendaEntity).showTitle : info.event.title
   const isShowTimeText = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 20
   const isSmallHeight = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 10
   const isDone = taskData?.status === 'done'
