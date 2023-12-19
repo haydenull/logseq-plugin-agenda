@@ -1,9 +1,12 @@
 import dayjs, { type Dayjs } from 'dayjs'
+import { useAtomValue } from 'jotai'
 import React from 'react'
 import { ReactSortable } from 'react-sortablejs'
 
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import { appAtom } from '@/Agenda3/models/app'
+import { settingsAtom } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
 import type { AgendaObjectiveWithTasks } from '@/types/objective'
@@ -26,6 +29,7 @@ const CycleColumn = ({
   objectives: AgendaObjectiveWithTasks[]
   allTasks: AgendaEntity[]
 }) => {
+  const settings = useAtomValue(settingsAtom)
   const today = dayjs()
   const dayMap = {
     today,
@@ -54,12 +58,11 @@ const CycleColumn = ({
         </div>
       </div>
 
-      {cycle === 'week' ? (
+      {settings.experimental?.objective && cycle === 'week' ? (
         <AddObjectiveCard period={{ type: 'week', year: today.year(), number: today.isoWeek() }} />
       ) : null}
-      {objectives.map((objective) => (
-        <ObjectiveCard key={objective.id} objective={objective} />
-      ))}
+      {settings.experimental?.objective &&
+        objectives.map((objective) => <ObjectiveCard key={objective.id} objective={objective} />)}
 
       {(cycle === 'week' && isTodayLastDayOfWeek) || (cycle === 'month' && isTodayLastDayOfMonth) ? (
         <div className="mt-1 text-center text-gray-500">

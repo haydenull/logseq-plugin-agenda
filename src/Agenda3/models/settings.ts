@@ -16,6 +16,9 @@ export type Settings = {
   }
   filters?: Filter[]
   selectedFilters?: string[]
+  experimental?: {
+    objective?: boolean
+  }
 }
 export const settingsAtom = atom<Settings>({ isInitialized: false, viewOptions: { showTimeLog: false } })
 
