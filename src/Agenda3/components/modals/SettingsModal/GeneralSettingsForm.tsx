@@ -1,13 +1,20 @@
 import { Checkbox, Select, Tooltip } from 'antd'
+import { useTranslation } from 'react-i18next'
 
 import useSettings from '@/Agenda3/hooks/useSettings'
-import type { Filter } from '@/Agenda3/models/settings'
+import type { Filter, Language } from '@/Agenda3/models/settings'
 
 const GeneralSettingsForm = () => {
+  const { t, i18n } = useTranslation()
   const { settings, setSettings } = useSettings()
 
   const onChange = (key: string, value: string | boolean | undefined | Filter[] | string[]) => {
     setSettings(key, value)
+  }
+  // 当切换语言时，更新 i18n 的语言
+  const onLanguageChange = (value: Language) => {
+    onChange('general.language', value)
+    i18n.changeLanguage(value)
   }
 
   return (
@@ -30,7 +37,7 @@ const GeneralSettingsForm = () => {
             placeholder="Select language"
             className="w-[300px]"
             value={settings.general?.language}
-            onChange={(value) => onChange('general.language', value)}
+            onChange={onLanguageChange}
             options={[
               { label: 'English', value: 'en' },
               { label: '简体中文', value: 'zh-CN' },

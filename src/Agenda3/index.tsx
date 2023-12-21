@@ -13,8 +13,11 @@ import { cn } from '@/util/util'
 import MultipleView from './components/MainArea'
 import Sidebar from './components/Sidebar'
 import useSettings from './hooks/useSettings'
+import { init as initI18n } from './locales/i18n'
 
 // import TimeBoxActual from './components/TimeBoxActual'
+
+initI18n()
 
 export type TimeBoxType = 'estimated' | 'actual'
 const Dashboard = () => {

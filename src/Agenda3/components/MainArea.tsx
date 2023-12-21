@@ -3,14 +3,15 @@ import { Button, Segmented } from 'antd'
 import dayjs from 'dayjs'
 import { useAtom, useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FiSettings, FiXCircle } from 'react-icons/fi'
 import { GoGoal } from 'react-icons/go'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
 
 import { track } from '@/Agenda3/helpers/umami'
+import i18n from '@/Agenda3/locales/i18n'
 import { type App, appAtom } from '@/Agenda3/models/app'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import i18n from '@/locales/i18n'
 import { cn } from '@/util/util'
 
 import Filter from './Filter'
@@ -40,6 +41,7 @@ const VIEWS = [
 ]
 
 const MultipleView = ({ className }: { className?: string }) => {
+  const { t } = useTranslation()
   const kanbanRef = useRef<KanBanHandle>(null)
   const calendarRef = useRef<CalendarHandle>(null)
   const [app, setApp] = useAtom(appAtom)
@@ -106,7 +108,7 @@ const MultipleView = ({ className }: { className?: string }) => {
             </div>
           ) : null}
           <Button className="!bg-transparent" shape="round" onClick={onClickToday}>
-            Today
+            {t('Today')}
           </Button>
           {app.view === 'calendar' ? (
             <h1 className="ml-3 flex items-center gap-1 text-xl font-medium">

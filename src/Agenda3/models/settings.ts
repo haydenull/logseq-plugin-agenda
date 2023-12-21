@@ -1,10 +1,11 @@
 import { atom } from 'jotai'
 
+export type Language = 'en' | 'zh-CN'
 export type Settings = {
   isInitialized: boolean
   general?: {
     useJournalDayAsSchedule?: boolean
-    language?: 'en' | 'zh-CN'
+    language?: Language
   }
   ics?: {
     repo?: string
