@@ -1,4 +1,4 @@
-import { Checkbox, Tooltip } from 'antd'
+import { Checkbox, Select, Tooltip } from 'antd'
 
 import useSettings from '@/Agenda3/hooks/useSettings'
 import type { Filter } from '@/Agenda3/models/settings'
@@ -12,8 +12,8 @@ const GeneralSettingsForm = () => {
 
   return (
     <>
-      <div className="h-14 pl-4 flex items-center font-semibold text-lg border-b">General Settings</div>
-      <div className="px-4 mt-4 pb-8">
+      <div className="flex h-14 items-center border-b pl-4 text-lg font-semibold">General Settings</div>
+      <div className="mt-4 px-4 pb-8">
         <div className="mt-4 flex flex-col gap-1">
           <Checkbox
             checked={settings.general?.useJournalDayAsSchedule}
@@ -23,6 +23,19 @@ const GeneralSettingsForm = () => {
               Use Journal Day As Schedule
             </Tooltip>
           </Checkbox>
+        </div>
+        <div className="mt-4">
+          <div className="text-gray-500">Language</div>
+          <Select
+            placeholder="Select language"
+            className="w-[300px]"
+            value={settings.general?.language}
+            onChange={(value) => onChange('general.language', value)}
+            options={[
+              { label: 'English', value: 'en' },
+              { label: '简体中文', value: 'zh-CN' },
+            ]}
+          />
         </div>
       </div>
     </>

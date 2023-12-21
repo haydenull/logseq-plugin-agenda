@@ -4,6 +4,7 @@ export type Settings = {
   isInitialized: boolean
   general?: {
     useJournalDayAsSchedule?: boolean
+    language?: 'en' | 'zh-CN'
   }
   ics?: {
     repo?: string

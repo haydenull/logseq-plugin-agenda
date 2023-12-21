@@ -72,7 +72,7 @@ if (import.meta.env.VITE_MODE === 'web') {
     logseq.App.getUserConfigs().then((configs) => {
       window.logseqAppUserConfigs = configs
       console.log('[faiz:] === configs', configs)
-      i18n.changeLanguage(configs.preferredLanguage || 'en')
+      // i18n.changeLanguage(configs.preferredLanguage || 'en')
     })
     // fix: https://github.com/haydenull/logseq-plugin-agenda/issues/87
     logseq.setMainUIInlineStyle({ zIndex: 1000 })
