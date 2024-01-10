@@ -1,5 +1,26 @@
 {
   "Today": "今天",
   "Calendar": "日历",
-  "Tasks": "任务"
+  "Tasks": "任务",
+  "Complete": "完成",
+  "Incomplete": "未完成",
+  "Delete": "删除",
+  "Cancel": "取消",
+  "Save": "保存",
+  "Add Task": "添加任务",
+  "New Page": "创建新页面",
+  "Date Range": "起止日期",
+  "Start Date": "开始日期",
+  "Select start Date": "选择开始日期",
+  "Estimated Time": "预计时长",
+  "Duration": "时长",
+  "Actual Time": "实际时长",
+  "Add a log": "添加日志",
+  "Page": "页面",
+  "Plan": "计划",
+  "Add a task": "添加任务",
+  "Hide Completed Tasks": "隐藏已完成任务",
+  "Month": "月视图",
+  "Week": "周视图",
+  "app settings": "应用设置"
 }

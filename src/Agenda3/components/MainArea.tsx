@@ -5,11 +5,9 @@ import { useAtom, useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FiSettings, FiXCircle } from 'react-icons/fi'
-import { GoGoal } from 'react-icons/go'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
 
 import { track } from '@/Agenda3/helpers/umami'
-import i18n from '@/Agenda3/locales/i18n'
 import { type App, appAtom } from '@/Agenda3/models/app'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { cn } from '@/util/util'
@@ -21,25 +19,6 @@ import CalendarOperation, { type CalendarView } from './calendar/CalendarAdvance
 import KanBan, { type KanBanHandle } from './kanban/KanBan'
 import SettingsModal from './modals/SettingsModal'
 
-const VIEWS = [
-  {
-    value: 'calendar',
-    label: (
-      <div className="flex items-center gap-1">
-        <LuCalendarDays className="text-base" /> {i18n.t('Calendar')}
-      </div>
-    ),
-  },
-  {
-    value: 'tasks',
-    label: (
-      <div className="flex items-center gap-1">
-        <LuKanbanSquare className="text-base" /> {i18n.t('Tasks')}
-      </div>
-    ),
-  },
-]
-
 const MultipleView = ({ className }: { className?: string }) => {
   const { t } = useTranslation()
   const kanbanRef = useRef<KanBanHandle>(null)
@@ -48,6 +27,25 @@ const MultipleView = ({ className }: { className?: string }) => {
   const settings = useAtomValue(settingsAtom)
 
   const [calendarTitle, setCalendarTitle] = useState('')
+
+  const VIEWS = [
+    {
+      value: 'calendar',
+      label: (
+        <div className="flex items-center gap-1">
+          <LuCalendarDays className="text-base" /> {t('Calendar')}
+        </div>
+      ),
+    },
+    {
+      value: 'tasks',
+      label: (
+        <div className="flex items-center gap-1">
+          <LuKanbanSquare className="text-base" /> {t('Tasks')}
+        </div>
+      ),
+    },
+  ]
 
   const onClickToday = () => {
     if (app.view === 'calendar') {

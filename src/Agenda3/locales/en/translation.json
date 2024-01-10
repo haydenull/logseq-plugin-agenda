@@ -1,5 +1,26 @@
 {
   "Today": "Today",
   "Calendar": "Calendar",
-  "Tasks": "Tasks"
+  "Tasks": "Tasks",
+  "Complete": "Complete",
+  "Incomplete": "Incomplete",
+  "Delete": "Delete",
+  "Cancel": "Cancel",
+  "Save": "Save",
+  "Add Task": "Add Task",
+  "New Page": "New Page",
+  "Date Range": "Date Range",
+  "Start Date": "Start Date",
+  "Select start Date": "Select start Date",
+  "Estimated Time": "Estimated Time",
+  "Duration": "Duration",
+  "Actual Time": "Actual Time",
+  "Add a log": "Add a log",
+  "Page": "Page",
+  "Plan": "Plan",
+  "Add a task": "Add a task",
+  "Hide Completed Tasks": "Hide Completed Tasks",
+  "Month": "Month",
+  "Week": "Week",
+  "app settings": "app settings"
 }

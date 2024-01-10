@@ -7,6 +7,7 @@ import { Button } from 'antd'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MdSchedule } from 'react-icons/md'
 
 import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
@@ -42,6 +43,7 @@ const FULL_CALENDAR_24HOUR_FORMAT = {
   hour12: false,
 } as const
 const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
+  const { t } = useTranslation()
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)
@@ -147,7 +149,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
         <div className="mr-4 flex opacity-0 transition-opacity group-hover/root:opacity-100">
           <Button size="small" type="text" icon={<LeftOutlined />} onClick={() => onClickNav('prev')} />
           <Button size="small" type="text" onClick={() => onClickNav('today')}>
-            Today
+            {t('Today')}
           </Button>
           <Button size="small" type="text" icon={<RightOutlined />} onClick={() => onClickNav('next')} />
         </div>

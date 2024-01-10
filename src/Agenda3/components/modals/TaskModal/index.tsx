@@ -3,6 +3,7 @@ import type { MentionsRef } from 'antd/es/mentions'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { BsCalendar4Event, BsCalendar4Range, BsClock, BsClockHistory } from 'react-icons/bs'
 import { GoGoal } from 'react-icons/go'
 import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
@@ -54,6 +55,7 @@ const TaskModal = ({
         initialTaskData: AgendaTaskWithStart
       }
 }) => {
+  const { t } = useTranslation()
   const [internalOpen, setInternalOpen] = useState(false)
   const _open = children ? internalOpen : open
   const [mode, setMode] = useState<'Normal' | 'Advanced'>('Normal')
@@ -180,7 +182,7 @@ const TaskModal = ({
                   disabled={editDisabled}
                   onClick={() => onSwitchTaskStatus('done')}
                 >
-                  Complete
+                  {t('Complete')}
                 </Button>
               ) : null}
               {info.type === 'edit' && info.initialTaskData.status === 'done' ? (
@@ -190,7 +192,7 @@ const TaskModal = ({
                   icon={<RiCheckboxBlankCircleLine />}
                   onClick={() => onSwitchTaskStatus('todo')}
                 >
-                  Incomplete
+                  {t('Incomplete')}
                 </Button>
               ) : null}
               {info.type === 'edit' ? (
@@ -204,7 +206,7 @@ const TaskModal = ({
                     className="inline-flex items-center px-2 hover:!border-red-500 hover:!text-red-500"
                     icon={<RiDeleteBin4Line />}
                   >
-                    Delete
+                    {t('Delete')}
                   </Button>
                 </Popconfirm>
               ) : null}
@@ -223,10 +225,10 @@ const TaskModal = ({
             </div>
             <div>
               <Button key="cancel" onClick={handleCancel}>
-                Cancel
+                {t('Cancel')}
               </Button>
               <Button key="ok" type="primary" onClick={handleOk} disabled={editDisabled}>
-                {info.type === 'create' ? 'Add Task' : 'Save'}
+                {info.type === 'create' ? t('Add Task') : t('Save')}
               </Button>
             </div>
           </div>
@@ -243,7 +245,7 @@ const TaskModal = ({
           onChange={(val) => updateFormData({ title: val.replace(/\n/, '') })}
           notFoundContent={
             <Button type="link" size="small" onClick={createPage}>
-              New Page: {titleTagSearchText}
+              {t('New Page')}: {titleTagSearchText}
             </Button>
           }
           onSearch={(text) => setTitleTagSearchText(text)}
@@ -252,7 +254,7 @@ const TaskModal = ({
         {formData.endDateVal ? (
           <div className="my-2 flex">
             <div className="flex w-[160px] items-center gap-1 text-gray-400">
-              <BsCalendar4Range /> Date Range
+              <BsCalendar4Range /> {t('Date Range')}
             </div>
             <div className="group flex items-center gap-1">
               <DatePicker.RangePicker
@@ -272,7 +274,7 @@ const TaskModal = ({
         ) : (
           <div className="my-2 flex">
             <div className="flex w-[160px] items-center gap-1 text-gray-400">
-              <BsCalendar4Event /> Start Date
+              <BsCalendar4Event /> {t('Start Date')}
             </div>
             <div className="group flex items-center gap-1">
               <Popover
@@ -299,7 +301,7 @@ const TaskModal = ({
                   {formData.startDateVal && start ? (
                     start.format(showStartTimeFormatter)
                   ) : (
-                    <span className="text-gray-400">Select start Date</span>
+                    <span className="text-gray-400">{t('Select start Date')}</span>
                   )}
                 </div>
               </Popover>
@@ -315,7 +317,7 @@ const TaskModal = ({
         {/* ========= Estimated Time Start ========= */}
         <div className="my-2 flex">
           <div className="flex w-[160px] items-center gap-1 text-gray-400">
-            <BsClock /> Estimated Time
+            <BsClock /> {t('Estimated Time')}
           </div>
           <DurationSelect
             bordered={false}
@@ -330,13 +332,13 @@ const TaskModal = ({
         {info.type === 'edit' ? (
           <div className="flex items-start">
             <div className="flex h-[32px] w-[160px] items-center gap-1 text-gray-400">
-              <BsClockHistory /> Actual Time
+              <BsClockHistory /> {t('Actual Time')}
             </div>
             <div>
               <div className="flex h-[32px] cursor-pointer items-center gap-2 px-3 py-1">
                 {formData.actualTime}
                 <div className="text-xs text-gray-400 hover:text-gray-800" onClick={addDefaultTimeLog}>
-                  (Add a log)
+                  ({t('Add a log')})
                 </div>
               </div>
               {editHookResult.formData.timeLogs?.map((timeLog, index) => (
@@ -357,7 +359,7 @@ const TaskModal = ({
         {/* ========= Actual Time End ========= */}
 
         {/* ========= Objective Start ========= */}
-        <div className="my-2 flex">
+        {/* <div className="my-2 flex">
           <div className="flex w-[160px] items-center gap-1 text-gray-400">
             <GoGoal /> Objective
           </div>
@@ -366,14 +368,13 @@ const TaskModal = ({
             value={formData.bindObjectiveId}
             onChange={(val) => updateFormData({ bindObjectiveId: val })}
           />
-        </div>
+        </div> */}
         {/* ========= Objective End ========= */}
 
         {/* ========= Page Start ========= */}
         <div className="my-2 flex">
           <div className="flex w-[160px] items-center gap-1 text-gray-400">
-            {/* <BsClipboard /> Page */}
-            <PageIcon /> Page
+            <PageIcon /> {t('Page')}
           </div>
           <PageSelect
             showPageColor={groupType === 'page'}

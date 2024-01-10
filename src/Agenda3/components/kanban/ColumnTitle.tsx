@@ -1,9 +1,11 @@
 // import { message } from 'antd'
 import dayjs, { type Dayjs } from 'dayjs'
+import { useTranslation } from 'react-i18next'
 
 import PlannerModal from '../modals/PlannerModal/PlannerModal'
 
 const ColumnTitle = ({ day }: { day: Dayjs }) => {
+  const { t } = useTranslation()
   const today = dayjs()
   const isToday = day.isSame(today, 'day')
   const isTomorrow = day.isSame(today.add(1, 'day'), 'day')
@@ -18,12 +20,12 @@ const ColumnTitle = ({ day }: { day: Dayjs }) => {
       <div className="flex items-center gap-2">
         {isToday ? (
           <PlannerModal type="today" triggerClassName="text-[10px] text-gray-400 hover:text-gray-700 cursor-pointer">
-            Plan
+            {t('Plan')}
           </PlannerModal>
         ) : null}
         {isTomorrow ? (
           <PlannerModal type="tomorrow" triggerClassName="text-[10px] text-gray-400 hover:text-gray-700 cursor-pointer">
-            Plan
+            {t('Plan')}
           </PlannerModal>
         ) : null}
         {/* {isFuture ? null : (

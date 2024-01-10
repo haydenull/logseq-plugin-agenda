@@ -1,4 +1,5 @@
 import dayjs, { type Dayjs } from 'dayjs'
+import { useTranslation } from 'react-i18next'
 import { IoAddCircleOutline } from 'react-icons/io5'
 
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
@@ -18,6 +19,7 @@ const AddTaskCard = ({
   actualTime?: number
   estimatedTime: number
 }) => {
+  const { t } = useTranslation()
   const isToday = day.isSame(dayjs(), 'day')
 
   return (
@@ -34,7 +36,7 @@ const AddTaskCard = ({
         <div className="flex items-center gap-1">
           <IoAddCircleOutline />
           <span className={cn('transition-opacity group-hover:opacity-100', { 'opacity-0': !isToday })}>
-            Add a task
+            {t('Add a task')}
           </span>
         </div>
         {actualTime ? (
