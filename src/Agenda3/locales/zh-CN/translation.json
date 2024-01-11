@@ -39,5 +39,11 @@
   "About": "关于",
   "version": "版本",
   "User Manual": "说明文档",
-  "Please note that the beta version is still under development and may contain bugs. We encourage you to test it out and provide feedback on any issues or suggestions on our GitHub page. Your input is valuable in ensuring a stable and polished final release.": "请注意，目前 Agenda 3 仍在开发阶段，可能出现错误。欢迎在 Github 上反馈问题或建议。"
+  "Please note that the beta version is still under development and may contain bugs. We encourage you to test it out and provide feedback on any issues or suggestions on our GitHub page. Your input is valuable in ensuring a stable and polished final release.": "请注意，目前 Agenda 3 仍在开发阶段，可能出现错误。欢迎在 Github 上反馈问题或建议。",
+  "Overdue": "已过期",
+  "today": "今天",
+  "tomorrow": "明天",
+  "week": "本周",
+  "month": "本月",
+  "Exit": "退出"
 }

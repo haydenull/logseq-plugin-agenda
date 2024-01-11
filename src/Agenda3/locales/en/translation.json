@@ -39,5 +39,11 @@
   "About": "About",
   "version": "version",
   "User Manual": "User Manual",
-  "Please note that the beta version is still under development and may contain bugs. We encourage you to test it out and provide feedback on any issues or suggestions on our GitHub page. Your input is valuable in ensuring a stable and polished final release.": "Please note that the beta version is still under development and may contain bugs. We encourage you to test it out and provide feedback on any issues or suggestions on our GitHub page. Your input is valuable in ensuring a stable and polished final release."
+  "Please note that the beta version is still under development and may contain bugs. We encourage you to test it out and provide feedback on any issues or suggestions on our GitHub page. Your input is valuable in ensuring a stable and polished final release.": "Please note that the beta version is still under development and may contain bugs. We encourage you to test it out and provide feedback on any issues or suggestions on our GitHub page. Your input is valuable in ensuring a stable and polished final release.",
+  "Overdue": "Overdue",
+  "today": "today",
+  "tomorrow": "tomorrow",
+  "week": "week",
+  "month": "month",
+  "Exit": "Exit"
 }

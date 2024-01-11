@@ -1,6 +1,7 @@
 import dayjs, { type Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { ReactSortable } from 'react-sortablejs'
 
 import { track } from '@/Agenda3/helpers/umami'
@@ -29,6 +30,7 @@ const CycleColumn = ({
   objectives: AgendaObjectiveWithTasks[]
   allTasks: AgendaEntity[]
 }) => {
+  const { t } = useTranslation()
   const settings = useAtomValue(settingsAtom)
   const today = dayjs()
   const dayMap = {
@@ -51,7 +53,7 @@ const CycleColumn = ({
     <div className="mt-2 flex w-[281px] shrink-0 flex-col rounded-md bg-gray-300 px-2 py-2">
       <div className="flex justify-center">
         <div className="relative text-2xl">
-          <span className="uppercase">{cycle}</span>
+          <span className="uppercase">{t(cycle)}</span>
           <span className="absolute -right-[104px] top-1 w-[100px] text-[10px] text-gray-500">
             {getCycleText(day, cycle)}
           </span>
