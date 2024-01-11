@@ -19,7 +19,7 @@ const GeneralSettingsForm = () => {
 
   return (
     <>
-      <div className="flex h-14 items-center border-b pl-4 text-lg font-semibold">General Settings</div>
+      <div className="flex h-14 items-center border-b pl-4 text-lg font-semibold">{t('General Settings')}</div>
       <div className="mt-4 px-4 pb-8">
         <div className="mt-4 flex flex-col gap-1">
           <Checkbox
@@ -27,7 +27,7 @@ const GeneralSettingsForm = () => {
             onChange={(e) => onChange('general.useJournalDayAsSchedule', e.target.checked)}
           >
             <Tooltip title="When the task in the journal is not scheduled, use the date of the journal as the task date.">
-              Use Journal Day As Schedule
+              {t('Use Journal Day As Schedule')}
             </Tooltip>
           </Checkbox>
         </div>

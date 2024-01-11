@@ -1,5 +1,6 @@
-import { Button, ColorPicker, Form, Input, Modal } from 'antd'
+import { Form, Input, Modal } from 'antd'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import type { Filter } from '@/Agenda3/models/settings'
 import { BACKGROUND_COLOR, DEFAULT_BG_COLOR_NAME } from '@/constants/agenda'
@@ -18,6 +19,7 @@ const EditFilterModal = ({
   onOk: (param: Filter) => void
   initialValues?: Filter
 }) => {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [formRef] = Form.useForm<Filter>()
   const handleClickOk = async () => {
@@ -34,7 +36,7 @@ const EditFilterModal = ({
       <Modal
         destroyOnClose
         open={open}
-        title={type === 'create' ? 'Create Filter' : 'Edit Filter'}
+        title={type === 'create' ? t('Create Filter') : t('Edit Filter')}
         onCancel={() => setOpen(false)}
         onOk={handleClickOk}
       >
@@ -45,10 +47,10 @@ const EditFilterModal = ({
           preserve={false}
           className="mt-8"
         >
-          <Form.Item label="Filter Color" name="color" rules={[{ required: true }]}>
+          <Form.Item label={t('Filter Color')} name="color" rules={[{ required: true }]}>
             <ColorPickerCom />
           </Form.Item>
-          <Form.Item label="Filter Name" name="name" rules={[{ required: true }]}>
+          <Form.Item label={t('Filter Name')} name="name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
           <Form.Item label="Query" name="query" rules={[{ required: true }]}>

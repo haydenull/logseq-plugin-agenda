@@ -22,5 +22,22 @@
   "Hide Completed Tasks": "Hide Completed Tasks",
   "Month": "Month",
   "Week": "Week",
-  "app settings": "app settings"
+  "app settings": "app settings",
+  "General Settings": "General Settings",
+  "Use Journal Day As Schedule": "Use Journal Day As Schedule",
+  "View Options": "View Options",
+  "Only Show First Event In Cycle": "Only Show First Event In Cycle",
+  "Show Time Log": "Show Time Log",
+  "Filters": "Filters",
+  "Create Filter": "Create Filter",
+  "Edit Filter": "Edit Filter",
+  "Filter Color": "Filter Color",
+  "Filter Name": "Filter Name",
+  "Share Agenda": "Share Agenda",
+  "ICS File Setting": "ICS File Setting",
+  "Github Repo": "Github Repo",
+  "About": "About",
+  "version": "version",
+  "User Manual": "User Manual",
+  "Please note that the beta version is still under development and may contain bugs. We encourage you to test it out and provide feedback on any issues or suggestions on our GitHub page. Your input is valuable in ensuring a stable and polished final release.": "Please note that the beta version is still under development and may contain bugs. We encourage you to test it out and provide feedback on any issues or suggestions on our GitHub page. Your input is valuable in ensuring a stable and polished final release."
 }

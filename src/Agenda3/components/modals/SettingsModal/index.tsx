@@ -42,6 +42,11 @@ const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; i
   const [activeTab, setActiveTab] = useState<Tab>()
   const finalActiveTab = activeTab ? activeTab : initialTab ?? defaultTab
 
+  const translatedTabs = tabs.map((tab) => ({
+    ...tab,
+    label: t(tab.label),
+  }))
+
   const renderForm = () => {
     switch (finalActiveTab) {
       case 'shareAgenda':
@@ -65,7 +70,7 @@ const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; i
           {/* sidebar */}
           <div className="w-[300px] bg-gray-100 px-4 py-4">
             <div className="font-semibold uppercase">{t('app settings')}</div>
-            {tabs.map((tab) => (
+            {translatedTabs.map((tab) => (
               <div
                 key={tab.key}
                 className={cn('mt-1 cursor-pointer rounded p-2 hover:bg-gray-200', {

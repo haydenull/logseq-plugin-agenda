@@ -1,11 +1,13 @@
 import { CopyOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { Input, Tooltip, message } from 'antd'
 import copy from 'copy-to-clipboard'
+import { useTranslation } from 'react-i18next'
 
 import useSettings from '@/Agenda3/hooks/useSettings'
 import type { Filter } from '@/Agenda3/models/settings'
 
 const ShareAgendaForm = () => {
+  const { t } = useTranslation()
   const { settings, setSettings } = useSettings()
   const icsUrl = `https://agenda-ics.haydenhayden.com?repo=${settings.ics?.repo}&token=${settings.ics?.token}`
 
@@ -19,10 +21,10 @@ const ShareAgendaForm = () => {
 
   return (
     <>
-      <div className="h-14 pl-4 flex items-center font-semibold text-lg border-b">ICS File Setting</div>
-      <div className="px-4 mt-4 pb-8">
+      <div className="flex h-14 items-center border-b pl-4 text-lg font-semibold">{t('ICS File Setting')}</div>
+      <div className="mt-4 px-4 pb-8">
         <div className="mt-4">
-          <div className="text-gray-500">Github Repo</div>
+          <div className="text-gray-500">{t('Github Repo')}</div>
           <Input
             className="w-[300px]"
             placeholder="username/repo"

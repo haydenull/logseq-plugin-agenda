@@ -1,4 +1,5 @@
 import { Button } from 'antd'
+import { useTranslation } from 'react-i18next'
 import { RiDeleteBin4Line, RiEdit2Line } from 'react-icons/ri'
 import { ReactSortable } from 'react-sortablejs'
 
@@ -8,6 +9,7 @@ import type { Filter } from '@/Agenda3/models/settings'
 import EditFilterModal from '../EditFilterModal'
 
 const FiltersForm = () => {
+  const { t } = useTranslation()
   const { settings, setSettings } = useSettings()
   const oldFilters = settings.filters ?? []
   const oldSelectedFilters = settings.selectedFilters ?? []
@@ -18,11 +20,11 @@ const FiltersForm = () => {
 
   return (
     <>
-      <div className="h-14 pl-4 flex items-center font-semibold text-lg border-b">Filters</div>
-      <div className="px-4 mt-4 pb-8">
+      <div className="flex h-14 items-center border-b pl-4 text-lg font-semibold">{t('Filters')}</div>
+      <div className="mt-4 px-4 pb-8">
         <div className="mt-4 flex flex-col gap-1">
           <EditFilterModal type="create" onOk={(filter) => onChange('filters', oldFilters.concat(filter))}>
-            <Button>Create Filter</Button>
+            <Button>{t('Create Filter')}</Button>
           </EditFilterModal>
           {settings.filters?.length ? (
             <ReactSortable
@@ -34,7 +36,7 @@ const FiltersForm = () => {
               {settings.filters?.map((filter) => (
                 <div
                   key={filter.id}
-                  className="flex items-center justify-between mb-2 w-[300px] border rounded px-4 py-1.5 text-white"
+                  className="mb-2 flex w-[300px] items-center justify-between rounded border px-4 py-1.5 text-white"
                   style={{ backgroundColor: filter.color }}
                 >
                   <span>{filter.name}</span>
