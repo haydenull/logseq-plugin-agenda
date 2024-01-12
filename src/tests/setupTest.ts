@@ -3,12 +3,12 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
-import { rest } from 'msw'
+import { http } from 'msw'
 import { setupServer } from 'msw/node'
 import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest'
 
 // export const restHandler = [
-// rest.post('/api', async (req, res, ctx) => {
+// http.post('/api', async (req, res, ctx) => {
 //   const { method, args } = await req.json()
 //   let data
 //   switch (method) {

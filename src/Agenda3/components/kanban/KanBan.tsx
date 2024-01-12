@@ -3,8 +3,8 @@ import { useAtomValue } from 'jotai'
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 
 import { DATE_FORMATTER_FOR_KEY, separateTasksInDay, transformTasksToKanbanTasks } from '@/Agenda3/helpers/task'
+import { recentTasksAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import { recentTasksAtom } from '@/Agenda3/models/tasks'
 import { getRecentDaysRange } from '@/constants/agenda'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { genDays } from '@/util/util'
@@ -47,7 +47,7 @@ const KanBan = (props, ref) => {
   }))
 
   return (
-    <div className="flex gap-8 overflow-auto flex-1 h-full" ref={kanBanContainerRef}>
+    <div className="flex h-full flex-1 gap-8 overflow-auto" ref={kanBanContainerRef}>
       {/* ========= Single Day List ========= */}
       {days.map((day) => {
         const dateStr = day.format('MM-DD ddd')

@@ -4,33 +4,31 @@ import dayjs from 'dayjs'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 import { RiDeleteBin4Line, RiInboxUnarchiveLine } from 'react-icons/ri'
 
-import { deleteTaskBlock, updateBlockDateInfo } from '@/Agenda3/helpers/block'
-import { formatTaskTitle } from '@/Agenda3/helpers/task'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
-import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import type { AgendaEntity } from '@/types/entity'
+import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
 import TaskModal from '../modals/TaskModal'
 
 const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
-  const { updateTaskData, deleteTask } = useAgendaTasks()
+  const { updateEntity, deleteEntity } = useAgendaEntities()
   const onDeleteTask = async (taskId: string) => {
-    deleteTask(taskId)
-    deleteTaskBlock(taskId)
+    deleteEntity(taskId)
   }
   const onRemoveTime = async (info: EventContentArg) => {
-    updateTaskData(info.event.id, {
-      allDay: true,
-    })
-    updateBlockDateInfo({
-      uuid: info.event.id,
-      allDay: true,
-      start: info.event.extendedProps.start,
-      estimatedTime: info.event.extendedProps.estimatedTime,
+    updateEntity({
+      type: 'task-date',
+      id: info.event.id,
+      data: {
+        allDay: true,
+        start: info.event.extendedProps.start,
+        estimatedTime: info.event.extendedProps.estimatedTime,
+      },
     })
   }
   const taskData = info.event.extendedProps
-  const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaTask) : info.event.title
+  const showTitle = taskData?.id ? (taskData as AgendaEntity).showTitle : info.event.title
   const isShowTimeText = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 20
   const isSmallHeight = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 10
   const isDone = taskData?.status === 'done'
@@ -39,12 +37,6 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
       info={{
         type: 'edit',
         initialTaskData: taskData as AgendaTaskWithStart,
-      }}
-      onOk={(taskInfo) => {
-        updateTaskData(taskData.id, taskInfo)
-      }}
-      onDelete={(taskId) => {
-        deleteTask(taskId)
       }}
     >
       <Dropdown
@@ -71,7 +63,7 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
       >
         <div className={cn('h-full', { 'opacity-60': isDone })}>
           <div
-            className={cn('truncate flex items-center relative', {
+            className={cn('relative flex items-center truncate', {
               'line-through': isDone,
               'font-semibold': !isDone,
               'text-[10px]': isSmallHeight,
@@ -79,7 +71,7 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
             title={showTitle}
           >
             {showTitle}
-            {isDone ? <IoIosCheckmarkCircle className="text-white absolute right-0" /> : null}
+            {isDone ? <IoIosCheckmarkCircle className="absolute right-0 text-white" /> : null}
           </div>
           {isShowTimeText ? <div className="text-xs text-gray-100">{info.timeText}</div> : null}
         </div>

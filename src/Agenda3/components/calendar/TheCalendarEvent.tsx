@@ -2,13 +2,11 @@ import type { EventContentArg } from '@fullcalendar/core'
 import dayjs from 'dayjs'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 
-import { formatTaskTitle } from '@/Agenda3/helpers/task'
-import type { AgendaTask } from '@/types/task'
 import { cn } from '@/util/util'
 
 const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
   const taskData = info.event.extendedProps
-  const showTitle = taskData?.id ? formatTaskTitle(taskData as AgendaTask) : info.event.title
+  const showTitle = taskData?.id ? taskData.showTitle : info.event.title
   const isShowTimeText = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') > 50
   const isSmallHeight = info.event.allDay === false && dayjs(info.event.end).diff(info.event.start, 'minute') <= 20
   const isDone = taskData?.status === 'done'
@@ -18,16 +16,16 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
     case 'dayGridWeek':
       element = (
         <div
-          className={cn('flex items-center gap-1 w-full px-0.5 relative cursor-pointer', {
-            'opacity-60 line-through': isDone,
+          className={cn('relative flex w-full cursor-pointer items-center gap-1 px-0.5', {
+            'line-through opacity-60': isDone,
             'font-semibold': !isDone,
           })}
           title={showTitle}
         >
           {info.event.allDay ? null : (
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: info.event.backgroundColor }} />
+            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: info.event.backgroundColor }} />
           )}
-          <span className="truncate flex-1">{showTitle}</span>
+          <span className="flex-1 truncate">{showTitle}</span>
           {isDone ? (
             <IoIosCheckmarkCircle
               className={cn('absolute right-0', info.event.allDay ? 'text-white' : 'text-green-500')}
@@ -38,7 +36,7 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
       break
     case 'timeGridWeek':
       element = (
-        <div className={cn('h-full relative cursor-pointer', { 'opacity-70': isDone })}>
+        <div className={cn('relative h-full cursor-pointer', { 'opacity-70': isDone })}>
           <div
             className={cn('truncate', {
               'line-through': isDone,

@@ -40,7 +40,9 @@ export const BACKGROUND_COLOR = {
 }
 export const DEFAULT_BG_COLOR_NAME = 'blue'
 
+export const RECENT_DAYS_RANGE = [14, 14] as const
 export const getRecentDaysRange = () => {
+  const [start, end] = RECENT_DAYS_RANGE
   const today = dayjs()
-  return [today.subtract(14, 'day'), today.add(14, 'day')] as const
+  return [today.subtract(start, 'day'), today.add(end, 'day')] as const
 }

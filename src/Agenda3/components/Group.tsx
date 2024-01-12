@@ -1,15 +1,15 @@
-import { type AgendaTask } from '@/types/task'
+import { type AgendaEntity } from '@/types/entity'
 
-const Group = ({ task, type }: { task: AgendaTask; type: 'page' | 'filter' }) => {
+const Group = ({ task, type }: { task: AgendaEntity; type: 'page' | 'filter' }) => {
   return type === 'page' ? <RenderPage task={task} /> : <RenderFilter task={task} />
 }
 
-function RenderPage({ task }: { task: AgendaTask }) {
+function RenderPage({ task }: { task: AgendaEntity }) {
   return (
     <>
       {task.project.isJournal ? null : (
-        <div className="text-gray-400 text-xs flex gap-1 items-center">
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: task.project.bgColor }} />
+        <div className="flex items-center gap-1 text-xs text-gray-400">
+          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: task.project.bgColor }} />
           <span>{task.project?.originalName}</span>
         </div>
       )}
@@ -17,12 +17,12 @@ function RenderPage({ task }: { task: AgendaTask }) {
   )
 }
 
-function RenderFilter({ task }: { task: AgendaTask }) {
+function RenderFilter({ task }: { task: AgendaEntity }) {
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       {task.filters?.map((filter) => (
-        <div key={filter.id} className="text-gray-400 text-xs flex gap-1 items-center border px-1 rounded-full">
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: filter.color }} />
+        <div key={filter.id} className="flex items-center gap-1 rounded-full border px-1 text-xs text-gray-400">
+          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: filter.color }} />
           <span>{filter.name}</span>
         </div>
       ))}

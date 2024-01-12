@@ -1,5 +1,6 @@
 import { Button, Dropdown, Switch } from 'antd'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { IoMdCheckmark } from 'react-icons/io'
 
 import useSettings from '@/Agenda3/hooks/useSettings'
@@ -10,13 +11,16 @@ const CALENDAR_VIEWS = {
   timeGridWeek: 'timeGridWeek',
 } as const
 export type CalendarView = keyof typeof CALENDAR_VIEWS
-const CALENDAR_OPTIONS = [
-  { value: CALENDAR_VIEWS.dayGridMonth, label: 'Month' },
-  // { value: 'dayGridWeek', label: '2 Weeks' },
-  { value: CALENDAR_VIEWS.timeGridWeek, label: 'Week' },
-]
 
 const CalendarOperation = ({ value, onChange }: { value: CalendarView; onChange: (view: CalendarView) => void }) => {
+  const { t } = useTranslation()
+
+  const CALENDAR_OPTIONS = [
+    { value: CALENDAR_VIEWS.dayGridMonth, label: t('Month') },
+    // { value: 'dayGridWeek', label: '2 Weeks' },
+    { value: CALENDAR_VIEWS.timeGridWeek, label: t('Week') },
+  ]
+
   const { settings, setSettings } = useSettings()
   const [open, setOpen] = useState(false)
 
@@ -33,15 +37,15 @@ const CalendarOperation = ({ value, onChange }: { value: CalendarView; onChange:
       onOpenChange={setOpen}
       dropdownRender={() => {
         return (
-          <div className="bg-white rounded-md shadow-lg">
-            <div className="border-b py-2 px-2 flex flex-col gap-1">
+          <div className="rounded-md bg-white shadow-lg">
+            <div className="flex flex-col gap-1 border-b py-2 px-2">
               {CALENDAR_OPTIONS.map((view) => {
                 const isSelected = value === view.value
                 return (
                   <div
                     key={view.value}
                     className={cn(
-                      'flex items-center justify-between gap-2 cursor-pointer px-2 py-1 rounded hover:bg-gray-300 min-w-[120px]',
+                      'flex min-w-[120px] cursor-pointer items-center justify-between gap-2 rounded px-2 py-1 hover:bg-gray-300',
                       {
                         'bg-gray-200': isSelected,
                       },
@@ -55,7 +59,7 @@ const CalendarOperation = ({ value, onChange }: { value: CalendarView; onChange:
               })}
             </div>
             <div className="px-4 py-2">
-              <span>Hide Completed Tasks</span>
+              <span>{t('Hide Completed Tasks')}</span>
               <Switch
                 size="small"
                 className="ml-3"

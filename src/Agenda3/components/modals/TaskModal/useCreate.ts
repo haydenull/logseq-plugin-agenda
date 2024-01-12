@@ -1,7 +1,8 @@
 import dayjs, { type Dayjs } from 'dayjs'
 import { useState } from 'react'
 
-import { createTaskBlock, parseDurationString } from '@/Agenda3/helpers/block'
+import { parseDurationString } from '@/Agenda3/helpers/block'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { replaceTimeInfo } from '@/util/util'
 
 export type CreateTaskForm = {
@@ -12,8 +13,10 @@ export type CreateTaskForm = {
   estimatedTime?: string
   actualTime?: string
   projectId?: string
+  bindObjectiveId?: string
 }
 const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
+  const { addNewEntity } = useAgendaEntities()
   const _initialData = initialData
     ? {
         title: initialData.title ?? '',
@@ -35,19 +38,18 @@ const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
     }))
   }
   const create = async () => {
-    const block = await createTaskBlock({
-      allDay,
-      start,
-      end: formData.endDateVal,
-      title: formData.title,
-      estimatedTime: formData.estimatedTime ? parseDurationString(formData.estimatedTime) : undefined,
-      projectId: formData.projectId,
+    return addNewEntity({
+      type: 'task',
+      data: {
+        allDay,
+        start,
+        end: formData.endDateVal,
+        title: formData.title,
+        estimatedTime: formData.estimatedTime ? parseDurationString(formData.estimatedTime) : undefined,
+        projectId: formData.projectId,
+        bindObjectiveId: formData.bindObjectiveId,
+      },
     })
-    if (!block) {
-      logseq.UI.showMsg('Failed to create task block')
-      throw new Error('Failed to create task block')
-    }
-    return block
   }
   const reset = () => {
     setFormData(_initialData)

@@ -3,14 +3,14 @@ import { useAtomValue } from 'jotai'
 import { useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 import { RiDeleteBin4Line } from 'react-icons/ri'
+import { VscDebugConsole } from 'react-icons/vsc'
 
-import { deleteBlockDateInfo, updateBlockTaskStatus, deleteTaskBlock } from '@/Agenda3/helpers/block'
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
-import { formatTaskTitle } from '@/Agenda3/helpers/task'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
-import type { AgendaTask, AgendaTaskWithStart } from '@/types/task'
+import type { AgendaEntity } from '@/types/entity'
+import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
 import Group from '../../Group'
@@ -23,7 +23,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
 
   const [editTaskModal, setEditTaskModal] = useState<{
     open: boolean
-    task?: AgendaTask
+    task?: AgendaTaskWithStart
   }>({
     open: false,
   })
@@ -31,45 +31,31 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
   const editDisabled = task.rrule || task.recurringPast
   const isMultipleDays = task.allDay && task.end
   const estimatedTime = task.estimatedTime ?? DEFAULT_ESTIMATED_TIME
-  const showTitle = formatTaskTitle(task)
 
-  const { updateTaskData, deleteTask } = useAgendaTasks()
+  const { updateEntity, deleteEntity } = useAgendaEntities()
 
-  const onClickTaskMark = (event: React.MouseEvent, task: AgendaTask, status: AgendaTask['status']) => {
+  const onClickTaskMark = (event: React.MouseEvent, task: AgendaEntity, status: AgendaEntity['status']) => {
     if (task.rrule) return message.error('Please modify the status of the recurring task in logseq.')
-    updateTaskData(task.id, {
-      ...task,
-      status,
-      rawBlock: {
-        ...task.rawBlock,
-        marker: status === 'todo' ? 'TODO' : 'DONE',
-      },
-    })
-    updateBlockTaskStatus(task, status)
+    updateEntity({ type: 'task-status', id: task.id, data: status })
     event.stopPropagation()
   }
   const onDeleteTask = async (taskId: string) => {
-    deleteTask(taskId)
-    deleteTaskBlock(taskId)
+    deleteEntity(taskId)
   }
   const onRemoveDate = async (taskId: string) => {
-    updateTaskData(taskId, {
-      allDay: true,
-      start: undefined,
-    })
-    deleteBlockDateInfo(taskId)
+    updateEntity({ type: 'task-remove-date', id: taskId, data: null })
   }
 
   return (
     <div
-      className={cn('bg-white rounded-md p-2 hover:shadow whitespace-pre-wrap cursor-pointer group/card', {
+      className={cn('group/card cursor-pointer whitespace-pre-wrap rounded-md bg-white p-2 hover:shadow', {
         'bg-[#edeef0] opacity-80': task.status === 'done',
         // 循环任务及多天任务不能拖拽
         'droppable-task-element': !editDisabled && !isMultipleDays,
       })}
       data-event={JSON.stringify({
         id: task.id,
-        title: showTitle,
+        title: task.showTitle,
         duration: minutesToHHmm(estimatedTime),
         color: groupType === 'page' ? task.project.bgColor : task?.filters?.[0]?.color,
       })}
@@ -79,6 +65,13 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
         trigger={['contextMenu']}
         menu={{
           items: [
+            import.meta.env.DEV
+              ? {
+                  key: 'console',
+                  label: 'Console task',
+                  icon: <VscDebugConsole className="!text-base" />,
+                }
+              : null,
             editDisabled || task.project.isJournal
               ? null
               : {
@@ -96,6 +89,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           onClick: ({ key }) => {
             if (key === 'delete') onDeleteTask(task.id)
             if (key === 'backlog') onRemoveDate(task.id)
+            if (key === 'console') console.log(task)
           },
         }}
       >
@@ -104,7 +98,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           <Toolbar task={task} groupType={groupType} onClickMark={onClickTaskMark} />
 
           {/* ========= Title ========= */}
-          <div className={cn('text-gray-600 my-0.5', { 'line-through': task.status === 'done' })}>{showTitle}</div>
+          <div className={cn('my-0.5 text-gray-600', { 'line-through': task.status === 'done' })}>{task.showTitle}</div>
 
           {/* ========= Group(page or filter) Name ========= */}
           <Group task={task} type={groupType} />
@@ -116,13 +110,11 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           key={editTaskModal.task.id}
           open={editTaskModal.open}
           info={{ type: 'edit', initialTaskData: editTaskModal.task }}
-          onOk={(taskInfo) => {
-            updateTaskData(editTaskModal.task!.id, taskInfo)
+          onOk={() => {
             setEditTaskModal({ open: false })
           }}
           onCancel={() => setEditTaskModal({ open: false })}
-          onDelete={(taskId) => {
-            deleteTask(taskId)
+          onDelete={() => {
             setEditTaskModal({ open: false })
           }}
         />

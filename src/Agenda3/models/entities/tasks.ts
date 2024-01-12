@@ -1,32 +1,32 @@
 import dayjs from 'dayjs'
 import { atom } from 'jotai'
 
-import type { AgendaObjective, AgendaTask, AgendaTaskWithStart } from '@/types/task'
+import { RECENT_DAYS_RANGE } from '@/constants/agenda'
+import type { AgendaTaskWithStart } from '@/types/task'
 
-export const agendaTasksAtom = atom<AgendaTask[]>([])
+import { agendaEntitiesAtom } from './entities'
+import { agendaObjectivesAtom } from './objectives'
 
 // task
 export const tasksWithStartAtom = atom<AgendaTaskWithStart[]>((get) => {
-  const allTasks = get(agendaTasksAtom)
-  return allTasks.filter((task) => task.start && !task.objective) as AgendaTaskWithStart[]
+  const allEntities = get(agendaEntitiesAtom)
+  const allObjectives = get(agendaObjectivesAtom)
+  return allEntities
+    .filter((entity) => entity.start && !entity.objective)
+    .map((task) => {
+      return {
+        ...task,
+        bindObjective: allObjectives.find((objective) => objective.id === task.bindObjectiveId),
+      }
+    }) as AgendaTaskWithStart[]
 })
-// backlog
-export const backlogTasksAtom = atom<AgendaTask[]>((get) => {
-  const allTasks = get(agendaTasksAtom)
-  return allTasks.filter((task) => task.status === 'todo' && !task.start && !task.objective)
-})
-// objective
-export const agendaObjectivesAtom = atom<AgendaObjective[]>((get) => {
-  const allTasks = get(agendaTasksAtom)
-  return allTasks.filter((task) => task.objective) as AgendaObjective[]
-})
-
 export const recentTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const allTasks = get(tasksWithStartAtom)
 
   const today = dayjs()
-  const startDay = today.subtract(7, 'day')
-  const endDay = today.add(14, 'day')
+  const [rangeStart, rangeEnd] = RECENT_DAYS_RANGE
+  const startDay = today.subtract(rangeStart, 'day')
+  const endDay = today.add(rangeEnd, 'day')
   return allTasks.filter((task) => {
     if (!task.start) return false
     return task.start.isBetween(startDay, endDay, 'day', '[]')
@@ -107,26 +107,5 @@ export const overdueTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
     // multiple days task
     if (task.end) return task.end.isBefore(today, 'day')
     return task.start.isBefore(today, 'day')
-  })
-})
-
-export const thisWeekObjectivesAtom = atom<AgendaObjective[]>((get) => {
-  const today = dayjs()
-  const yearNumber = today.year()
-  const weekNumber = today.isoWeek()
-  const allObjectives = get(agendaObjectivesAtom)
-  return allObjectives.filter(({ objective }) => {
-    const { type, year, number } = objective
-    return type === 'week' && year === yearNumber && number === weekNumber
-  })
-})
-export const thisMonthObjectivesAtom = atom<AgendaObjective[]>((get) => {
-  const today = dayjs()
-  const yearNumber = today.year()
-  const monthNumber = today.month() + 1
-  const allObjectives = get(agendaObjectivesAtom)
-  return allObjectives.filter(({ objective }) => {
-    const { type, year, number } = objective
-    return type === 'month' && year === yearNumber && number === monthNumber
   })
 })

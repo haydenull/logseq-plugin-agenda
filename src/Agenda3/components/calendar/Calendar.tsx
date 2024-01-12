@@ -1,4 +1,6 @@
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+import enLocale from '@fullcalendar/core/locales/en-gb'
+import esLocale from '@fullcalendar/core/locales/es'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { type EventReceiveArg, type EventResizeDoneArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
@@ -12,10 +14,10 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } f
 import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { appAtom } from '@/Agenda3/models/app'
+import { tasksWithStartAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import { tasksWithStartAtom } from '@/Agenda3/models/tasks'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
@@ -23,6 +25,7 @@ import TaskModal from '../modals/TaskModal'
 import { type CreateTaskForm } from '../modals/TaskModal/useCreate'
 import { type CalendarView } from './CalendarAdvancedOperation'
 import TheCalendarEvent from './TheCalendarEvent'
+import WeekNumber from './WeekNumber'
 import s from './calendar.module.less'
 
 const FULL_CALENDAR_24HOUR_FORMAT = {
@@ -35,7 +38,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   // const [currentView, setCurrentView] = useState<CalendarView>('dayGridMonth')
   const calendarRef = useRef<FullCalendar>(null)
   const app = useAtomValue(appAtom)
-  const { updateTaskData, deleteTask, addNewTask } = useAgendaTasks()
+  const { updateEntity } = useAgendaEntities()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
@@ -89,11 +92,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       allDay,
     }
     try {
-      updateTaskData(blockUUID, dateInfo)
-      updateBlockDateInfo({
-        ...dateInfo,
-        uuid: blockUUID,
-      })
+      updateEntity({ type: 'task-date', id: blockUUID, data: dateInfo })
       // const event = calendarApi?.getEventById(blockUUID)
       // if (event) {
       //   event.setProp('extendedProps', {
@@ -145,6 +144,12 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       changeView: (view: CalendarView) => {
         calendarApi?.changeView(view)
       },
+      getView: () => {
+        return calendarApi?.view.type
+      },
+      getDate: () => {
+        return calendarApi?.getDate()
+      },
       navToday: () => {
         calendarApi?.today()
       },
@@ -162,7 +167,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
 
   return (
     <div
-      className={cn('h-full flex flex-col', s.fullCalendar)}
+      className={cn('flex h-full flex-col', s.fullCalendar)}
       style={{
         // @ts-expect-error define fullcalendar css variables
         '--fc-border-color': '#e5e5e5',
@@ -175,12 +180,14 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         selectable
         dayMaxEventRows // allow "more" link when too many events
         weekNumbers
-        weekNumberClassNames="text-xs"
+        weekNumberContent={({ num, date }) => <WeekNumber weekNumber={num} date={date} />}
         defaultTimedEventDuration="00:30"
         firstDay={1}
         fixedWeekCount={false}
         ref={calendarRef}
         height="100%"
+        // locales={[esLocale]}
+        // locale={enLocale}
         events={[
           ...calendarEvents,
           // {
@@ -225,6 +232,9 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
           track('Calendar: Click Event', { calendarView: info.view.type })
         }}
         select={(info) => {
+          // prevent click week number to create task
+          // @ts-expect-error type correctly
+          if (info.jsEvent?.target?.className?.includes('faiz-week-number')) return
           track('Calendar: Select Event', { calendarView: info.view.type })
           onSelect(info)
         }}
@@ -239,13 +249,13 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
               const isWeekend = day.day() === 6 || day.day() === 0
               return (
                 <div
-                  className={clsx('flex gap-1 h-[34px] items-center', isWeekend ? 'text-gray-400' : 'text-gray-700')}
+                  className={clsx('flex h-[34px] items-center gap-1', isWeekend ? 'text-gray-400' : 'text-gray-700')}
                 >
                   {day.format('ddd')}
                   <span
                     className={cn(
-                      'w-6 h-6 items-center flex justify-center',
-                      date.isToday ? 'bg-blue-400 rounded text-white' : '',
+                      'flex h-6 w-6 items-center justify-center',
+                      date.isToday ? 'rounded bg-blue-400 text-white' : '',
                     )}
                   >
                     {day.format('DD')}
@@ -265,12 +275,10 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
             type: 'edit',
             initialTaskData: editTaskModal.task,
           }}
-          onOk={(taskInfo) => {
-            updateTaskData(taskInfo.id, taskInfo)
+          onOk={() => {
             setEditTaskModal({ open: false })
           }}
-          onDelete={(taskId) => {
-            deleteTask(taskId)
+          onDelete={() => {
             setEditTaskModal({ open: false })
           }}
         />
@@ -278,8 +286,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       {createTaskModal.open ? (
         <TaskModal
           open={createTaskModal.open}
-          onOk={(task) => {
-            addNewTask(task)
+          onOk={() => {
             setCreateTaskModal({ open: false })
           }}
           onCancel={() => setCreateTaskModal({ open: false })}
@@ -293,6 +300,8 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
 export type CalendarHandle = {
   prev: () => void
   next: () => void
+  getView: () => CalendarView
+  getDate: () => Date
   changeView: (view: CalendarView) => void
   navToday: () => void
 }

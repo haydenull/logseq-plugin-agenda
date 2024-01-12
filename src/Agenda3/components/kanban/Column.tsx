@@ -8,7 +8,7 @@ import { ReactSortable } from 'react-sortablejs'
 
 import { updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { track } from '@/Agenda3/helpers/umami'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { appAtom } from '@/Agenda3/models/app'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { AgendaTaskWithStart } from '@/types/task'
@@ -41,7 +41,7 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
     return acc + (task.actualTime ?? task.estimatedTime ?? DEFAULT_ESTIMATED_TIME)
   }, 0)
 
-  const { updateTaskData } = useAgendaTasks()
+  const { updateEntity } = useAgendaEntities()
 
   const onAddTaskByDrag = async (sortableEvent) => {
     console.log('[faiz:] === kanban onAdd', sortableEvent)
@@ -53,11 +53,13 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
     if (task.allDay === false) {
       startDay = replaceDateInfo(task.start, day)
     }
-    updateTaskData(id, { start: startDay })
-    updateBlockDateInfo({
-      uuid: id,
-      start: startDay,
-      allDay: task.allDay,
+    updateEntity({
+      type: 'task-date',
+      id,
+      data: {
+        start: startDay,
+        allDay: task.allDay,
+      },
     })
     track('KanBan: Drag Task')
   }
@@ -84,7 +86,7 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
 
   return (
     <>
-      <div key={dateStr} className="w-[265px] shrink-0 mt-2 flex flex-col" id={dateStr} ref={columnContainerRef}>
+      <div key={dateStr} className="mt-2 flex w-[265px] shrink-0 flex-col" id={dateStr} ref={columnContainerRef}>
         {/* ========= Title ========= */}
         <ColumnTitle day={day} />
 
@@ -112,7 +114,7 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
         {/* ========= Tasks List ========= */}
         <ReactSortable
           forceFallback // 该属性如果不加就无法与 fullcalendar 交互
-          className={cn('flex flex-col gap-2 flex-1 overflow-y-auto', { 'pb-28': _dayTasks.length === 0 })}
+          className={cn('flex flex-1 flex-col gap-2 overflow-y-auto', { 'pb-28': _dayTasks.length === 0 })}
           group="shared"
           dragClass="dragged-mirror-element"
           draggable=".droppable-task-element"

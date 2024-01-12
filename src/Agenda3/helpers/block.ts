@@ -1,7 +1,9 @@
+import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { message } from 'antd'
 import { format } from 'date-fns'
 import dayjs, { type Dayjs } from 'dayjs'
 
+import { type CreateObjectiveForm } from '@/Agenda3/components/modals/ObjectiveModal/CreateObjectiveModal'
 import {
   AGENDA_DRAWER_REGEX,
   DATE_FORMATTER,
@@ -10,10 +12,13 @@ import {
   SCHEDULED_DATETIME_FORMATTER,
   SCHEDULED_DATE_FORMATTER,
 } from '@/constants/agenda'
-import type { AgendaTask, AgendaTaskObjective, CreateAgendaTask } from '@/types/task'
-import { moveBlockToNewPage, updateBlock } from '@/util/logseq'
+import type { AgendaEntity } from '@/types/entity'
+import type { AgendaObjective, AgendaEntityObjective } from '@/types/objective'
+import type { AgendaTaskWithStart, CreateAgendaTask } from '@/types/task'
+import { updateBlock } from '@/util/logseq'
 
 import { secondsToHHmmss } from './fullCalendar'
+import type { BlockFromQuery } from './task'
 
 /**
  * change task date and estimated time
@@ -50,7 +55,8 @@ export const updateBlockDateInfo = async ({
     estimated: estimatedTime,
     end,
   })
-  return logseq.Editor.updateBlock(uuid, newContent2)
+  await logseq.Editor.updateBlock(uuid, newContent2)
+  return logseq.Editor.getBlock(uuid)
 }
 
 /**
@@ -70,7 +76,8 @@ export const deleteBlockDateInfo = async (uuid: string) => {
         .filter(Boolean)
         .join('\n')
     : originalBlock.content
-  return logseq.Editor.updateBlock(uuid, newContent)
+  await logseq.Editor.updateBlock(uuid, newContent)
+  return logseq.Editor.getBlock(uuid)
 }
 
 /**
@@ -165,11 +172,12 @@ export const deleteBlogTimeLog = async (uuid: string, index: number) => {
  * create task
  */
 export const createTaskBlock = async (taskInfo: CreateAgendaTask) => {
-  const { title, allDay, start, end, estimatedTime, projectId } = taskInfo
+  const { title, allDay, start, end, estimatedTime, projectId, bindObjectiveId } = taskInfo
 
   const AGENDA_DRAWER = genAgendaDrawerText({
     estimated: estimatedTime,
     end,
+    bindObjectiveId,
   })
   // const
   const content = [
@@ -204,14 +212,18 @@ export function generateTimeLogText({ start, end }: { start: Dayjs; end: Dayjs }
 /**
  * update task
  */
-export const updateTaskBlock = async (taskInfo: AgendaTask & { projectId?: string }) => {
-  const { id, title, allDay, start, end, estimatedTime, status, timeLogs, projectId } = taskInfo
+export const updateTaskBlock = async (taskInfo: AgendaTaskWithStart & { projectId?: string }) => {
+  const { id, title, allDay, start, end, estimatedTime, status, timeLogs, projectId, bindObjectiveId } = taskInfo
   const originalBlock = await logseq.Editor.getBlock(id)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
   const content1 = updateBlockTaskTitle(originalBlock.content, title, status)
   const content2 = updateBlockScheduled(content1, { start, allDay })
-  const content3 = updateBlockAgendaDrawer(content2, { estimated: estimatedTime, end })
+  const content3 = updateBlockAgendaDrawer(content2, {
+    estimated: estimatedTime,
+    end,
+    bindObjectiveId,
+  })
   const content4 = updateBlockTimeLogText(content3, timeLogs)
   await updateBlock(id, content4)
 
@@ -233,19 +245,23 @@ export const updateTaskBlock = async (taskInfo: AgendaTask & { projectId?: strin
 /**
  * toggle task status
  */
-export const updateBlockTaskStatus = async (taskInfo: AgendaTask, status: AgendaTask['status']) => {
+export const updateBlockTaskStatus = async (taskInfo: AgendaEntity, status: AgendaEntity['status']) => {
   const todoTag = status === 'done' ? 'DONE' : 'TODO'
   const rawTodoTag = taskInfo.rawBlock.marker
-  if (!rawTodoTag) return message.error('This is not a todo block')
+  if (!rawTodoTag) {
+    message.error('This is not a todo block')
+    return null
+  }
   const reg = new RegExp(`^${rawTodoTag}`)
   const newContent = taskInfo.rawBlock.content.replace(reg, todoTag)
-  return logseq.Editor.updateBlock(taskInfo.rawBlock.uuid, newContent)
+  await logseq.Editor.updateBlock(taskInfo.rawBlock.uuid, newContent)
+  return logseq.Editor.getBlock(taskInfo.rawBlock.uuid)
 }
 
 /**
  * delete task
  */
-export const deleteTaskBlock = async (uuid: string) => {
+export const deleteEntityBlock = async (uuid: string) => {
   return logseq.Editor.removeBlock(uuid)
 }
 
@@ -303,7 +319,7 @@ export function genDurationString(minutes: number): string {
   return durationString
 }
 
-type AgendaDrawer = { estimated?: number; end?: Dayjs; objective?: AgendaTaskObjective }
+type AgendaDrawer = { estimated?: number; end?: Dayjs; objective?: AgendaEntityObjective; bindObjectiveId?: string }
 /**
  * parse agenda drawer
  */
@@ -331,12 +347,13 @@ export function parseAgendaDrawer(blockContent: string): AgendaDrawer | null {
           return {
             ...acc,
             objective: {
-              type: type as AgendaTaskObjective['type'],
+              type: type as AgendaEntityObjective['type'],
               year: Number(year),
               number: Number(number),
             },
           }
         }
+        if (cur[0] === 'bindObjectiveId') return { ...acc, bindObjectiveId: cur[1] }
         return { ...acc, [cur[0]]: cur[1] }
       }, {} as AgendaDrawer)
     : null
@@ -357,6 +374,10 @@ export function genAgendaDrawerText(drawer: AgendaDrawer): string {
         valueText = genDurationString(originalVal)
       } else if (key === 'end') {
         valueText = originalVal.format(DATE_FORMATTER)
+      } else if (key === 'objective') {
+        valueText = `${originalVal.type}-${originalVal.year}-${originalVal.number}`
+      } else if (key === 'bindObjectiveId') {
+        valueText = originalVal
       }
       return `${key}: ${valueText}`
     })
@@ -440,4 +461,54 @@ export async function createTodayJournalPage() {
   const journalPage = await logseq.Editor.createPage(journalName, {}, { journal: true })
   if (!journalPage) return Promise.reject(new Error('Failed to create journal page'))
   return journalPage
+}
+
+/**
+ * transform normal block to BlockFromQuery
+ */
+export const transformBlockToBlockFromQuery = async (block: BlockEntity | null): Promise<BlockFromQuery | null> => {
+  if (!block) return null
+  const page = await logseq.Editor.getPage(block?.page?.id ?? block?.page)
+  if (!page) return null
+
+  return {
+    ...block,
+    marker: block.marker,
+    page: {
+      ...page,
+      originalName: page.originalName,
+      journalDay: page.journalDay,
+      isJournal: page?.['journal?'],
+    },
+  }
+}
+
+/**
+ * create objective block
+ */
+export const createObjectiveBlock = async (objective: CreateObjectiveForm) => {
+  const { title, objective: objectiveInfo } = objective
+  const AGENDA_DRAWER = genAgendaDrawerText({
+    objective: objectiveInfo,
+  })
+  const content = [`TODO ${title}`, AGENDA_DRAWER].filter(Boolean).join('\n')
+  const block = await logseq.Editor.insertBlock((await createTodayJournalPage()).uuid, content, {
+    isPageBlock: true,
+    customUUID: await logseq.Editor.newBlockUUID(),
+  })
+  if (!block) return Promise.reject(new Error('Failed to create objective block'))
+  return logseq.Editor.getBlock(block.uuid)
+}
+/**
+ * update objective block
+ */
+export const updateObjectiveBlock = async (objective: AgendaObjective) => {
+  const { id, title, objective: objectiveInfo, status } = objective
+  const originalBlock = await logseq.Editor.getBlock(id)
+  if (!originalBlock) return Promise.reject(new Error('Block not found'))
+
+  const content1 = updateBlockTaskTitle(originalBlock.content, title, status)
+  const content2 = updateBlockAgendaDrawer(content1, { objective: objectiveInfo })
+  await updateBlock(id, content2)
+  return logseq.Editor.getBlock(id)
 }

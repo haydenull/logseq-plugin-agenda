@@ -6,8 +6,9 @@ import { RRule as RRuleClass } from 'rrule'
 import type { KanBanItem } from '@/Agenda3/components/kanban/KanBan'
 import type { Filter, Settings } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME, getRecentDaysRange } from '@/constants/agenda'
+import type { AgendaEntity, AgendaEntityPage } from '@/types/entity'
 import type { RRule } from '@/types/fullcalendar'
-import type { AgendaTask, AgendaTaskWithStart, AgendaTaskPage } from '@/types/task'
+import type { AgendaTaskWithStart } from '@/types/task'
 import { fillBlockReference } from '@/util/schedule'
 import { genDays } from '@/util/util'
 
@@ -31,14 +32,14 @@ const FREQ_MAP = {
 
 export type BlockFromQuery = BlockEntity & {
   marker: 'TODO' | 'DOING' | 'NOW' | 'LATER' | 'WAITING' | 'DONE' | 'CANCELED'
-  deadline: number
-  page: AgendaTaskPage
+  deadline?: number
+  page: AgendaEntityPage
   repeated?: boolean
 }
 export type BlockFromQueryWithFilters = BlockFromQuery & {
   filters?: Filter[]
 }
-export const getAgendaTasks = async (settings: Settings) => {
+export const getAgendaEntities = async (settings: Settings) => {
   const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
   let blocks = (await logseq.DB.datascriptQuery(`
   [:find (pull
@@ -93,7 +94,7 @@ export const getAgendaTasks = async (settings: Settings) => {
         }
       })
   }
-  const promiseList: Promise<AgendaTask[]>[] = blocks.map(async (block) => {
+  const promiseList: Promise<AgendaEntity[]>[] = blocks.map(async (block) => {
     const _block = {
       ...block,
       uuid: typeof block.uuid === 'string' ? block.uuid : block.uuid?.['$uuid$'],
@@ -116,8 +117,8 @@ export const getAgendaTasks = async (settings: Settings) => {
       })),
     }
 
-    const task = await transformBlockToAgendaTask(_block as unknown as BlockFromQuery, favoritePages, settings)
-    const recurringPastTasks: AgendaTask[] =
+    const task = await transformBlockToAgendaEntity(_block as unknown as BlockFromQuery, settings, favoritePages)
+    const recurringPastTasks: AgendaEntity[] =
       task.doneHistory?.map((pastTaskEnd) => {
         const { estimatedTime = DEFAULT_ESTIMATED_TIME } = task
         const spanTime = task.status === 'done' && task.actualTime ? task.actualTime : estimatedTime
@@ -142,11 +143,12 @@ export const getAgendaTasks = async (settings: Settings) => {
 /**
  * transform logseq block to agenda task
  */
-export const transformBlockToAgendaTask = async (
+export const transformBlockToAgendaEntity = async (
   block: BlockFromQuery,
-  favoritePages: string[],
   settings: Settings,
-): Promise<AgendaTask> => {
+  favoritePages?: string[],
+): Promise<AgendaEntity> => {
+  const _favoritePages = (favoritePages ?? (await logseq.App.getCurrentGraphFavorites())) || []
   const { general = {} } = settings
   const {
     uuid,
@@ -157,9 +159,11 @@ export const transformBlockToAgendaTask = async (
     properties,
     page,
     filters,
+    format,
   } = block
 
   const title = content.split('\n')[0]?.replace(marker, '')?.trim()
+  const showTitle = await formatTaskTitle(title, format)
 
   let allDay = true
   // parse SCHEDULED
@@ -198,6 +202,8 @@ export const transformBlockToAgendaTask = async (
   const end = agendaDrawer?.end
   // objective
   const objective = agendaDrawer?.objective
+  // bindObjectiveId
+  const bindObjectiveId = agendaDrawer?.bindObjectiveId
 
   /**
    * parse logbook
@@ -250,18 +256,30 @@ export const transformBlockToAgendaTask = async (
     if (_rrule) rrule = _rrule
   }
 
+  // filters
+  let _filters: Filter[] = filters ?? []
+  if (settings.selectedFilters?.length && !filters?.length) {
+    const settingsFilters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
+    const filterBlocks = await retrieveFilteredBlocks(settingsFilters)
+    const belongFilters = filterBlocks
+      .filter((filterBlock) => filterBlock.uuid === block.uuid)
+      .map((filterBlock) => filterBlock.filter)
+    _filters = belongFilters
+  }
+
   return {
     id: uuid,
     status,
     title,
+    showTitle,
     start,
     end,
     allDay,
     deadline,
     estimatedTime,
     actualTime,
-    project: transformPageToProject(page, favoritePages),
-    filters,
+    project: transformPageToProject(page, _favoritePages),
+    filters: _filters,
     timeLogs,
     // TODO: read from logseq
     // label: page,
@@ -271,6 +289,7 @@ export const transformBlockToAgendaTask = async (
     rrule,
     doneHistory,
     objective,
+    bindObjectiveId,
     rawBlock: block,
   }
 }
@@ -400,8 +419,8 @@ export function getRRuleInstance(rrule: RRule) {
 /**
  * categorize task according to project name
  */
-export const categorizeTasksByPage = (tasks: AgendaTask[]) => {
-  const categorizedTasks: Record<string, AgendaTask[]> = {}
+export const categorizeTasksByPage = (tasks: AgendaEntity[]) => {
+  const categorizedTasks: Record<string, AgendaEntity[]> = {}
   tasks.forEach((task) => {
     const { originalName: projectName } = task.project
     if (!categorizedTasks[projectName]) {
@@ -438,8 +457,16 @@ function replacePageReference(text: string) {
  * replace block reference
  * ((some-id-id)) -> block reference
  */
-function replaceBlockReference(text: string) {
-  return text.replace(/\(\(([\w-]+)\)\)/g, 'block')
+async function replaceBlockReference(text: string): Promise<string> {
+  const blockIds = Array.from(text.matchAll(/\(\(([\w-]+)\)\)/g)).map((match) => match[1])
+  const blockContents = await Promise.all(blockIds.map((uuid) => logseq.Editor.getBlock(uuid)))
+  blockContents.forEach((content, index) => {
+    if (content) {
+      const firstLine = content.content.split('\n')[0]
+      text = text.replace(`((${blockIds[index]}))`, firstLine)
+    }
+  })
+  return text
 }
 
 /**
@@ -448,8 +475,8 @@ function replaceBlockReference(text: string) {
  * 2. page reference [[test]] -> test
  * 3. block reference ((sdfash-sdfa-ss)) -> test
  */
-export const formatTaskTitle = (task: AgendaTask) => {
-  return replaceLinks(replacePageReference(replaceBlockReference(task.title)), task.rawBlock?.format)
+export const formatTaskTitle = async (title: string, format: BlockEntity['format']) => {
+  return replaceLinks(replacePageReference(await replaceBlockReference(title)), format)
 
   // return await fillBlockReference(task.title)
 }

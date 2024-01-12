@@ -3,9 +3,10 @@ import dayjs, { isDayjs, type Dayjs } from 'dayjs'
 import { useState } from 'react'
 import { object, string, optional, special, type Output, safeParse, array, number } from 'valibot'
 
-import { genDurationString, parseDurationString, updateTaskBlock } from '@/Agenda3/helpers/block'
-import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
-import type { AgendaTask } from '@/types/task'
+import { genDurationString, parseDurationString } from '@/Agenda3/helpers/block'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import type { AgendaEntity } from '@/types/entity'
+import type { AgendaTaskWithStart } from '@/types/task'
 
 import { genStart } from './useCreate'
 
@@ -27,10 +28,12 @@ const editFormSchema = object({
     ),
   ),
   projectId: optional(string()),
+  bindObjectiveId: optional(string()),
 })
 type EditTaskForm = Output<typeof editFormSchema>
 type EditTaskFormNoValidation = Partial<EditTaskForm>
-const useEdit = (initialTask: AgendaTask | null) => {
+const useEdit = (initialTask: AgendaTaskWithStart | null) => {
+  const { updateEntity } = useAgendaEntities()
   const initialFormData = {
     title: initialTask?.title || '',
     startDateVal: initialTask?.start,
@@ -40,6 +43,7 @@ const useEdit = (initialTask: AgendaTask | null) => {
     actualTime: initialTask?.actualTime ? genDurationString(initialTask.actualTime) : undefined,
     timeLogs: initialTask?.timeLogs || [],
     projectId: initialTask?.project?.id,
+    bindObjectiveId: initialTask?.bindObjectiveId,
   }
   const [formData, setFormData] = useState<EditTaskFormNoValidation>(initialFormData)
 
@@ -70,19 +74,24 @@ const useEdit = (initialTask: AgendaTask | null) => {
       console.error('edit error', result)
       throw new Error('Failed to edit task block')
     }
+    if (!start) return
     const estimatedTime = result.output.estimatedTime
-    await updateTaskBlock({
-      ...initialTask,
-      ...result.output,
-      allDay,
-      start,
-      end: result.output.endDateVal,
-      estimatedTime: estimatedTime ? parseDurationString(estimatedTime) : undefined,
-      // actual time is generated from time logs
-      actualTime: undefined,
-      projectId: result.output.projectId,
-    })
-    return logseq.Editor.getBlock(initialTask.id)
+    return updateEntity({
+      type: 'task',
+      id: initialTask.id,
+      data: {
+        ...initialTask,
+        ...result.output,
+        allDay,
+        start,
+        end: result.output.endDateVal,
+        estimatedTime: estimatedTime ? parseDurationString(estimatedTime) : undefined,
+        // actual time is generated from time logs
+        actualTime: undefined,
+        projectId: result.output.projectId,
+      },
+      // 因为这里必定有 start， 所以类型是 AgendaTaskWithStart
+    }) as Promise<AgendaTaskWithStart>
   }
 
   return {

@@ -12,7 +12,7 @@ import {
   transformAgendaTaskToCalendarEvent,
   transformAgendaTimeLogsToCalendarEvents,
 } from '@/Agenda3/helpers/fullCalendar'
-import { tasksWithStartAtom } from '@/Agenda3/models/tasks'
+import { tasksWithStartAtom } from '@/Agenda3/models/entities/tasks'
 import { cn } from '@/util/util'
 
 import s from './timeboxActual.module.less'
@@ -37,16 +37,16 @@ const TimeBoxActual = ({ date }: { date: Dayjs }) => {
 
   return (
     <div
-      className={cn('w-[500px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md', s.fullCalendarTimeBox)}
+      className={cn('flex h-full w-[500px] flex-col border-l bg-gray-50 pl-2 shadow-md', s.fullCalendarTimeBox)}
       style={{
         // @ts-expect-error define fullcalendar css variables
         '--fc-border-color': '#ebebeb',
       }}
     >
-      <div className="h-[44px] flex items-center">
+      <div className="flex h-[44px] items-center">
         <Tooltip title="Click to change to Time Box">
           <div
-            className="flex gap-1.5 hover:bg-gray-100 items-center px-2 py-1 rounded cursor-default"
+            className="flex cursor-default items-center gap-1.5 rounded px-2 py-1 hover:bg-gray-100"
             // onClick={onChangeType}
           >
             <TbArrowsExchange2 /> Time Tracking
@@ -83,7 +83,7 @@ const TimeBoxActual = ({ date }: { date: Dayjs }) => {
               return (
                 <div className="flex gap-1 text-gray-500">
                   {date.format('ddd')}
-                  <span className="w-6 h-6 bg-blue-400 rounded text-white">{date.format('DD')}</span>
+                  <span className="h-6 w-6 rounded bg-blue-400 text-white">{date.format('DD')}</span>
                   {dayjs(columnDate).isSame(date, 'day') ? 'Actual' : 'Estimated'}
                 </div>
               )

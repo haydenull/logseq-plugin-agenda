@@ -1,9 +1,11 @@
 import { atom } from 'jotai'
 
+export type Language = 'en' | 'zh-CN'
 export type Settings = {
   isInitialized: boolean
   general?: {
     useJournalDayAsSchedule?: boolean
+    language?: Language
   }
   ics?: {
     repo?: string
@@ -16,6 +18,9 @@ export type Settings = {
   }
   filters?: Filter[]
   selectedFilters?: string[]
+  experimental?: {
+    objective?: boolean
+  }
 }
 export const settingsAtom = atom<Settings>({ isInitialized: false, viewOptions: { showTimeLog: false } })
 

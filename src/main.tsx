@@ -72,7 +72,7 @@ if (import.meta.env.VITE_MODE === 'web') {
     logseq.App.getUserConfigs().then((configs) => {
       window.logseqAppUserConfigs = configs
       console.log('[faiz:] === configs', configs)
-      i18n.changeLanguage(configs.preferredLanguage || 'en')
+      // i18n.changeLanguage(configs.preferredLanguage || 'en')
     })
     // fix: https://github.com/haydenull/logseq-plugin-agenda/issues/87
     logseq.setMainUIInlineStyle({ zIndex: 1000 })
@@ -122,7 +122,7 @@ if (import.meta.env.VITE_MODE === 'web') {
     })
     logseq.App.registerUIItem('toolbar', {
       key: 'Agenda3',
-      template: '<a data-on-click="showAgenda3" class="button" style="color: orange;"><i class="ti ti-comet"></i></a>',
+      template: '<a data-on-click="showAgenda3" class="button"><i class="ti ti-comet"></i></a>',
     })
     logseq.on('ui:visible:changed', (e) => {
       if (!e.visible && window.currentApp !== 'pomodoro' && window.currentApp !== 'agenda3App') {

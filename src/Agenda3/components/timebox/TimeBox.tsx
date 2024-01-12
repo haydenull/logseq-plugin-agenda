@@ -7,14 +7,15 @@ import { Button } from 'antd'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MdSchedule } from 'react-icons/md'
 
 import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
-import useAgendaTasks from '@/Agenda3/hooks/useAgendaTasks'
+import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import { recentTasksAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import { recentTasksAtom } from '@/Agenda3/models/tasks'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { CalendarEvent } from '@/types/fullcalendar'
 import { cn } from '@/util/util'
@@ -42,10 +43,11 @@ const FULL_CALENDAR_24HOUR_FORMAT = {
   hour12: false,
 } as const
 const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
+  const { t } = useTranslation()
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)
-  const { updateTaskData, addNewTask } = useAgendaTasks()
+  const { updateEntity } = useAgendaEntities()
   const recentTasks = useAtomValue(recentTasksAtom)
   const now = dayjs()
   const calendarEvents = recentTasks
@@ -92,16 +94,14 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
     // 原本没有设置 estimatedTime 时，除非新的预估时间不等于默认预估时间，否则仍不修改 estimatedTime
     const estimatedTime = task.estimatedTime || span !== DEFAULT_ESTIMATED_TIME ? span : undefined
     try {
-      updateTaskData(blockUUID, {
-        start: startDay,
-        allDay: false,
-        estimatedTime,
-      })
-      updateBlockDateInfo({
-        uuid: blockUUID,
-        start: startDay,
-        estimatedTime,
-        allDay: false,
+      updateEntity({
+        type: 'task-date',
+        id: blockUUID,
+        data: {
+          start: startDay,
+          estimatedTime,
+          allDay: false,
+        },
       })
       const event = calendarApi?.getEventById(blockUUID)
       if (event) {
@@ -134,7 +134,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   return (
     <div
       className={cn(
-        'w-[290px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md group/root',
+        'group/root flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md',
         s.fullCalendarTimeBox,
       )}
       style={{
@@ -142,14 +142,14 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
         '--fc-border-color': '#ebebeb',
       }}
     >
-      <div className="h-[44px] flex items-center justify-between group">
-        <div className="flex gap-1.5  items-center px-2 py-1 cursor-default">
+      <div className="group flex h-[44px] items-center justify-between">
+        <div className="flex cursor-default  items-center gap-1.5 px-2 py-1">
           <MdSchedule className="text-lg" /> Time Box
         </div>
-        <div className="flex mr-4 opacity-0 group-hover/root:opacity-100 transition-opacity">
+        <div className="mr-4 flex opacity-0 transition-opacity group-hover/root:opacity-100">
           <Button size="small" type="text" icon={<LeftOutlined />} onClick={() => onClickNav('prev')} />
           <Button size="small" type="text" onClick={() => onClickNav('today')}>
-            Today
+            {t('Today')}
           </Button>
           <Button size="small" type="text" icon={<RightOutlined />} onClick={() => onClickNav('next')} />
         </div>
@@ -218,7 +218,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
               return (
                 <div className="flex gap-1 text-gray-500">
                   {day.format('ddd')}
-                  <span className={cn('w-6 h-6  rounded ', { 'text-white bg-blue-400': isToday })}>
+                  <span className={cn('h-6 w-6  rounded ', { 'bg-blue-400 text-white': isToday })}>
                     {day.format('DD')}
                   </span>
                 </div>
@@ -227,27 +227,10 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
           },
         }}
       />
-      {/* {editTaskModal.task ? (
-        <TaskModal
-          key={editTaskModal.task.id}
-          open={editTaskModal.open}
-          info={{ type: 'edit', initialTaskData: editTaskModal.task }}
-          onOk={(taskInfo) => {
-            updateTaskData(editTaskModal.task!.id, taskInfo)
-            setEditTaskModal({ open: false })
-          }}
-          onCancel={() => setEditTaskModal({ open: false })}
-          onDelete={(taskId) => {
-            deleteTask(taskId)
-            setEditTaskModal({ open: false })
-          }}
-        />
-      ) : null} */}
       {createTaskModal.open ? (
         <TaskModal
           open={createTaskModal.open}
-          onOk={(task) => {
-            addNewTask(task)
+          onOk={() => {
             setCreateTaskModal({ open: false })
           }}
           onCancel={() => setCreateTaskModal({ open: false })}

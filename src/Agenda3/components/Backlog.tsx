@@ -1,7 +1,6 @@
 import { CaretRightOutlined } from '@ant-design/icons'
 import { Draggable } from '@fullcalendar/interaction'
 import { Collapse, Empty, Select } from 'antd'
-import clsx from 'clsx'
 import { useAtom, useAtomValue } from 'jotai'
 import { useEffect, useRef, useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
@@ -11,14 +10,15 @@ import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { categorizeTasksByPage, formatTaskTitle } from '@/Agenda3/helpers/task'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import { backlogTasksAtom } from '@/Agenda3/models/tasks'
+import { cn } from '@/util/util'
 
+import { backlogsAtom } from '../models/entities/backlogs'
 import s from './backlog.module.less'
 import LogseqLogo from './icons/LogseqLogo'
 
 const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
   const taskContainerRef = useRef<HTMLDivElement>(null)
-  const [backlogTasks] = useAtom(backlogTasksAtom)
+  const [backlogTasks] = useAtom(backlogsAtom)
   const { currentGraph } = useAtomValue(logseqAtom)
   const categorizedTasks = categorizeTasksByPage(backlogTasks)
   const projects = categorizedTasks.map(({ project }) => project)
@@ -46,8 +46,8 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
     }
   }, [backlogTasks.length, bindCalendar])
   return (
-    <div className={clsx('w-[290px] h-full border-l pl-2 flex flex-col bg-gray-50 shadow-md', s.backlog)}>
-      <div className="h-[44px] flex items-center gap-1.5 relative after:shadow after:absolute after:bottom-0 after:w-full after:h-1">
+    <div className={cn('flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md', s.backlog)}>
+      <div className="relative flex h-[44px] items-center gap-1.5 after:absolute after:bottom-0 after:h-1 after:w-full after:shadow">
         <BsArchive /> Backlog
         <Select
           showSearch
@@ -67,7 +67,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
         />
       </div>
       <div
-        className={clsx('flex flex-col gap-2 flex-1 overflow-auto pt-2', {
+        className={cn('flex flex-1 flex-col gap-2 overflow-auto pt-2', {
           'justify-center': showCategorizedTasks?.length <= 0,
         })}
         ref={taskContainerRef}
@@ -82,7 +82,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
             items={showCategorizedTasks.map((project) => ({
               key: project.project.originalName,
               label: project.project.originalName,
-              extra: <span className="text-xs text-gray-400 pr-0.5">{project.tasks.length}</span>,
+              extra: <span className="pr-0.5 text-xs text-gray-400">{project.tasks.length}</span>,
               children: (
                 <ReactSortable
                   forceFallback
@@ -96,21 +96,20 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
                   }}
                 >
                   {project.tasks.map((task) => {
-                    const showTitle = formatTaskTitle(task)
                     return (
                       <div
                         key={task.id}
-                        className="border rounded px-2 py-2 text-sm text-gray-600 break-all droppable-task-element bg-[#f9fafb] cursor-move group"
+                        className="droppable-task-element group cursor-move break-all rounded border bg-[#f9fafb] px-2 py-2 text-sm text-gray-600"
                         data-event={JSON.stringify({
                           id: task.id,
-                          title: showTitle,
+                          title: task.showTitle,
                           color: groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
                           backlog: true,
                         })}
                       >
-                        {showTitle}{' '}
+                        {task.showTitle}{' '}
                         <span
-                          className="text-gray-300 inline-block opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                          className="inline-block cursor-pointer text-gray-300 opacity-0 transition-opacity group-hover:opacity-100"
                           onClick={(e) => {
                             e.stopPropagation()
                             navToLogseqBlock(task, currentGraph)
