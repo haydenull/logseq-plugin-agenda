@@ -1,3 +1,26 @@
+# [3.9.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.8.0...v3.9.0) (2024-01-12)
+
+
+### Bug Fixes
+
+* the date range of tasks is inconsistent with kanban ([c1e513b](https://github.com/haydenull/logseq-plugin-agenda/commit/c1e513b1905197f7c85c4cfeff71d8d8c4dee12e))
+
+
+### Features
+
+* [skip ci] Add goal icon and functionality to calendar title ([63a980e](https://github.com/haydenull/logseq-plugin-agenda/commit/63a980ed64867faedd4ecabc987f575e07e2668f))
+* [skip ci] add objective modal ([1b1eb0c](https://github.com/haydenull/logseq-plugin-agenda/commit/1b1eb0c6fac67d6790a4531638386b5cfb97333c))
+* [skip ci] completed edit objective modal ([fe90ab1](https://github.com/haydenull/logseq-plugin-agenda/commit/fe90ab19b7c35f76d35ce70e52ec26423b943c33))
+* Add experimental objective feature ([e87609e](https://github.com/haydenull/logseq-plugin-agenda/commit/e87609e2f2016035e52ec399215762df52c6714f))
+* Add language selection in General Settings form ([5d6ea9a](https://github.com/haydenull/logseq-plugin-agenda/commit/5d6ea9af6cfd76b42795c0be4ff78d6872840165))
+* add objective board ([ba6800a](https://github.com/haydenull/logseq-plugin-agenda/commit/ba6800a2beeef004bf27b0cc03545447c089f462))
+* Add ObjectiveSelect component to TaskModal ([7a3eb3c](https://github.com/haydenull/logseq-plugin-agenda/commit/7a3eb3cc1faf44da81a0f0d2352867aeb8650f67))
+* Add showTitle property to AgendaEntity and use it in various components ([fc89f65](https://github.com/haydenull/logseq-plugin-agenda/commit/fc89f657b3478a36118995d7f019e5a41b19a920))
+* Add translation support for plan modal ([78faed2](https://github.com/haydenull/logseq-plugin-agenda/commit/78faed2fa64c9cad2e8a22e0ed3ccb12c22658e5))
+* Translate labels and titles in SettingsModal ([206c33d](https://github.com/haydenull/logseq-plugin-agenda/commit/206c33d309476492014f3de2ed602c550ff7c7ef))
+* Update agenda3 toolbar button color ([f191f34](https://github.com/haydenull/logseq-plugin-agenda/commit/f191f3447d9b4638f00e5c69d5bea3dc7949e97b))
+* Update translation files and add language support ([8d63662](https://github.com/haydenull/logseq-plugin-agenda/commit/8d63662d4567326d092169ff5a60c8ea95ee1635))
+
 # [3.8.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.7.2...v3.8.0) (2023-12-06)
 
 
