@@ -1,3 +1,10 @@
+## [3.9.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.9.0...v3.9.1) (2024-01-20)
+
+
+### Bug Fixes
+
+* Failure to obtain data due to the absence of block corresponding to uuid ([067a6e5](https://github.com/haydenull/logseq-plugin-agenda/commit/067a6e55c7851acd30ce70ec1a502593b0abc5a9))
+
 # [3.9.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.8.0...v3.9.0) (2024-01-12)
 
 
