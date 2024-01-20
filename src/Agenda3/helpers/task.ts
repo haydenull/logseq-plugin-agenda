@@ -459,7 +459,13 @@ function replacePageReference(text: string) {
  */
 async function replaceBlockReference(text: string): Promise<string> {
   const blockIds = Array.from(text.matchAll(/\(\(([\w-]+)\)\)/g)).map((match) => match[1])
-  const blocks = await Promise.all(blockIds.map((uuid) => logseq.Editor.getBlock(uuid)))
+  const blocks = await Promise.all(
+    blockIds.map((uuid) => {
+      // if not a valid uuid, return null
+      if (!uuid.match(/^[\w-]{31,}$/)) return null
+      return logseq.Editor.getBlock(uuid)
+    }),
+  )
   blocks.forEach((block, index) => {
     if (block?.content) {
       const firstLine = block.content.split('\n')[0]
