@@ -1,3 +1,10 @@
+## [3.9.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.9.1...v3.9.2) (2024-01-20)
+
+
+### Bug Fixes
+
+* :bug: fix: Filter illegal uuid ([5d311e8](https://github.com/haydenull/logseq-plugin-agenda/commit/5d311e8267d28b328e467cc27a98d41e348547d7))
+
 ## [3.9.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.9.0...v3.9.1) (2024-01-20)
 
 
