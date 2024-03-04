@@ -12,6 +12,7 @@ import { cn } from '@/util/util'
 
 import MultipleView from './components/MainArea'
 import Sidebar from './components/Sidebar'
+import { ThemeProvider } from './components/ThemeProvider'
 import useSettings from './hooks/useSettings'
 import { init as initI18n } from './locales/i18n'
 
@@ -70,41 +71,43 @@ const Dashboard = () => {
     })
   }, [])
   return (
-    <div
-      className={cn(
-        "flex h-screen w-screen bg-gray-100 before:pointer-events-none before:absolute before:h-[180px] before:w-[240px] before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:transition-all  before:content-[''] before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40",
-        {
-          'pt-[30px]': import.meta.env.VITE_MODE === 'plugin',
-        },
-        app.view === 'calendar' ? 'before:left-1/4 before:top-2/3' : 'before:left-1/2 before:top-1/2',
-      )}
-    >
-      {/* ========== projects sidebar ========== */}
-      {/* <ProjectSidebar className="hidden" /> */}
-
-      {/* ========== Multiple View ========= */}
-      <MultipleView className="flex-1" />
-
-      {/* ========== Sidebar ========= */}
-      <Sidebar />
-
-      {/* ========== Toolbar ======== */}
-      {/* <div></div> */}
-
-      {/* <Analytics /> */}
-      <Modal
-        open={connectionErrorModal}
-        title="Connection Error"
-        onCancel={() => setConnectionErrorModal(false)}
-        okText="Refresh"
-        onOk={() => window.location.reload()}
+    <ThemeProvider defaultTheme="dark">
+      <div
+        className={cn(
+          "flex h-screen w-screen bg-gray-100 before:pointer-events-none before:absolute before:h-[180px] before:w-[240px] before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:transition-all  before:content-[''] before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40",
+          {
+            'pt-[30px]': import.meta.env.VITE_MODE === 'plugin',
+          },
+          app.view === 'calendar' ? 'before:left-1/4 before:top-2/3' : 'before:left-1/2 before:top-1/2',
+        )}
       >
-        <div>Please check the logseq api configuration and refresh the page to try again.</div>
-        <a href="https://haydenut.notion.site/Agenda3-ef115e277c864de3b2679d6bda0e6376?pvs=4">
-          Reference Documents: https://haydenut.notion.site/Agenda3-ef115e277c864de3b2679d6bda0e6376?pvs=4
-        </a>
-      </Modal>
-    </div>
+        {/* ========== projects sidebar ========== */}
+        {/* <ProjectSidebar className="hidden" /> */}
+
+        {/* ========== Multiple View ========= */}
+        <MultipleView className="flex-1" />
+
+        {/* ========== Sidebar ========= */}
+        <Sidebar />
+
+        {/* ========== Toolbar ======== */}
+        {/* <div></div> */}
+
+        {/* <Analytics /> */}
+        <Modal
+          open={connectionErrorModal}
+          title="Connection Error"
+          onCancel={() => setConnectionErrorModal(false)}
+          okText="Refresh"
+          onOk={() => window.location.reload()}
+        >
+          <div>Please check the logseq api configuration and refresh the page to try again.</div>
+          <a href="https://haydenut.notion.site/Agenda3-ef115e277c864de3b2679d6bda0e6376?pvs=4">
+            Reference Documents: https://haydenut.notion.site/Agenda3-ef115e277c864de3b2679d6bda0e6376?pvs=4
+          </a>
+        </Modal>
+      </div>
+    </ThemeProvider>
   )
 }
 
