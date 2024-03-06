@@ -134,7 +134,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   return (
     <div
       className={cn(
-        'group/root flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md',
+        'group/root flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md dark:border-zinc-900 dark:bg-zinc-900',
         s.fullCalendarTimeBox,
       )}
       style={{
@@ -216,9 +216,13 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
               const day = dayjs(date.date)
               const isToday = day.isSame(now, 'day')
               return (
-                <div className="flex gap-1 text-gray-500">
+                <div className="flex gap-1 text-gray-500 dark:text-gray-300">
                   {day.format('ddd')}
-                  <span className={cn('h-6 w-6  rounded ', { 'bg-blue-400 text-white': isToday })}>
+                  <span
+                    className={cn('h-6 w-6  rounded ', {
+                      'bg-blue-400 text-white dark:bg-blue-600 dark:text-gray-100': isToday,
+                    })}
+                  >
                     {day.format('DD')}
                   </span>
                 </div>

@@ -1,17 +1,24 @@
 import { StyleProvider } from '@ant-design/cssinjs'
-import { CloseOutlined } from '@ant-design/icons'
-import { Button, ConfigProvider } from 'antd'
+import { ConfigProvider } from 'antd'
 
 import Dashboard from '@/Agenda3'
+import { ThemeProvider, useTheme } from '@/Agenda3/components/ThemeProvider'
 import { NEW_ANTD_THEME_CONFIG } from '@/util/constants'
-import { cn } from '@/util/util'
 
-const theme = 'green'
-const NewMainApp = () => {
+const Agenda3 = () => {
+  return (
+    <ThemeProvider defaultTheme="dark">
+      <MainApp />
+    </ThemeProvider>
+  )
+}
+
+function MainApp() {
+  const { theme } = useTheme()
   return (
     <ConfigProvider theme={NEW_ANTD_THEME_CONFIG[theme]}>
       <StyleProvider hashPriority="high">
-        <main className="w-screen h-screen flex flex-col">
+        <main className="flex h-screen w-screen flex-col">
           <Dashboard />
         </main>
       </StyleProvider>
@@ -19,4 +26,4 @@ const NewMainApp = () => {
   )
 }
 
-export default NewMainApp
+export default Agenda3
