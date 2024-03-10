@@ -17,6 +17,7 @@ import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { recentTasksAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
+import useTheme from '@/hooks/useTheme'
 import type { CalendarEvent } from '@/types/fullcalendar'
 import { cn } from '@/util/util'
 
@@ -44,6 +45,7 @@ const FULL_CALENDAR_24HOUR_FORMAT = {
 } as const
 const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const { t } = useTranslation()
+  const theme = useTheme()
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)
@@ -134,12 +136,14 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   return (
     <div
       className={cn(
-        'group/root flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md dark:border-zinc-900 dark:bg-zinc-900',
+        'group/root flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md dark:bg-zinc-900',
         s.fullCalendarTimeBox,
       )}
       style={{
         // @ts-expect-error define fullcalendar css variables
-        '--fc-border-color': '#ebebeb',
+        '--fc-border-color': theme === 'dark' ? '#444' : '#ebebeb',
+        '--fc-highlight-color': theme === 'dark' ? 'rgba(188,232,241,.1)' : 'rgba(188,232,241,.3)',
+        '--fc-page-bg-color': theme === 'dark' ? '#444' : '#fff',
       }}
     >
       <div className="group flex h-[44px] items-center justify-between">
