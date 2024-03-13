@@ -29,8 +29,7 @@ const AddTaskCard = ({
         className={cn(
           'group my-2 flex cursor-pointer items-center justify-between rounded-md bg-white p-2 text-sm text-gray-400 hover:shadow dark:bg-zinc-700',
           {
-            'bg-[#edeef0]': isGray,
-            'dark:bg-[#2f2f33]': isGray,
+            'bg-[#edeef0] dark:bg-[#2f2f33]': isGray,
           },
         )}
       >

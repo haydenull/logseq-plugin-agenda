@@ -130,7 +130,7 @@ const MultipleView = ({ className }: { className?: string }) => {
           ) : null}
           <Segmented
             defaultValue={app.view}
-            className="!bg-gray-200 dark:!bg-zinc-950"
+            className="!bg-gray-200 dark:!bg-zinc-700"
             options={VIEWS}
             onChange={onClickAppViewChange}
           />

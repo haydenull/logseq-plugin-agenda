@@ -7,7 +7,7 @@ import { BsArchive } from 'react-icons/bs'
 import { ReactSortable } from 'react-sortablejs'
 
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
-import { categorizeTasksByPage, formatTaskTitle } from '@/Agenda3/helpers/task'
+import { categorizeTasksByPage } from '@/Agenda3/helpers/task'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import useTheme from '@/hooks/useTheme'

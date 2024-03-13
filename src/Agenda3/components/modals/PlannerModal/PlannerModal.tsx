@@ -78,7 +78,7 @@ const PlannerModal = ({
       <FullScreenModal open={open} onClose={onClickClose}>
         <div
           className={cn(
-            'flex h-full w-screen gap-3 overflow-auto bg-gray-50 px-3 pt-8 pb-1',
+            'flex h-full w-screen gap-3 overflow-auto bg-gray-50 px-3 pb-1 pt-8 dark:bg-[#1a1a1a]',
             backlogFolded ? 'pr-3' : 'pr-[300px]',
           )}
         >
@@ -102,7 +102,7 @@ const PlannerModal = ({
           {/* sidebar */}
           <div
             className={cn(
-              'group/backlog absolute top-0 right-0 h-screen pt-8 transition-all',
+              'group/backlog absolute right-0 top-0 h-screen pt-8 transition-all',
               backlogFolded ? 'w-0' : 'w-[290px]',
             )}
           >
@@ -113,7 +113,7 @@ const PlannerModal = ({
               )}
             >
               <div
-                className="flex h-[50px] w-full cursor-pointer items-center rounded-tl rounded-bl border-l border-t border-b bg-[#f0f0f0] text-gray-400 hover:bg-gray-200"
+                className="flex h-[50px] w-full cursor-pointer items-center rounded-bl rounded-tl border-b border-l border-t bg-[#f0f0f0] text-gray-400 hover:bg-gray-200 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
                 onClick={() => setBacklogFolded((folded) => !folded)}
               >
                 {backlogFolded ? <AiOutlineLeft /> : <AiOutlineRight />}

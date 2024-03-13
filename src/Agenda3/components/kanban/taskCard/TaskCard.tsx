@@ -51,7 +51,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
       className={cn(
         'group/card cursor-pointer whitespace-pre-wrap rounded-md bg-white p-2 hover:shadow dark:bg-zinc-700',
         {
-          'bg-[#edeef0] opacity-80 dark:bg-zinc-900': task.status === 'done',
+          'bg-[#edeef0] opacity-80 dark:bg-[#2f2f33]': task.status === 'done',
           // 循环任务及多天任务不能拖拽
           'droppable-task-element': !editDisabled && !isMultipleDays,
         },

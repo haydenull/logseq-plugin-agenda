@@ -68,13 +68,13 @@ const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; i
       <Modal open={open} footer={null} width={900} onCancel={() => setOpen(false)} wrapClassName={s.modalWrapper}>
         <div className="flex">
           {/* sidebar */}
-          <div className="w-[300px] bg-gray-100 px-4 py-4">
+          <div className="w-[300px] bg-gray-100 px-4 py-4 dark:bg-zinc-800">
             <div className="font-semibold uppercase">{t('app settings')}</div>
             {translatedTabs.map((tab) => (
               <div
                 key={tab.key}
-                className={cn('mt-1 cursor-pointer rounded p-2 hover:bg-gray-200', {
-                  'bg-gray-200': tab.key === finalActiveTab,
+                className={cn('mt-1 cursor-pointer rounded p-2 hover:bg-gray-200 hover:dark:bg-zinc-700', {
+                  'bg-gray-200 dark:bg-zinc-600': tab.key === finalActiveTab,
                 })}
                 onClick={() => setActiveTab(tab.key)}
               >
