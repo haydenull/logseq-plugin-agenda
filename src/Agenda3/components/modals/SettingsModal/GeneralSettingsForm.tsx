@@ -49,7 +49,7 @@ const GeneralSettingsForm = () => {
           <Select
             placeholder="Select Start of Week"
             className="w-[300px]"
-            value={settings.general?.startOfWeek}
+            value={settings.general?.startOfWeek || '1'}
             onChange={(e) => onChange('general.startOfWeek', e)}
             options={[
               { label: 'Sun', value: '0' },
