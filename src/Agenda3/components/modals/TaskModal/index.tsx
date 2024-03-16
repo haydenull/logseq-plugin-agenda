@@ -21,6 +21,7 @@ import TimeSelect from '@/components/TaskModal/components/TimeSelect'
 import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
 import type { AgendaTaskWithStart, TimeLog } from '@/types/task'
+import { getOS } from '@/util/util'
 
 import ObjectiveSelect from '../../forms/ObjectiveSelect'
 import PageSelect from '../../forms/PageSelect'
@@ -151,6 +152,42 @@ const TaskModal = ({
     onCancel?.()
     setInternalOpen(false)
   }
+  // Add keyboard event listener
+  useEffect(() => {
+    function handleKeyDown(event) {
+      const isMac = getOS() === 'mac'
+      const mainModifierKey = isMac ? event.metaKey : event.ctrlKey
+
+      if (event.code === 'KeyQ' && mainModifierKey) {
+        // Close the modal on pressing ctrl+q (or cmd+q on Mac)
+        onCancel?.()
+        setInternalOpen(false)
+        event.stopPropagation()
+      } else if (event.code === 'KeyS' && mainModifierKey) {
+        // Save and close the modal on pressing ctrl+s (or cmd+s on Mac)
+        onOk?.()
+        setInternalOpen(false)
+        event.stopPropagation()
+      } else if (event.code === 'Enter' && mainModifierKey) {
+        // toggle TODO status on pressing ctrl+Enter (or cmd+Enter on Mac)
+        if (info.type === 'edit' && info.initialTaskData.status === 'done') {
+          onSwitchTaskStatus('todo')
+        }
+        if (info.type === 'edit' && info.initialTaskData.status === 'todo') {
+          onSwitchTaskStatus('done')
+          setInternalOpen(false)
+        }
+        event.stopPropagation()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   useEffect(() => {
     // 增加延时，否则二次打开无法自动聚焦
     if (_open) setTimeout(() => titleInputRef.current?.focus(), 0)
