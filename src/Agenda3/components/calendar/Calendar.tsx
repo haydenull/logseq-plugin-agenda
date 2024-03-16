@@ -13,10 +13,12 @@ import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } f
 
 import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
+import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { appAtom } from '@/Agenda3/models/app'
 import { tasksWithStartAtom } from '@/Agenda3/models/entities/tasks'
+import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
@@ -41,6 +43,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   const { updateEntity } = useAgendaEntities()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
   const settings = useAtomValue(settingsAtom)
+  const { currentGraph } = useAtomValue(logseqAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const showTasks = tasksWithStart?.filter((task) =>
     settings.viewOptions?.hideCompleted ? task.status === 'todo' : true,
@@ -77,6 +80,9 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       open: true,
       task: info.event.extendedProps as AgendaTaskWithStart,
     })
+  }
+  const onEventCtrlClick = (info: EventClickArg) => {
+    navToLogseqBlock(info.event.extendedProps as AgendaTaskWithStart, currentGraph)
   }
   const onEventScheduleUpdate = (info: EventResizeDoneArg | EventReceiveArg | EventDropArg) => {
     // const calendarApi = calendarRef.current?.getApi()
@@ -228,7 +234,11 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         }}
         // click event
         eventClick={(info) => {
-          onEventClick(info)
+          if (info.jsEvent?.ctrlKey) {
+            onEventCtrlClick(info)
+          } else {
+            onEventClick(info)
+          }
           track('Calendar: Click Event', { calendarView: info.view.type })
         }}
         select={(info) => {
