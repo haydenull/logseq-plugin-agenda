@@ -6,6 +6,7 @@ export type Settings = {
   general?: {
     useJournalDayAsSchedule?: boolean
     language?: Language
+    startOfWeek?: string
   }
   ics?: {
     repo?: string

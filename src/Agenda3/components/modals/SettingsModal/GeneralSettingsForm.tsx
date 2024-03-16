@@ -44,6 +44,24 @@ const GeneralSettingsForm = () => {
             ]}
           />
         </div>
+        <div className="mt-4">
+          <div className="text-gray-500">Start of Week</div>
+          <Select
+            placeholder="Select Start of Week"
+            className="w-[300px]"
+            value={settings.general?.startOfWeek}
+            onChange={(e) => onChange('general.startOfWeek', e)}
+            options={[
+              { label: 'Sun', value: '0' },
+              { label: 'Mon', value: '1' },
+              { label: 'Tue', value: '2' },
+              { label: 'Wed', value: '3' },
+              { label: 'Thu', value: '4' },
+              { label: 'Fri', value: '5' },
+              { label: 'Sat', value: '6' },
+            ]}
+          />
+        </div>
       </div>
     </>
   )
