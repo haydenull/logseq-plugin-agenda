@@ -6,7 +6,9 @@ import { RiDeleteBin4Line } from 'react-icons/ri'
 import { VscDebugConsole } from 'react-icons/vsc'
 
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
+import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
@@ -18,6 +20,7 @@ import TaskModal from '../../modals/TaskModal'
 import Toolbar from './Toolbar'
 
 const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
+  const currentGraph = useAtomValue(logseqAtom).currentGraph
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
 
@@ -44,6 +47,15 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
   }
   const onRemoveDate = async (taskId: string) => {
     updateEntity({ type: 'task-remove-date', id: taskId, data: null })
+  }
+  const onClickTask = (e: React.MouseEvent, task: AgendaTaskWithStart) => {
+    if (e.ctrlKey) {
+      navToLogseqBlock(task, currentGraph)
+      console.log(task)
+    } else {
+      setEditTaskModal({ open: true, task })
+    }
+    e.stopPropagation()
   }
 
   return (
@@ -93,7 +105,11 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           },
         }}
       >
-        <div onClick={() => setEditTaskModal({ open: true, task })}>
+        <div
+          onClick={(e) => {
+            onClickTask(e, task)
+          }}
+        >
           {/* ========= Toolbar ========= */}
           <Toolbar task={task} groupType={groupType} onClickMark={onClickTaskMark} />
 
