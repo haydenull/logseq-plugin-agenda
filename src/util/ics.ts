@@ -27,7 +27,7 @@ export const transformAgendaTaskToICSEvent = (task: AgendaTaskWithStart, graphNa
   }
 
   let type: 'day-event' | 'multi-days-event' | 'time-event' = 'day-event'
-  if (allDay === false) {
+  if (allDay === false && estimatedTime !== undefined) {
     type = 'time-event'
   } else if (end) {
     type = 'multi-days-event'
