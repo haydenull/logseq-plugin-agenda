@@ -94,10 +94,14 @@ const MultipleView = ({ className }: { className?: string }) => {
     let lastKeyDownTime = 0
     let lastKey = ''
     const doubleClickThreshold = 500 // 500 milliseconds
-    console.log('shortcuts', 'loaded')
 
     function handleKeyDown(event) {
-      console.log('Key down event:', event.code)
+      // Get the currently focused element
+      const activeElement = document.activeElement
+
+      // If the focused element is an input or textarea, ignore the keydown event
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) return
+
       const calendarApi = calendarRef.current
 
       const currentTime = new Date().getTime()
