@@ -2,7 +2,7 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons'
 import { Button, Segmented } from 'antd'
 import dayjs from 'dayjs'
 import { useAtom, useAtomValue } from 'jotai'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FiSettings, FiXCircle } from 'react-icons/fi'
 import { LuCalendarDays, LuKanbanSquare } from 'react-icons/lu'
@@ -15,7 +15,7 @@ import { cn } from '@/util/util'
 import Filter from './Filter'
 import UploadIcs from './UploadIcs'
 import Calendar, { type CalendarHandle } from './calendar/Calendar'
-import CalendarOperation, { type CalendarView } from './calendar/CalendarAdvancedOperation'
+import CalendarOperation, { CALENDAR_VIEWS, type CalendarView } from './calendar/CalendarAdvancedOperation'
 import KanBan, { type KanBanHandle } from './kanban/KanBan'
 import SettingsModal from './modals/SettingsModal'
 
@@ -77,6 +77,62 @@ const MultipleView = ({ className }: { className?: string }) => {
       },
     }))
   }
+
+  const set_calendar_view = (view: CalendarView) => {
+    calendarRef.current?.changeView(view as CalendarView)
+    setApp((_app) => ({ ..._app, calendarView: view }))
+    track('Calendar View Change', { calendarView: view })
+  }
+
+  const tog_calendar_view = () => {
+    const view =
+      app.calendarView === CALENDAR_VIEWS.dayGridMonth ? CALENDAR_VIEWS.timeGridWeek : CALENDAR_VIEWS.dayGridMonth
+    set_calendar_view(view)
+  }
+
+  useEffect(() => {
+    let lastKeyDownTime = 0
+    let lastKey = ''
+    const doubleClickThreshold = 500 // 500 milliseconds
+
+    function handleKeyDown(event) {
+      // Get the currently focused element
+      const activeElement = document.activeElement
+
+      // If the focused element is an input or textarea, ignore the keydown event
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) return
+
+      const calendarApi = calendarRef.current
+
+      const currentTime = new Date().getTime()
+
+      // Handle double-tap [[ or ]]
+      if (currentTime - lastKeyDownTime <= doubleClickThreshold && lastKey === event.code) {
+        // [[ : go to the previous month
+        if (event.code === 'BracketLeft') calendarApi?.prev()
+        // ]] : go to the next month
+        if (event.code === 'BracketRight') calendarApi?.next()
+      }
+
+      // Handle other keystrokes
+      if (event.code === 'KeyW') tog_calendar_view()
+
+      if (event.code === 'KeyT') {
+        const view = app.view === 'calendar' ? 'tasks' : 'calendar'
+        onClickAppViewChange(view)
+        // TODO UI: toggle the state of Calendar-Tasks slider accordingly
+      }
+
+      lastKey = event.code
+      lastKeyDownTime = currentTime
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [app.calendarView, app.view, setApp])
 
   return (
     <div className={cn('relative z-0 flex w-0 flex-1 flex-col py-1 pl-2', className)}>
