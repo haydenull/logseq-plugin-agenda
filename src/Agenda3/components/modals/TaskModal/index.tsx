@@ -158,7 +158,7 @@ const TaskModal = ({
       const isMac = getOS() === 'mac'
       const mainModifierKey = isMac ? event.metaKey : event.ctrlKey
 
-      if (event.code === 'KeyQ' && mainModifierKey) {
+      if (event.code === 'KeyW' && mainModifierKey) {
         // Close the modal on pressing ctrl+q (or cmd+q on Mac)
         onCancel?.()
         setInternalOpen(false)
