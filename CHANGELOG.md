@@ -1,3 +1,10 @@
+## [3.10.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.0...v3.10.1) (2024-03-28)
+
+
+### Bug Fixes
+
+* :bug: aoto siwtch theme when logseq's theme changed ([#301](https://github.com/haydenull/logseq-plugin-agenda/issues/301)) ([e9fcb8d](https://github.com/haydenull/logseq-plugin-agenda/commit/e9fcb8d5d0f26c1ba11c1175c53f7ac0775a8ab2))
+
 # [3.10.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.9.2...v3.10.0) (2024-03-28)
 
 
