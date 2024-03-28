@@ -13,6 +13,5 @@ export default function useTheme() {
     })
   })
 
-  // return theme
-  return 'dark'
+  return theme
 }

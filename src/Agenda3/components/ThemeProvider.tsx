@@ -49,12 +49,20 @@ export function ThemeProvider({
   }
 
   useEffect(() => {
-    updateTheme(themeSetting)
-  }, [themeSetting])
+    const setThemeWithLogseqTheme = async () => {
+      const logseqTheme = await logseq.App.getStateFromStore<'dark' | 'light'>('ui/theme')
+      updateTheme(logseqTheme)
+    }
+    if (import.meta.env.VITE_MODE === 'plugin') {
+      setThemeWithLogseqTheme()
+    } else {
+      updateTheme(themeSetting)
+    }
+  }, [])
 
   useEffect(() => {
     // listen to system theme change
-    if (themeSetting === 'system') {
+    if (themeSetting === 'system' && import.meta.env.VITE_MODE === 'web') {
       const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)')
       const listener = (e: MediaQueryListEvent) => {
         const newTheme = e.matches ? 'dark' : 'light'
@@ -68,6 +76,15 @@ export function ThemeProvider({
       }
     }
   }, [themeSetting])
+
+  // if it is plugin, we need to listen to logseq theme change
+  useEffect(() => {
+    if (import.meta.env.VITE_MODE === 'plugin') {
+      logseq.App.onThemeModeChanged(({ mode }) => {
+        updateTheme(mode)
+      })
+    }
+  }, [])
 
   const value = {
     currentTheme,
