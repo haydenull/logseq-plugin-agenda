@@ -7,14 +7,14 @@ import { NEW_ANTD_THEME_CONFIG } from '@/util/constants'
 
 const Agenda3 = () => {
   return (
-    <ThemeProvider defaultTheme="dark">
+    <ThemeProvider defaultThemeSetting="system">
       <MainApp />
     </ThemeProvider>
   )
 }
 
 function MainApp() {
-  const { theme } = useTheme()
+  const { currentTheme: theme } = useTheme()
   return (
     <ConfigProvider theme={NEW_ANTD_THEME_CONFIG[theme]}>
       <StyleProvider hashPriority="high">
