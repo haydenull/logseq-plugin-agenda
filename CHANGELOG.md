@@ -1,3 +1,10 @@
+# [3.10.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.9.2...v3.10.0) (2024-03-28)
+
+
+### Features
+
+* ✨ add dark theme ([#300](https://github.com/haydenull/logseq-plugin-agenda/issues/300)) ([fa8fd6c](https://github.com/haydenull/logseq-plugin-agenda/commit/fa8fd6ceba90900a8a00aadaef7b52ba653ea93a))
+
 ## [3.9.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.9.1...v3.9.2) (2024-01-20)
 
 
