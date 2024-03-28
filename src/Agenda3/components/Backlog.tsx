@@ -6,11 +6,11 @@ import { useEffect, useRef, useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 import { ReactSortable } from 'react-sortablejs'
 
+import { useTheme } from '@/Agenda3/components/ThemeProvider'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { categorizeTasksByPage } from '@/Agenda3/helpers/task'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import useTheme from '@/hooks/useTheme'
 import { cn } from '@/util/util'
 
 import { backlogsAtom } from '../models/entities/backlogs'
@@ -18,7 +18,7 @@ import s from './backlog.module.less'
 import LogseqLogo from './icons/LogseqLogo'
 
 const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
-  const theme = useTheme()
+  const { currentTheme: theme } = useTheme()
   const taskContainerRef = useRef<HTMLDivElement>(null)
   const [backlogTasks] = useAtom(backlogsAtom)
   const { currentGraph } = useAtomValue(logseqAtom)

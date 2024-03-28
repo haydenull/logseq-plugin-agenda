@@ -10,14 +10,15 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MdSchedule } from 'react-icons/md'
 
-import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
+// import useTheme from '@/hooks/useTheme'
+import { useTheme } from '@/Agenda3/components/ThemeProvider'
+import { genDurationString } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { recentTasksAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
-import useTheme from '@/hooks/useTheme'
 import type { CalendarEvent } from '@/types/fullcalendar'
 import { cn } from '@/util/util'
 
@@ -45,7 +46,7 @@ const FULL_CALENDAR_24HOUR_FORMAT = {
 } as const
 const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const { t } = useTranslation()
-  const theme = useTheme()
+  const { currentTheme: theme } = useTheme()
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)

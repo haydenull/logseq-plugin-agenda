@@ -1,6 +1,4 @@
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-import enLocale from '@fullcalendar/core/locales/en-gb'
-import esLocale from '@fullcalendar/core/locales/es'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { type EventReceiveArg, type EventResizeDoneArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
@@ -11,14 +9,15 @@ import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
-import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
+import { useTheme } from '@/Agenda3/components/ThemeProvider'
+import { genDurationString } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { appAtom } from '@/Agenda3/models/app'
 import { tasksWithStartAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
-import useTheme from '@/hooks/useTheme'
+// import useTheme from '@/hooks/useTheme'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
@@ -38,7 +37,7 @@ type CalendarProps = { onCalendarTitleChange: (title: string) => void }
 const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   // const [currentView, setCurrentView] = useState<CalendarView>('dayGridMonth')
   const calendarRef = useRef<FullCalendar>(null)
-  const theme = useTheme()
+  const { currentTheme: theme } = useTheme()
   const app = useAtomValue(appAtom)
   const { updateEntity } = useAgendaEntities()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
