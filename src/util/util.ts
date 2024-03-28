@@ -40,7 +40,10 @@ export const getWeekly = async (startDate, endDate) => {
 
 export const log = (msg, color = 'blue') => console.log(`%c${msg}`, `color:${color}`)
 
+/** this method is only for agenda2 */
 export const setPluginTheme = (theme: 'dark' | 'light') => {
+  if (window.currentApp === 'agenda3App') return
+
   const html = document.querySelector('html')
   const lightTheme = logseq.settings?.lightThemeType || DEFAULT_SETTINGS.lightThemeType
   const prevLightTheme = lightTheme === 'green' ? 'purple' : 'green'
