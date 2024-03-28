@@ -48,11 +48,14 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
 
   return (
     <div
-      className={cn('group/card cursor-pointer whitespace-pre-wrap rounded-md bg-white p-2 hover:shadow', {
-        'bg-[#edeef0] opacity-80': task.status === 'done',
-        // 循环任务及多天任务不能拖拽
-        'droppable-task-element': !editDisabled && !isMultipleDays,
-      })}
+      className={cn(
+        'group/card cursor-pointer whitespace-pre-wrap rounded-md bg-white p-2 hover:shadow dark:bg-zinc-700',
+        {
+          'bg-[#edeef0] opacity-80 dark:bg-[#2f2f33]': task.status === 'done',
+          // 循环任务及多天任务不能拖拽
+          'droppable-task-element': !editDisabled && !isMultipleDays,
+        },
+      )}
       data-event={JSON.stringify({
         id: task.id,
         title: task.showTitle,
@@ -98,7 +101,9 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           <Toolbar task={task} groupType={groupType} onClickMark={onClickTaskMark} />
 
           {/* ========= Title ========= */}
-          <div className={cn('my-0.5 text-gray-600', { 'line-through': task.status === 'done' })}>{task.showTitle}</div>
+          <div className={cn('my-0.5 text-gray-600 dark:text-gray-100', { 'line-through': task.status === 'done' })}>
+            {task.showTitle}
+          </div>
 
           {/* ========= Group(page or filter) Name ========= */}
           <Group task={task} type={groupType} />

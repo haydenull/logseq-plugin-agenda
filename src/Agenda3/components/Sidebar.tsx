@@ -17,7 +17,7 @@ const Sidebar = () => {
       {/* folded option bar */}
       <div className="absolute -left-[16px] top-0 z-10 flex h-full w-[16px] items-center opacity-0 transition-opacity group-hover/sidebar:opacity-100">
         <div
-          className="flex h-[50px] w-full cursor-pointer items-center rounded-tl rounded-bl border-l border-t border-b bg-[#f0f0f0] text-gray-400 hover:bg-gray-200"
+          className="flex h-[50px] w-full cursor-pointer items-center rounded-bl rounded-tl border-b border-l border-t bg-[#f0f0f0] text-gray-400 hover:bg-gray-200 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900"
           onClick={() => setApp((_app) => ({ ..._app, rightSidebarFolded: !_app.rightSidebarFolded }))}
         >
           {app.rightSidebarFolded ? <AiOutlineLeft /> : <AiOutlineRight />}

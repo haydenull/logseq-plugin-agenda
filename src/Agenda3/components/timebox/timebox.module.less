@@ -11,18 +11,29 @@
         border-left: none;
       }
       .fc-timegrid-slot-minor {
-        border: none;
+        border-top: none;
       }
       .fc-timegrid-slot-label {
-        font-weight: 500;
         font-size: 10px;
-        @apply text-gray-400;
+        @apply text-gray-400 font-medium;
       }
       .fc-scrollgrid {
-        border: none;
+        @apply border-none;
       }
       .fc-timegrid-col.fc-day-today {
         @apply bg-gray-50;
+      }
+    }
+  }
+}
+
+:global(.dark) {
+  .fullCalendarTimeBox {
+    :global {
+      .fc-timegrid-body .fc-timegrid-slots {
+        tr{
+          @apply bg-zinc-900;
+        }
       }
     }
   }

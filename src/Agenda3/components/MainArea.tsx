@@ -128,7 +128,12 @@ const MultipleView = ({ className }: { className?: string }) => {
               }}
             />
           ) : null}
-          <Segmented defaultValue={app.view} className="!bg-gray-200" options={VIEWS} onChange={onClickAppViewChange} />
+          <Segmented
+            defaultValue={app.view}
+            className="!bg-gray-200 dark:!bg-zinc-700"
+            options={VIEWS}
+            onChange={onClickAppViewChange}
+          />
           {settings.filters?.length ? <Filter /> : null}
           {settings.ics?.repo && settings.ics?.token ? <UploadIcs className="cursor-pointer text-lg" /> : null}
           <SettingsModal initialTab="general">

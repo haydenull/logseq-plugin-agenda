@@ -72,7 +72,7 @@ const Dashboard = () => {
   return (
     <div
       className={cn(
-        "flex h-screen w-screen bg-gray-100 before:pointer-events-none before:absolute before:h-[180px] before:w-[240px] before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:transition-all  before:content-[''] before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40",
+        "flex h-screen w-screen bg-gray-100 before:pointer-events-none before:absolute before:h-[180px] before:w-[240px] before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:transition-all before:content-['']  dark:bg-zinc-800 before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40",
         {
           'pt-[30px]': import.meta.env.VITE_MODE === 'plugin',
         },

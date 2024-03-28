@@ -10,7 +10,9 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MdSchedule } from 'react-icons/md'
 
-import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
+// import useTheme from '@/hooks/useTheme'
+import { useTheme } from '@/Agenda3/components/ThemeProvider'
+import { genDurationString } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
@@ -44,6 +46,7 @@ const FULL_CALENDAR_24HOUR_FORMAT = {
 } as const
 const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const { t } = useTranslation()
+  const { currentTheme: theme } = useTheme()
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const calendarRef = useRef<FullCalendar>(null)
@@ -134,12 +137,14 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   return (
     <div
       className={cn(
-        'group/root flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md',
+        'group/root flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md dark:bg-zinc-900',
         s.fullCalendarTimeBox,
       )}
       style={{
         // @ts-expect-error define fullcalendar css variables
-        '--fc-border-color': '#ebebeb',
+        '--fc-border-color': theme === 'dark' ? '#444' : '#ebebeb',
+        '--fc-highlight-color': theme === 'dark' ? 'rgba(188,232,241,.1)' : 'rgba(188,232,241,.3)',
+        '--fc-page-bg-color': theme === 'dark' ? '#444' : '#fff',
       }}
     >
       <div className="group flex h-[44px] items-center justify-between">
@@ -216,9 +221,13 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
               const day = dayjs(date.date)
               const isToday = day.isSame(now, 'day')
               return (
-                <div className="flex gap-1 text-gray-500">
+                <div className="flex gap-1 text-gray-500 dark:text-gray-300">
                   {day.format('ddd')}
-                  <span className={cn('h-6 w-6  rounded ', { 'bg-blue-400 text-white': isToday })}>
+                  <span
+                    className={cn('h-6 w-6  rounded ', {
+                      'bg-blue-400 text-white dark:bg-blue-600 dark:text-gray-100': isToday,
+                    })}
+                  >
                     {day.format('DD')}
                   </span>
                 </div>
