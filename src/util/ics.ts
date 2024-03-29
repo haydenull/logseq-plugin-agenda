@@ -2,6 +2,7 @@ import type { Dayjs } from 'dayjs'
 import { type EventAttributes } from 'ics'
 
 import { getRRuleInstance } from '@/Agenda3/helpers/task'
+import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { AgendaTaskWithStart } from '@/types/task'
 
 export const transformAgendaTaskToICSEvent = (task: AgendaTaskWithStart, graphName: string): EventAttributes => {
@@ -27,7 +28,7 @@ export const transformAgendaTaskToICSEvent = (task: AgendaTaskWithStart, graphNa
   }
 
   let type: 'day-event' | 'multi-days-event' | 'time-event' = 'day-event'
-  if (allDay === false && estimatedTime !== undefined) {
+  if (allDay === false) {
     type = 'time-event'
   } else if (end) {
     type = 'multi-days-event'
@@ -42,7 +43,7 @@ export const transformAgendaTaskToICSEvent = (task: AgendaTaskWithStart, graphNa
     case 'time-event':
       return {
         ...common,
-        duration: { minutes: estimatedTime },
+        duration: { minutes: estimatedTime ?? DEFAULT_ESTIMATED_TIME },
       }
     case 'day-event':
       return {
