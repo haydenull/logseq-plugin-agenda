@@ -21,6 +21,19 @@ import { secondsToHHmmss } from './fullCalendar'
 import type { BlockFromQuery } from './task'
 
 /**
+ * insert `<SCHEDULED: ...>` string into a block without any `<SCHEDULED: ...>` string
+ */
+const insertScheduled = (content: string, scheduled: string) => {
+  if (/^SCHEDULED: </gm.test(content)) return content // make sure the task hasn't been scheduled yet (prevent duplicate)
+
+  // Split the content into lines
+  const [firstLine, ...restLines] = content.split('\n')
+
+  // Insert the scheduled string as the second line of the content
+  return [firstLine, scheduled, ...restLines].join('\n')
+}
+
+/**
  * change task date and estimated time
  */
 export const updateBlockDateInfo = async ({
@@ -49,7 +62,7 @@ export const updateBlockDateInfo = async ({
           return line
         })
         .join('\n')
-    : `${originalBlock.content}\n${scheduledText}`
+    : insertScheduled(originalBlock.content, scheduledText)
   // update estimated time and end date
   const newContent2 = updateBlockAgendaDrawer(newContent, {
     estimated: estimatedTime,
