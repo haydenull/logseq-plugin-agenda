@@ -1,3 +1,10 @@
+## [3.10.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.2...v3.10.3) (2024-04-08)
+
+
+### Bug Fixes
+
+* **block.ts:** insert scheduled error when block has multiple lines ([#306](https://github.com/haydenull/logseq-plugin-agenda/issues/306)) ([9ede498](https://github.com/haydenull/logseq-plugin-agenda/commit/9ede49826a05048b71ece08c8cffd850bb9effde))
+
 ## [3.10.2](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.1...v3.10.2) (2024-03-29)
 
 
