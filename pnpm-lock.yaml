@@ -148,7 +148,7 @@ dependencies:
     version: 13.1.1(react-dom@18.2.0)(react@18.2.0)
   react-chrono:
     specifier: ^1.19.2
-    version: 1.19.2(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
+    version: 1.19.2(react-dom@18.2.0)(react-is@18.3.1)(react@18.2.0)
   react-color:
     specifier: ^2.19.3
     version: 2.19.3(react@18.2.0)
@@ -197,8 +197,8 @@ devDependencies:
     specifier: ^1.17.0
     version: 1.17.0(react-dom@18.2.0)(react@18.2.0)
   '@haydenull/fabric':
-    specifier: ^0.2.5
-    version: 0.2.5(eslint@8.48.0)(prettier-plugin-organize-imports@3.2.2)(prettier@2.8.7)(typescript@5.3.3)
+    specifier: ^0.2.6
+    version: 0.2.6(eslint@8.48.0)(prettier-plugin-organize-imports@3.2.2)(prettier@2.8.7)(typescript@5.3.3)
   '@semantic-release/changelog':
     specifier: ^6.0.1
     version: 6.0.1(semantic-release@21.0.0)
@@ -1582,8 +1582,8 @@ packages:
       '@fullcalendar/daygrid': 6.1.9(@fullcalendar/core@6.1.9)
     dev: false
 
-  /@haydenull/fabric@0.2.5(eslint@8.48.0)(prettier-plugin-organize-imports@3.2.2)(prettier@2.8.7)(typescript@5.3.3):
-    resolution: {integrity: sha512-1FEw5bMc4UAjxa98eL/uMZCkrXCgQTqSqi23HM5moq4OYWSYKeJTFppFI6uP1LJAu7do5Uy+afB+bhQAYIff+g==}
+  /@haydenull/fabric@0.2.6(eslint@8.48.0)(prettier-plugin-organize-imports@3.2.2)(prettier@2.8.7)(typescript@5.3.3):
+    resolution: {integrity: sha512-7321yOlv4IbPeI3iPZpZF3tDuZySdUxTRGb8IBVk8Ap9hFHHB4Ng6b6kNAwGp/oL8R5KPUCuMLWC8t2xIpH+Mw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     peerDependencies:
@@ -1600,6 +1600,8 @@ packages:
       eslint-plugin-react: 7.33.2(eslint@8.48.0)
       eslint-plugin-react-hooks: 4.6.0(eslint@8.48.0)
       local-pkg: 0.4.3
+      prettier-plugin-classnames: 0.6.6(prettier@2.8.7)
+      prettier-plugin-merge: 0.6.0(prettier@2.8.7)
       prettier-plugin-tailwindcss: 0.4.1(@trivago/prettier-plugin-sort-imports@4.1.1)(prettier-plugin-organize-imports@3.2.2)(prettier@2.8.7)
     transitivePeerDependencies:
       - '@ianvs/prettier-plugin-sort-imports'
@@ -4305,7 +4307,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.6(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
+      styled-components: 5.3.6(react-dom@18.2.0)(react-is@18.3.1)(react@18.2.0)
     dev: false
 
   /babel-plugin-syntax-jsx@6.18.0:
@@ -5058,6 +5060,11 @@ packages:
   /diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    dev: true
+
+  /diff@5.1.0:
+    resolution: {integrity: sha512-D+mk+qE8VC/PAUrlAU34N+VfXev0ghe5ywmpqrawphmVZc1bEfn56uo9qpyGp1p4xpzOHkSW4ztBd6L7Xx4ACw==}
+    engines: {node: '>=0.3.1'}
     dev: true
 
   /dir-glob@3.0.1:
@@ -8251,6 +8258,29 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
+  /prettier-plugin-classnames@0.6.6(prettier@2.8.7):
+    resolution: {integrity: sha512-sg28MlA6bsme4T3VbKVHeMTpfG9frdqGvTBOFXoAG6z7FuroRH8P54RkXgPw2cnEfJRKIOIWCZCouu5qu9ATmA==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      prettier: ^2 || ^3
+      prettier-plugin-astro: '*'
+    peerDependenciesMeta:
+      prettier-plugin-astro:
+        optional: true
+    dependencies:
+      prettier: 2.8.7
+    dev: true
+
+  /prettier-plugin-merge@0.6.0(prettier@2.8.7):
+    resolution: {integrity: sha512-zpWREE7u+ta9HgjtxqZSG/nTPy8QqiwGz2fY+GsBKS3LXLIAZeB45H8uq24LuQh83Seo/Stj37GjjyTHk0GMiw==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      prettier: ^2 || ^3
+    dependencies:
+      diff: 5.1.0
+      prettier: 2.8.7
+    dev: true
+
   /prettier-plugin-organize-imports@3.2.2(prettier@2.8.7)(typescript@5.3.3):
     resolution: {integrity: sha512-e97lE6odGSiHonHJMTYC0q0iLXQyw0u5z/PJpvP/3vRy6/Zi9kLBwFAbEGjDzIowpjQv8b+J04PDamoUSQbzGA==}
     peerDependencies:
@@ -9047,7 +9077,7 @@ packages:
       - react-native
     dev: false
 
-  /react-chrono@1.19.2(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0):
+  /react-chrono@1.19.2(react-dom@18.2.0)(react-is@18.3.1)(react@18.2.0):
     resolution: {integrity: sha512-phYGz599JGwRUCxMmqrMFHe74DRZiSHTTa339f6tijb7lXRV1zkDZqmHZmRhTjzBksccADt8QnnNvLYuunTllw==}
     peerDependencies:
       react: ^18.1.0
@@ -9057,7 +9087,7 @@ packages:
       focus-visible: 5.2.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      styled-components: 5.3.6(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
+      styled-components: 5.3.6(react-dom@18.2.0)(react-is@18.3.1)(react@18.2.0)
     transitivePeerDependencies:
       - react-is
     dev: false
@@ -9132,6 +9162,10 @@ packages:
 
   /react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
+
+  /react-is@18.3.1:
+    resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
+    dev: false
 
   /react-redux@7.2.9(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-Gx4L3uM182jEEayZfRbI/G11ZpYdNAnBs70lFVMNdHJI76XYtR+7m0MN+eAs7UHBPhWXcnFPaS+9owSCJQHNpQ==}
@@ -10073,7 +10107,7 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /styled-components@5.3.6(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0):
+  /styled-components@5.3.6(react-dom@18.2.0)(react-is@18.3.1)(react@18.2.0):
     resolution: {integrity: sha512-hGTZquGAaTqhGWldX7hhfzjnIYBZ0IXQXkCYdvF1Sq3DsUaLx6+NTHC5Jj1ooM2F68sBiVz3lvhfwQs/S3l6qg==}
     engines: {node: '>=10'}
     requiresBuild: true
@@ -10092,7 +10126,7 @@ packages:
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      react-is: 18.2.0
+      react-is: 18.3.1
       shallowequal: 1.1.0
       supports-color: 5.5.0
     dev: false

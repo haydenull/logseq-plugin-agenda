@@ -94,7 +94,7 @@
   },
   "devDependencies": {
     "@ant-design/cssinjs": "^1.17.0",
-    "@haydenull/fabric": "^0.2.5",
+    "@haydenull/fabric": "^0.2.6",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
