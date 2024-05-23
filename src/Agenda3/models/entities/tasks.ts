@@ -28,8 +28,11 @@ export const recentTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const startDay = today.subtract(rangeStart, 'day')
   const endDay = today.add(rangeEnd, 'day')
   return allTasks.filter((task) => {
-    if (!task.start) return false
-    return task.start.isBetween(startDay, endDay, 'day', '[]')
+    return (
+      task.start?.isBetween(startDay, endDay, 'day', '[]') ||
+      task.end?.isBetween(startDay, endDay, 'day', '[]') ||
+      (task.start?.isBefore(startDay, 'day') && task.end?.isAfter(endDay, 'day'))
+    )
   })
 })
 
