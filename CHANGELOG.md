@@ -1,3 +1,10 @@
+## [3.10.5](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.4...v3.10.5) (2024-05-23)
+
+
+### Bug Fixes
+
+* **agenda2:** :bug: prevent the sync todoist button from being clicked repeatedly ([#315](https://github.com/haydenull/logseq-plugin-agenda/issues/315)) ([3183201](https://github.com/haydenull/logseq-plugin-agenda/commit/318320188c3813677165a2399a2912be661b4447)), closes [#312](https://github.com/haydenull/logseq-plugin-agenda/issues/312)
+
 ## [3.10.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.3...v3.10.4) (2024-05-23)
 
 
