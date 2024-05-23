@@ -1,3 +1,10 @@
+## [3.10.4](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.3...v3.10.4) (2024-05-23)
+
+
+### Bug Fixes
+
+* **kanban:** :bug: some tasks are hidden in kanban ([#314](https://github.com/haydenull/logseq-plugin-agenda/issues/314)) ([e39fe12](https://github.com/haydenull/logseq-plugin-agenda/commit/e39fe1250c9cdfca8401566b4d991c34730b7d4f))
+
 ## [3.10.3](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.2...v3.10.3) (2024-04-08)
 
 
