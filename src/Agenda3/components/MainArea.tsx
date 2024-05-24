@@ -78,16 +78,16 @@ const MultipleView = ({ className }: { className?: string }) => {
     }))
   }
 
-  const set_calendar_view = (view: CalendarView) => {
+  const setCalendarView = (view: CalendarView) => {
     calendarRef.current?.changeView(view as CalendarView)
     setApp((_app) => ({ ..._app, calendarView: view }))
     track('Calendar View Change', { calendarView: view })
   }
 
-  const tog_calendar_view = () => {
+  const togCalendarView = () => {
     const view =
       app.calendarView === CALENDAR_VIEWS.dayGridMonth ? CALENDAR_VIEWS.timeGridWeek : CALENDAR_VIEWS.dayGridMonth
-    set_calendar_view(view)
+    setCalendarView(view)
   }
 
   useEffect(() => {
@@ -115,7 +115,7 @@ const MultipleView = ({ className }: { className?: string }) => {
       }
 
       // Handle other keystrokes
-      if (event.code === 'KeyW') tog_calendar_view()
+      if (event.code === 'KeyW') togCalendarView()
 
       if (event.code === 'KeyT') {
         const view = app.view === 'calendar' ? 'tasks' : 'calendar'
