@@ -8,7 +8,7 @@ import { getAgendaEntities, transformBlockToAgendaEntity } from '@/Agenda3/helpe
 import { settingsAtom } from '@/Agenda3/models/settings'
 import type { AgendaEntity } from '@/types/entity'
 import type { AgendaObjective } from '@/types/objective'
-import type { AgendaTaskWithStart, CreateAgendaTask } from '@/types/task'
+import type { AgendaTaskWithStart, AgendaTaskWithStartOrDeadline, CreateAgendaTask } from '@/types/task'
 
 import type { CreateObjectiveForm } from '../components/modals/ObjectiveModal/CreateObjectiveModal'
 import type { EditObjectiveForm } from '../components/modals/ObjectiveModal/EditObjectiveModal'
@@ -41,7 +41,7 @@ const useAgendaEntities = () => {
       | {
           type: 'task'
           id: string
-          data: AgendaTaskWithStart & { projectId?: string }
+          data: AgendaTaskWithStartOrDeadline & { projectId?: string }
         }
       | {
           type: 'task-date'
@@ -175,6 +175,7 @@ const useAgendaEntities = () => {
       })
       return false
     }
+    console.log('[faiz:] === newTask', newTask)
     setEntities((_tasks) => _tasks.concat(newTask))
     return newTask
   }

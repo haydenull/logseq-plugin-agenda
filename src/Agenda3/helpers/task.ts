@@ -6,7 +6,7 @@ import { RRule as RRuleClass } from 'rrule'
 import type { KanBanItem } from '@/Agenda3/components/kanban/KanBan'
 import type { Filter, Settings } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME, getRecentDaysRange } from '@/constants/agenda'
-import type { AgendaEntity, AgendaEntityPage } from '@/types/entity'
+import type { AgendaEntity, AgendaEntityDeadline, AgendaEntityPage } from '@/types/entity'
 import type { RRule } from '@/types/fullcalendar'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { fillBlockReference } from '@/util/schedule'
@@ -175,20 +175,23 @@ export const transformBlockToAgendaEntity = async (
       ?.trim()
     const time = / (\d{2}:\d{2})[ >]/.exec(dateString!)?.[1] || null
     if (time) allDay = false
-    start = time ? dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm') : dayjs('' + scheduledNumber, 'YYYYMMDD')
+    start = time ? dayjs(`${scheduledNumber} ${time}`, 'YYYYMMDD HH:mm') : dayjs('' + scheduledNumber, 'YYYYMMDD')
   } else if (page.isJournal && general?.useJournalDayAsSchedule) {
     start = dayjs(String(page.journalDay), 'YYYYMMDD')
   }
 
   // parse DEADLINE
-  let deadline: Dayjs | undefined
+  let deadline: AgendaEntityDeadline | undefined
   if (deadlineNumber) {
     const dateString = block.content
       ?.split('\n')
       ?.find((l) => l.startsWith(`DEADLINE:`))
       ?.trim()
     const time = / (\d{2}:\d{2})[ >]/.exec(dateString!)?.[1] || null
-    deadline = time ? dayjs(`${block.scheduled} ${time}`, 'YYYYMMDD HH:mm') : dayjs('' + scheduledNumber, 'YYYYMMDD')
+    deadline = {
+      value: time ? dayjs(`${deadlineNumber} ${time}`, 'YYYYMMDD HH:mm') : dayjs('' + deadlineNumber, 'YYYYMMDD'),
+      allDay: !time,
+    }
   }
 
   // status

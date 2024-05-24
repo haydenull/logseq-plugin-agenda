@@ -103,9 +103,9 @@ const DateForm = ({ value, onChange }: { value?: DateFormValue; onChange: (value
         mode="single"
         selected={calendarDate}
         onSelect={(date) => onCalendarSelect(dayjs(date))}
-        className="w-full p-0 mt-2"
+        className="mt-2 w-full p-0"
       />
-      <div className="flex items-center gap-1 border rounded-md mt-2">
+      <div className="mt-2 flex items-center gap-1 rounded-md border">
         <TimeSelect
           placeholder="Start Time"
           value={value?.isAllDay === false ? startTime : undefined}

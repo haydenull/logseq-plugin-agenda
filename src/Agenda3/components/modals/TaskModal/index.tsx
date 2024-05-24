@@ -4,9 +4,8 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BsCalendar4Event, BsCalendar4Range, BsClock, BsClockHistory } from 'react-icons/bs'
-import { GoGoal } from 'react-icons/go'
-import { IoIosCheckmarkCircleOutline } from 'react-icons/io'
+import { BsCalendar4Event, BsCalendar4Range, BsCalendarCheck, BsClock, BsClockHistory } from 'react-icons/bs'
+import { IoIosCheckmarkCircleOutline, IoMdCloseCircle } from 'react-icons/io'
 import { RiCheckboxBlankCircleLine, RiDeleteBin4Line } from 'react-icons/ri'
 
 import { updateBlockTaskStatus } from '@/Agenda3/helpers/block'
@@ -20,10 +19,9 @@ import DurationSelect from '@/components/TaskModal/components/DurationSelect'
 import TimeSelect from '@/components/TaskModal/components/TimeSelect'
 import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
-import type { AgendaTaskWithStart, TimeLog } from '@/types/task'
+import type { AgendaTaskWithStartOrDeadline, TimeLog } from '@/types/task'
 import { getOS } from '@/util/util'
 
-import ObjectiveSelect from '../../forms/ObjectiveSelect'
 import PageSelect from '../../forms/PageSelect'
 import LogseqLogo from '../../icons/LogseqLogo'
 import PageIcon from '../../icons/PageIcon'
@@ -53,10 +51,11 @@ const TaskModal = ({
       }
     | {
         type: 'edit'
-        initialTaskData: AgendaTaskWithStart
+        initialTaskData: AgendaTaskWithStartOrDeadline
       }
 }) => {
   const { t } = useTranslation()
+  const [messageApi, contextHolder] = message.useMessage()
   const [internalOpen, setInternalOpen] = useState(false)
   const _open = children ? internalOpen : open
   const [mode, setMode] = useState<'Normal' | 'Advanced'>('Normal')
@@ -70,14 +69,15 @@ const TaskModal = ({
 
   const { deleteEntity } = useAgendaEntities()
 
-  const createHookResult = useCreate(info.type === 'create' ? info.initialData : null)
-  const editHookResult = useEdit(info.type === 'edit' ? info.initialTaskData : null)
+  const createHookResult = useCreate(info.type === 'create' ? info.initialData : null, messageApi)
+  const editHookResult = useEdit(info.type === 'edit' ? info.initialTaskData : null, messageApi)
   const {
     formData,
     updateFormData,
     reset: resetFormData,
     allDay,
     start,
+    deadline,
   } = info.type === 'create' ? createHookResult : editHookResult
   const { create } = createHookResult
   const { edit } = editHookResult
@@ -87,6 +87,7 @@ const TaskModal = ({
     info.type === 'edit' && (info.initialTaskData.rrule || info.initialTaskData.recurringPast) ? true : false
 
   const showStartTimeFormatter = allDay ? SHOW_DATE_FORMATTER : SHOW_DATETIME_FORMATTER
+  const showDeadlineTimeFormatter = deadline?.allDay ? SHOW_DATE_FORMATTER : SHOW_DATETIME_FORMATTER
 
   const handleCancel = () => {
     setInternalOpen(false)
@@ -95,7 +96,7 @@ const TaskModal = ({
   const handleOk = async () => {
     track(`Task Modal: Ok Button`, { type: info.type })
     const task = await action()
-    if (!task) return message.error('Failed to create task')
+    if (!task) return messageApi.error('Failed to create task')
     onOk?.()
     setInternalOpen(false)
   }
@@ -141,10 +142,10 @@ const TaskModal = ({
   const createPage = async () => {
     await logseq.Editor.createPage(titleTagSearchText)
     refreshPages()
-    message.success('Page created')
+    messageApi.success('Page created')
   }
   const onSwitchTaskStatus = async (status: AgendaEntity['status']) => {
-    if (editDisabled) return message.error('Please modify the status of the recurring task in logseq.')
+    if (editDisabled) return messageApi.error('Please modify the status of the recurring task in logseq.')
     if (info.type !== 'edit') return
 
     await updateBlockTaskStatus(info.initialTaskData, status)
@@ -295,7 +296,6 @@ const TaskModal = ({
             </div>
             <div className="group flex items-center gap-1">
               <DatePicker.RangePicker
-                allowClear={false}
                 bordered={false}
                 suffixIcon={null}
                 value={[formData.startDateVal ?? dayjs(), formData.endDateVal]}
@@ -334,9 +334,18 @@ const TaskModal = ({
                   </div>
                 }
               >
-                <div className="cursor-pointer rounded px-3 py-1 hover:bg-gray-100">
+                <div className="group cursor-pointer rounded px-3 py-1 hover:bg-gray-100 dark:hover:bg-zinc-800">
                   {formData.startDateVal && start ? (
-                    start.format(showStartTimeFormatter)
+                    <div className="flex items-center gap-1">
+                      <span>{start.format(showStartTimeFormatter)}</span>
+                      <IoMdCloseCircle
+                        className="invisible text-zinc-400 group-hover:visible"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          updateFormData({ startDateVal: undefined, startTime: undefined })
+                        }}
+                      />
+                    </div>
                   ) : (
                     <span className="text-gray-400">{t('Select start Date')}</span>
                   )}
@@ -408,6 +417,53 @@ const TaskModal = ({
         </div> */}
         {/* ========= Objective End ========= */}
 
+        {/* ========= Due Date Start ========= */}
+        <div className="my-2 flex">
+          <div className="flex w-[160px] items-center gap-1 text-gray-400">
+            <BsCalendarCheck /> {t('Due Date')}
+          </div>
+          <div className="group flex items-center gap-1">
+            <Popover
+              trigger={['click']}
+              arrow={false}
+              placement="bottomLeft"
+              content={
+                <div className="w-[300px] p-2">
+                  <Calendar
+                    fullscreen={false}
+                    value={formData.deadlineDateVal}
+                    onChange={(val) => updateFormData({ deadlineDateVal: val })}
+                  />
+                  <TimeSelect
+                    bordered
+                    placeholder="Time"
+                    value={formData.deadlineTime}
+                    onChange={(val) => updateFormData({ deadlineTime: val })}
+                  />
+                </div>
+              }
+            >
+              <div className="group cursor-pointer rounded px-3 py-1 hover:bg-gray-100 dark:hover:bg-zinc-800">
+                {formData.deadlineDateVal && deadline ? (
+                  <div className="flex items-center gap-1">
+                    <span>{deadline.value.format(showDeadlineTimeFormatter)}</span>
+                    <IoMdCloseCircle
+                      className="invisible text-zinc-400 group-hover:visible"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        updateFormData({ deadlineDateVal: undefined, deadlineTime: undefined })
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <span className="text-gray-400">{t('Select Due Date')}</span>
+                )}
+              </div>
+            </Popover>
+          </div>
+        </div>
+        {/* ========= Due Date End ========= */}
+
         {/* ========= Page Start ========= */}
         <div className="my-2 flex">
           <div className="flex w-[160px] items-center gap-1 text-gray-400">
@@ -454,6 +510,7 @@ const TaskModal = ({
           </div>
         ) : null}
       </Modal>
+      {contextHolder}
     </>
   )
 }

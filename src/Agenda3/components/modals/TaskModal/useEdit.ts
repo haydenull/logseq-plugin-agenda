@@ -1,28 +1,29 @@
-import { message } from 'antd'
+import type { MessageInstance } from 'antd/es/message/interface'
 import dayjs, { isDayjs, type Dayjs } from 'dayjs'
 import { useState } from 'react'
-import { object, string, optional, special, type Output, safeParse, array, number } from 'valibot'
+import { useTranslation } from 'react-i18next'
+import { object, string, optional, special, type Output, safeParse, array, number, union } from 'valibot'
 
 import { genDurationString, parseDurationString } from '@/Agenda3/helpers/block'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
-import type { AgendaEntity } from '@/types/entity'
-import type { AgendaTaskWithStart } from '@/types/task'
+import type { AgendaEntityDeadline } from '@/types/entity'
+import type { AgendaTaskWithStartOrDeadline } from '@/types/task'
 
 import { genStart } from './useCreate'
 
-const dayjsSchema = special<Dayjs>((input) => isDayjs(input))
-const editFormSchema = object({
+const DayjsSchema = special<Dayjs>((input) => isDayjs(input))
+const BaseFormSchema = object({
   title: string(),
-  startDateVal: dayjsSchema,
-  endDateVal: optional(dayjsSchema),
+  endDateVal: optional(DayjsSchema),
   startTime: optional(string()),
+  deadlineTime: optional(string()),
   estimatedTime: optional(string()),
   actualTime: optional(string()),
   timeLogs: optional(
     array(
       object({
-        start: dayjsSchema,
-        end: dayjsSchema,
+        start: DayjsSchema,
+        end: DayjsSchema,
         amount: number(),
       }),
     ),
@@ -30,14 +31,28 @@ const editFormSchema = object({
   projectId: optional(string()),
   bindObjectiveId: optional(string()),
 })
-type EditTaskForm = Output<typeof editFormSchema>
+const StartFormSchema = object({
+  ...BaseFormSchema.entries,
+  startDateVal: DayjsSchema,
+  deadlineDateVal: optional(DayjsSchema),
+})
+const DeadlineFormSchema = object({
+  ...BaseFormSchema.entries,
+  startDateVal: optional(DayjsSchema),
+  deadlineDateVal: DayjsSchema,
+})
+const EditFormSchema = union([StartFormSchema, DeadlineFormSchema])
+type EditTaskForm = Output<typeof EditFormSchema>
 type EditTaskFormNoValidation = Partial<EditTaskForm>
-const useEdit = (initialTask: AgendaTaskWithStart | null) => {
+const useEdit = (initialTask: AgendaTaskWithStartOrDeadline | null, messageApi: MessageInstance) => {
+  const { t } = useTranslation()
   const { updateEntity } = useAgendaEntities()
   const initialFormData = {
     title: initialTask?.title || '',
     startDateVal: initialTask?.start,
     endDateVal: initialTask?.end,
+    deadlineDateVal: initialTask?.deadline?.value,
+    deadlineTime: initialTask?.deadline?.allDay ? undefined : dayjs(initialTask?.deadline?.value).format('HH:mm'),
     startTime: initialTask?.allDay ? undefined : dayjs(initialTask?.start).format('HH:mm'),
     estimatedTime: initialTask?.estimatedTime ? genDurationString(initialTask.estimatedTime) : undefined,
     actualTime: initialTask?.actualTime ? genDurationString(initialTask.actualTime) : undefined,
@@ -49,6 +64,12 @@ const useEdit = (initialTask: AgendaTaskWithStart | null) => {
 
   const allDay = !formData.startTime
   const start = formData.startDateVal ? genStart(allDay, formData.startDateVal, formData.startTime) : undefined
+  const deadline = formData.deadlineDateVal
+    ? ({
+        value: genStart(!formData.deadlineTime, formData.deadlineDateVal, formData.deadlineTime),
+        allDay: !formData.deadlineTime,
+      } satisfies AgendaEntityDeadline)
+    : undefined
 
   const updateFormData = (data: EditTaskFormNoValidation) => {
     setFormData((_data) => {
@@ -68,13 +89,18 @@ const useEdit = (initialTask: AgendaTaskWithStart | null) => {
     setFormData(initialFormData)
   }
   const edit = async () => {
-    const result = safeParse(editFormSchema, formData)
+    // start 与 deadline 不能同时为空
+    if (!start && !deadline) {
+      const message = t('Pleasse specify start or deadline')
+      messageApi.error(message)
+      throw new Error(message)
+    }
+    const result = safeParse(EditFormSchema, formData)
     if (!result.success || !initialTask) {
-      message.error('Failed to edit task block')
-      console.error('edit error', result)
+      messageApi.error('Failed to edit task block')
+      console.error('Failed to edit task block', result)
       throw new Error('Failed to edit task block')
     }
-    if (!start) return
     const estimatedTime = result.output.estimatedTime
     return updateEntity({
       type: 'task',
@@ -83,15 +109,16 @@ const useEdit = (initialTask: AgendaTaskWithStart | null) => {
         ...initialTask,
         ...result.output,
         allDay,
+        // start 与 deadline 不能同时为空
         start,
+        deadline: deadline as AgendaEntityDeadline,
         end: result.output.endDateVal,
         estimatedTime: estimatedTime ? parseDurationString(estimatedTime) : undefined,
         // actual time is generated from time logs
         actualTime: undefined,
         projectId: result.output.projectId,
       },
-      // 因为这里必定有 start， 所以类型是 AgendaTaskWithStart
-    }) as Promise<AgendaTaskWithStart>
+    }) as Promise<AgendaTaskWithStartOrDeadline>
   }
 
   return {
@@ -101,6 +128,7 @@ const useEdit = (initialTask: AgendaTaskWithStart | null) => {
     edit,
     allDay,
     start,
+    deadline,
   }
 }
 

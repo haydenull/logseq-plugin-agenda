@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { atom } from 'jotai'
 
 import { RECENT_DAYS_RANGE } from '@/constants/agenda'
-import type { AgendaTaskWithStart } from '@/types/task'
+import type { AgendaTaskWithStart, AgendaTaskWithStartOrDeadline } from '@/types/task'
 
 import { agendaEntitiesAtom } from './entities'
 import { agendaObjectivesAtom } from './objectives'
@@ -19,6 +19,18 @@ export const tasksWithStartAtom = atom<AgendaTaskWithStart[]>((get) => {
         bindObjective: allObjectives.find((objective) => objective.id === task.bindObjectiveId),
       }
     }) as AgendaTaskWithStart[]
+})
+export const tasksWithStartOrDeadlineAtom = atom<AgendaTaskWithStartOrDeadline[]>((get) => {
+  const allEntities = get(agendaEntitiesAtom)
+  const allObjectives = get(agendaObjectivesAtom)
+  return allEntities
+    .filter((entity) => !entity.objective && (entity.start || entity.deadline))
+    .map((task) => {
+      return {
+        ...task,
+        bindObjective: allObjectives.find((objective) => objective.id === task.bindObjectiveId),
+      } as AgendaTaskWithStartOrDeadline
+    })
 })
 export const recentTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
   const allTasks = get(tasksWithStartAtom)

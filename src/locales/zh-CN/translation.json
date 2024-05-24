@@ -25,5 +25,6 @@
   "Please select a project": "请选择项目",
   "Failed to create today journal page": "今日日志页面创建失败",
   "Tasks": "任务",
-  "Calendar": "日历"
+  "Calendar": "日历",
+  "Pleasse specify start or deadline": "请指定开始或截止时间"
 }
