@@ -12,9 +12,9 @@ import {
   SCHEDULED_DATETIME_FORMATTER,
   SCHEDULED_DATE_FORMATTER,
 } from '@/constants/agenda'
-import type { AgendaEntity } from '@/types/entity'
+import type { AgendaEntity, AgendaEntityDeadline } from '@/types/entity'
 import type { AgendaObjective, AgendaEntityObjective } from '@/types/objective'
-import type { AgendaTaskWithStart, CreateAgendaTask } from '@/types/task'
+import type { AgendaTaskWithStartOrDeadline, CreateAgendaTask } from '@/types/task'
 import { updateBlock } from '@/util/logseq'
 
 import { secondsToHHmmss } from './fullCalendar'
@@ -185,7 +185,7 @@ export const deleteBlogTimeLog = async (uuid: string, index: number) => {
  * create task
  */
 export const createTaskBlock = async (taskInfo: CreateAgendaTask) => {
-  const { title, allDay, start, end, estimatedTime, projectId, bindObjectiveId } = taskInfo
+  const { title, allDay, start, deadline, end, estimatedTime, projectId, bindObjectiveId } = taskInfo
 
   const AGENDA_DRAWER = genAgendaDrawerText({
     estimated: estimatedTime,
@@ -195,7 +195,12 @@ export const createTaskBlock = async (taskInfo: CreateAgendaTask) => {
   // const
   const content = [
     `TODO ${title}`,
-    `SCHEDULED: <${start.format(allDay ? SCHEDULED_DATE_FORMATTER : SCHEDULED_DATETIME_FORMATTER)}>`,
+    start ? `SCHEDULED: <${start.format(allDay ? SCHEDULED_DATE_FORMATTER : SCHEDULED_DATETIME_FORMATTER)}>` : null,
+    deadline
+      ? `DEADLINE: <${deadline.value.format(
+          deadline.allDay ? SCHEDULED_DATE_FORMATTER : SCHEDULED_DATETIME_FORMATTER,
+        )}>`
+      : null,
     AGENDA_DRAWER,
   ]
     .filter(Boolean)
@@ -225,20 +230,22 @@ export function generateTimeLogText({ start, end }: { start: Dayjs; end: Dayjs }
 /**
  * update task
  */
-export const updateTaskBlock = async (taskInfo: AgendaTaskWithStart & { projectId?: string }) => {
-  const { id, title, allDay, start, end, estimatedTime, status, timeLogs, projectId, bindObjectiveId } = taskInfo
+export const updateTaskBlock = async (taskInfo: AgendaTaskWithStartOrDeadline & { projectId?: string }) => {
+  const { id, title, allDay, start, end, estimatedTime, deadline, status, timeLogs, projectId, bindObjectiveId } =
+    taskInfo
   const originalBlock = await logseq.Editor.getBlock(id)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
   const content1 = updateBlockTaskTitle(originalBlock.content, title, status)
   const content2 = updateBlockScheduled(content1, { start, allDay })
-  const content3 = updateBlockAgendaDrawer(content2, {
+  const content3 = updateBlockDeadline(content2, deadline)
+  const content4 = updateBlockAgendaDrawer(content3, {
     estimated: estimatedTime,
     end,
     bindObjectiveId,
   })
-  const content4 = updateBlockTimeLogText(content3, timeLogs)
-  await updateBlock(id, content4)
+  const content5 = updateBlockTimeLogText(content4, timeLogs)
+  await updateBlock(id, content5)
 
   const page = await logseq.Editor.getPage(originalBlock.page.id)
   if (!page) return Promise.reject(new Error('Page not found'))
@@ -424,6 +431,27 @@ export function updateBlockScheduled(blockContent: string, { start, allDay }: { 
     .map((line) => {
       if (line.startsWith('SCHEDULED: <')) {
         return scheduleText
+      }
+      return line
+    })
+    .filter(Boolean)
+    .join('\n')
+}
+/**
+ * update deadline
+ */
+export function updateBlockDeadline(blockContent: string, deadline?: AgendaEntityDeadline) {
+  const deadlineText = deadline?.value
+    ? `DEADLINE: <${deadline.value.format(deadline.allDay ? SCHEDULED_DATE_FORMATTER : SCHEDULED_DATETIME_FORMATTER)}>`
+    : null
+  if (!/^DEADLINE: </gm.test(blockContent) && deadlineText) {
+    return blockContent + '\n' + deadlineText
+  }
+  return blockContent
+    .split('\n')
+    .map((line) => {
+      if (line.startsWith('DEADLINE: <')) {
+        return deadlineText
       }
       return line
     })

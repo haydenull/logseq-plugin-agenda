@@ -1,21 +1,34 @@
+import type { MessageInstance } from 'antd/es/message/interface'
 import dayjs, { type Dayjs } from 'dayjs'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { parseDurationString } from '@/Agenda3/helpers/block'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
+import type { AgendaEntityDeadline } from '@/types/entity'
 import { replaceTimeInfo } from '@/util/util'
 
-export type CreateTaskForm = {
+type BaseCreateTaskForm = {
   title: string
-  startDateVal: Dayjs
+  startDateVal?: Dayjs
   endDateVal?: Dayjs
+  deadlineDateVal?: Dayjs
   startTime?: string
+  deadlineTime?: string
   estimatedTime?: string
   actualTime?: string
   projectId?: string
   bindObjectiveId?: string
 }
-const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
+export type CreateTaskForm =
+  | (BaseCreateTaskForm & {
+      startDateVal: Dayjs
+    })
+  | (BaseCreateTaskForm & {
+      endDateVal: Dayjs
+    })
+const useCreate = (initialData: Partial<CreateTaskForm> | null, messageApi: MessageInstance) => {
+  const { t } = useTranslation()
   const { addNewEntity } = useAgendaEntities()
   const _initialData = initialData
     ? {
@@ -30,7 +43,13 @@ const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
   const [formData, setFormData] = useState<CreateTaskForm>(_initialData)
 
   const allDay = !formData.startTime
-  const start = genStart(allDay, formData.startDateVal, formData.startTime)
+  const start = formData.startDateVal ? genStart(allDay, formData.startDateVal, formData.startTime) : undefined
+  const deadline = formData.deadlineDateVal
+    ? ({
+        value: genStart(!formData.deadlineTime, formData.deadlineDateVal, formData.deadlineTime),
+        allDay: !formData.deadlineTime,
+      } satisfies AgendaEntityDeadline)
+    : undefined
   const updateFormData = (data: Partial<CreateTaskForm>) => {
     setFormData((_data) => ({
       ..._data,
@@ -38,11 +57,15 @@ const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
     }))
   }
   const create = async () => {
+    if (!start && !deadline) {
+      return messageApi.error(t('Pleasse specify start or deadline'))
+    }
     return addNewEntity({
       type: 'task',
       data: {
         allDay,
         start,
+        deadline,
         end: formData.endDateVal,
         title: formData.title,
         estimatedTime: formData.estimatedTime ? parseDurationString(formData.estimatedTime) : undefined,
@@ -55,7 +78,7 @@ const useCreate = (initialData: Partial<CreateTaskForm> | null) => {
     setFormData(_initialData)
   }
 
-  return { formData, allDay, start, updateFormData, create, reset }
+  return { formData, allDay, start, deadline, updateFormData, create, reset }
 }
 
 export const genStart = (allDay: boolean, date: Dayjs, startTime?: string) => {

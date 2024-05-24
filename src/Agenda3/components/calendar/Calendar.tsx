@@ -16,7 +16,7 @@ import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { appAtom } from '@/Agenda3/models/app'
-import { tasksWithStartAtom } from '@/Agenda3/models/entities/tasks'
+import { tasksWithStartOrDeadlineAtom } from '@/Agenda3/models/entities/tasks'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
 // import useTheme from '@/hooks/useTheme'
@@ -42,12 +42,12 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   const { currentTheme: theme } = useTheme()
   const app = useAtomValue(appAtom)
   const { updateEntity } = useAgendaEntities()
-  const tasksWithStart = useAtomValue(tasksWithStartAtom)
+  const tasksWithStartOrDeadline = useAtomValue(tasksWithStartOrDeadlineAtom)
   const settings = useAtomValue(settingsAtom)
   const { currentGraph } = useAtomValue(logseqAtom)
   const startingDay = settings.general?.startOfWeek
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
-  const showTasks = tasksWithStart?.filter((task) =>
+  const showTasks = tasksWithStartOrDeadline?.filter((task) =>
     settings.viewOptions?.hideCompleted ? task.status === 'todo' : true,
   )
   // const now = dayjs()

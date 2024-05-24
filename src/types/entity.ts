@@ -16,7 +16,8 @@ export type AgendaEntity = {
   allDay: boolean
   start?: Dayjs // logseq scheduled
   end?: Dayjs // from agenda drawer end
-  deadline?: Dayjs // logseq deadline
+  // logseq deadline
+  deadline?: AgendaEntityDeadline
   project: AgendaProject // logseq page
   label?: AgendaEntityPage // logseq page
   filters?: Filter[]
@@ -43,4 +44,8 @@ export type AgendaEntityPage = {
   isJournal: boolean
   journalDay?: number
   properties?: Record<string, string>
+}
+export type AgendaEntityDeadline = {
+  value: Dayjs
+  allDay: boolean
 }
