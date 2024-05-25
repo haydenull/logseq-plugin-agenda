@@ -7,7 +7,6 @@ import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import usePages from '@/Agenda3/hooks/usePages'
 import { appAtom } from '@/Agenda3/models/app'
 import { logseqAtom } from '@/Agenda3/models/logseq'
-import initializeDayjs from '@/register/dayjs'
 import { cn } from '@/util/util'
 
 import MultipleView from './components/MainArea'
@@ -30,7 +29,6 @@ const Dashboard = () => {
   const [connectionErrorModal, setConnectionErrorModal] = useState(false)
 
   const loadData = useCallback(() => {
-    initializeDayjs(1)
     refreshEntities().catch((error) => {
       console.error('retrieve tasks failed', error)
       if (import.meta.env.VITE_MODE === 'web') {
@@ -72,7 +70,9 @@ const Dashboard = () => {
   return (
     <div
       className={cn(
-        "flex h-screen w-screen bg-gray-100 before:pointer-events-none before:absolute before:h-[180px] before:w-[240px] before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:transition-all before:content-['']  dark:bg-zinc-800 before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40",
+        `flex h-screen w-screen bg-gray-100 before:pointer-events-none before:absolute before:h-[180px] before:w-[240px]
+        before:bg-gradient-conic before:from-sky-200 before:via-blue-200 before:blur-2xl before:transition-all
+        before:content-[''] before:dark:from-sky-900 before:dark:via-[#0141ff] before:dark:opacity-40`,
         {
           'pt-[30px]': import.meta.env.VITE_MODE === 'plugin',
         },

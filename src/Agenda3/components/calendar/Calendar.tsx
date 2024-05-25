@@ -42,6 +42,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   const { updateEntity } = useAgendaEntities()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
   const settings = useAtomValue(settingsAtom)
+  const startingDay = settings.general?.startOfWeek
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
   const showTasks = tasksWithStart?.filter((task) =>
     settings.viewOptions?.hideCompleted ? task.status === 'todo' : true,
@@ -185,7 +186,7 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
         weekNumbers
         weekNumberContent={({ num, date }) => <WeekNumber weekNumber={num} date={date} />}
         defaultTimedEventDuration="00:30"
-        firstDay={1}
+        firstDay={Number(startingDay)}
         fixedWeekCount={false}
         ref={calendarRef}
         height="100%"

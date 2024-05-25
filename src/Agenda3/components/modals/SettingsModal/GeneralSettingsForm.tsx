@@ -8,7 +8,7 @@ const GeneralSettingsForm = () => {
   const { t, i18n } = useTranslation()
   const { settings, setSettings } = useSettings()
 
-  const onChange = (key: string, value: string | boolean | undefined | Filter[] | string[]) => {
+  const onChange = (key: string, value: number | string | boolean | undefined | Filter[] | string[]) => {
     setSettings(key, value)
   }
   // 当切换语言时，更新 i18n 的语言
@@ -41,6 +41,24 @@ const GeneralSettingsForm = () => {
             options={[
               { label: 'English', value: 'en' },
               { label: '简体中文', value: 'zh-CN' },
+            ]}
+          />
+        </div>
+        <div className="mt-4">
+          <div className="text-gray-500">Start of Week</div>
+          <Select
+            placeholder="Select Start of Week"
+            className="w-[300px]"
+            value={settings.general?.startOfWeek}
+            onChange={(e) => onChange('general.startOfWeek', e)}
+            options={[
+              { label: 'Sun', value: 0 },
+              { label: 'Mon', value: 1 },
+              { label: 'Tue', value: 2 },
+              { label: 'Wed', value: 3 },
+              { label: 'Thu', value: 4 },
+              { label: 'Fri', value: 5 },
+              { label: 'Sat', value: 6 },
             ]}
           />
         </div>
