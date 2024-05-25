@@ -5,12 +5,14 @@ import { useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BsCalendar4Event, BsCalendar4Range, BsCalendarCheck, BsClock, BsClockHistory } from 'react-icons/bs'
+import { CgSandClock } from 'react-icons/cg'
 import { IoIosCheckmarkCircleOutline, IoMdCloseCircle } from 'react-icons/io'
 import { RiCheckboxBlankCircleLine, RiDeleteBin4Line } from 'react-icons/ri'
 
 import { updateBlockTaskStatus } from '@/Agenda3/helpers/block'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { track } from '@/Agenda3/helpers/umami'
+import { getDaysBetween } from '@/Agenda3/helpers/util'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import usePages from '@/Agenda3/hooks/usePages'
 import { logseqAtom } from '@/Agenda3/models/logseq'
@@ -447,6 +449,12 @@ const TaskModal = ({
                 {formData.deadlineDateVal && deadline ? (
                   <div className="flex items-center gap-1">
                     <span>{deadline.value.format(showDeadlineTimeFormatter)}</span>
+                    {info.type === 'create' || (info.type === 'edit' && info.initialTaskData.status !== 'done') ? (
+                      <div className="flex items-center rounded bg-zinc-500/10 px-1 text-xs font-normal text-zinc-400 dark:bg-white/20">
+                        <CgSandClock className="text-xs" />
+                        <span className="italic">{getDaysBetween(dayjs(), deadline.value)}</span>
+                      </div>
+                    ) : null}
                     <IoMdCloseCircle
                       className="invisible text-zinc-400 group-hover:visible"
                       onClick={(e) => {
