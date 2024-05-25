@@ -1,3 +1,10 @@
+# [3.11.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.5...v3.11.0) (2024-05-25)
+
+
+### Features
+
+* support set start of the week ([#296](https://github.com/haydenull/logseq-plugin-agenda/issues/296)) ([b87a00e](https://github.com/haydenull/logseq-plugin-agenda/commit/b87a00ef6f7e1aeb7f8db45ec469a6f420bbada9))
+
 ## [3.10.5](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.4...v3.10.5) (2024-05-23)
 
 
