@@ -1,3 +1,17 @@
+# [3.13.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.12.0...v3.13.0) (2024-05-25)
+
+
+### Bug Fixes
+
+* **calendar:** :bug: timed event from previous day causes incorrect +more count in calendar ([4ba6942](https://github.com/haydenull/logseq-plugin-agenda/commit/4ba6942e6c2bf36854a1da23e822106f44c78680)), closes [#316](https://github.com/haydenull/logseq-plugin-agenda/issues/316)
+
+
+### Features
+
+* **calendar:** :sparkles: show days to deadline ([5fabaec](https://github.com/haydenull/logseq-plugin-agenda/commit/5fabaecdff5c4375becfe45d833c648119af9075))
+* **calendar:** :sparkles: show deadline task in calendar ([ed5e060](https://github.com/haydenull/logseq-plugin-agenda/commit/ed5e0609f883753d8e08343b88cee832a885d6ae))
+* **kanban:** :sparkles: show deadline in kanban ([86ed350](https://github.com/haydenull/logseq-plugin-agenda/commit/86ed350e87de1f762df27327cf2f5d827dd95f60))
+
 # [3.12.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.11.0...v3.12.0) (2024-05-25)
 
 
