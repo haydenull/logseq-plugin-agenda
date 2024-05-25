@@ -61,7 +61,7 @@ const Toolbar = ({
         ) : null}
         {/* Logseq icon */}
         <div
-          className="cursor-pointer text-gray-300 opacity-0 transition-opacity group-hover/card:opacity-100"
+          className="cursor-pointer text-gray-300 opacity-0 transition-opacity group-hover/card:opacity-100 dark:text-gray-400"
           onClick={(e) => {
             e.stopPropagation()
             navToLogseqBlock(task, currentGraph)
@@ -70,7 +70,7 @@ const Toolbar = ({
           <LogseqLogo />
         </div>
       </div>
-      <div className="rounded bg-gray-100 px-1 py-0.5 text-[10px] text-gray-400">
+      <div className="rounded bg-gray-100 px-1 py-0.5 text-[10px] text-gray-400 dark:bg-zinc-800">
         {task.status === 'done' ? <span>{minutesToHHmm(task.actualTime ?? estimatedTime)} / </span> : null}
         {minutesToHHmm(estimatedTime)}
       </div>

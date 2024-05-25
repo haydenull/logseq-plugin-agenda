@@ -78,11 +78,14 @@ export const ANTD_THEME_CONFIG: Record<string, ThemeConfig> = {
     algorithm: antdTheme.darkAlgorithm,
   },
 }
-export const NEW_ANTD_THEME_CONFIG: Record<string, ThemeConfig> = {
-  green: {
+export const NEW_ANTD_THEME_CONFIG: Record<'light' | 'dark', ThemeConfig> = {
+  light: {
     token: {
       colorPrimary: '#3688d8',
     },
+  },
+  dark: {
+    algorithm: antdTheme.darkAlgorithm,
   },
 }
 

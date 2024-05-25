@@ -22,7 +22,7 @@ dayjs.extend(quarterOfYear)
 dayjs.extend(isoWeek)
 dayjs.extend(weekOfYear) // Use plugin
 
-const initializeDayjs = (weekStartDay: 0 | 1) => {
+const initializeDayjs = (weekStartDay: number) => {
   // dayjs.locale('zh-cn')
   dayjs.updateLocale('en', {
     weekStart: weekStartDay,

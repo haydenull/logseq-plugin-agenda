@@ -13,6 +13,8 @@ import { transformAgendaTaskToICSEvent } from '@/util/ics'
 import { cn } from '@/util/util'
 
 const UploadIcs = ({ className }: { className?: string }) => {
+  const [notificationApi, notificationContextHolder] = notification.useNotification()
+  const [messageApi, messageContextHolder] = message.useMessage()
   const { currentGraph } = useAtomValue(logseqAtom)
   const tasks = useAtomValue(tasksWithStartAtom)
   const { settings } = useSettings()
@@ -23,17 +25,18 @@ const UploadIcs = ({ className }: { className?: string }) => {
   const onClickUpload = async () => {
     track('Upload ICS Button')
     const { repo, token } = ics ?? {}
-    if (!repo || !token) return message.error('Please set repo and token')
-    if (!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(repo)) return message.error('Invalid repo format. eg: username/repo')
+    if (!repo || !token) return messageApi.error('Please set repo and token')
+    if (!/^[A-Za-z0-9._-]+\/[A-Za-z0-9._-]+$/.test(repo))
+      return messageApi.error('Invalid repo format. eg: username/repo')
     const events: EventAttributes[] = tasks.map((task) => transformAgendaTaskToICSEvent(task, currentGraph?.name ?? ''))
-    if (events.length <= 0) return message.warning('There are no tasks to upload')
+    if (events.length <= 0) return messageApi.warning('There are no tasks to upload')
     createEvents(events, (error, value) => {
       if (error) return console.log('generate ics error', error)
       // console.log('ics text', value)
       doUpload({ file: value, repo, token })
-        .then(() => message.success('🎉 Upload success'))
+        .then(() => messageApi.success('🎉 Upload success'))
         .catch((err) => {
-          notification.error({
+          notificationApi.error({
             message: 'Upload failed',
             description: err.message,
             duration: 0,
@@ -44,12 +47,16 @@ const UploadIcs = ({ className }: { className?: string }) => {
   }
 
   return (
-    <div className="relative">
-      <FiUploadCloud className={cn('text-lg', className)} onClick={onClickUpload} />
-      {loading ? (
-        <span className="absolute top-0 right-0 h-2 w-2 animate-pulse rounded-full bg-orange-500"></span>
-      ) : null}
-    </div>
+    <>
+      <div className="relative">
+        <FiUploadCloud className={cn('text-lg', className)} onClick={onClickUpload} />
+        {loading ? (
+          <span className="absolute right-0 top-0 h-2 w-2 animate-pulse rounded-full bg-orange-500"></span>
+        ) : null}
+      </div>
+      {notificationContextHolder}
+      {messageContextHolder}
+    </>
   )
 }
 
