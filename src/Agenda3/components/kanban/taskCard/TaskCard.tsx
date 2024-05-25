@@ -12,27 +12,28 @@ import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
-import type { AgendaTaskWithStart } from '@/types/task'
+import type { AgendaTaskWithStartOrDeadline } from '@/types/task'
 import { cn } from '@/util/util'
 
 import Group from '../../Group'
 import TaskModal from '../../modals/TaskModal'
 import Toolbar from './Toolbar'
 
-const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
+const TaskCard = ({ task }: { task: AgendaTaskWithStartOrDeadline }) => {
   const currentGraph = useAtomValue(logseqAtom).currentGraph
   const settings = useAtomValue(settingsAtom)
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
 
   const [editTaskModal, setEditTaskModal] = useState<{
     open: boolean
-    task?: AgendaTaskWithStart
+    task?: AgendaTaskWithStartOrDeadline
   }>({
     open: false,
   })
 
   const editDisabled = task.rrule || task.recurringPast
   const isMultipleDays = task.allDay && task.end
+  const noStart = !task.start
   const estimatedTime = task.estimatedTime ?? DEFAULT_ESTIMATED_TIME
 
   const { updateEntity, deleteEntity } = useAgendaEntities()
@@ -48,7 +49,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
   const onRemoveDate = async (taskId: string) => {
     updateEntity({ type: 'task-remove-date', id: taskId, data: null })
   }
-  const onClickTask = (e: React.MouseEvent, task: AgendaTaskWithStart) => {
+  const onClickTask = (e: React.MouseEvent, task: AgendaTaskWithStartOrDeadline) => {
     if (e.ctrlKey) {
       navToLogseqBlock(task, currentGraph)
       console.log(task)
@@ -65,7 +66,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
         {
           'bg-[#edeef0] opacity-80 dark:bg-[#2f2f33]': task.status === 'done',
           // 循环任务及多天任务不能拖拽
-          'droppable-task-element': !editDisabled && !isMultipleDays,
+          'droppable-task-element': !editDisabled && !isMultipleDays && !noStart,
         },
       )}
       data-event={JSON.stringify({
@@ -117,7 +118,11 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStart }) => {
           <Toolbar task={task} groupType={groupType} onClickMark={onClickTaskMark} />
 
           {/* ========= Title ========= */}
-          <div className={cn('my-0.5 text-gray-600 dark:text-gray-100', { 'line-through': task.status === 'done' })}>
+          <div
+            className={cn('my-0.5 select-none break-words text-gray-600 dark:text-gray-100', {
+              'line-through': task.status === 'done',
+            })}
+          >
             {task.showTitle}
           </div>
 
