@@ -6,7 +6,7 @@ import { IoMdCheckmark } from 'react-icons/io'
 import useSettings from '@/Agenda3/hooks/useSettings'
 import { cn } from '@/util/util'
 
-const CALENDAR_VIEWS = {
+export const CALENDAR_VIEWS = {
   dayGridMonth: 'dayGridMonth',
   timeGridWeek: 'timeGridWeek',
 } as const
