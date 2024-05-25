@@ -1,3 +1,10 @@
+# [3.12.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.11.0...v3.12.0) (2024-05-25)
+
+
+### Features
+
+* shortcuts for agenda v3 ([#297](https://github.com/haydenull/logseq-plugin-agenda/issues/297)) ([790be0d](https://github.com/haydenull/logseq-plugin-agenda/commit/790be0ddf2d0c2b97481e5ec874a35d64fdc9143))
+
 # [3.11.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.10.5...v3.11.0) (2024-05-25)
 
 
