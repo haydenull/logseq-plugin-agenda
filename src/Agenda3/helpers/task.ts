@@ -8,7 +8,7 @@ import type { Filter, Settings } from '@/Agenda3/models/settings'
 import { DEFAULT_ESTIMATED_TIME, getRecentDaysRange } from '@/constants/agenda'
 import type { AgendaEntity, AgendaEntityDeadline, AgendaEntityPage } from '@/types/entity'
 import type { RRule } from '@/types/fullcalendar'
-import type { AgendaTaskWithStart } from '@/types/task'
+import type { AgendaTaskWithStart, AgendaTaskWithStartOrDeadline } from '@/types/task'
 import { fillBlockReference } from '@/util/schedule'
 import { genDays } from '@/util/util'
 
@@ -343,11 +343,16 @@ export const DATE_FORMATTER_FOR_KEY = 'YYYYMMDD'
 /**
  * separate tasks day by day
  */
-export const separateTasksInDay = (tasks: AgendaTaskWithStart[]): Map<string, AgendaTaskWithStart[]> => {
+export const separateTasksInDay = (
+  tasks: AgendaTaskWithStartOrDeadline[],
+): Map<string, AgendaTaskWithStartOrDeadline[]> => {
   // separate tasks in day based on scheduled date
-  const tasksMap = new Map<string, AgendaTaskWithStart[]>()
+  const tasksMap = new Map<string, AgendaTaskWithStartOrDeadline[]>()
   tasks.forEach((task) => {
-    const taskDayStr = task.start.format(DATE_FORMATTER_FOR_KEY)
+    if (!task.start && !task.deadline?.value) return
+    const taskDayStr = task.start
+      ? task.start.format(DATE_FORMATTER_FOR_KEY)
+      : task.deadline!.value.format(DATE_FORMATTER_FOR_KEY)
     if (tasksMap.has(taskDayStr)) {
       tasksMap.get(taskDayStr)?.push(task)
     } else {
@@ -364,7 +369,7 @@ export const separateTasksInDay = (tasks: AgendaTaskWithStart[]): Map<string, Ag
  * adapt task to kanban
  */
 export const transformTasksToKanbanTasks = (
-  tasks: AgendaTaskWithStart[],
+  tasks: AgendaTaskWithStartOrDeadline[],
   options: { showFirstEventInCycleOnly?: boolean } = {},
 ): KanBanItem[] => {
   const { showFirstEventInCycleOnly = false } = options
@@ -374,7 +379,7 @@ export const transformTasksToKanbanTasks = (
       const { allDay, end, start } = task
 
       // splitting multi-days task into single-day tasks
-      if (allDay && end) {
+      if (allDay && end && start) {
         const days = genDays(start, end)
         return days.map((day) => {
           const isPast = day.isBefore(today, 'day')

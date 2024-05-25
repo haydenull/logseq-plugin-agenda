@@ -32,19 +32,23 @@ export const tasksWithStartOrDeadlineAtom = atom<AgendaTaskWithStartOrDeadline[]
       } as AgendaTaskWithStartOrDeadline
     })
 })
-export const recentTasksAtom = atom<AgendaTaskWithStart[]>((get) => {
-  const allTasks = get(tasksWithStartAtom)
+export const recentTasksAtom = atom<AgendaTaskWithStartOrDeadline[]>((get) => {
+  const allTasks = get(tasksWithStartOrDeadlineAtom)
 
   const today = dayjs()
   const [rangeStart, rangeEnd] = RECENT_DAYS_RANGE
   const startDay = today.subtract(rangeStart, 'day')
   const endDay = today.add(rangeEnd, 'day')
   return allTasks.filter((task) => {
-    return (
-      task.start?.isBetween(startDay, endDay, 'day', '[]') ||
-      task.end?.isBetween(startDay, endDay, 'day', '[]') ||
-      (task.start?.isBefore(startDay, 'day') && task.end?.isAfter(endDay, 'day'))
-    )
+    if (task.start) {
+      return (
+        task.start?.isBetween(startDay, endDay, 'day', '[]') ||
+        task.end?.isBetween(startDay, endDay, 'day', '[]') ||
+        (task.start?.isBefore(startDay, 'day') && task.end?.isAfter(endDay, 'day'))
+      )
+    }
+    if (task.deadline?.value) return task.deadline.value?.isBetween(startDay, endDay, 'day', '[]')
+    return false
   })
 })
 

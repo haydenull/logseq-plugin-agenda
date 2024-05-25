@@ -6,7 +6,7 @@ import { DATE_FORMATTER_FOR_KEY, separateTasksInDay, transformTasksToKanbanTasks
 import { recentTasksAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { getRecentDaysRange } from '@/constants/agenda'
-import type { AgendaTaskWithStart } from '@/types/task'
+import type { AgendaTaskWithStartOrDeadline } from '@/types/task'
 import { genDays } from '@/util/util'
 
 import Column, { type ColumnHandle } from './Column'
@@ -66,7 +66,7 @@ const KanBan = (props, ref) => {
   )
 }
 
-export type KanBanItem = AgendaTaskWithStart & {
+export type KanBanItem = AgendaTaskWithStartOrDeadline & {
   filtered?: boolean
 }
 export default forwardRef<KanBanHandle>(KanBan)

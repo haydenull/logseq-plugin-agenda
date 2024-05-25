@@ -54,6 +54,8 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
   const recentTasks = useAtomValue(recentTasksAtom)
   const now = dayjs()
   const calendarEvents = recentTasks
+    // TODO: 补充 deadline 任务的处理后移除次过滤器
+    .filter((task) => task.start)
     .map((task) =>
       transformAgendaTaskToCalendarEvent(task, {
         showFirstEventInCycleOnly: settings.viewOptions?.showFirstEventInCycleOnly,
@@ -148,7 +150,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
       }}
     >
       <div className="group flex h-[44px] items-center justify-between">
-        <div className="flex cursor-default  items-center gap-1.5 px-2 py-1">
+        <div className="flex cursor-default items-center gap-1.5 px-2 py-1">
           <MdSchedule className="text-lg" /> Time Box
         </div>
         <div className="mr-4 flex opacity-0 transition-opacity group-hover/root:opacity-100">
@@ -224,7 +226,7 @@ const TimeBox = ({ onChangeType }: { onChangeType?: () => void }) => {
                 <div className="flex gap-1 text-gray-500 dark:text-gray-300">
                   {day.format('ddd')}
                   <span
-                    className={cn('h-6 w-6  rounded ', {
+                    className={cn('h-6 w-6 rounded ', {
                       'bg-blue-400 text-white dark:bg-blue-600 dark:text-gray-100': isToday,
                     })}
                   >

@@ -6,12 +6,11 @@ import { useEffect, useImperativeHandle, useRef } from 'react'
 import React from 'react'
 import { ReactSortable } from 'react-sortablejs'
 
-import { updateBlockDateInfo } from '@/Agenda3/helpers/block'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { appAtom } from '@/Agenda3/models/app'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
-import type { AgendaTaskWithStart } from '@/types/task'
+import type { AgendaTaskWithStartOrDeadline } from '@/types/task'
 import { cn, replaceDateInfo } from '@/util/util'
 
 import AddTaskCard from './AddTaskCard'
@@ -19,7 +18,7 @@ import ColumnTitle from './ColumnTitle'
 import type { KanBanItem } from './KanBan'
 import TaskCard from './taskCard/TaskCard'
 
-export type ColumnProps = { day: Dayjs; tasks: AgendaTaskWithStart[]; allKanbanItems: KanBanItem[] }
+export type ColumnProps = { day: Dayjs; tasks: AgendaTaskWithStartOrDeadline[]; allKanbanItems: KanBanItem[] }
 const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
   const columnContainerRef = useRef<HTMLDivElement>(null)
   // bind draggable
@@ -47,6 +46,8 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
     console.log('[faiz:] === kanban onAdd', sortableEvent)
     const id = sortableEvent?.item?.dataset?.id
     const task = allKanbanItems.find((task) => task.id === id)
+    // TODO: 支持拖拽修改 deadline
+    if (!task?.start) return logseq.UI.showMsg('Drag task without start date is not supported', 'error')
     if (!task || !id) return logseq.UI.showMsg('task id not found', 'error')
     let startDay = day
     // remain time info
