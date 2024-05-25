@@ -15,8 +15,7 @@
       @apply bg-rose-500 rounded-full flex items-center justify-center text-white font-bold;
     }
     .fc-daygrid-day.fc-day-sat, .fc-daygrid-day.fc-day-sun {
-      background-color: #f0f0f0;
-      // @apply bg-stone-200;
+      @apply bg-[#f0f0f0];
     }
     .fc-col-header-cell {
       @apply font-normal text-right;
@@ -24,20 +23,27 @@
     .fc-col-header-cell.fc-day-sat,.fc-col-header-cell.fc-day-sun {
       @apply text-gray-400;
     }
-    .fc-theme-standard .fc-scrollgrid {
-      // border-left: none;
-      // & > thead[role="rowgroup"] th {
-      //   border-right: none;
-      // }
-      // & > tbody[role="presentation"] tr td {
-      //   border-right: none;
-      // }
-    }
-    // tr td.fc-day {
-    //   border-right: none !important;
-    // }
     .fc-timegrid-col.fc-day-sun, .fc-timegrid-col.fc-day-sat {
-      background-color: #f0f0f0;
+      @apply bg-[#f0f0f0];
+    }
+  }
+}
+
+:global(.dark) {
+  .fullCalendar {
+    :global {
+      .fc-day-today .fc-daygrid-day-top a {
+        @apply bg-rose-600;
+      }
+      .fc-daygrid-day.fc-day-sat, .fc-daygrid-day.fc-day-sun {
+        @apply bg-zinc-900;
+      }
+      .fc-col-header-cell.fc-day-sat,.fc-col-header-cell.fc-day-sun {
+        @apply text-zinc-500;
+      }
+      .fc-timegrid-col.fc-day-sun, .fc-timegrid-col.fc-day-sat {
+        @apply bg-zinc-900;
+      }
     }
   }
 }

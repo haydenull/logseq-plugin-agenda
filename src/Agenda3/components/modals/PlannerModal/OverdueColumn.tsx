@@ -10,7 +10,7 @@ import TaskCard from '../../kanban/taskCard/TaskCard'
 const OverdueColumn = ({ tasks }: { tasks: AgendaTaskWithStart[] }) => {
   const { t } = useTranslation()
   return (
-    <div className="mt-2 flex w-[281px] shrink-0 flex-col rounded-md bg-gray-300 px-2 py-2">
+    <div className="mt-2 flex w-[281px] shrink-0 flex-col rounded-md bg-gray-300 px-2 py-2 dark:bg-[#212121]">
       <div className="mb-2 flex items-center justify-center">
         <div className="relative text-2xl">
           <span className="uppercase">{t('Overdue')}</span>

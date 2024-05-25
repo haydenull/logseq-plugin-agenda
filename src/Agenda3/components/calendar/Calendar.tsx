@@ -1,6 +1,4 @@
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-import enLocale from '@fullcalendar/core/locales/en-gb'
-import esLocale from '@fullcalendar/core/locales/es'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin, { type EventReceiveArg, type EventResizeDoneArg } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
@@ -11,13 +9,15 @@ import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
-import { genDurationString, updateBlockDateInfo } from '@/Agenda3/helpers/block'
+import { useTheme } from '@/Agenda3/components/ThemeProvider'
+import { genDurationString } from '@/Agenda3/helpers/block'
 import { transformAgendaTaskToCalendarEvent } from '@/Agenda3/helpers/fullCalendar'
 import { track } from '@/Agenda3/helpers/umami'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { appAtom } from '@/Agenda3/models/app'
 import { tasksWithStartAtom } from '@/Agenda3/models/entities/tasks'
 import { settingsAtom } from '@/Agenda3/models/settings'
+// import useTheme from '@/hooks/useTheme'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
@@ -37,6 +37,7 @@ type CalendarProps = { onCalendarTitleChange: (title: string) => void }
 const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
   // const [currentView, setCurrentView] = useState<CalendarView>('dayGridMonth')
   const calendarRef = useRef<FullCalendar>(null)
+  const { currentTheme: theme } = useTheme()
   const app = useAtomValue(appAtom)
   const { updateEntity } = useAgendaEntities()
   const tasksWithStart = useAtomValue(tasksWithStartAtom)
@@ -171,8 +172,10 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
       className={cn('flex h-full flex-col', s.fullCalendar)}
       style={{
         // @ts-expect-error define fullcalendar css variables
-        '--fc-border-color': '#e5e5e5',
         '--fc-today-bg-color': 'transparent',
+        '--fc-border-color': theme === 'dark' ? '#444' : '#e5e5e5',
+        '--fc-highlight-color': theme === 'dark' ? 'rgba(188,232,241,.1)' : 'rgba(188,232,241,.3)',
+        '--fc-page-bg-color': theme === 'dark' ? '#444' : '#fff',
       }}
     >
       <FullCalendar
@@ -250,7 +253,10 @@ const Calendar = ({ onCalendarTitleChange }: CalendarProps, ref) => {
               const isWeekend = day.day() === 6 || day.day() === 0
               return (
                 <div
-                  className={clsx('flex h-[34px] items-center gap-1', isWeekend ? 'text-gray-400' : 'text-gray-700')}
+                  className={clsx(
+                    'flex h-[34px] items-center gap-1',
+                    isWeekend ? 'text-gray-400 dark:text-gray-400' : 'text-gray-700 dark:text-gray-300',
+                  )}
                 >
                   {day.format('ddd')}
                   <span

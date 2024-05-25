@@ -6,6 +6,7 @@ dist-ssr
 .vscode
 .temp
 .cache
+.wrangler
 
 # bundle analytics
 stats.html

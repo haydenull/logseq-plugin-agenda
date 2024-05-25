@@ -27,9 +27,9 @@ const AddTaskCard = ({
       <div
         onClick={() => track('KanBan: Add Task Button', { today: String(isToday) })}
         className={cn(
-          'group my-2 flex cursor-pointer items-center justify-between rounded-md bg-white p-2 text-sm text-gray-400 hover:shadow',
+          'group my-2 flex cursor-pointer items-center justify-between rounded-md bg-white p-2 text-sm text-gray-400 hover:shadow dark:bg-zinc-700',
           {
-            'bg-[#edeef0]': isGray,
+            'bg-[#edeef0] dark:bg-[#2f2f33]': isGray,
           },
         )}
       >
@@ -40,11 +40,13 @@ const AddTaskCard = ({
           </span>
         </div>
         {actualTime ? (
-          <div className="rounded bg-gray-200 px-1 py-0.5 text-xs text-[10px]">
+          <div className="rounded bg-gray-200 px-1 py-0.5 text-[10px] text-xs dark:bg-zinc-800">
             {minutesToHHmm(actualTime)} / {minutesToHHmm(estimatedTime)}
           </div>
         ) : (
-          <div className="rounded bg-gray-200 px-1 py-0.5 text-xs text-[10px]">{minutesToHHmm(estimatedTime)}</div>
+          <div className="rounded bg-gray-200 px-1 py-0.5 text-[10px] text-xs dark:bg-zinc-800">
+            {minutesToHHmm(estimatedTime)}
+          </div>
         )}
       </div>
     </TaskModal>

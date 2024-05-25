@@ -6,8 +6,9 @@ import { useEffect, useRef, useState } from 'react'
 import { BsArchive } from 'react-icons/bs'
 import { ReactSortable } from 'react-sortablejs'
 
+import { useTheme } from '@/Agenda3/components/ThemeProvider'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
-import { categorizeTasksByPage, formatTaskTitle } from '@/Agenda3/helpers/task'
+import { categorizeTasksByPage } from '@/Agenda3/helpers/task'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import { cn } from '@/util/util'
@@ -17,6 +18,7 @@ import s from './backlog.module.less'
 import LogseqLogo from './icons/LogseqLogo'
 
 const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
+  const { currentTheme: theme } = useTheme()
   const taskContainerRef = useRef<HTMLDivElement>(null)
   const [backlogTasks] = useAtom(backlogsAtom)
   const { currentGraph } = useAtomValue(logseqAtom)
@@ -46,7 +48,9 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
     }
   }, [backlogTasks.length, bindCalendar])
   return (
-    <div className={cn('flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md', s.backlog)}>
+    <div
+      className={cn('flex h-full w-[290px] flex-col border-l bg-gray-50 pl-2 shadow-md dark:bg-zinc-900', s.backlog)}
+    >
       <div className="relative flex h-[44px] items-center gap-1.5 after:absolute after:bottom-0 after:h-1 after:w-full after:shadow">
         <BsArchive /> Backlog
         <Select
@@ -77,7 +81,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
             // accordion
             bordered={false}
             expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
-            style={{ background: '#f9fafb' }}
+            style={{ background: theme === 'dark' ? '#111' : '#f9fafb' }}
             defaultActiveKey={showCategorizedTasks.map((project) => project.project.originalName)}
             items={showCategorizedTasks.map((project) => ({
               key: project.project.originalName,
@@ -99,7 +103,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
                     return (
                       <div
                         key={task.id}
-                        className="droppable-task-element group cursor-move break-all rounded border bg-[#f9fafb] px-2 py-2 text-sm text-gray-600"
+                        className="droppable-task-element group cursor-move break-all rounded border bg-[#f9fafb] px-2 py-2 text-sm text-gray-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-500"
                         data-event={JSON.stringify({
                           id: task.id,
                           title: task.showTitle,
@@ -126,7 +130,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
                 marginBottom: 10,
                 borderRadius: 4,
                 border: 'none',
-                background: '#f0f0f0',
+                background: theme === 'dark' ? '#111' : '#f0f0f0',
               },
             }))}
           />

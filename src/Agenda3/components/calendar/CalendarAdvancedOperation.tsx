@@ -37,17 +37,17 @@ const CalendarOperation = ({ value, onChange }: { value: CalendarView; onChange:
       onOpenChange={setOpen}
       dropdownRender={() => {
         return (
-          <div className="rounded-md bg-white shadow-lg">
-            <div className="flex flex-col gap-1 border-b py-2 px-2">
+          <div className="rounded-md bg-white shadow-lg dark:bg-[#333]">
+            <div className="flex flex-col gap-1 border-b px-2 py-2">
               {CALENDAR_OPTIONS.map((view) => {
                 const isSelected = value === view.value
                 return (
                   <div
                     key={view.value}
                     className={cn(
-                      'flex min-w-[120px] cursor-pointer items-center justify-between gap-2 rounded px-2 py-1 hover:bg-gray-300',
+                      'flex min-w-[120px] cursor-pointer items-center justify-between gap-2 rounded px-2 py-1 hover:bg-gray-300 hover:dark:bg-[#444]',
                       {
-                        'bg-gray-200': isSelected,
+                        'bg-gray-200 dark:bg-[#555]': isSelected,
                       },
                     )}
                     onClick={() => onClickItem(view.value)}
