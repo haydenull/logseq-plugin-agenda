@@ -95,6 +95,11 @@ const useEdit = (initialTask: AgendaTaskWithStartOrDeadline | null, messageApi: 
       messageApi.error(message)
       throw new Error(message)
     }
+    if (formData.title?.trim()?.length === 0) {
+      const message = t('Title cannot be empty')
+      messageApi.error(message)
+      throw new Error(message)
+    }
     const result = safeParse(EditFormSchema, formData)
     if (!result.success || !initialTask) {
       messageApi.error('Failed to edit task block')

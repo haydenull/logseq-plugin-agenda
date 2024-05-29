@@ -47,5 +47,7 @@
   "tomorrow": "明天",
   "week": "本周",
   "month": "本月",
-  "Exit": "退出"
+  "Exit": "退出",
+  "Title cannot be empty": "标题不能为空",
+  "Pleasse specify start or deadline": "请指定开始或截止日期"
 }

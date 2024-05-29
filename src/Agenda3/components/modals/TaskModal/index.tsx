@@ -325,6 +325,11 @@ const TaskModal = ({
                 trigger={['click']}
                 arrow={false}
                 placement="bottomLeft"
+                onOpenChange={(open) => {
+                  if (open && formData.startDateVal === undefined) {
+                    updateFormData({ startDateVal: dayjs() })
+                  }
+                }}
                 content={
                   <div className="w-[300px] p-2">
                     <Calendar
@@ -434,6 +439,11 @@ const TaskModal = ({
               trigger={['click']}
               arrow={false}
               placement="bottomLeft"
+              onOpenChange={(open) => {
+                if (open && formData.deadlineDateVal === undefined) {
+                  updateFormData({ deadlineDateVal: dayjs().add(1, 'day') })
+                }
+              }}
               content={
                 <div className="w-[300px] p-2">
                   <Calendar

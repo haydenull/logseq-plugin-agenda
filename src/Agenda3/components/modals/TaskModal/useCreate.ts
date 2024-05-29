@@ -60,6 +60,9 @@ const useCreate = (initialData: Partial<CreateTaskForm> | null, messageApi: Mess
     if (!start && !deadline) {
       return messageApi.error(t('Pleasse specify start or deadline'))
     }
+    if (formData.title?.trim()?.length === 0) {
+      return messageApi.error(t('Title cannot be empty'))
+    }
     return addNewEntity({
       type: 'task',
       data: {
