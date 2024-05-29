@@ -1,5 +1,6 @@
 import type { EventContentArg } from '@fullcalendar/core'
 import dayjs from 'dayjs'
+import type { CSSProperties } from 'react'
 import { CgSandClock } from 'react-icons/cg'
 import { IoIosCheckmarkCircle } from 'react-icons/io'
 
@@ -16,6 +17,8 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
   const isHasDeadline = taskData?.deadline
   // 距离截止时间还剩多少天, 正数正常显示，负数显示为0
   const daysToDeadline = getDaysBetween(dayjs(), dayjs(taskData?.deadline?.value))
+  // 是否显示距离截止时间剩余天数
+  const isShowDeadline = isHasDeadline && !isDone
   let element: React.ReactNode | null = null
   switch (info.view.type) {
     case 'dayGridMonth':
@@ -37,18 +40,19 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
               className={cn('absolute right-0', info.event.allDay ? 'text-white' : 'text-green-500')}
             />
           ) : null}
-          {isHasDeadline && !isDone ? (
-            <div className="flex items-center rounded bg-white/30 px-0.5 text-xs font-normal">
-              <CgSandClock className="text-xs" />
-              <span className="italic">{daysToDeadline}</span>
-            </div>
+          {isShowDeadline ? (
+            <DeadlineNumber
+              daysToDeadline={daysToDeadline}
+              className={cn({ 'text-zinc-100': !info.event.allDay })}
+              style={info.event.allDay ? {} : { backgroundColor: info.event.backgroundColor }}
+            />
           ) : null}
         </div>
       )
       break
     case 'timeGridWeek':
       element = (
-        <div className={cn('relative h-full cursor-pointer', { 'opacity-70': isDone })}>
+        <div className={cn('relative h-full cursor-pointer', { 'opacity-70': isDone, 'pr-6': isShowDeadline })}>
           <div
             className={cn('truncate', {
               'line-through': isDone,
@@ -60,6 +64,9 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
           </div>
           {isShowTimeText ? <div className="text-xs text-gray-200">{info.timeText}</div> : null}
           {isDone ? <IoIosCheckmarkCircle className="absolute right-0 top-0.5" /> : null}
+          {isShowDeadline ? (
+            <DeadlineNumber daysToDeadline={daysToDeadline} className="absolute right-0 top-0.5" />
+          ) : null}
         </div>
       )
       break
@@ -67,6 +74,23 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
       element = null
   }
   return element
+}
+
+function DeadlineNumber({
+  daysToDeadline,
+  className,
+  style,
+}: {
+  daysToDeadline: number
+  className?: string
+  style?: CSSProperties
+}) {
+  return (
+    <div className={cn('flex items-center rounded bg-white/30 px-0.5 text-xs font-normal', className)} style={style}>
+      <CgSandClock className="text-xs" />
+      <span className="italic">{daysToDeadline}</span>
+    </div>
+  )
 }
 
 export default TheCalendarEvent
