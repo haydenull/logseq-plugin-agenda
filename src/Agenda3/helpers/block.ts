@@ -194,7 +194,7 @@ export const createTaskBlock = async (taskInfo: CreateAgendaTask) => {
   })
   // const
   const content = [
-    `TODO ${title}`,
+    `${getTodoTag()} ${title}`,
     start ? `SCHEDULED: <${start.format(allDay ? SCHEDULED_DATE_FORMATTER : SCHEDULED_DATETIME_FORMATTER)}>` : null,
     deadline
       ? `DEADLINE: <${deadline.value.format(
@@ -266,7 +266,7 @@ export const updateTaskBlock = async (taskInfo: AgendaTaskWithStartOrDeadline & 
  * toggle task status
  */
 export const updateBlockTaskStatus = async (taskInfo: AgendaEntity, status: AgendaEntity['status']) => {
-  const todoTag = status === 'done' ? 'DONE' : 'TODO'
+  const todoTag = status === 'done' ? 'DONE' : getTodoTag()
   const rawTodoTag = taskInfo.rawBlock.marker
   if (!rawTodoTag) {
     message.error('This is not a todo block')
@@ -462,7 +462,7 @@ export function updateBlockDeadline(blockContent: string, deadline?: AgendaEntit
  * update title
  */
 export function updateBlockTaskTitle(blockContent: string, title: string, status: 'done' | 'todo') {
-  const todoTag = status === 'done' ? 'DONE' : 'TODO'
+  const todoTag = status === 'done' ? 'DONE' : getTodoTag()
   return blockContent
     .split('\n')
     .map((line, index) => {
@@ -532,7 +532,7 @@ export const createObjectiveBlock = async (objective: CreateObjectiveForm) => {
   const AGENDA_DRAWER = genAgendaDrawerText({
     objective: objectiveInfo,
   })
-  const content = [`TODO ${title}`, AGENDA_DRAWER].filter(Boolean).join('\n')
+  const content = [`${getTodoTag()} ${title}`, AGENDA_DRAWER].filter(Boolean).join('\n')
   const block = await logseq.Editor.insertBlock((await createTodayJournalPage()).uuid, content, {
     isPageBlock: true,
     customUUID: await logseq.Editor.newBlockUUID(),
@@ -552,4 +552,9 @@ export const updateObjectiveBlock = async (objective: AgendaObjective) => {
   const content2 = updateBlockAgendaDrawer(content1, { objective: objectiveInfo })
   await updateBlock(id, content2)
   return logseq.Editor.getBlock(id)
+}
+
+/** get todo tag */
+export function getTodoTag() {
+  return window.logseqAppUserConfigs?.preferredWorkflow === 'now' ? 'LATER' : 'TODO'
 }

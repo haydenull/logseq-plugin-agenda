@@ -44,6 +44,8 @@ const Dashboard = () => {
   // get tasks and projects
   useEffect(() => {
     const handleWindowFocus = () => {
+      // 更新 logseqAppUserConfigs
+      logseq.App.getUserConfigs().then((res) => (window.logseqAppUserConfigs = res))
       // 在浏览器获得焦点时刷新数据
       loadData()
     }
