@@ -67,7 +67,7 @@ export const transformAgendaTaskToCalendarEvent = (
       rrule,
       // 只有时间点事件才能传 duration
       duration: allDay ? undefined : { minute: spanTime },
-      editable: !(task.recurringPast || task.rrule),
+      editable: !(task.recurringPast || task.rrule || !task.start),
       color: groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
     },
   ]
