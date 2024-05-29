@@ -69,7 +69,7 @@ const TaskModal = ({
 
   const groupType = settings.selectedFilters?.length ? 'filter' : 'page'
 
-  const { deleteEntity } = useAgendaEntities()
+  const { deleteEntity, updateEntity } = useAgendaEntities()
 
   const createHookResult = useCreate(info.type === 'create' ? info.initialData : null, messageApi)
   const editHookResult = useEdit(info.type === 'edit' ? info.initialTaskData : null, messageApi)
@@ -151,6 +151,11 @@ const TaskModal = ({
     if (info.type !== 'edit') return
 
     await updateBlockTaskStatus(info.initialTaskData, status)
+    updateEntity({
+      type: 'task-status',
+      id: info.initialTaskData.id,
+      data: status,
+    })
     onOk?.()
     onCancel?.()
     setInternalOpen(false)
