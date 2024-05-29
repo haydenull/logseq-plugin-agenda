@@ -1,3 +1,14 @@
+## [3.13.1](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.13.0...v3.13.1) (2024-05-29)
+
+
+### Bug Fixes
+
+* :bug: added toast for empty task name ([e16817b](https://github.com/haydenull/logseq-plugin-agenda/commit/e16817bb823e665802e66361e3cd6a1a940d6b4f))
+* :bug: nOW task transfer to TODO task ([d74454c](https://github.com/haydenull/logseq-plugin-agenda/commit/d74454c9405ce053bf569f2b2e7b93548e46e72f)), closes [#262](https://github.com/haydenull/logseq-plugin-agenda/issues/262)
+* :bug: update task status after switch status in task modal ([952c880](https://github.com/haydenull/logseq-plugin-agenda/commit/952c88026baed6ab7d2843168492a05c1d3c2c7f)), closes [#284](https://github.com/haydenull/logseq-plugin-agenda/issues/284)
+* **agenda2:** :bug: parse todoist id error ([ee1d301](https://github.com/haydenull/logseq-plugin-agenda/commit/ee1d301cb7b7586bf5bca944c927c9858fea5cd2))
+* **calendar:** :bug: show deadline in week view ([6a43384](https://github.com/haydenull/logseq-plugin-agenda/commit/6a433847503861706c17ad8adea8d9c75ba4cd22))
+
 # [3.13.0](https://github.com/haydenull/logseq-plugin-agenda/compare/v3.12.0...v3.13.0) (2024-05-25)
 
 
