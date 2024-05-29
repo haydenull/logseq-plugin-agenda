@@ -223,7 +223,10 @@ export const transformEventToTodoistEvent = (event: IEvent) => {
   const todoistIdLink = event.properties?.todoistId
   const reg = event.format === 'markdown' ? MARKDOWN_TODOISTLINK_REG : ORG_TODOISTLINK_REG
   const url = todoistIdLink?.match?.(reg)?.[1]
+  // old url: https://todoist.com/showTask?id=6957662645
   if (url) todoistId = new URL(url).searchParams.get('id')
+  // new url: https://app.todoist.com/app/task/6957662645
+  if (todoistId === null) todoistId = url.split('/').pop()
   return {
     ...event,
     todoistId: String(todoistId),
