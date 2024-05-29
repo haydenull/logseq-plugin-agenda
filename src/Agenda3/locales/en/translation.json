@@ -47,5 +47,7 @@
   "tomorrow": "tomorrow",
   "week": "week",
   "month": "month",
-  "Exit": "Exit"
+  "Exit": "Exit",
+  "Title cannot be empty": "Title cannot be empty",
+  "Pleasse specify start or deadline": "Pleasse specify start or deadline"
 }
