@@ -1,12 +1,19 @@
-import { Checkbox, Select, Tooltip } from 'antd'
+import { useLocalStorageValue } from '@react-hookz/web'
+import { Checkbox, Input, Select, Tooltip } from 'antd'
 import { useTranslation } from 'react-i18next'
+import { FaRegCircleQuestion } from 'react-icons/fa6'
 
+import { DEFAULT_LOGSEQ_API_CONFIG, LOGSEQ_API_CONFIG_KEY } from '@/Agenda3/helpers/logseq'
 import useSettings from '@/Agenda3/hooks/useSettings'
 import type { Filter, Language } from '@/Agenda3/models/settings'
 
 const GeneralSettingsForm = () => {
   const { t, i18n } = useTranslation()
   const { settings, setSettings } = useSettings()
+  const { value: apiConfig, set: setApiConfig } = useLocalStorageValue(LOGSEQ_API_CONFIG_KEY, {
+    defaultValue: DEFAULT_LOGSEQ_API_CONFIG,
+    initializeWithValue: true,
+  })
 
   const onChange = (key: string, value: number | string | boolean | undefined | Filter[] | string[]) => {
     setSettings(key, value)
@@ -62,6 +69,44 @@ const GeneralSettingsForm = () => {
             ]}
           />
         </div>
+        {import.meta.env.VITE_MODE === 'web' ? (
+          <>
+            <div className="mt-4">
+              <div className="flex cursor-pointer items-center gap-2 text-gray-500">
+                Logseq API Server
+                <FaRegCircleQuestion title="This configuration requires reloading the page to take effect." />
+              </div>
+              <Input
+                className="w-[300px]"
+                placeholder={DEFAULT_LOGSEQ_API_CONFIG.apiServer}
+                value={apiConfig?.apiServer}
+                onChange={(e) =>
+                  setApiConfig((config) => ({
+                    ...config,
+                    apiServer: e.target.value?.trim() || DEFAULT_LOGSEQ_API_CONFIG.apiServer,
+                  }))
+                }
+              />
+            </div>
+            <div className="mt-4">
+              <div className="flex cursor-pointer items-center gap-2 text-gray-500">
+                Logseq API Token
+                <FaRegCircleQuestion title="This configuration requires reloading the page to take effect." />
+              </div>
+              <Input.Password
+                className="w-[300px]"
+                placeholder={DEFAULT_LOGSEQ_API_CONFIG.apiToken}
+                value={apiConfig?.apiToken}
+                onChange={(e) =>
+                  setApiConfig((config) => ({
+                    ...config,
+                    apiToken: e.target.value?.trim() || DEFAULT_LOGSEQ_API_CONFIG.apiToken,
+                  }))
+                }
+              />
+            </div>
+          </>
+        ) : null}
       </div>
     </>
   )

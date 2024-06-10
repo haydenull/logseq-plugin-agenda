@@ -49,5 +49,6 @@
   "month": "month",
   "Exit": "Exit",
   "Title cannot be empty": "Title cannot be empty",
-  "Pleasse specify start or deadline": "Pleasse specify start or deadline"
+  "Pleasse specify start or deadline": "Pleasse specify start or deadline",
+  "This configuration requires reloading the page to take effect.": "This configuration requires reloading the page to take effect."
 }

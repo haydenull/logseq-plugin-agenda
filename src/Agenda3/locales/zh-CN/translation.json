@@ -49,5 +49,6 @@
   "month": "本月",
   "Exit": "退出",
   "Title cannot be empty": "标题不能为空",
-  "Pleasse specify start or deadline": "请指定开始或截止日期"
+  "Pleasse specify start or deadline": "请指定开始或截止日期",
+  "This configuration requires reloading the page to take effect.": "此配置需要重新加载页面才能生效。"
 }

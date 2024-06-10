@@ -25,6 +25,7 @@ import initializeTodoist from '@/register/todoist'
 import { getInitialSettings, initializeSettings } from '@/util/baseInfo'
 import { listenEsc, log, managePluginTheme, setPluginTheme, toggleAppTransparent } from '@/util/util'
 
+import { getLogseqApiConfig } from './Agenda3/helpers/logseq'
 import { track } from './Agenda3/helpers/umami'
 import Agenda3App from './apps/Agenda3App'
 import TaskListApp from './apps/TaskListApp'
@@ -45,18 +46,15 @@ echarts.use([
   LegendComponent,
 ])
 
-const isDevelopment = import.meta.env.DEV
 let root: Root | null = null
 
 if (import.meta.env.VITE_MODE === 'web') {
   // run in browser
-  console.log('[faiz:] === meta.env.VITE_LOGSEQ_API_SERVER', import.meta.env.VITE_LOGSEQ_API_SERVER)
+  const { apiServer, apiToken } = getLogseqApiConfig()
+  console.log('[faiz:] === LOGSEQ_API_SERVER', apiServer)
   console.log(`%c[version]: v${__APP_VERSION__}`, 'background-color: #60A5FA; color: white; padding: 4px;')
   proxyLogseq({
-    config: {
-      apiServer: import.meta.env.VITE_LOGSEQ_API_SERVER,
-      apiToken: import.meta.env.VITE_LOGSEQ_API_TOKEN,
-    },
+    config: { apiServer, apiToken },
     settings: window.mockSettings,
   })
   // logseq.provideStyle(`.drawer[data-drawer-name="agenda"] {display: none;}`)
