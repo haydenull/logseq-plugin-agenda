@@ -79,6 +79,14 @@ if (import.meta.env.VITE_MODE === 'web') {
 
     const { weekStartDay, todoist } = getInitialSettings()
 
+    const showAgenda2 = () => {
+      track('Show Agenda2', { version: __APP_VERSION__ })
+      renderApp(false)
+      managePluginTheme()
+      logseq.showMainUI()
+      window.isMounted = false
+    }
+
     const showAgenda3 = () => {
       track('Show Agenda', { version: __APP_VERSION__ })
       if (window.isMounted !== true) {
@@ -91,13 +99,7 @@ if (import.meta.env.VITE_MODE === 'web') {
 
     // ===== logseq plugin model start =====
     logseq.provideModel({
-      show() {
-        track('Show Agenda2', { version: __APP_VERSION__ })
-        renderApp(false)
-        managePluginTheme()
-        logseq.showMainUI()
-        window.isMounted = false
-      },
+      showAgenda2,
       showAgenda3,
       hide() {
         logseq.hideMainUI()
@@ -116,7 +118,7 @@ if (import.meta.env.VITE_MODE === 'web') {
     // ========== show or hide app start =========
     logseq.App.registerUIItem('toolbar', {
       key: 'Agenda2-Legacy',
-      template: '<a data-on-click="show" class="button"><i class="ti ti-comet"></i></a>',
+      template: '<a data-on-click="showAgenda2" class="button"><i class="ti ti-comet"></i></a>',
     })
     logseq.App.registerUIItem('toolbar', {
       key: 'Agenda3',
@@ -128,6 +130,16 @@ if (import.meta.env.VITE_MODE === 'web') {
       }
     })
     listenEsc(() => logseq.hideMainUI())
+    logseq.App.registerCommandPalette(
+      {
+        key: 'Agenda:showLegacy',
+        label: 'Show Agenda Legacy',
+        keybinding: {} as any,
+      },
+      (data) => {
+        showAgenda3()
+      },
+    )
     logseq.App.registerCommandPalette(
       {
         key: 'Agenda:show',
