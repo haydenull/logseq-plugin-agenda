@@ -75,7 +75,6 @@ export const getSubCalendarSchedules = async (
   const schedulePromiseList = await Promise.allSettled(subPromiseList)
   const schedules: ISchedule[] = schedulePromiseList
     .filter((item) => item?.status === 'fulfilled')
-    // @ts-expect-error map
     .map((item) => item?.value)
     ?.flat()
 

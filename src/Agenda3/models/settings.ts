@@ -35,4 +35,5 @@ export type Filter = {
   name: string
   query: string
   color: string
+  alwaysEnabled: boolean
 }

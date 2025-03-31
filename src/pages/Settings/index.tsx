@@ -80,7 +80,7 @@ const Settings: React.FC<{
     const _allValues = cloneDeep(allValues)
 
     // Automatically changes the color of text and border when the background color changes
-    ;['logKey', 'journal'].forEach((key) => {
+    ;(['logKey', 'journal'] as const).forEach((key) => {
       const bgColor = get(changedValues, [key, 'bgColor'])
       if (bgColor) {
         const textColor = autoTextColor(bgColor)
@@ -90,8 +90,8 @@ const Settings: React.FC<{
         set(_allValues, [key, 'borderColor'], bgColor)
       }
     })
-    ;['projectList', 'calendarList', 'subscriptionList', 'dailyLogTagList'].forEach((key) => {
-      const index = get(changedValues, [key])?.findIndex(Boolean)
+    ;(['projectList', 'calendarList', 'subscriptionList', 'dailyLogTagList'] as const).forEach((key) => {
+      const index = get(changedValues, [key])?.findIndex(Boolean) ?? -1
       const bgColor = get(changedValues, [key, index, 'bgColor'])
       if (bgColor) {
         const textColor = autoTextColor(bgColor)
@@ -174,11 +174,11 @@ const Settings: React.FC<{
   }, [])
 
   return (
-    <div className="page-container p-8 flex flex-col items-center">
+    <div className="page-container flex flex-col items-center p-8">
       <Typography.Title className={classNames(s.title, 'title-text')} level={3}>
         Settings
       </Typography.Title>
-      <div className={classNames(s.content, 'rounded-2xl flex')}>
+      <div className={classNames(s.content, 'flex rounded-2xl')}>
         <div className="flex flex-col justify-between pr-5">
           <Tabs value={tab} tabs={TABS} onChange={onTabChange} />
           <Popconfirm

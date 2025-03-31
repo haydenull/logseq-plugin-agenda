@@ -1,4 +1,4 @@
-import { Form, Input, Modal } from 'antd'
+import { Form, Input, Modal, Checkbox } from 'antd'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -52,6 +52,14 @@ const EditFilterModal = ({
           </Form.Item>
           <Form.Item label={t('Filter Name')} name="name" rules={[{ required: true }]}>
             <Input />
+          </Form.Item>
+          <Form.Item
+            label={t('Always enabled')}
+            name="alwaysEnabled"
+            valuePropName="checked"
+            rules={[{ required: true }]}
+          >
+            <Checkbox />
           </Form.Item>
           <Form.Item label="Query" name="query" rules={[{ required: true }]}>
             <Input.TextArea autoSize />

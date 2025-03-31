@@ -14,6 +14,7 @@ export type AgendaEntity = {
   showTitle: string
   status: 'todo' | 'done'
   allDay: boolean
+  multiDayStart?: Dayjs
   start?: Dayjs // logseq scheduled
   end?: Dayjs // from agenda drawer end
   // logseq deadline

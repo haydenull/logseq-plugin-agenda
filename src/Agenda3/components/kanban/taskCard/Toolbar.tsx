@@ -8,7 +8,7 @@ import { IoRepeatOutline } from 'react-icons/io5'
 
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
-import { getDaysBetween } from '@/Agenda3/helpers/util'
+import { getDaysBetween, selectTaskColor } from '@/Agenda3/helpers/util'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { DEFAULT_ESTIMATED_TIME } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
@@ -48,7 +48,7 @@ const Toolbar = ({
           <span
             className="rounded px-1 py-0.5 text-[10px] text-white opacity-70"
             style={{
-              backgroundColor: groupType === 'page' ? task.project.bgColor : task?.filters?.[0]?.color,
+              backgroundColor: selectTaskColor(groupType, task),
             }}
           >
             {task.start.format('HH:mm')}

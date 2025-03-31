@@ -3,6 +3,8 @@ import type { CalendarEvent } from '@/types/fullcalendar'
 import type { AgendaTaskWithDeadline, AgendaTaskWithStart, AgendaTaskWithStartOrDeadline } from '@/types/task'
 import { padZero } from '@/util/util'
 
+import { selectTaskColor } from './util'
+
 /**
  * transform agenda task to calendar event
  */
@@ -13,7 +15,7 @@ export const transformAgendaTaskToCalendarEvent = (
   },
 ): CalendarEvent[] => {
   const { showFirstEventInCycleOnly = false, showTimeLog = false, groupType } = options
-  const { estimatedTime = DEFAULT_ESTIMATED_TIME, timeLogs = [], status, actualTime } = task
+  const { estimatedTime = task.estimatedTime || 20, timeLogs = [], status, actualTime } = task
   const rrule: CalendarEvent['rrule'] =
     showFirstEventInCycleOnly && task.rrule
       ? {
@@ -30,7 +32,7 @@ export const transformAgendaTaskToCalendarEvent = (
       end: log.end.toDate(),
       extendedProps: task,
       editable: false,
-      color: groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
+      color: selectTaskColor(groupType, task),
     }))
   }
   let spanTime: number
@@ -68,7 +70,7 @@ export const transformAgendaTaskToCalendarEvent = (
       // 只有时间点事件才能传 duration
       duration: allDay ? undefined : { minute: spanTime },
       editable: !(task.recurringPast || task.rrule || !task.start),
-      color: groupType === 'page' ? task.project.bgColor : task.filters?.[0]?.color,
+      color: selectTaskColor(groupType, task),
     },
   ]
 }

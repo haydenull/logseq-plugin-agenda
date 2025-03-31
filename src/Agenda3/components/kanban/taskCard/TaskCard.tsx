@@ -7,6 +7,7 @@ import { VscDebugConsole } from 'react-icons/vsc'
 
 import { minutesToHHmm } from '@/Agenda3/helpers/fullCalendar'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
+import { selectTaskColor } from '@/Agenda3/helpers/util'
 import useAgendaEntities from '@/Agenda3/hooks/useAgendaEntities'
 import { logseqAtom } from '@/Agenda3/models/logseq'
 import { settingsAtom } from '@/Agenda3/models/settings'
@@ -17,6 +18,7 @@ import { cn } from '@/util/util'
 
 import Group from '../../Group'
 import TaskModal from '../../modals/TaskModal'
+import s from '../kanban.module.less'
 import Toolbar from './Toolbar'
 
 const TaskCard = ({ task }: { task: AgendaTaskWithStartOrDeadline }) => {
@@ -67,13 +69,14 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStartOrDeadline }) => {
           'bg-[#edeef0] opacity-80 dark:bg-[#2f2f33]': task.status === 'done',
           // 循环任务及多天任务不能拖拽
           'droppable-task-element': !editDisabled && !isMultipleDays && !noStart,
+          [s.multidayTaskElement]: isMultipleDays,
         },
       )}
       data-event={JSON.stringify({
         id: task.id,
         title: task.showTitle,
         duration: minutesToHHmm(estimatedTime),
-        color: groupType === 'page' ? task.project.bgColor : task?.filters?.[0]?.color,
+        color: selectTaskColor(groupType, task),
       })}
       data-id={task.id}
     >

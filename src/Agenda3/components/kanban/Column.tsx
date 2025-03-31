@@ -32,7 +32,11 @@ const Column = ({ day, tasks, allKanbanItems }: ColumnProps, ref) => {
   const isToday = day.isSame(today, 'day')
   const doneTasks = tasks.filter((task) => task.status === 'done')
   const undoneTasks = tasks.filter((task) => task.status !== 'done')
-  const _dayTasks = undoneTasks.concat(doneTasks)
+  const _dayTasks = undoneTasks.concat(doneTasks).sort((a, b) => {
+    if (a.multiDayStart && !b.multiDayStart) return -1
+    if (!a.multiDayStart && b.multiDayStart) return 1
+    return a.multiDayStart?.isAfter(b.multiDayStart) ? 1 : -1
+  })
   const estimatedTime = _dayTasks.reduce((acc, task) => {
     return acc + (task.estimatedTime ?? DEFAULT_ESTIMATED_TIME)
   }, 0)

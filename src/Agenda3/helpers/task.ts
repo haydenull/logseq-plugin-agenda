@@ -79,6 +79,7 @@ export const getAgendaEntities = async (settings: Settings) => {
   blocks = blocks.flat()
 
   const filters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
+  const filtersEnabledInDefaultView = settings.filters?.filter((_filter) => _filter.alwaysEnabled) ?? []
 
   if (settings.selectedFilters?.length) {
     const filterBlocks = await retrieveFilteredBlocks(filters)
@@ -93,7 +94,18 @@ export const getAgendaEntities = async (settings: Settings) => {
             .map((filterBlock) => filterBlock.filter),
         }
       })
+  } else if (filtersEnabledInDefaultView?.length > 0) {
+    const filterBlocks = await retrieveFilteredBlocks(filtersEnabledInDefaultView)
+    blocks = blocks.map((block) => {
+      return {
+        ...block,
+        filters: filterBlocks
+          .filter((filterBlock) => filterBlock.uuid === block.uuid)
+          .map((filterBlock) => filterBlock.filter),
+      }
+    })
   }
+
   const promiseList: Promise<AgendaEntity[]>[] = blocks.map(async (block) => {
     const _block = {
       ...block,
@@ -261,9 +273,16 @@ export const transformBlockToAgendaEntity = async (
 
   // filters
   let _filters: Filter[] = filters ?? []
-  if (settings.selectedFilters?.length && !filters?.length) {
-    const settingsFilters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
+  const settingsFilters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
+  const filtersEnabledInDefaultView = settings.filters?.filter((_filter) => _filter.alwaysEnabled) ?? []
+  if (settingsFilters?.length && !filters?.length) {
     const filterBlocks = await retrieveFilteredBlocks(settingsFilters)
+    const belongFilters = filterBlocks
+      .filter((filterBlock) => filterBlock.uuid === block.uuid)
+      .map((filterBlock) => filterBlock.filter)
+    _filters = belongFilters
+  } else if (filtersEnabledInDefaultView?.length > 0) {
+    const filterBlocks = await retrieveFilteredBlocks(filtersEnabledInDefaultView)
     const belongFilters = filterBlocks
       .filter((filterBlock) => filterBlock.uuid === block.uuid)
       .map((filterBlock) => filterBlock.filter)
@@ -381,12 +400,14 @@ export const transformTasksToKanbanTasks = (
       // splitting multi-days task into single-day tasks
       if (allDay && end && start) {
         const days = genDays(start, end)
+        const multiDayStart = start
         return days.map((day) => {
           const isPast = day.isBefore(today, 'day')
           const isEndDay = day.isSame(end, 'day')
           return {
             ...task,
             start: day,
+            multiDayStart,
             // filtered: true,
             // 过去且不是结束日期的任务默认为已完成
             status: (isPast && !isEndDay) || task.status === 'done' ? 'done' : 'todo',
