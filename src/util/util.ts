@@ -21,7 +21,17 @@ export function cn(...inputs: ClassValue[]) {
  * 获取周报
  */
 export const getWeekly = async (startDate, endDate) => {
-  const keyword = logseq.settings?.logKey?.id || DEFAULT_SETTINGS.logKey?.id
+  const settingLogKey = logseq.settings?.logKey
+  const settingLogKeyId =
+    typeof settingLogKey === 'string'
+      ? settingLogKey
+      : typeof settingLogKey === 'object' &&
+        settingLogKey !== null &&
+        'id' in settingLogKey &&
+        typeof settingLogKey.id === 'string'
+      ? settingLogKey.id
+      : undefined
+  const keyword = settingLogKeyId || DEFAULT_SETTINGS.logKey?.id || ''
   const { preferredDateFormat } = await logseq.App.getUserConfigs()
   const journalFormat = preferredDateFormat || DEFAULT_JOURNAL_FORMAT
   const _start = format(parse(startDate, SHOW_DATE_FORMAT, new Date()), journalFormat)
@@ -45,7 +55,9 @@ export const setPluginTheme = (theme: 'dark' | 'light') => {
   if (window.currentApp === 'agenda3App') return
 
   const html = document.querySelector('html')
-  const lightTheme = logseq.settings?.lightThemeType || DEFAULT_SETTINGS.lightThemeType
+  const settingLightTheme = logseq.settings?.lightThemeType
+  const lightTheme =
+    typeof settingLightTheme === 'string' ? settingLightTheme : DEFAULT_SETTINGS.lightThemeType || 'green'
   const prevLightTheme = lightTheme === 'green' ? 'purple' : 'green'
   if (theme === 'dark') {
     html?.classList.add('dark')

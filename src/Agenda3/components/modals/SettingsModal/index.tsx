@@ -42,7 +42,8 @@ const SettingsModal = ({ children, initialTab }: { children?: React.ReactNode; i
   const [activeTab, setActiveTab] = useState<Tab>()
   const finalActiveTab = activeTab ? activeTab : initialTab ?? defaultTab
 
-  const translatedTabs = tabs.map((tab) => ({
+  const visibleTabs = tabs.filter((tab) => import.meta.env.VITE_MODE !== 'plugin' || tab.key !== 'filters')
+  const translatedTabs = visibleTabs.map((tab) => ({
     ...tab,
     label: t(tab.label),
   }))

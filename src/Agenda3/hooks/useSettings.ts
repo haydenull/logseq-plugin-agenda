@@ -32,7 +32,13 @@ const useSettings = () => {
   // initialize settings
   const initializeSettings = () => {
     const getNewSettings = (userSettings?: Settings) => {
-      return merge({}, DEFAULT_SETTINGS, userSettings, { isInitialized: true })
+      const newSettings = merge({}, DEFAULT_SETTINGS, userSettings, { isInitialized: true })
+      if (isPlugin) {
+        newSettings.filters = []
+        newSettings.selectedFilters = []
+        newSettings.experimental = { ...newSettings.experimental, objective: false }
+      }
+      return newSettings
     }
     const userSettings = isPlugin ? (logseq.settings as unknown as Settings) : valueLocalStorage
     initializeDayjs(userSettings?.general?.startOfWeek ?? DEFAULT_SETTINGS.general.startOfWeek)

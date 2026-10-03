@@ -190,7 +190,7 @@ const MultipleView = ({ className }: { className?: string }) => {
             options={VIEWS}
             onChange={onClickAppViewChange}
           />
-          {settings.filters?.length ? <Filter /> : null}
+          {import.meta.env.VITE_MODE !== 'plugin' && settings.filters?.length ? <Filter /> : null}
           {settings.ics?.repo && settings.ics?.token ? <UploadIcs className="cursor-pointer text-lg" /> : null}
           <SettingsModal initialTab="general">
             <FiSettings className="cursor-pointer text-lg" onClick={() => track('Settings Button')} />

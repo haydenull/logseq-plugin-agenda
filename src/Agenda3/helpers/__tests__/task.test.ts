@@ -1,9 +1,9 @@
 import dayjs from 'dayjs'
-import { describe, expect, test } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import type { AgendaTaskWithStart } from '@/types/task'
 
-import { type BlockFromQuery, transformBlockToAgendaEntity, separateTasksInDay } from '../task'
+import { type BlockFromQuery, formatTaskTitle, transformBlockToAgendaEntity, separateTasksInDay } from '../task'
 
 const DEMO_FAVORITE_PAGES = []
 export const DEMO_BLOCK = {
@@ -90,6 +90,10 @@ export const DEMO_TASK = {
 } as unknown as AgendaTaskWithStart
 
 describe('helper: task', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
   // TODO: 修复测试时没有 logseq 对象的问题
   // test('transformBlockToAgendaTask', async () => {
   //   expect(await transformBlockToAgendaTask(DEMO_BLOCK, { isInitialized: true })).toEqual(DEMO_TASK),
@@ -116,5 +120,29 @@ describe('helper: task', () => {
         ['20230925', [tasks[1]]],
       ]),
     )
+  })
+
+  test('resolves DB block UUIDs to their titles', async () => {
+    const uuid = '6aa2306a-7998-4f41-bf1f-77a7381a2bea'
+    vi.stubGlobal('logseq', {
+      Editor: {
+        getBlock: vi.fn().mockResolvedValue({ title: '👤 Roger Penrose' }),
+        getPage: vi.fn(),
+      },
+    })
+
+    await expect(formatTaskTitle(`Meeting with ${uuid}`, 'markdown')).resolves.toBe('Meeting with 👤 Roger Penrose')
+  })
+
+  test('resolves DB page UUIDs to their names when they are not blocks', async () => {
+    const uuid = '6aa2306a-7998-4f41-bf1f-77a7381a2bea'
+    vi.stubGlobal('logseq', {
+      Editor: {
+        getBlock: vi.fn().mockResolvedValue(null),
+        getPage: vi.fn().mockResolvedValue({ originalName: '👤 Roger Penrose' }),
+      },
+    })
+
+    await expect(formatTaskTitle(`Meeting with ${uuid}`, 'markdown')).resolves.toBe('Meeting with 👤 Roger Penrose')
   })
 })

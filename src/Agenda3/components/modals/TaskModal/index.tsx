@@ -4,12 +4,11 @@ import dayjs, { type Dayjs } from 'dayjs'
 import { useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BsCalendar4Event, BsCalendar4Range, BsCalendarCheck, BsClock, BsClockHistory } from 'react-icons/bs'
+import { BsCalendar4Event, BsCalendar4Range, BsCalendarCheck, BsClock } from 'react-icons/bs'
 import { CgSandClock } from 'react-icons/cg'
 import { IoIosCheckmarkCircleOutline, IoMdCloseCircle } from 'react-icons/io'
 import { RiCheckboxBlankCircleLine, RiDeleteBin4Line } from 'react-icons/ri'
 
-import { updateBlockTaskStatus } from '@/Agenda3/helpers/block'
 import { navToLogseqBlock } from '@/Agenda3/helpers/logseq'
 import { track } from '@/Agenda3/helpers/umami'
 import { getDaysBetween } from '@/Agenda3/helpers/util'
@@ -21,13 +20,12 @@ import DurationSelect from '@/components/TaskModal/components/DurationSelect'
 import TimeSelect from '@/components/TaskModal/components/TimeSelect'
 import { SHOW_DATETIME_FORMATTER, SHOW_DATE_FORMATTER } from '@/constants/agenda'
 import type { AgendaEntity } from '@/types/entity'
-import type { AgendaTaskWithStartOrDeadline, TimeLog } from '@/types/task'
+import type { AgendaTaskWithStartOrDeadline } from '@/types/task'
 import { getOS } from '@/util/util'
 
 import PageSelect from '../../forms/PageSelect'
 import LogseqLogo from '../../icons/LogseqLogo'
 import PageIcon from '../../icons/PageIcon'
-import TimeLogComponent from './TimeLog'
 import useCreate, { type CreateTaskForm } from './useCreate'
 import useEdit from './useEdit'
 
@@ -97,16 +95,26 @@ const TaskModal = ({
   }
   const handleOk = async () => {
     track(`Task Modal: Ok Button`, { type: info.type })
-    const task = await action()
-    if (!task) return messageApi.error('Failed to create task')
-    onOk?.()
-    setInternalOpen(false)
+    try {
+      const task = await action()
+      if (!task) return messageApi.error('Failed to save task')
+      onOk?.()
+      setInternalOpen(false)
+    } catch (error) {
+      console.error('Failed to save DB task', error)
+      messageApi.error(error instanceof Error ? error.message : 'Failed to save task')
+    }
   }
   const handleDelete = async () => {
     if (info.type === 'edit') {
-      deleteEntity(info.initialTaskData.id)
-      onDelete?.(info.initialTaskData.id)
-      setInternalOpen(false)
+      try {
+        await deleteEntity(info.initialTaskData.id)
+        onDelete?.(info.initialTaskData.id)
+        setInternalOpen(false)
+      } catch (error) {
+        console.error('Failed to delete DB task', error)
+        messageApi.error(error instanceof Error ? error.message : 'Failed to delete task')
+      }
     }
   }
   const handleSwitchRangeMode = (mode: 'range' | 'date') => {
@@ -119,46 +127,33 @@ const TaskModal = ({
     setMode('Normal')
     titleInputRef.current?.blur()
   }
-  const addDefaultTimeLog = () => {
-    const curTimeLogs = editHookResult.formData.timeLogs ?? []
-    const lastTimeLog = curTimeLogs[curTimeLogs.length - 1]
-    const DEFAULT_DURATION = 30
-    let logStart = start && allDay === false ? start : dayjs().subtract(DEFAULT_DURATION, 'minute')
-    if (lastTimeLog) logStart = lastTimeLog.end.add(DEFAULT_DURATION, 'minute')
-    const logEnd = logStart.add(DEFAULT_DURATION, 'minute')
-    updateFormData({ timeLogs: [...curTimeLogs, { start: logStart, end: logEnd, amount: DEFAULT_DURATION }] })
-  }
-  const deleteTimeLog = (index: number) => {
-    const curTimeLogs = editHookResult.formData.timeLogs ?? []
-    const newTimeLogs = curTimeLogs.filter((_, i) => index !== i)
-    updateFormData({ timeLogs: newTimeLogs })
-  }
-  const updateTimeLog = (index: number, data: TimeLog) => {
-    const curTimeLogs = editHookResult.formData.timeLogs ?? []
-    const newTimeLogs = curTimeLogs.map((log, i) => {
-      if (index === i) return data
-      return log
-    })
-    updateFormData({ timeLogs: newTimeLogs })
-  }
   const createPage = async () => {
-    await logseq.Editor.createPage(titleTagSearchText)
-    refreshPages()
-    messageApi.success('Page created')
+    try {
+      const page = await logseq.Editor.createPage(titleTagSearchText)
+      if (!page) throw new Error('Failed to create Logseq DB page')
+      if (await refreshPages()) messageApi.success('Page created')
+    } catch (error) {
+      console.error('Failed to create Logseq DB page', error)
+      messageApi.error(error instanceof Error ? error.message : 'Failed to create page')
+    }
   }
   const onSwitchTaskStatus = async (status: AgendaEntity['status']) => {
     if (editDisabled) return messageApi.error('Please modify the status of the recurring task in logseq.')
     if (info.type !== 'edit') return
 
-    await updateBlockTaskStatus(info.initialTaskData, status)
-    updateEntity({
-      type: 'task-status',
-      id: info.initialTaskData.id,
-      data: status,
-    })
-    onOk?.()
-    onCancel?.()
-    setInternalOpen(false)
+    try {
+      await updateEntity({
+        type: 'task-status',
+        id: info.initialTaskData.id,
+        data: status,
+      })
+      onOk?.()
+      onCancel?.()
+      setInternalOpen(false)
+    } catch (error) {
+      console.error('Failed to update DB task status', error)
+      messageApi.error(error instanceof Error ? error.message : 'Failed to update task status')
+    }
   }
   // Add keyboard event listener
   useEffect(() => {
@@ -385,36 +380,6 @@ const TaskModal = ({
           />
         </div>
         {/* ========= Estimated Time End ========= */}
-
-        {/* ========= Actual Time Start ========= */}
-        {info.type === 'edit' ? (
-          <div className="flex items-start">
-            <div className="flex h-[32px] w-[160px] items-center gap-1 text-gray-400">
-              <BsClockHistory /> {t('Actual Time')}
-            </div>
-            <div>
-              <div className="flex h-[32px] cursor-pointer items-center gap-2 px-3 py-1">
-                {formData.actualTime}
-                <div className="text-xs text-gray-400 hover:text-gray-800" onClick={addDefaultTimeLog}>
-                  ({t('Add a log')})
-                </div>
-              </div>
-              {editHookResult.formData.timeLogs?.map((timeLog, index) => (
-                <div key={index} className="group flex w-[220px] items-center justify-between">
-                  <TimeLogComponent
-                    value={{ start: timeLog.start, end: timeLog.end, amount: timeLog.amount }}
-                    onChange={(newTimeLog) => updateTimeLog(index, newTimeLog)}
-                  />
-                  <RiDeleteBin4Line
-                    className="hidden cursor-pointer text-red-300 hover:text-red-500 group-hover:block"
-                    onClick={() => deleteTimeLog(index)}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : null}
-        {/* ========= Actual Time End ========= */}
 
         {/* ========= Objective Start ========= */}
         {/* <div className="my-2 flex">

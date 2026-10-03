@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import { useAtom, useAtomValue } from 'jotai'
 
 import { getAllProjects } from '@/Agenda3/helpers/project'
@@ -14,8 +15,16 @@ const usePages = () => {
   const normalPages = useAtomValue(normalProjectsAtom)
   const journalPages = useAtomValue(journalProjectsAtom)
   const allPages = [...favoritePages, ...normalPages, ...journalPages]
-  const refreshPages = () => {
-    getAllProjects().then((projects) => setProjects(projects))
+  const refreshPages = async () => {
+    try {
+      const projects = await getAllProjects()
+      setProjects(projects)
+      return true
+    } catch (error) {
+      console.error('Failed to load Logseq DB pages', error)
+      message.error('Failed to load Logseq pages')
+      return false
+    }
   }
 
   return {

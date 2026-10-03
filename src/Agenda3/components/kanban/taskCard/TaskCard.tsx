@@ -16,6 +16,7 @@ import type { AgendaTaskWithStartOrDeadline } from '@/types/task'
 import { cn } from '@/util/util'
 
 import Group from '../../Group'
+import MathText from '../../MathText'
 import TaskModal from '../../modals/TaskModal'
 import Toolbar from './Toolbar'
 
@@ -123,7 +124,7 @@ const TaskCard = ({ task }: { task: AgendaTaskWithStartOrDeadline }) => {
               'line-through': task.status === 'done',
             })}
           >
-            {task.showTitle}
+            <MathText>{task.showTitle}</MathText>
           </div>
 
           {/* ========= Group(page or filter) Name ========= */}

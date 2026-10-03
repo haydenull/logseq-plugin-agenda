@@ -3,26 +3,26 @@ import type { AgendaEntityPage } from '@/types/entity'
 import type { AgendaProject } from '@/types/project'
 
 export const getAllProjects = async () => {
-  const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
-  const pages = (await logseq.Editor.getAllPages()) || []
-  const _pages = pages?.map((page) => {
+  const favorites = (await logseq.App.getCurrentGraphFavorites()) ?? []
+  const favoriteNames = favorites.map((page) =>
+    (typeof page === 'string' ? page : page.originalName ?? page.title ?? page.name).toLocaleLowerCase(),
+  )
+  const pages = (await logseq.Editor.getAllPages()) ?? []
+  const projects = pages.map((page) => {
+    const originalName = page.originalName ?? page.title ?? page.name
     return transformPageToProject(
       {
         ...page,
-        isJournal: page['journal?'],
+        originalName,
+        isJournal: Boolean(page['journal?']),
       },
-      favoritePages,
+      favoriteNames,
     )
   })
-  const unFavoritePages = _pages?.filter((page) => !page.isFavorite)
-
-  return [
-    ...favoritePages.map((pageName) => {
-      console.log
-      return _pages?.find((p) => p.originalName?.toLocaleLowerCase() === pageName)
-    }),
-    ...unFavoritePages,
-  ].filter(Boolean)
+  const favoritesFirst = favoriteNames
+    .map((name) => projects.find((project) => project.originalName.toLocaleLowerCase() === name))
+    .filter((project): project is (typeof projects)[number] => project !== undefined)
+  return [...favoritesFirst, ...projects.filter((project) => !project.isFavorite)]
 }
 
 export const transformPageToProject = (page: AgendaEntityPage, favoritePages: string[]): AgendaProject => {
@@ -35,7 +35,7 @@ export const transformPageToProject = (page: AgendaEntityPage, favoritePages: st
     ...page,
     id: page.uuid,
     isJournal: page['journal?'],
-    isFavorite: favoritePages.includes(page.originalName?.toLocaleLowerCase()),
+    isFavorite: favoritePages.includes(page.originalName.toLocaleLowerCase()),
     bgColor,
   }
 }

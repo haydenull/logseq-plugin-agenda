@@ -34,7 +34,8 @@ const Dashboard = () => {
       if (import.meta.env.VITE_MODE === 'web') {
         return setConnectionErrorModal(true)
       }
-      message.error('retrieve tasks failed')
+      const details = error instanceof Error ? error.message : String(error)
+      message.error(`Failed to retrieve tasks: ${details}`)
     })
     refreshPages()
     // logseq.App.getCurrentGraph().then((res) => {

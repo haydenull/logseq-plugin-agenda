@@ -14,6 +14,7 @@ import { settingsAtom } from '@/Agenda3/models/settings'
 import { cn } from '@/util/util'
 
 import { backlogsAtom } from '../models/entities/backlogs'
+import MathText from './MathText'
 import s from './backlog.module.less'
 import LogseqLogo from './icons/LogseqLogo'
 
@@ -103,7 +104,8 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
                     return (
                       <div
                         key={task.id}
-                        className="droppable-task-element group cursor-move break-all rounded border bg-[#f9fafb] px-2 py-2 text-sm text-gray-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-500"
+                        className="droppable-task-element group cursor-move break-all rounded border bg-[#f9fafb] px-2 py-2 text-sm text-gray-600
+                          dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-500"
                         data-event={JSON.stringify({
                           id: task.id,
                           title: task.showTitle,
@@ -111,7 +113,7 @@ const Backlog = ({ bindCalendar = true }: { bindCalendar?: boolean }) => {
                           backlog: true,
                         })}
                       >
-                        {task.showTitle}{' '}
+                        <MathText>{task.showTitle}</MathText>{' '}
                         <span
                           className="inline-block cursor-pointer text-gray-300 opacity-0 transition-opacity group-hover:opacity-100"
                           onClick={(e) => {

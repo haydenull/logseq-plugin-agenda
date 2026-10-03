@@ -9,6 +9,7 @@ import type { AgendaEntity } from '@/types/entity'
 import type { AgendaTaskWithStart } from '@/types/task'
 import { cn } from '@/util/util'
 
+import MathText from '../MathText'
 import TaskModal from '../modals/TaskModal'
 
 const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
@@ -70,7 +71,7 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
             })}
             title={showTitle}
           >
-            {showTitle}
+            <MathText>{showTitle}</MathText>
             {isDone ? <IoIosCheckmarkCircle className="absolute right-0 text-white" /> : null}
           </div>
           {isShowTimeText ? <div className="text-xs text-gray-100">{info.timeText}</div> : null}

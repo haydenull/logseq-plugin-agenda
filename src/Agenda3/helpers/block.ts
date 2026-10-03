@@ -1,9 +1,7 @@
 import type { BlockEntity } from '@logseq/libs/dist/LSPlugin'
 import { message } from 'antd'
-import { format } from 'date-fns'
 import dayjs, { type Dayjs } from 'dayjs'
 
-import { type CreateObjectiveForm } from '@/Agenda3/components/modals/ObjectiveModal/CreateObjectiveModal'
 import {
   AGENDA_DRAWER_REGEX,
   DATE_FORMATTER,
@@ -13,25 +11,12 @@ import {
   SCHEDULED_DATE_FORMATTER,
 } from '@/constants/agenda'
 import type { AgendaEntity, AgendaEntityDeadline } from '@/types/entity'
-import type { AgendaObjective, AgendaEntityObjective } from '@/types/objective'
+import type { AgendaEntityObjective } from '@/types/objective'
 import type { AgendaTaskWithStartOrDeadline, CreateAgendaTask } from '@/types/task'
-import { updateBlock } from '@/util/logseq'
 
+import { createDbTask, removeDbTaskSchedule, updateDbTask, updateDbTaskSchedule, writeDbTaskStatus } from './dbGraph'
 import { secondsToHHmmss } from './fullCalendar'
 import type { BlockFromQuery } from './task'
-
-/**
- * insert `<SCHEDULED: ...>` string into a block without any `<SCHEDULED: ...>` string
- */
-const insertScheduled = (content: string, scheduled: string) => {
-  if (/^SCHEDULED: </gm.test(content)) return content // make sure the task hasn't been scheduled yet (prevent duplicate)
-
-  // Split the content into lines
-  const [firstLine, ...restLines] = content.split('\n')
-
-  // Insert the scheduled string as the second line of the content
-  return [firstLine, scheduled, ...restLines].join('\n')
-}
 
 /**
  * change task date and estimated time
@@ -49,48 +34,14 @@ export const updateBlockDateInfo = async ({
   end?: Dayjs
   estimatedTime?: number
 }) => {
-  const originalBlock = await logseq.Editor.getBlock(uuid)
-  if (!originalBlock) return Promise.reject(new Error('Block not found'))
-
-  const scheduledText = `SCHEDULED: <${start.format(allDay ? SCHEDULED_DATE_FORMATTER : SCHEDULED_DATETIME_FORMATTER)}>`
-  // update SCHEDULED
-  const newContent = originalBlock.scheduled
-    ? originalBlock.content
-        .split('\n')
-        .map((line) => {
-          if (line.startsWith('SCHEDULED:')) return scheduledText
-          return line
-        })
-        .join('\n')
-    : insertScheduled(originalBlock.content, scheduledText)
-  // update estimated time and end date
-  const newContent2 = updateBlockAgendaDrawer(newContent, {
-    estimated: estimatedTime,
-    end,
-  })
-  await logseq.Editor.updateBlock(uuid, newContent2)
-  return logseq.Editor.getBlock(uuid)
+  return updateDbTaskSchedule(uuid, { allDay, start, end, estimatedTime })
 }
 
 /**
  * delete date info
  */
 export const deleteBlockDateInfo = async (uuid: string) => {
-  const originalBlock = await logseq.Editor.getBlock(uuid)
-  if (!originalBlock) return Promise.reject(new Error('Block not found'))
-
-  const newContent = originalBlock.scheduled
-    ? originalBlock.content
-        .split('\n')
-        .map((line) => {
-          if (line.startsWith('SCHEDULED:')) return ''
-          return line
-        })
-        .filter(Boolean)
-        .join('\n')
-    : originalBlock.content
-  await logseq.Editor.updateBlock(uuid, newContent)
-  return logseq.Editor.getBlock(uuid)
+  return removeDbTaskSchedule(uuid)
 }
 
 /**
@@ -107,7 +58,8 @@ export const updateBlockTimeLog = async (
   const originalBlock = await logseq.Editor.getBlock(uuid)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
-  const timeLogTexts = originalBlock.content
+  const originalContent = originalBlock.content ?? originalBlock.title
+  const timeLogTexts = originalContent
     .split('\n')
     .filter((line) => line.startsWith('CLOCK: ['))
     .map((log, i) => {
@@ -119,7 +71,7 @@ export const updateBlockTimeLog = async (
       }
       return log
     })
-  const newContent = originalBlock.content
+  const newContent = originalContent
     .split('\n')
     .filter((line) => !(line.startsWith('CLOCK: [') || line.startsWith(':LOGBOOK:') || line.startsWith(':END:')))
     .filter(Boolean)
@@ -143,12 +95,13 @@ export const addBlockTimeLog = async (
   const originalBlock = await logseq.Editor.getBlock(uuid)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
-  const timeLogTexts = (originalBlock.content.split('\n').filter((line) => line.startsWith('CLOCK: [')) || []).concat(
+  const originalContent = originalBlock.content ?? originalBlock.title
+  const timeLogTexts = (originalContent.split('\n').filter((line) => line.startsWith('CLOCK: [')) || []).concat(
     `CLOCK: [${info.start.format(LOGBOOK_CLOCK_FORMATTER)}]--[${info.end.format(
       LOGBOOK_CLOCK_FORMATTER,
     )}] =>  ${secondsToHHmmss(info.end.diff(info.start, 'second'))}`,
   )
-  const newContent = originalBlock.content
+  const newContent = originalContent
     .split('\n')
     .filter((line) => !(line.startsWith('CLOCK: [') || line.startsWith(':LOGBOOK:') || line.startsWith(':END:')))
     .filter(Boolean)
@@ -166,11 +119,12 @@ export const deleteBlogTimeLog = async (uuid: string, index: number) => {
   const originalBlock = await logseq.Editor.getBlock(uuid)
   if (!originalBlock) return Promise.reject(new Error('Block not found'))
 
-  const timeLogTexts = originalBlock.content
+  const originalContent = originalBlock.content ?? originalBlock.title
+  const timeLogTexts = originalContent
     .split('\n')
     .filter((line) => line.startsWith('CLOCK: ['))
     .filter((log, i) => i !== index)
-  const newContent = originalBlock.content
+  const newContent = originalContent
     .split('\n')
     .filter((line) => !(line.startsWith('CLOCK: [') || line.startsWith(':LOGBOOK:') || line.startsWith(':END:')))
     .filter(Boolean)
@@ -185,34 +139,7 @@ export const deleteBlogTimeLog = async (uuid: string, index: number) => {
  * create task
  */
 export const createTaskBlock = async (taskInfo: CreateAgendaTask) => {
-  const { title, allDay, start, deadline, end, estimatedTime, projectId, bindObjectiveId } = taskInfo
-
-  const AGENDA_DRAWER = genAgendaDrawerText({
-    estimated: estimatedTime,
-    end,
-    bindObjectiveId,
-  })
-  // const
-  const content = [
-    `${getTodoTag()} ${title}`,
-    start ? `SCHEDULED: <${start.format(allDay ? SCHEDULED_DATE_FORMATTER : SCHEDULED_DATETIME_FORMATTER)}>` : null,
-    deadline
-      ? `DEADLINE: <${deadline.value.format(
-          deadline.allDay ? SCHEDULED_DATE_FORMATTER : SCHEDULED_DATETIME_FORMATTER,
-        )}>`
-      : null,
-    AGENDA_DRAWER,
-  ]
-    .filter(Boolean)
-    .join('\n')
-
-  const targetProjectId = projectId ? projectId : (await createTodayJournalPage()).uuid
-
-  const block = await logseq.Editor.insertBlock(targetProjectId, content, {
-    isPageBlock: true,
-  })
-  if (!block) return Promise.reject(new Error('Failed to create task block'))
-  return logseq.Editor.getBlock(block.uuid)
+  return createDbTask(taskInfo)
 }
 
 export function generateTimeLogText({ start, end }: { start: Dayjs; end: Dayjs }) {
@@ -231,50 +158,14 @@ export function generateTimeLogText({ start, end }: { start: Dayjs; end: Dayjs }
  * update task
  */
 export const updateTaskBlock = async (taskInfo: AgendaTaskWithStartOrDeadline & { projectId?: string }) => {
-  const { id, title, allDay, start, end, estimatedTime, deadline, status, timeLogs, projectId, bindObjectiveId } =
-    taskInfo
-  const originalBlock = await logseq.Editor.getBlock(id)
-  if (!originalBlock) return Promise.reject(new Error('Block not found'))
-
-  const content1 = updateBlockTaskTitle(originalBlock.content, title, status)
-  const content2 = updateBlockScheduled(content1, { start, allDay })
-  const content3 = updateBlockDeadline(content2, deadline)
-  const content4 = updateBlockAgendaDrawer(content3, {
-    estimated: estimatedTime,
-    end,
-    bindObjectiveId,
-  })
-  const content5 = updateBlockTimeLogText(content4, timeLogs)
-  await updateBlock(id, content5)
-
-  const page = await logseq.Editor.getPage(originalBlock.page.id)
-  if (!page) return Promise.reject(new Error('Page not found'))
-  if (page.uuid !== projectId) {
-    // move task to new page's bottom
-    const targetPageId = projectId ? projectId : (await createTodayJournalPage()).uuid
-    const blocks = await logseq.Editor.getPageBlocksTree(targetPageId)
-    const targetBlockId = blocks.length > 0 ? blocks[blocks.length - 1].uuid : targetPageId
-    await logseq.Editor.moveBlock(id, targetBlockId, {
-      children: false,
-    })
-  }
-
-  return logseq.Editor.getBlock(id)
+  return updateDbTask(taskInfo)
 }
 
 /**
  * toggle task status
  */
 export const updateBlockTaskStatus = async (taskInfo: AgendaEntity, status: AgendaEntity['status']) => {
-  const todoTag = status === 'done' ? 'DONE' : getTodoTag()
-  const rawTodoTag = taskInfo.rawBlock.marker
-  if (!rawTodoTag) {
-    message.error('This is not a todo block')
-    return null
-  }
-  const reg = new RegExp(`^${rawTodoTag}`)
-  const newContent = taskInfo.rawBlock.content.replace(reg, todoTag)
-  await logseq.Editor.updateBlock(taskInfo.rawBlock.uuid, newContent)
+  await writeDbTaskStatus(taskInfo.rawBlock.uuid, status)
   return logseq.Editor.getBlock(taskInfo.rawBlock.uuid)
 }
 
@@ -496,14 +387,6 @@ export function updateBlockTimeLogText(blockContent: string, timeLogs: { start: 
   return blockContent.replace(LOGBOOK_REGEX, logbookText)
 }
 
-export async function createTodayJournalPage() {
-  const { preferredDateFormat } = await logseq.App.getUserConfigs()
-  const journalName = format(dayjs().valueOf(), preferredDateFormat)
-  const journalPage = await logseq.Editor.createPage(journalName, {}, { journal: true })
-  if (!journalPage) return Promise.reject(new Error('Failed to create journal page'))
-  return journalPage
-}
-
 /**
  * transform normal block to BlockFromQuery
  */
@@ -514,44 +397,23 @@ export const transformBlockToBlockFromQuery = async (block: BlockEntity | null):
 
   return {
     ...block,
-    marker: block.marker,
+    marker:
+      block.marker === 'TODO' ||
+      block.marker === 'DOING' ||
+      block.marker === 'NOW' ||
+      block.marker === 'LATER' ||
+      block.marker === 'WAITING' ||
+      block.marker === 'DONE' ||
+      block.marker === 'CANCELED'
+        ? block.marker
+        : 'TODO',
     page: {
       ...page,
-      originalName: page.originalName,
+      originalName: page.originalName ?? page.title ?? page.name,
       journalDay: page.journalDay,
       isJournal: page?.['journal?'],
     },
   }
-}
-
-/**
- * create objective block
- */
-export const createObjectiveBlock = async (objective: CreateObjectiveForm) => {
-  const { title, objective: objectiveInfo } = objective
-  const AGENDA_DRAWER = genAgendaDrawerText({
-    objective: objectiveInfo,
-  })
-  const content = [`${getTodoTag()} ${title}`, AGENDA_DRAWER].filter(Boolean).join('\n')
-  const block = await logseq.Editor.insertBlock((await createTodayJournalPage()).uuid, content, {
-    isPageBlock: true,
-    customUUID: await logseq.Editor.newBlockUUID(),
-  })
-  if (!block) return Promise.reject(new Error('Failed to create objective block'))
-  return logseq.Editor.getBlock(block.uuid)
-}
-/**
- * update objective block
- */
-export const updateObjectiveBlock = async (objective: AgendaObjective) => {
-  const { id, title, objective: objectiveInfo, status } = objective
-  const originalBlock = await logseq.Editor.getBlock(id)
-  if (!originalBlock) return Promise.reject(new Error('Block not found'))
-
-  const content1 = updateBlockTaskTitle(originalBlock.content, title, status)
-  const content2 = updateBlockAgendaDrawer(content1, { objective: objectiveInfo })
-  await updateBlock(id, content2)
-  return logseq.Editor.getBlock(id)
 }
 
 /** get todo tag */

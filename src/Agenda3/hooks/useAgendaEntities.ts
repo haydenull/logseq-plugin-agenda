@@ -1,10 +1,9 @@
-import type { BlockEntity } from '@logseq/libs/dist/LSPlugin.user'
-import { message, notification } from 'antd'
-import { type Dayjs } from 'dayjs'
+import { message } from 'antd'
+import type { Dayjs } from 'dayjs'
 import { useAtom, useAtomValue } from 'jotai'
 import { useCallback } from 'react'
 
-import { getAgendaEntities, transformBlockToAgendaEntity } from '@/Agenda3/helpers/task'
+import { getAgendaEntities, getDbAgendaEntity } from '@/Agenda3/helpers/task'
 import { settingsAtom } from '@/Agenda3/models/settings'
 import type { AgendaEntity } from '@/types/entity'
 import type { AgendaObjective } from '@/types/objective'
@@ -13,14 +12,11 @@ import type { AgendaTaskWithStart, AgendaTaskWithStartOrDeadline, CreateAgendaTa
 import type { CreateObjectiveForm } from '../components/modals/ObjectiveModal/CreateObjectiveModal'
 import type { EditObjectiveForm } from '../components/modals/ObjectiveModal/EditObjectiveModal'
 import {
-  createObjectiveBlock,
   createTaskBlock,
   deleteBlockDateInfo,
   deleteEntityBlock,
-  transformBlockToBlockFromQuery,
   updateBlockDateInfo,
   updateBlockTaskStatus,
-  updateObjectiveBlock,
   updateTaskBlock,
 } from '../helpers/block'
 import { agendaEntitiesAtom } from '../models/entities/entities'
@@ -31,10 +27,8 @@ const useAgendaEntities = () => {
 
   const refreshEntities = useCallback(() => {
     if (settings.isInitialized === false) return Promise.resolve()
-    return getAgendaEntities(settings).then((res) => {
-      setEntities(res)
-    })
-  }, [settings])
+    return getAgendaEntities(settings).then(setEntities)
+  }, [settings, setEntities])
 
   const updateEntity = async (
     params:
@@ -69,76 +63,43 @@ const useAgendaEntities = () => {
           data: AgendaObjective['status']
         },
   ) => {
-    const { type, id, data } = params
-    const task = entities.find((task) => task.id === id)
+    if (params.type === 'objective' || params.type === 'objective-status') {
+      throw new Error('Objectives are not supported in the DB-only MVP')
+    }
+
+    const task = entities.find((entity) => entity.id === params.id)
     if (!task) {
       message.error('Entity not found')
       throw new Error('Entity not found')
     }
-    let rawBlock: BlockEntity | null = null
-    switch (type) {
+
+    switch (params.type) {
       case 'task':
-        rawBlock = await updateTaskBlock(data)
+        await updateTaskBlock(params.data)
         break
       case 'task-date':
-        rawBlock = await updateBlockDateInfo({
-          ...data,
-          uuid: id,
-        })
+        await updateBlockDateInfo({ ...params.data, uuid: params.id })
         break
       case 'task-status':
-      case 'objective-status':
-        rawBlock = await updateBlockTaskStatus(task, data)
+        await updateBlockTaskStatus(task, params.data)
         break
       case 'task-remove-date':
-        rawBlock = await deleteBlockDateInfo(id)
+        await deleteBlockDateInfo(params.id)
         break
-      case 'objective':
-        // 如果执行到这个分支，说明 task.objective 一定存在
-        rawBlock = await updateObjectiveBlock({
-          ...task,
-          ...data,
-        } as AgendaObjective)
-        break
-      default:
-        break
-    }
-    const block = await transformBlockToBlockFromQuery(rawBlock)
-    if (!block) {
-      message.error('Failed to edit block')
-      throw new Error('Failed to edit block')
     }
 
-    const newTask = await transformBlockToAgendaEntity(block, settings)
-    const isFilterMode = (settings.selectedFilters || [])?.length > 0
-    if (isFilterMode && (newTask.filters ?? []).length === 0) {
-      const message = type.startsWith('task')
-        ? 'Edit task successful but task is hidden'
-        : 'Edit objective successful but objective is hidden'
-      const description = type.startsWith('task')
-        ? 'Task was hidden because it dose not match any of your filters.'
-        : 'Objective was hidden because it dose not match any of your filters.'
-      notification.info({
-        message,
-        description,
-        duration: 0,
-      })
-      return false
+    const updatedTask = await getDbAgendaEntity(params.id, settings)
+    if (!updatedTask) {
+      message.error('Failed to read updated DB task')
+      throw new Error('Failed to read updated DB task')
     }
-    setEntities((_tasks) => {
-      return _tasks.map((task) => {
-        if (task.id === id) {
-          return { ...task, ...newTask }
-        }
-        return task
-      })
-    })
-    return newTask
+    setEntities((current) => current.map((entity) => (entity.id === params.id ? updatedTask : entity)))
+    return updatedTask
   }
 
-  const deleteEntity = (id: string) => {
-    deleteEntityBlock(id)
-    setEntities((_tasks) => _tasks.filter((task) => task.id !== id))
+  const deleteEntity = async (id: string) => {
+    await deleteEntityBlock(id)
+    setEntities((current) => current.filter((entity) => entity.id !== id))
   }
 
   const addNewEntity = async (
@@ -149,34 +110,20 @@ const useAgendaEntities = () => {
           data: CreateObjectiveForm
         },
   ) => {
-    const { type, data } = params
-    const block = await transformBlockToBlockFromQuery(
-      type === 'task' ? await createTaskBlock(data) : await createObjectiveBlock(data),
-    )
+    if (params.type === 'objective') {
+      throw new Error('Objectives are not supported in the DB-only MVP')
+    }
+    const block = await createTaskBlock(params.data)
     if (!block) {
-      message.error('Failed to create block')
-      throw new Error('Failed to create block')
+      message.error('Failed to create DB task')
+      throw new Error('Failed to create DB task')
     }
-    const newTask = await transformBlockToAgendaEntity(block, settings)
-    const isFilterMode = (settings.selectedFilters || [])?.length > 0
-    if (isFilterMode && (newTask.filters ?? []).length === 0) {
-      const message =
-        type === 'task'
-          ? 'Create task successful but task is hidden'
-          : 'Create objective successful but objective is hidden'
-      const description =
-        type === 'task'
-          ? 'Task was hidden because it dose not match any of your filters.'
-          : 'Objective was hidden because it dose not match any of your filters.'
-      notification.info({
-        message,
-        description,
-        duration: 0,
-      })
-      return false
+    const newTask = await getDbAgendaEntity(block.uuid, settings)
+    if (!newTask) {
+      message.error('Failed to read created DB task')
+      throw new Error('Failed to read created DB task')
     }
-    console.log('[faiz:] === newTask', newTask)
-    setEntities((_tasks) => _tasks.concat(newTask))
+    setEntities((current) => current.concat(newTask))
     return newTask
   }
 

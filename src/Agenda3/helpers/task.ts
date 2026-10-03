@@ -9,10 +9,10 @@ import { DEFAULT_ESTIMATED_TIME, getRecentDaysRange } from '@/constants/agenda'
 import type { AgendaEntity, AgendaEntityDeadline, AgendaEntityPage } from '@/types/entity'
 import type { RRule } from '@/types/fullcalendar'
 import type { AgendaTaskWithStart, AgendaTaskWithStartOrDeadline } from '@/types/task'
-import { fillBlockReference } from '@/util/schedule'
 import { genDays } from '@/util/util'
 
 import { parseAgendaDrawer } from './block'
+import { getDbDateValue, getDbScalarValue, getDbTaskStatus, isCanceledDbStatus, isCompletedDbStatus } from './dbGraph'
 import { transformPageToProject } from './project'
 
 export const FREQ_ENUM_MAP = {
@@ -39,105 +39,86 @@ export type BlockFromQuery = BlockEntity & {
 export type BlockFromQueryWithFilters = BlockFromQuery & {
   filters?: Filter[]
 }
-export const getAgendaEntities = async (settings: Settings) => {
-  const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
-  let blocks = (await logseq.DB.datascriptQuery(`
-  [:find (pull
-    ?block
-    [:block/uuid
-      :block/parent
-      :db/id
-      :block/left
-      :block/collapsed?
-      :block/format
-      :block/_refs
-      :block/path-refs
-      :block/tags
-      :block/content
-      :block/marker
-      :block/priority
-      :block/properties
-      :block/properties-order
-      :block/properties-text-values
-      :block/pre-block?
-      :block/scheduled
-      :block/deadline
-      :block/repeated?
-      :block/created-at
-      :block/updated-at
-      :block/file
-      :block/heading-level
-      {:block/page
-        [:db/id :block/uuid :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}
-      {:block/refs
-        [:db/id :block/uuid :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}])
-    :where
-    [?block :block/marker ?marker]
-    [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
-  `)) as BlockFromQueryWithFilters[]
-  if (!blocks || blocks?.length === 0) return []
-  blocks = blocks.flat()
 
-  const filters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
+async function transformDbTask(block: BlockEntity, settings: Settings): Promise<AgendaEntity | null> {
+  const [page, properties] = await Promise.all([
+    logseq.Editor.getPage(block.page.id),
+    logseq.Editor.getBlockProperties(block.uuid),
+  ])
+  if (!page) throw new Error(`Logseq DB task page not found: ${block.uuid}`)
+  const status = getDbTaskStatus(properties)
+  if (status && isCanceledDbStatus(status)) return null
 
-  if (settings.selectedFilters?.length) {
-    const filterBlocks = await retrieveFilteredBlocks(filters)
-    const filterBlockIds = filterBlocks.map((block) => block.uuid)
-    blocks = blocks
-      .filter((block) => filterBlockIds.includes(block.uuid))
-      .map((block) => {
-        return {
-          ...block,
-          filters: filterBlocks
-            .filter((filterBlock) => filterBlock.uuid === block.uuid)
-            .map((filterBlock) => filterBlock.filter),
-        }
-      })
+  const start = getDbDateValue(properties, 'logseq.property/scheduled')
+  const deadline = getDbDateValue(properties, 'logseq.property/deadline')
+  const marker = status && isCompletedDbStatus(status) ? 'DONE' : 'TODO'
+  const title = block.title ?? block.content ?? ''
+  const formatScheduled = (date: typeof start) =>
+    date?.format(date.hour() || date.minute() ? 'YYYY-MM-DD ddd HH:mm' : 'YYYY-MM-DD ddd')
+  const content = [
+    `${marker} ${title}`,
+    start ? `SCHEDULED: <${formatScheduled(start)}>` : undefined,
+    deadline ? `DEADLINE: <${formatScheduled(deadline)}>` : undefined,
+  ]
+    .filter(Boolean)
+    .join('\n')
+  const pageName = page.originalName ?? page.title ?? page.name
+  const agendaBlock: BlockFromQuery = {
+    ...block,
+    content,
+    marker,
+    scheduled: start ? Number(start.format('YYYYMMDD')) : undefined,
+    deadline: deadline ? Number(deadline.format('YYYYMMDD')) : undefined,
+    page: {
+      id: page.id,
+      uuid: page.uuid,
+      originalName: pageName,
+      isJournal: Boolean(page['journal?']),
+      journalDay: page.journalDay,
+      properties: page.properties,
+    },
   }
-  const promiseList: Promise<AgendaEntity[]>[] = blocks.map(async (block) => {
-    const _block = {
-      ...block,
-      uuid: typeof block.uuid === 'string' ? block.uuid : block.uuid?.['$uuid$'],
-      repeated: block['repeated?'],
-      page: {
-        ...block.page,
-        uuid: block.page?.['uuid'],
-        originalName: block.page?.['original-name'],
-        journalDay: block.page?.['journal-day'],
-        isJournal: block.page?.['journal?'],
-        properties: block.page?.['properties'],
-      },
-      refs: block.refs?.map((_page) => ({
-        ..._page,
-        uuid: _page?.['uuid'],
-        journalDay: _page?.['journal-day'],
-        originalName: _page?.['original-name'],
-        isJournal: _page?.['journal?'],
-        properties: _page?.['properties'],
-      })),
-    }
-
-    const task = await transformBlockToAgendaEntity(_block as unknown as BlockFromQuery, settings, favoritePages)
-    const recurringPastTasks: AgendaEntity[] =
-      task.doneHistory?.map((pastTaskEnd) => {
-        const { estimatedTime = DEFAULT_ESTIMATED_TIME } = task
-        const spanTime = task.status === 'done' && task.actualTime ? task.actualTime : estimatedTime
-        return {
-          ...task,
-          id: task.id + '_' + pastTaskEnd.format('YYYYMMDDHHmm'),
-          start: pastTaskEnd.subtract(spanTime, 'minute'),
-          recurringPast: true,
-          rrule: undefined,
-          repeated: false,
-          status: 'done',
-          actualTime: task.estimatedTime,
+  const entity = await transformBlockToAgendaEntity(agendaBlock, { ...settings, selectedFilters: [] })
+  const startAllDay = getDbScalarValue(properties, 'agenda3_start_all_day')
+  const deadlineAllDay = getDbScalarValue(properties, 'agenda3_deadline_all_day')
+  const estimatedTime = getDbScalarValue(properties, 'agenda3_estimated_time')
+  return {
+    ...entity,
+    allDay: typeof startAllDay === 'boolean' ? startAllDay : entity.allDay,
+    end: getDbDateValue(properties, 'agenda3_end_date'),
+    estimatedTime: typeof estimatedTime === 'number' ? estimatedTime : undefined,
+    deadline: entity.deadline
+      ? {
+          ...entity.deadline,
+          allDay: typeof deadlineAllDay === 'boolean' ? deadlineAllDay : entity.deadline.allDay,
         }
-      }) ?? []
-    return [task].concat(recurringPastTasks)
-  })
+      : undefined,
+  }
+}
 
-  const tasks = await Promise.all(promiseList)
-  return tasks.flat()
+export async function getDbAgendaEntity(uuid: string, settings: Settings) {
+  const block = await logseq.Editor.getBlock(uuid)
+  if (!block) return null
+  return transformDbTask(block, settings)
+}
+
+export const getAgendaEntities = async (settings: Settings) => {
+  const taskTag = (await logseq.Editor.getTag('logseq.class/Task')) ?? (await logseq.Editor.getTag('Task'))
+  if (!taskTag) throw new Error('Logseq DB Task tag is unavailable')
+
+  const rows = await logseq.DB.datascriptQuery<Array<[string]>>(
+    `[:find ?uuid :in $ ?tag :where [?block :block/tags ?tag] [?block :block/uuid ?uuid]]`,
+    taskTag.id,
+  )
+  if (!rows?.length) return []
+  const tasks: (AgendaEntity | null)[] = await Promise.all(
+    (rows ?? []).map(async ([uuid]) => {
+      const block = await logseq.Editor.getBlock(uuid)
+      if (!block) return null
+      return transformDbTask(block, settings)
+    }),
+  )
+  return tasks.filter((task): task is AgendaEntity => task !== null)
 }
 
 /**
@@ -148,21 +129,15 @@ export const transformBlockToAgendaEntity = async (
   settings: Settings,
   favoritePages?: string[],
 ): Promise<AgendaEntity> => {
-  const _favoritePages = (favoritePages ?? (await logseq.App.getCurrentGraphFavorites())) || []
+  const favorites = favoritePages ?? (await logseq.App.getCurrentGraphFavorites()) ?? []
+  const _favoritePages = favorites.map((favorite) =>
+    typeof favorite === 'string' ? favorite : favorite.originalName ?? favorite.title ?? favorite.name,
+  )
   const { general = {} } = settings
-  const {
-    uuid,
-    marker,
-    content,
-    scheduled: scheduledNumber,
-    deadline: deadlineNumber,
-    properties,
-    page,
-    filters,
-    format,
-  } = block
+  const { uuid, marker, scheduled: scheduledNumber, deadline: deadlineNumber, properties, page, format } = block
+  const content = block.content ?? block.title
 
-  const title = content.split('\n')[0]?.replace(marker, '')?.trim()
+  const title = content.split('\n')[0]?.replace(marker, '')?.trim() ?? ''
   const showTitle = await formatTaskTitle(title, format)
 
   let allDay = true
@@ -197,7 +172,7 @@ export const transformBlockToAgendaEntity = async (
   // status
   const status = marker === 'DONE' ? 'done' : 'todo'
 
-  const agendaDrawer = parseAgendaDrawer(block.content)
+  const agendaDrawer = parseAgendaDrawer(block.content ?? '')
   // estimatedTime
   const estimatedTime = agendaDrawer && agendaDrawer.estimated ? agendaDrawer.estimated : undefined
   const _defaultEstimatedTime = DEFAULT_ESTIMATED_TIME
@@ -260,8 +235,8 @@ export const transformBlockToAgendaEntity = async (
   }
 
   // filters
-  let _filters: Filter[] = filters ?? []
-  if (settings.selectedFilters?.length && !filters?.length) {
+  let _filters: Filter[] = (block as BlockFromQueryWithFilters).filters ?? []
+  if (settings.selectedFilters?.length && !_filters.length) {
     const settingsFilters = settings.filters?.filter((_filter) => settings.selectedFilters?.includes(_filter.id)) ?? []
     const filterBlocks = await retrieveFilteredBlocks(settingsFilters)
     const belongFilters = filterBlocks
@@ -466,19 +441,27 @@ function replacePageReference(text: string) {
  * ((some-id-id)) -> block reference
  */
 async function replaceBlockReference(text: string): Promise<string> {
-  const blockIds = Array.from(text.matchAll(/\(\(([\w-]+)\)\)/g)).map((match) => match[1])
-  const blocks = await Promise.all(
-    blockIds.map((uuid) => {
-      // if not a valid uuid, return null
-      if (!uuid.match(/^[\w-]{31,}$/)) return null
-      return logseq.Editor.getBlock(uuid)
+  const referenceRegex = /\(\(([\w-]+)\)\)|\b([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\b/gi
+  const references = Array.from(text.matchAll(referenceRegex), (match) => ({
+    text: match[0],
+    uuid: match[1] ?? match[2],
+  }))
+  const uniqueUuids = [...new Set(references.map(({ uuid }) => uuid))]
+  const resolvedTitles = await Promise.all(
+    uniqueUuids.map(async (uuid) => {
+      const block = await logseq.Editor.getBlock(uuid)
+      const blockTitle = block?.title ?? block?.content
+      if (blockTitle) return [uuid, blockTitle.split('\n')[0]] as const
+
+      const page = await logseq.Editor.getPage(uuid)
+      const pageTitle = page?.originalName ?? page?.title ?? page?.name
+      return pageTitle ? ([uuid, pageTitle] as const) : null
     }),
   )
-  blocks.forEach((block, index) => {
-    if (block?.content) {
-      const firstLine = block.content.split('\n')[0]
-      text = text.replace(`((${blockIds[index]}))`, firstLine)
-    }
+  const titles = new Map(resolvedTitles.filter((entry): entry is readonly [string, string] => entry !== null))
+  references.forEach(({ text: reference, uuid }) => {
+    const title = titles.get(uuid)
+    if (title) text = text.replace(reference, title)
   })
   return text
 }

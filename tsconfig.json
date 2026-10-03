@@ -4,8 +4,17 @@
     "target": "ESNext",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["./src", "./vite.config.ts", "./src/tests/setupTest.ts"]
+  "include": [
+    "./src/main.tsx",
+    "./src/**/*.d.ts",
+    "./src/Agenda3/components/__tests__/MathText.test.tsx",
+    "./src/Agenda3/helpers/__tests__/dbGraph.test.ts",
+    "./src/Agenda3/helpers/__tests__/project.test.ts",
+    "./src/Agenda3/helpers/__tests__/task.test.ts",
+    "./vite.config.ts",
+    "./src/tests/setupTest.ts"
+  ]
 }

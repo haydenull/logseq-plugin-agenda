@@ -1,6 +1,10 @@
 # logseq-plugin-agenda
 > A calendar plugin for logseq
 
+This fork targets Logseq DB graphs. The DB-only MVP supports page selection and creating, listing, editing, and deleting scheduled tasks. Tasks are blocks tagged with Logseq's `Task` class; their status, schedule, and deadline use DB properties. Agenda-specific end dates, estimated time, and all-day flags are stored in hidden Agenda properties. Tasks without a selected page are created on today's journal page.
+
+The legacy Agenda2 toolbar, filters, objectives, and actual-time logs are not available in this MVP. Other Agenda features are still being ported and may not work yet.
+
 [![latest release version](https://img.shields.io/github/v/release/haydenull/logseq-plugin-agenda)](https://github.com/haydenull/logseq-plugin-agenda/releases)
 [![License](https://img.shields.io/github/license/haydenull/logseq-plugin-agenda?color=blue)](https://github.com/haydenull/logseq-plugin-agenda/blob/main/LICENSE)
 

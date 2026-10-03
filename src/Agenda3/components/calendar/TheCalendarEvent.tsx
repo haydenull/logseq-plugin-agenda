@@ -7,6 +7,8 @@ import { IoIosCheckmarkCircle } from 'react-icons/io'
 import { getDaysBetween } from '@/Agenda3/helpers/util'
 import { cn } from '@/util/util'
 
+import MathText from '../MathText'
+
 const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
   const taskData = info.event.extendedProps
   const showTitle = taskData?.id ? taskData.showTitle : info.event.title
@@ -34,7 +36,9 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
           {info.event.allDay ? null : (
             <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: info.event.backgroundColor }} />
           )}
-          <span className="flex-1 truncate">{showTitle}</span>
+          <span className="flex-1 truncate">
+            <MathText>{showTitle}</MathText>
+          </span>
           {isDone ? (
             <IoIosCheckmarkCircle
               className={cn('absolute right-0', info.event.allDay ? 'text-white' : 'text-green-500')}
@@ -60,7 +64,7 @@ const TheCalendarEvent = ({ info }: { info: EventContentArg }) => {
               'text-[10px]': isSmallHeight,
             })}
           >
-            {showTitle}
+            <MathText>{showTitle}</MathText>
           </div>
           {isShowTimeText ? <div className="text-xs text-gray-200">{info.timeText}</div> : null}
           {isDone ? <IoIosCheckmarkCircle className="absolute right-0 top-0.5" /> : null}
