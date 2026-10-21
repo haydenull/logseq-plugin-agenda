@@ -361,7 +361,10 @@ export const separateTasksInDay = (
   })
   const arr = Array.from(tasksMap)
     .sort((a, b) => Number(a[0]) - Number(b[0]))
-    .map(([day, tasks]) => [day, tasks] as const)
+    .map(
+      ([day, tasks]) =>
+        [day, tasks.sort((a, b) => (a.start ?? a.deadline!.value).diff(b.start ?? b.deadline!.value))] as const,
+    )
   return new Map(arr)
 }
 

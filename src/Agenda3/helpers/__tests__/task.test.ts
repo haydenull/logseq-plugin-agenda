@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { describe, expect, test } from 'vitest'
 
-import type { AgendaTaskWithStart } from '@/types/task'
+import type { AgendaTaskWithStart, AgendaTaskWithStartOrDeadline } from '@/types/task'
 
 import { type BlockFromQuery, transformBlockToAgendaEntity, separateTasksInDay } from '../task'
 
@@ -116,5 +116,67 @@ describe('helper: task', () => {
         ['20230925', [tasks[1]]],
       ]),
     )
+  })
+
+  test('sorts tasks within each day by scheduled time without mutating the input', () => {
+    const tasks = ['2023-09-25 11:15', '2023-09-24 10:50', '2023-09-24 10:25', '2023-09-24 10:45'].map(
+      (start, index) => ({ ...DEMO_TASK, id: String(index), start: dayjs(start) }),
+    )
+    const originalTasks = [...tasks]
+
+    expect(separateTasksInDay(tasks)).toEqual(
+      new Map([
+        ['20230924', [tasks[2], tasks[3], tasks[1]]],
+        ['20230925', [tasks[0]]],
+      ]),
+    )
+    expect(tasks).toEqual(originalTasks)
+  })
+
+  test('uses deadline time when a task has no scheduled date', () => {
+    const tasks: AgendaTaskWithStartOrDeadline[] = [
+      { ...DEMO_TASK, start: dayjs('2023-09-24 10:50') },
+      {
+        ...DEMO_TASK,
+        start: undefined,
+        deadline: { value: dayjs('2023-09-24 10:35'), allDay: false },
+      },
+      { ...DEMO_TASK, start: dayjs('2023-09-24 10:25') },
+    ]
+
+    expect(separateTasksInDay(tasks).get('20230924')).toEqual([tasks[2], tasks[1], tasks[0]])
+  })
+
+  test('prefers scheduled time over deadline time when both are present', () => {
+    const tasks = [
+      {
+        ...DEMO_TASK,
+        start: dayjs('2023-09-24 10:50'),
+        deadline: { value: dayjs('2023-09-25 09:00'), allDay: false },
+      },
+      { ...DEMO_TASK, start: dayjs('2023-09-24 11:15') },
+    ]
+
+    expect(separateTasksInDay(tasks)).toEqual(new Map([['20230924', tasks]]))
+  })
+
+  test('keeps all-day tasks first and preserves input order for equal times', () => {
+    const tasks = [
+      { ...DEMO_TASK, id: 'first-timed', start: dayjs('2023-09-24 10:50') },
+      { ...DEMO_TASK, id: 'first-all-day', start: dayjs('2023-09-24'), allDay: true },
+      { ...DEMO_TASK, id: 'second-timed', start: dayjs('2023-09-24 10:50') },
+      { ...DEMO_TASK, id: 'second-all-day', start: dayjs('2023-09-24'), allDay: true },
+    ]
+
+    expect(separateTasksInDay(tasks).get('20230924')).toEqual([tasks[1], tasks[3], tasks[0], tasks[2]])
+  })
+
+  test('ignores tasks without either date and handles empty input', () => {
+    const tasks = [
+      { ...DEMO_TASK, start: undefined, deadline: undefined },
+    ] as unknown as AgendaTaskWithStartOrDeadline[]
+
+    expect(separateTasksInDay(tasks)).toEqual(new Map())
+    expect(separateTasksInDay([])).toEqual(new Map())
   })
 })
