@@ -39,7 +39,7 @@ export type BlockFromQuery = BlockEntity & {
 export type BlockFromQueryWithFilters = BlockFromQuery & {
   filters?: Filter[]
 }
-export const getAgendaEntities = async (settings: Settings) => {
+export const getAgendaEntities = async (settings: Settings, options: { scheduledIncompleteOnly?: boolean } = {}) => {
   const favoritePages = (await logseq.App.getCurrentGraphFavorites()) || []
   let blocks = (await logseq.DB.datascriptQuery(`
   [:find (pull
@@ -73,6 +73,7 @@ export const getAgendaEntities = async (settings: Settings) => {
         [:db/id :block/uuid :block/name :block/original-name :block/journal-day :block/journal? :block/properties]}])
     :where
     [?block :block/marker ?marker]
+    ${options.scheduledIncompleteOnly ? '[?block :block/scheduled] [(not= ?marker "DONE")]' : ''}
     [(contains? #{"TODO" "DOING" "NOW" "LATER" "WAITING" "DONE"} ?marker)]]
   `)) as BlockFromQueryWithFilters[]
   if (!blocks || blocks?.length === 0) return []
