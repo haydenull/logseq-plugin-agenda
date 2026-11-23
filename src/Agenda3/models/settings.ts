@@ -4,6 +4,7 @@ export type Language = 'en' | 'zh-CN'
 export type Settings = {
   isInitialized: boolean
   general?: {
+    notifyOnTaskEnd?: boolean
     useJournalDayAsSchedule?: boolean
     language?: Language
     startOfWeek?: number
@@ -25,7 +26,7 @@ export type Settings = {
 }
 export const DEFAULT_SETTINGS = {
   isInitialized: false,
-  general: { language: 'en', startOfWeek: 1 },
+  general: { language: 'en', startOfWeek: 1, notifyOnTaskEnd: false },
   viewOptions: { showTimeLog: false },
 } satisfies Settings
 export const settingsAtom = atom<Settings>(DEFAULT_SETTINGS)

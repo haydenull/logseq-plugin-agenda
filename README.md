@@ -44,6 +44,14 @@ If you want to contribute, please visit [contribution guide](./CONTRIBUTING.md)
 ![Timeline](./screenshots/timeline.png)
 ![Pomodoro](./screenshots/pomodoro.png) -->
 
+## Scheduled task-end notifications
+
+In the Logseq desktop plugin, open **Agenda 3 > Settings > General Settings** and enable **Notify when a task's scheduled time ends**. Notifications are off by default. Use **Test notification** to check desktop notification access and sound.
+
+An unfinished timed task triggers a desktop notification at the end shown in Agenda's calendar: its scheduled start plus its estimated duration (30 minutes by default). Recurring occurrences are supported. Completed tasks, all-day tasks, objectives, and tasks without a scheduled start are excluded. View filters do not suppress alerts. Clicking a notification opens the task's block if the same graph is still active.
+
+Logseq must remain running with the graph open; Agenda itself can stay hidden. End times are checked every 10 seconds. After a brief sleep or query failure, alerts up to five minutes late can still appear. Starting Logseq, switching graphs, or enabling notifications does not replay overdue tasks. Desktop notifications request system sound and respect the operating system's notification, sound, and Do Not Disturb settings.
+
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=haydenull/logseq-plugin-agenda&type=Date)](https://star-history.com/#haydenull/logseq-plugin-agenda&Date)

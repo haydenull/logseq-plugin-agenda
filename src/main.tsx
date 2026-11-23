@@ -21,6 +21,7 @@ import initializeClickLogseqDomListener from '@/register/logseq/clickLogseqDom'
 import initializePageMenuItem from '@/register/pageMenuItem'
 import initializePomodoro, { renderPomodoroApp } from '@/register/pomodoro'
 import initializeSidebar from '@/register/sidebar'
+import { initializeTaskEndNotifications } from '@/register/taskEndNotifications'
 import initializeTodoist from '@/register/todoist'
 import { getInitialSettings, initializeSettings } from '@/util/baseInfo'
 import { listenEsc, log, managePluginTheme, setPluginTheme, toggleAppTransparent } from '@/util/util'
@@ -158,6 +159,9 @@ if (import.meta.env.VITE_MODE === 'web') {
     // ========== dayjs start =========
     initializeDayjs(weekStartDay)
     // ========== dayjs end =========
+
+    const stopTaskEndNotifications = initializeTaskEndNotifications()
+    logseq.beforeunload(async () => stopTaskEndNotifications())
 
     // ========== manage theme start =========
     managePluginTheme()

@@ -1,11 +1,12 @@
 import { useLocalStorageValue } from '@react-hookz/web'
-import { Checkbox, Input, Select, Tooltip } from 'antd'
+import { Button, Checkbox, Input, Select, Tooltip } from 'antd'
 import { useTranslation } from 'react-i18next'
 import { FaRegCircleQuestion } from 'react-icons/fa6'
 
 import { DEFAULT_LOGSEQ_API_CONFIG, LOGSEQ_API_CONFIG_KEY } from '@/Agenda3/helpers/logseq'
 import useSettings from '@/Agenda3/hooks/useSettings'
 import type { Filter, Language } from '@/Agenda3/models/settings'
+import { testTaskEndNotification } from '@/register/taskEndNotifications'
 
 const GeneralSettingsForm = () => {
   const { t, i18n } = useTranslation()
@@ -28,6 +29,20 @@ const GeneralSettingsForm = () => {
     <>
       <div className="flex h-14 items-center border-b pl-4 text-lg font-semibold">{t('General Settings')}</div>
       <div className="mt-4 px-4 pb-8">
+        {import.meta.env.VITE_MODE === 'plugin' && (
+          <div className="mt-4 flex flex-col items-start gap-2">
+            <Checkbox
+              checked={settings.general?.notifyOnTaskEnd === true}
+              onChange={(e) => onChange('general.notifyOnTaskEnd', e.target.checked)}
+            >
+              {t("Notify when a task's scheduled time ends")}
+            </Checkbox>
+            <div className="text-sm text-gray-500">
+              {t('Desktop notification with sound for unfinished timed tasks. Logseq must stay open.')}
+            </div>
+            <Button onClick={() => void testTaskEndNotification()}>{t('Test notification')}</Button>
+          </div>
+        )}
         <div className="mt-4 flex flex-col gap-1">
           <Checkbox
             checked={settings.general?.useJournalDayAsSchedule}
